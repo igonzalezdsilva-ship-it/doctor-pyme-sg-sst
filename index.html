@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Pyme | Plataforma SG-SST Colombia (Decreto 1072 & Res. 0312)</title>
+  
+  <!-- Favicon y Soporte PWA (Instalable en Móvil y Escritorio) -->
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#4338ca">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Doctor Pyme">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Estilos Personalizados e Impresión -->
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body class="h-full">
+
+  <!-- CONTENEDOR RAÍZ (Controlado por Auth / App) -->
+  <div id="app-root" class="h-full flex overflow-hidden">
+    
+    <!-- SIDEBAR LATERAL -->
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 z-30 shadow-xl border-r border-slate-800 no-print">
+      <!-- Logotipo de Doctor Pyme -->
+      <div class="p-4 border-b border-slate-800 flex items-center gap-3">
+        <img src="./assets/logo.jpg" alt="Doctor Pyme" class="w-11 h-11 object-contain bg-white rounded-xl p-1 shadow-md shadow-indigo-500/20 flex-shrink-0">
+        <div class="overflow-hidden">
+          <h1 class="text-sm font-black text-white tracking-tight truncate">
+            Doctor Pyme
+          </h1>
+          <p class="text-[9px] text-emerald-400 font-bold tracking-wider uppercase truncate">Gestión SST & Laboral</p>
+        </div>
+      </div>
+
+      <!-- Menú de Navegación -->
+      <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
+        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 mb-2">Gestión y Operación</div>
+
+        <a href="#dashboard" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+          Panel Principal (Dashboard)
+        </a>
+
+        <a href="#empresas" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+          Empresas Clientes
+        </a>
+
+        <a href="#procesos" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+          <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+          Mapa de Procesos & Organigrama
+        </a>
+
+        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 mt-4 mb-2">Ciclo PHVA</div>
+
+        <a href="#evaluacion" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+          <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+          Estándares Res. 0312
+        </a>
+
+        <a href="#matriz" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+          <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          Matriz de Riesgos GTC 45
+        </a>
+
+        <a href="#plan-trabajo" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+          <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          Plan Anual de Trabajo
+        </a>
+
+        <a href="#accidentes" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+          <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          Registro ATEL (FURAT)
+        </a>
+
+        <a href="#documentos" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+          Gestión Documental PHVA
+        </a>
+
+        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 mt-4 mb-2">Auditoría & Salida</div>
+
+        <a href="#reportes" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+          Informes y Reportes PDF
+        </a>
+      </nav>
+
+      <!-- Perfil de Usuario y Cerrar Sesión -->
+      <div class="p-3 bg-slate-950/60 border-t border-slate-800">
+        <div class="flex items-center justify-between gap-2 mb-2 px-1">
+          <div class="flex items-center gap-2 overflow-hidden">
+            <div class="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+              DP
+            </div>
+            <div class="overflow-hidden">
+              <span id="user-display-name" class="text-xs font-bold text-slate-200 block truncate">Consultor SST</span>
+              <span id="user-display-role" class="text-[10px] text-slate-400 block truncate">Doctor Pyme Admin</span>
+            </div>
+          </div>
+          <button id="btn-logout" class="p-1.5 text-slate-400 hover:text-red-400 transition" title="Cerrar Sesión">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-1 pt-1 border-t border-slate-800/80">
+          <button id="btn-exportar-backup" class="py-1 px-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[10px] font-medium transition text-center truncate" title="Descargar Respaldo JSON">
+            💾 Respaldo
+          </button>
+
+          <label class="py-1 px-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[10px] font-medium transition text-center truncate cursor-pointer" title="Restaurar Copia JSON">
+            📂 Restaurar
+            <input type="file" id="input-importar-backup" accept=".json" class="hidden">
+          </label>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL Y HEADER -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden">
+      
+      <!-- CABECERA SUPERIOR CON SELECTOR DE EMPRESA CLIENTE -->
+      <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4 z-20 shadow-sm no-print">
+        
+        <!-- Selector de Empresa Activa (Multi-Tenant Switcher) -->
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap hidden md:inline">
+            Empresa Activa:
+          </span>
+          <div class="relative w-full sm:w-96">
+            <select id="header-company-select" class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 hover:border-indigo-400 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer transition shadow-sm appearance-none">
+              <option value="todas">🏢 Todas las Empresas (Panel Global)</option>
+            </select>
+            <svg class="w-4 h-4 text-indigo-600 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            <svg class="w-4 h-4 text-slate-400 absolute right-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </div>
+        </div>
+
+        <!-- Filtro General por Año (Iniciando desde 2025) -->
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap hidden lg:inline">
+            Vigencia / Año:
+          </span>
+          <div class="relative">
+            <select id="header-year-select" class="pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 hover:border-indigo-400 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer transition shadow-sm appearance-none">
+              <!-- Renderizado dinámico desde app.js -->
+            </select>
+            <svg class="w-4 h-4 text-indigo-600 absolute left-2.5 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            <svg class="w-4 h-4 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </div>
+          <button id="btn-header-nuevo-anio" onclick="window.abrirModalNuevoAnio()" class="px-2.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm" title="Habilitar nueva vigencia anual para la autoevaluación">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            <span class="hidden xl:inline">+ Año</span>
+          </button>
+        </div>
+
+        <!-- Indicador de Almacenamiento Seguro y Diagnóstico -->
+        <div class="flex items-center gap-2">
+          <button id="header-save-indicator" onclick="window.mostrarDiagnosticoAlmacenamiento()" class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-bold transition shadow-2xs cursor-pointer group" title="Haz clic para ver el Diagnóstico de Almacenamiento Seguro">
+            <span id="save-status-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="save-status-text" class="hidden sm:inline">100% Guardado Seguro</span>
+            <span class="text-[10px] text-emerald-600 bg-emerald-100 px-1 rounded font-semibold hidden md:inline">Local + IndexedDB</span>
+          </button>
+        </div>
+
+        <!-- Acciones Rápidas -->
+        <div class="flex items-center gap-2">
+          <a href="#empresas" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Nueva Empresa
+          </a>
+          <a href="#reportes" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold transition flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            Generar PDF
+          </a>
+        </div>
+      </header>
+
+      <!-- ÁREA DE CONTENIDO DINÁMICO -->
+      <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50">
+        <div id="main-content" class="max-w-7xl mx-auto">
+          <!-- Renderizado dinámico de vistas -->
+        </div>
+      </main>
+    </div>
+
+  </div>
+
+  <!-- SCRIPT PRINCIPAL DE LA APLICACIÓN -->
+  <script type="module" src="./js/app.js?v=4.4"></script>
+</body>
+</html>

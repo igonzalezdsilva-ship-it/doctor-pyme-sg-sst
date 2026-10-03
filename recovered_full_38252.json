@@ -1,0 +1,190 @@
+{
+  "empresas": [
+    {
+      "id": "emp-1790438946268",
+      "razonSocial": "LADRILLOS OCHOA LTDA",
+      "nit": "830124631",
+      "arl": "Positiva",
+      "claseRiesgo": "V",
+      "trabajadores": 45,
+      "ciudad": "Bogota",
+      "direccion": "Kilometro 2 Via Mochuelo",
+      "sector": "Transformacion de arcilla en productos para la construccion",
+      "responsableSST": "Ing. Ivan David Gonzalez Silva - Licencia: RESOLUCIÓN No. 6514 de 19/10/2022",
+      "telefono": "3144001787",
+      "email": "sstmineroambientall8a@gmail.com",
+      "estandaresAplicables": 60,
+      "createdAt": "2026-09-26T16:09:06.268Z",
+      "tieneOrganigrama": true,
+      "tieneMapaProcesos": true
+    }
+  ],
+  "matriz": [
+
+  ],
+  "planTrabajo": [
+
+  ],
+  "accidentes": [
+
+  ],
+  "evaluaciones": {
+    "emp-1790438946268": {
+      "2025": {
+        "1.1.1.3": {
+          "linkGuia": "https://docs.google.com/document/d/1KwN9NqmkfD7RTZMilnMopH4AeTbdIftwNfaBRCQg9H8/edit?usp=sharing",
+          "updatedAt": "2026-09-29T15:15:49.312Z",
+          "justificacion": "Acta asignación de profesional responsable SG SST",
+          "estado": "CUMPLE"
+        },
+        "1.1.1.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-29T14:57:41.352Z",
+          "justificacion": "Profesional en SST o con especialización en SST (certificados de acta de grado y diploma)"
+        },
+        "1.1.1.2": {
+          "justificacion": "Licencia vigente de SST",
+          "updatedAt": "2026-09-29T14:58:47.931Z",
+          "estado": "CUMPLE",
+          "linkGuia": ""
+        },
+        "1.1.2.1": {
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-29T15:37:30.691Z",
+          "justificacion": "Responsabilidades documentadas y firmadas las responsabilidades para la alta dirección.",
+          "estado": "CUMPLE"
+        },
+        "1.1.2.2": {
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-29T15:52:58.693Z"
+        },
+        "1.1.2.3": {
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-29T15:53:04.562Z"
+        },
+        "1.1.2.4": {
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-29T15:53:10.036Z"
+        },
+        "1.1.2.5": {
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-29T15:53:19.163Z"
+        },
+        "1.1.2.6": {
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-29T16:00:36.747Z",
+          "estado": ""
+        },
+        "1.1.3": {
+          "linkGuia": "https://docs.google.com/spreadsheets/d/1j9ZjfdRTcrpZNUwa2Kp0HPNDOffEtDDo/edit?usp=sharing&ouid=105054984538376788001&rtpof=true&sd=true",
+          "updatedAt": "2026-09-29T16:00:24.571Z",
+          "justificacion": "Recursos Financieros - Presupuesto Anual",
+          "estado": "CUMPLE"
+        },
+        "1.1.4": {
+          "justificacion": "Planillas de seguridad social - 2026",
+          "updatedAt": "2026-09-29T16:00:21.964Z",
+          "estado": "CUMPLE"
+        },
+        "3.1.3": {
+          "linkGuia": "https://docs.google.com/spreadsheets/d/17Fn1kRCPqey7OsAayK8aIE-i3eMmHmWnlSUhQrODGCc/edit?gid=1384905893#gid=1384905893",
+          "updatedAt": "2026-09-29T16:35:31.830Z",
+          "estado": "CUMPLE",
+          "justificacion": "Perfil sociodemografico"
+        }
+      },
+      "2026": {
+        "1.1.1.3": {
+          "estado": "CUMPLE",
+          "justificacion": "Acta asignación de profesional responsable SG SST",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/document/d/1KwN9NqmkfD7RTZMilnMopH4AeTbdIftwNfaBRCQg9H8/edit?usp=sharing",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.1.1": {
+          "estado": "CUMPLE",
+          "justificacion": "Profesional en SST o con especialización en SST (certificados de acta de grado y diploma)",
+          "planAccion": "",
+          "linkGuia": "",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.1.2": {
+          "estado": "CUMPLE",
+          "justificacion": "Licencia vigente de SST",
+          "planAccion": "",
+          "linkGuia": "",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.2.1": {
+          "estado": "CUMPLE",
+          "justificacion": "Responsabilidades documentadas y firmadas las responsabilidades para la alta dirección.",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.2.2": {
+          "estado": "PENDIENTE",
+          "justificacion": "",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.2.3": {
+          "estado": "PENDIENTE",
+          "justificacion": "",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.2.4": {
+          "estado": "PENDIENTE",
+          "justificacion": "",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.2.5": {
+          "estado": "PENDIENTE",
+          "justificacion": "",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.2.6": {
+          "estado": "PENDIENTE",
+          "justificacion": "",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.3": {
+          "estado": "CUMPLE",
+          "justificacion": "Recursos Financieros - Presupuesto Anual",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/spreadsheets/d/1j9ZjfdRTcrpZNUwa2Kp0HPNDOffEtDDo/edit?usp=sharing&ouid=105054984538376788001&rtpof=true&sd=true",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.4": {
+          "estado": "CUMPLE",
+          "justificacion": "Planillas de seguridad social - 2026",
+          "planAccion": "",
+          "linkGuia": "",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "3.1.3": {
+          "estado": "CUMPLE",
+          "justificacion": "Perfil sociodemografico",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/spreadsheets/d/17Fn1kRCPqey7OsAayK8aIE-i3eMmHmWnlSUhQrODGCc/edit?gid=1384905893#gid=1384905893",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "2.1.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-29T17:21:15.578Z",
+          "justificacion": "Policitica Actualizada 2026 - Firmada por represnetanta legal y soportes de capacitacion. ",
+          "linkGuia": "https://docs.google.com/document/d/1sRg32I5sGNpe6ROYxwxjq1pcRpEPAZN9mJoWj_rEpFw/edit?usp=sharing"
+        }
+      }
+    }
+  }
+}

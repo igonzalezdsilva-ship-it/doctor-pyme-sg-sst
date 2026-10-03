@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" width="100%" height="100%">
+  <defs>
+    <linearGradient id="gradGerencia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="gradSST" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="100%" stop-color="#B91C1C"/>
+    </linearGradient>
+    <linearGradient id="gradLideres" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#3730A3"/>
+    </linearGradient>
+    <linearGradient id="gradOperativo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <filter id="shadowOrg" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" fill="#F8FAFC" rx="16"/>
+
+  <!-- Encabezado -->
+  <text x="450" y="38" font-family="Inter, sans-serif" font-size="20" font-weight="800" text-anchor="middle" fill="#1E293B">ORGANIGRAMA Y ESTRUCTURA DE ROLES EN SST</text>
+  <text x="450" y="58" font-family="Inter, sans-serif" font-size="12" text-anchor="middle" fill="#64748B">Asignación de Responsabilidades según Decreto 1072 Art. 2.2.4.6.8</text>
+
+  <!-- LÍNEAS CONECTORAS -->
+  <!-- Vertical desde Gerencia -->
+  <line x1="450" y1="140" x2="450" y2="240" stroke="#94A3B8" stroke-width="2"/>
+  <!-- Lateral a SST / COPASST -->
+  <line x1="450" y1="180" x2="710" y2="180" stroke="#DC2626" stroke-width="2" stroke-dasharray="4 4"/>
+  <line x1="710" y1="180" x2="710" y2="195" stroke="#DC2626" stroke-width="2" stroke-dasharray="4 4"/>
+  <!-- Horizontal Líderes -->
+  <line x1="160" y1="240" x2="740" y2="240" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="160" y1="240" x2="160" y2="260" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="450" y1="240" x2="450" y2="260" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="740" y1="240" x2="740" y2="260" stroke="#94A3B8" stroke-width="2"/>
+
+  <!-- Líneas hacia personal operativo -->
+  <line x1="160" y1="325" x2="160" y2="365" stroke="#CBD5E1" stroke-width="2"/>
+  <line x1="450" y1="325" x2="450" y2="365" stroke="#CBD5E1" stroke-width="2"/>
+  <line x1="740" y1="325" x2="740" y2="365" stroke="#CBD5E1" stroke-width="2"/>
+
+  <!-- NIVEL 1: GERENCIA GENERAL -->
+  <g transform="translate(340, 80)">
+    <rect width="220" height="60" rx="10" fill="url(#gradGerencia)" filter="url(#shadowOrg)"/>
+    <text x="110" y="27" font-family="Inter, sans-serif" font-size="13" font-weight="bold" fill="#FFFFFF" text-anchor="middle">GERENCIA GENERAL</text>
+    <text x="110" y="45" font-family="Inter, sans-serif" font-size="10" fill="#94A3B8" text-anchor="middle">Representante Legal (Recursos)</text>
+  </g>
+
+  <!-- ASESORÍA SST / COPASST (STAFF) -->
+  <g transform="translate(610, 150)">
+    <rect width="200" height="55" rx="8" fill="#FEF2F2" stroke="#F87171" stroke-width="2" filter="url(#shadowOrg)"/>
+    <text x="100" y="24" font-family="Inter, sans-serif" font-size="11" font-weight="bold" fill="#991B1B" text-anchor="middle">RESPONSABLE SG-SST</text>
+    <text x="100" y="40" font-family="Inter, sans-serif" font-size="9" fill="#B91C1C" text-anchor="middle">&amp; COPASST / Vigía de SST</text>
+  </g>
+
+  <!-- NIVEL 2: DIRECCIONES Y JEFATURAS -->
+  <!-- Operaciones / Obra -->
+  <g transform="translate(60, 260)">
+    <rect width="200" height="65" rx="8" fill="url(#gradLideres)" filter="url(#shadowOrg)"/>
+    <text x="100" y="28" font-family="Inter, sans-serif" font-size="12" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Dirección de Operaciones</text>
+    <text x="100" y="45" font-family="Inter, sans-serif" font-size="10" fill="#C7D2FE" text-anchor="middle">Ingeniería &amp; Producción</text>
+  </g>
+
+  <!-- Administrativa y Financiera -->
+  <g transform="translate(350, 260)">
+    <rect width="200" height="65" rx="8" fill="url(#gradLideres)" filter="url(#shadowOrg)"/>
+    <text x="100" y="28" font-family="Inter, sans-serif" font-size="12" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Dirección Administrativa</text>
+    <text x="100" y="45" font-family="Inter, sans-serif" font-size="10" fill="#C7D2FE" text-anchor="middle">Gestión Humana &amp; Compras</text>
+  </g>
+
+  <!-- Comercial y Mercadeo -->
+  <g transform="translate(640, 260)">
+    <rect width="200" height="65" rx="8" fill="url(#gradLideres)" filter="url(#shadowOrg)"/>
+    <text x="100" y="28" font-family="Inter, sans-serif" font-size="12" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Dirección Comercial</text>
+    <text x="100" y="45" font-family="Inter, sans-serif" font-size="10" fill="#C7D2FE" text-anchor="middle">Ventas &amp; Servicio al Cliente</text>
+  </g>
+
+  <!-- NIVEL 3: EQUIPOS OPERATIVOS Y CARGOS BASE -->
+  <!-- Operarios -->
+  <g transform="translate(60, 365)">
+    <rect width="200" height="95" rx="8" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1.5"/>
+    <text x="100" y="22" font-family="Inter, sans-serif" font-size="11" font-weight="bold" fill="#065F46" text-anchor="middle">Personal Operativo</text>
+    <text x="100" y="40" font-family="Inter, sans-serif" font-size="9" fill="#047857" text-anchor="middle">• Supervisores de Planta / Obra</text>
+    <text x="100" y="58" font-family="Inter, sans-serif" font-size="9" fill="#047857" text-anchor="middle">• Oficiales y Ayudantes</text>
+    <text x="100" y="76" font-family="Inter, sans-serif" font-size="9" fill="#047857" text-anchor="middle">• Conductores y Almacenistas</text>
+  </g>
+
+  <!-- Administrativos -->
+  <g transform="translate(350, 365)">
+    <rect width="200" height="95" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5"/>
+    <text x="100" y="22" font-family="Inter, sans-serif" font-size="11" font-weight="bold" fill="#334155" text-anchor="middle">Personal Administrativo</text>
+    <text x="100" y="40" font-family="Inter, sans-serif" font-size="9" fill="#475569" text-anchor="middle">• Asistentes Contables</text>
+    <text x="100" y="58" font-family="Inter, sans-serif" font-size="9" fill="#475569" text-anchor="middle">• Coordinador de Talento</text>
+    <text x="100" y="76" font-family="Inter, sans-serif" font-size="9" fill="#475569" text-anchor="middle">• Compras y Facturación</text>
+  </g>
+
+  <!-- Asesores Comerciales -->
+  <g transform="translate(640, 365)">
+    <rect width="200" height="95" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5"/>
+    <text x="100" y="22" font-family="Inter, sans-serif" font-size="11" font-weight="bold" fill="#334155" text-anchor="middle">Fuerza Comercial</text>
+    <text x="100" y="40" font-family="Inter, sans-serif" font-size="9" fill="#475569" text-anchor="middle">• Asesores de Ventas</text>
+    <text x="100" y="58" font-family="Inter, sans-serif" font-size="9" fill="#475569" text-anchor="middle">• Ejecutivos de Cuenta</text>
+    <text x="100" y="76" font-family="Inter, sans-serif" font-size="9" fill="#475569" text-anchor="middle">• Soporte Posventa</text>
+  </g>
+</svg>
