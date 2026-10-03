@@ -1,0 +1,19 @@
+[Unit]
+Description=Doctor Pyme SG-SST Service (Ruby Persistence Backend)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/doctorpyme/sst
+ExecStart=/usr/bin/ruby server.rb
+Restart=always
+RestartSec=3
+StandardOutput=append:/var/log/doctorpyme-sst.log
+StandardError=append:/var/log/doctorpyme-sst.error.log
+Environment=PORT=3000
+Environment=RACK_ENV=production
+
+[Install]
+WantedBy=multi-user.target

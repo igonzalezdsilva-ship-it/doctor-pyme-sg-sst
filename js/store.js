@@ -890,10 +890,17 @@ class Store {
     this.notify();
   }
 
+  getApiUrl(endpoint) {
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : '/' + endpoint;
+    const path = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname : '';
+    const prefix = path.startsWith('/sst') ? '/sst/api' : '/api';
+    return `${prefix}${cleanEndpoint}`;
+  }
+
   async sincronizarConServidorFisico() {
     if (typeof fetch === 'undefined') return;
     try {
-      const resp = await fetch('/api/data');
+      const resp = await fetch(this.getApiUrl('/data'));
       if (resp.ok) {
         const serverData = await resp.json();
         if (serverData && Array.isArray(serverData.empresas) && serverData.empresas.length > 0) {
@@ -931,7 +938,7 @@ class Store {
     if (this._saveTimeout) clearTimeout(this._saveTimeout);
     this._saveTimeout = setTimeout(async () => {
       try {
-        const resp = await fetch('/api/save', {
+        const resp = await fetch(this.getApiUrl('/save'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(this.data)
@@ -959,7 +966,7 @@ class Store {
   async getBackupsList() {
     if (typeof fetch === 'undefined') return [];
     try {
-      const resp = await fetch('/api/backups');
+      const resp = await fetch(this.getApiUrl('/backups'));
       if (resp.ok) {
         const json = await resp.json();
         return json.backups || [];
@@ -971,7 +978,7 @@ class Store {
   async restaurarDesdeBackup(filename) {
     if (typeof fetch === 'undefined' || !filename) return false;
     try {
-      const resp = await fetch('/api/restore', {
+      const resp = await fetch(this.getApiUrl('/restore'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filename })
@@ -997,7 +1004,7 @@ class Store {
   async getAuditTrail() {
     if (typeof fetch === 'undefined') return [];
     try {
-      const resp = await fetch('/api/audit');
+      const resp = await fetch(this.getApiUrl('/audit'));
       if (resp.ok) {
         const json = await resp.json();
         return json.auditTrail || [];

@@ -96,10 +96,18 @@ server = WEBrick::HTTPServer.new(
   }
 )
 
+def mount_api(srv, path, &block)
+  srv.mount_proc(path, &block)
+  srv.mount_proc("/sst#{path}", &block)
+end
+
+# Soporte para servir la aplicación bajo la subcarpeta /sst
+server.mount('/sst', WEBrick::HTTPServlet::FileHandler, root)
+
 # -----------------------------------------------------------------------------
 # API: Obtener Base de Datos Física en Disco
 # -----------------------------------------------------------------------------
-server.mount_proc '/api/data' do |req, res|
+mount_api(server, '/api/data') do |req, res|
   add_cors_headers(res)
   if req.request_method == 'OPTIONS'
     res.status = 200
@@ -120,7 +128,7 @@ end
 # -----------------------------------------------------------------------------
 # API: Guardar Físicamente en Disco Duro + Auto Backup + Auditoría
 # -----------------------------------------------------------------------------
-server.mount_proc '/api/save' do |req, res|
+mount_api(server, '/api/save') do |req, res|
   add_cors_headers(res)
   if req.request_method == 'OPTIONS'
     res.status = 200
@@ -205,7 +213,7 @@ end
 # -----------------------------------------------------------------------------
 # API: Listar Copias de Seguridad Disponibles
 # -----------------------------------------------------------------------------
-server.mount_proc '/api/backups' do |req, res|
+mount_api(server, '/api/backups') do |req, res|
   add_cors_headers(res)
   if req.request_method == 'OPTIONS'
     res.status = 200
@@ -228,7 +236,7 @@ end
 # -----------------------------------------------------------------------------
 # API: Restaurar desde una Copia de Seguridad
 # -----------------------------------------------------------------------------
-server.mount_proc '/api/restore' do |req, res|
+mount_api(server, '/api/restore') do |req, res|
   add_cors_headers(res)
   if req.request_method == 'OPTIONS'
     res.status = 200
@@ -269,7 +277,7 @@ end
 # -----------------------------------------------------------------------------
 # API: Obtener Historial de Auditoría y Trazabilidad (Decreto 1072)
 # -----------------------------------------------------------------------------
-server.mount_proc '/api/audit' do |req, res|
+mount_api(server, '/api/audit') do |req, res|
   add_cors_headers(res)
   if req.request_method == 'OPTIONS'
     res.status = 200
