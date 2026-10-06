@@ -457,7 +457,8 @@
         },
         "3.3.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "linkGuia": "https://docs.google.com/spreadsheets/d/15m279FowJpNTtXc23roPiruQzYMYUNdVp7qnKeNUrfQ/edit?usp=sharing"
         },
         "3.3.2": {
           "estado": "CUMPLE",
@@ -509,7 +510,8 @@
         },
         "5.1.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "linkGuia": "https://drive.google.com/file/d/17S8G1u-aBV7Hhr2T5PVzT_zRtYqSxPif/view?usp=drive_link"
         },
         "5.1.2": {
           "estado": "CUMPLE",
@@ -658,8 +660,8 @@
           "linkGuia": ""
         },
         "1.2.1": {
-          "linkGuia": "https://docs.google.com/spreadsheets/d/16BAHVpwmkIfIIJqKpHkpNUdwoAtZyQEs8Ozh5gdITlI/edit?usp=sharing",
-          "updatedAt": "2026-10-03T15:30:38.527Z",
+          "linkGuia": "https://docs.google.com/spreadsheets/d/16xBhbhxgWSB7zUBTaOiCFslyKDhKLlQgcmEBI4v7fb0/edit?usp=sharing",
+          "updatedAt": "2026-10-05T14:22:45.022Z",
           "estado": "CUMPLE"
         },
         "1.2.2": {
@@ -697,7 +699,8 @@
         },
         "2.10.1": {
           "estado": "NO_CUMPLE",
-          "updatedAt": "2026-09-30T16:04:08.458Z"
+          "updatedAt": "2026-10-05T15:53:44.090Z",
+          "planAccion": "crear manual de contratistas "
         },
         "2.11.1": {
           "estado": "NO_APLICA",
@@ -743,7 +746,7 @@
           "estado": "CUMPLE",
           "justificacion": "Programa de estilos de vida y entornos saludables (Prevención y Promoción de salud Pública): tabaquismo, alcoholismo, farmacodependencia, salud mental, alimentación saludable, pausas activas, ergonomía y control de enfermedades.",
           "linkGuia": "https://docs.google.com/document/d/1vfHlhlNkl3thBA5VrxDOoYrR_lb93BAMUjNfJ_L5x8A/edit?usp=sharing",
-          "updatedAt": "2026-09-30T17:10:50.287Z"
+          "updatedAt": "2026-10-05T19:08:56.576Z"
         },
         "3.1.8": {
           "estado": "CUMPLE",
@@ -831,7 +834,8 @@
         },
         "3.3.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-05T19:55:48.856Z",
+          "linkGuia": "https://docs.google.com/spreadsheets/d/15m279FowJpNTtXc23roPiruQzYMYUNdVp7qnKeNUrfQ/edit?usp=sharing"
         },
         "3.3.2": {
           "estado": "CUMPLE",
@@ -1092,11 +1096,111 @@
         },
         "4.1.2": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1r5uCJkbwY8cRiAMk82XuHngf9iIATwZrU39Mtf1TpVU/edit?usp=sharing",
-          "updatedAt": "2026-09-30T16:57:06.085Z"
+          "updatedAt": "2026-09-30T16:57:06.085Z",
+          "estado": "CUMPLE"
         },
         "4.1.3": {
           "linkGuia": "https://drive.google.com/drive/folders/19I3DB87qxUcNDLaxh8EmCgbGP-Xi9EaW",
-          "updatedAt": "2026-09-30T16:57:40.228Z"
+          "updatedAt": "2026-09-30T16:57:40.228Z",
+          "estado": "CUMPLE"
+        },
+        "2.8.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "3.3.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "linkGuia": "https://docs.google.com/spreadsheets/d/15m279FowJpNTtXc23roPiruQzYMYUNdVp7qnKeNUrfQ/edit?usp=sharing"
+        },
+        "3.3.2": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "3.3.3": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "3.3.4": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "3.3.5": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "3.3.6": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "4.1.4": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "4.2.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "4.2.2": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "4.2.3": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "4.2.4": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "4.2.5": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "4.2.6": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "5.1.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "linkGuia": "https://drive.google.com/file/d/17S8G1u-aBV7Hhr2T5PVzT_zRtYqSxPif/view?usp=drive_link"
+        },
+        "5.1.2": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "6.1.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "6.1.2": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "6.1.3": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "6.1.4": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "7.1.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "7.1.2": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "7.1.3": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "7.1.4": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
         }
       },
       "2026": {
@@ -1209,8 +1313,8 @@
           "linkGuia": ""
         },
         "1.2.1": {
-          "linkGuia": "https://docs.google.com/spreadsheets/d/16BAHVpwmkIfIIJqKpHkpNUdwoAtZyQEs8Ozh5gdITlI/edit?usp=sharing",
-          "updatedAt": "2026-10-03T15:30:38.527Z",
+          "linkGuia": "https://docs.google.com/spreadsheets/d/16xBhbhxgWSB7zUBTaOiCFslyKDhKLlQgcmEBI4v7fb0/edit?usp=sharing",
+          "updatedAt": "2026-10-05T14:22:45.022Z",
           "estado": "CUMPLE"
         },
         "1.2.2": {
@@ -1248,7 +1352,8 @@
         },
         "2.10.1": {
           "estado": "NO_CUMPLE",
-          "updatedAt": "2026-09-30T16:04:08.458Z"
+          "updatedAt": "2026-10-05T15:53:44.090Z",
+          "planAccion": "crear manual de contratistas "
         },
         "2.11.1": {
           "estado": "NO_APLICA",
@@ -1294,7 +1399,7 @@
           "estado": "CUMPLE",
           "justificacion": "Programa de estilos de vida y entornos saludables (Prevención y Promoción de salud Pública): tabaquismo, alcoholismo, farmacodependencia, salud mental, alimentación saludable, pausas activas, ergonomía y control de enfermedades.",
           "linkGuia": "https://docs.google.com/document/d/1vfHlhlNkl3thBA5VrxDOoYrR_lb93BAMUjNfJ_L5x8A/edit?usp=sharing",
-          "updatedAt": "2026-09-30T17:10:50.287Z"
+          "updatedAt": "2026-10-05T19:08:56.576Z"
         },
         "3.1.8": {
           "estado": "CUMPLE",
@@ -1356,13 +1461,8 @@
           "updatedAt": "2026-10-03T16:13:01.772Z"
         },
         "4.2.6": {
-          "linkGuia": "https://drive.google.com/file/d/17S8G1u-aBV7Hhr2T5PVzT_zRtYqSxPif/view?usp=drive_link",
-          "updatedAt": "2026-10-03T16:20:17.880Z",
-          "estado": "CUMPLE"
-        },
-        "4.2.7": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:20:15.663Z"
+          "updatedAt": "2026-10-03T11:37:49-05:00"
         },
         "4.2.5": {
           "estado": "CUMPLE",
@@ -1370,19 +1470,12 @@
         },
         "5.1.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:20:45.845Z"
+          "updatedAt": "2026-10-03T16:20:45.845Z",
+          "linkGuia": "https://drive.google.com/file/d/17S8G1u-aBV7Hhr2T5PVzT_zRtYqSxPif/view?usp=drive_link"
         },
         "5.1.2": {
           "estado": "CUMPLE",
           "updatedAt": "2026-10-03T16:21:15.345Z"
-        },
-        "5.1.3": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:21:21.812Z"
-        },
-        "5.1.4": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:21:24.047Z"
         },
         "6.1.2": {
           "estado": "CUMPLE",
@@ -1391,8 +1484,60 @@
         "6.1.1": {
           "estado": "CUMPLE",
           "updatedAt": "2026-10-03T16:21:47.563Z"
+        },
+        "3.3.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-05T19:55:48.856Z",
+          "linkGuia": "https://docs.google.com/spreadsheets/d/15m279FowJpNTtXc23roPiruQzYMYUNdVp7qnKeNUrfQ/edit?usp=sharing"
+        },
+        "3.3.2": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "3.3.3": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "3.3.4": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "3.3.5": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "3.3.6": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "6.1.3": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "6.1.4": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "7.1.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "7.1.2": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "7.1.3": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
+        },
+        "7.1.4": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00"
         }
       }
     }
-  }
+  },
+  "evidencias": [
+
+  ]
 }

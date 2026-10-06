@@ -264,7 +264,7 @@ window.mostrarNotificacion = function(mensaje, tipo = 'success') {
 };
 
 // Inicialización de la aplicación (resistente a diferimiento de módulos y readyState)
-function initApp() {
+async function initApp() {
   // Verificación de Autenticación / Inicio de Sesión
   if (!auth.isAuthenticated()) {
     auth.renderLoginScreen(document.getElementById('app-root'), () => {
@@ -347,6 +347,21 @@ function initApp() {
   });
 
   window.addEventListener('hashchange', router);
+
+  // Suscribirse a cambios del store para re-renderizado reactivo automático
+  store.subscribe(() => {
+    actualizarSelectorCabecera();
+    router();
+  });
+
+  // Asegurar que la información física de disco se descargue antes del render inicial
+  try {
+    await store.sincronizarConServidorFisico();
+  } catch (e) {
+    console.warn("Inicio offline con almacenamiento local:", e);
+  }
+
+  actualizarSelectorCabecera();
   router();
 }
 

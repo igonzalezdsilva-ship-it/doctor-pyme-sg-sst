@@ -7,6 +7,11 @@ const DB_NAME = 'DoctorPyme_SG_SST_Files';
 const DB_VERSION = 2; // Actualizado para soportar índices y migración automática
 const STORE_NAME = 'evidencias';
 
+let appStoreRef = null;
+export function setEvidenceStoreRef(s) {
+  appStoreRef = s;
+}
+
 class EvidenceDB {
   constructor() {
     this.db = null;
@@ -84,7 +89,7 @@ class EvidenceDB {
     await this.init();
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onload = async () => {
         const evidencia = {
           id: `evid-${companyId}-${numeral}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
           companyId,
@@ -95,6 +100,31 @@ class EvidenceDB {
           dataUrl: reader.result,
           fechaCargue: new Date().toISOString()
         };
+
+        // Guardar físicamente en el servidor Mac si hay conexión
+        if (typeof fetch !== 'undefined') {
+          const apiPath = (typeof window !== 'undefined' && window.location && window.location.pathname.startsWith('/sst')) ? '/sst/api/upload_evidence' : '/api/upload_evidence';
+          fetch(apiPath, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              companyId,
+              numeral,
+              nombre: file.name,
+              tamanio: file.size,
+              tipo: file.type,
+              dataUrl: reader.result
+            })
+          }).then(res => res.json()).then(resJson => {
+            if (resJson && resJson.evidencia) {
+              evidencia.url = resJson.evidencia.url;
+              if (appStoreRef && appStoreRef.data) {
+                appStoreRef.data.evidencias = appStoreRef.data.evidencias || [];
+                appStoreRef.data.evidencias.push(resJson.evidencia);
+              }
+            }
+          }).catch(e => console.warn("Evidencia preservada localmente en IndexedDB:", e));
+        }
 
         if (this.db) {
           try {
@@ -173,6 +203,19 @@ class EvidenceDB {
   async eliminarEvidencia(id) {
     await this.init();
     this.eliminarDeFallback(id);
+    if (typeof fetch !== 'undefined') {
+      const apiPath = (typeof window !== 'undefined' && window.location && window.location.pathname.startsWith('/sst')) ? '/sst/api/delete_evidence' : '/api/delete_evidence';
+      fetch(apiPath, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      }).then(() => {
+        if (appStoreRef?.data?.evidencias) {
+          appStoreRef.data.evidencias = appStoreRef.data.evidencias.filter(e => e.id !== id);
+        }
+      }).catch(() => {});
+    }
+
     return new Promise((resolve) => {
       if (!this.db) return resolve(true);
       try {
@@ -199,8 +242,15 @@ class EvidenceDB {
   async obtenerTodasEvidencias(companyId) {
     await this.init();
     const fallbackList = this.obtenerTodasDeFallback(companyId);
+    const serverList = (appStoreRef?.data?.evidencias || []).filter(i => this.coincideEmpresa(i.companyId, companyId));
+
     return new Promise((resolve) => {
-      if (!this.db) return resolve(fallbackList);
+      if (!this.db) {
+        const merged = [...fallbackList];
+        const ids = new Set(merged.map(i => i.id));
+        serverList.forEach(s => { if (!ids.has(s.id)) merged.push(s); });
+        return resolve(merged);
+      }
       try {
         const transaction = this.db.transaction([STORE_NAME], 'readonly');
         const store = transaction.objectStore(STORE_NAME);
@@ -211,19 +261,34 @@ class EvidenceDB {
             return this.coincideEmpresa(i.companyId, companyId);
           });
 
-          // Unir con fallback sin duplicar por ID
+          // Unir con fallback y con evidencias del servidor sin duplicar
           const idsExistentes = new Set(listaIndexed.map(i => i.id));
           fallbackList.forEach(fb => {
             if (!idsExistentes.has(fb.id)) {
               listaIndexed.push(fb);
+              idsExistentes.add(fb.id);
+            }
+          });
+          serverList.forEach(sb => {
+            if (!idsExistentes.has(sb.id)) {
+              listaIndexed.push(sb);
+              idsExistentes.add(sb.id);
             }
           });
 
           resolve(listaIndexed);
         };
-        request.onerror = () => resolve(fallbackList);
+        request.onerror = () => {
+          const merged = [...fallbackList];
+          const ids = new Set(merged.map(i => i.id));
+          serverList.forEach(s => { if (!ids.has(s.id)) merged.push(s); });
+          resolve(merged);
+        };
       } catch {
-        resolve(fallbackList);
+        const merged = [...fallbackList];
+        const ids = new Set(merged.map(i => i.id));
+        serverList.forEach(s => { if (!ids.has(s.id)) merged.push(s); });
+        resolve(merged);
       }
     });
   }

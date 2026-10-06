@@ -2,17 +2,20 @@ require 'webrick'
 require 'json'
 require 'fileutils'
 require 'time'
+require 'base64'
 
 root = File.expand_path(File.dirname(__FILE__))
 port = 3000
 
 DATA_DIR = File.join(root, 'data')
 BACKUPS_DIR = File.join(root, 'backups')
+UPLOADS_DIR = File.join(DATA_DIR, 'uploads')
 DB_FILE = File.join(DATA_DIR, 'database.json')
 AUDIT_FILE = File.join(DATA_DIR, 'audit_log.jsonl')
 
 FileUtils.mkdir_p(DATA_DIR)
 FileUtils.mkdir_p(BACKUPS_DIR)
+FileUtils.mkdir_p(UPLOADS_DIR)
 
 # Fix crítico para macOS: Evitar Errno::EPERM al invocar sendfile() vía IO.copy_stream
 # Implementa lectura y escritura por bloques en sockets de red
@@ -91,6 +94,8 @@ server = WEBrick::HTTPServer.new(
   :DocumentRoot => root,
   :MimeTypes => mime_types,
   :AccessLog => [],
+  :DoNotReverseLookup => true,
+  :RequestTimeout => 30,
   :RequestCallback => proc { |req, res|
     add_cors_headers(res)
   }
@@ -103,6 +108,10 @@ end
 
 # Soporte para servir la aplicación bajo la subcarpeta /sst
 server.mount('/sst', WEBrick::HTTPServlet::FileHandler, root)
+
+# Servir archivos físicos adjuntos subidos
+server.mount('/uploads', WEBrick::HTTPServlet::FileHandler, UPLOADS_DIR)
+server.mount('/sst/uploads', WEBrick::HTTPServlet::FileHandler, UPLOADS_DIR)
 
 # -----------------------------------------------------------------------------
 # API: Obtener Base de Datos Física en Disco
@@ -293,6 +302,122 @@ mount_api(server, '/api/audit') do |req, res|
     end
     res['Content-Type'] = 'application/json; charset=utf-8'
     res.body = { auditTrail: entries, total: entries.size }.to_json
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# -----------------------------------------------------------------------------
+# API: Cargar Archivo de Evidencia Físicamente en Disco Duro (data/uploads/)
+# -----------------------------------------------------------------------------
+mount_api(server, '/api/upload_evidence') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body)
+      company_id = payload['companyId'] || 'emp-1790438946268'
+      numeral = payload['numeral'] || 'general'
+      anio = payload['anio'] || '2026'
+      nombre = payload['nombre'] || 'archivo.pdf'
+      data_url = payload['dataUrl'] || ''
+      tipo = payload['tipo'] || 'application/octet-stream'
+
+      if data_url.include?(',')
+        header, b64 = data_url.split(',', 2)
+        binary_data = Base64.decode64(b64)
+      else
+        binary_data = Base64.decode64(data_url)
+      end
+
+      # Nombre de archivo seguro
+      clean_name = nombre.gsub(/[^a-zA-Z0-9_\.-]/, '_')
+      timestamp = Time.now.strftime('%Y%m%d_%H%M%S')
+      unique_id = "evid-#{company_id}-#{numeral}-#{Time.now.to_i}-#{rand(1000..9999)}"
+      disk_filename = "#{timestamp}_#{numeral.gsub('.', '_')}_#{clean_name}"
+      file_path = File.join(UPLOADS_DIR, disk_filename)
+
+      File.open(file_path, 'wb') { |f| f.write(binary_data) }
+
+      # Registrar en base de datos física
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      db['evidencias'] ||= []
+      
+      evidencia_record = {
+        'id' => unique_id,
+        'companyId' => company_id,
+        'numeral' => numeral,
+        'anio' => anio,
+        'nombre' => nombre,
+        'tamanio' => binary_data.bytesize,
+        'tipo' => tipo,
+        'url' => "/uploads/#{disk_filename}",
+        'dataUrl' => data_url,
+        'fechaCargue' => Time.now.iso8601
+      }
+      db['evidencias'] << evidencia_record
+
+      # Guardar base de datos
+      tmp_file = "#{DB_FILE}.tmp"
+      File.open(tmp_file, 'w:UTF-8') { |f| f.write(JSON.pretty_generate(db)) }
+      File.rename(tmp_file, DB_FILE)
+
+      # Registrar en auditoría
+      audit_entry = {
+        timestamp: Time.now.iso8601,
+        action: 'UPLOAD_EVIDENCE',
+        companyId: company_id,
+        numeral: numeral,
+        filename: nombre,
+        sizeBytes: binary_data.bytesize
+      }
+      File.open(AUDIT_FILE, 'a:UTF-8') { |af| af.puts(audit_entry.to_json) }
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { status: 'ok', evidencia: evidencia_record }.to_json
+    rescue => e
+      res.status = 500
+      res.body = { error: e.message }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# -----------------------------------------------------------------------------
+# API: Eliminar Archivo de Evidencia Físico
+# -----------------------------------------------------------------------------
+mount_api(server, '/api/delete_evidence') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body)
+      id = payload['id']
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      if db['evidencias'].is_a?(Array)
+        found = db['evidencias'].find { |e| e['id'] == id }
+        if found
+          if found['url']
+            fname = File.basename(found['url'])
+            FileUtils.rm_f(File.join(UPLOADS_DIR, fname))
+          end
+          db['evidencias'].reject! { |e| e['id'] == id }
+          tmp_file = "#{DB_FILE}.tmp"
+          File.open(tmp_file, 'w:UTF-8') { |f| f.write(JSON.pretty_generate(db)) }
+          File.rename(tmp_file, DB_FILE)
+        end
+      end
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { status: 'ok' }.to_json
+    rescue => e
+      res.status = 500
+      res.body = { error: e.message }.to_json
+    end
   else
     res.status = 405
     res.body = { error: 'Método no permitido' }.to_json

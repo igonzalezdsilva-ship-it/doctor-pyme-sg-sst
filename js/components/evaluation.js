@@ -505,10 +505,11 @@ window.guardarPlanAccion = function(numeral, planAccion) {
 window.guardarLinkGuia = function(numeral, url) {
   const empresaActiva = store.getEmpresaActiva();
   if (!empresaActiva) return;
-  const evaluacion = store.getEvaluacion(empresaActiva.id);
+  const anio = store.getAnioActivo();
+  const evaluacion = store.getEvaluacion(empresaActiva.id, anio);
   const actual = evaluacion[numeral] || {};
 
-  store.saveEvaluacionItem(empresaActiva.id, numeral, {
+  store.saveEvaluacionItem(empresaActiva.id, anio, numeral, {
     ...actual,
     linkGuia: (url || '').trim()
   });
@@ -523,7 +524,8 @@ window.limpiarLinkGuia = function(numeral) {
 window.previsualizarDocumentoGuia = function(numeral) {
   const empresaActiva = store.getEmpresaActiva();
   if (!empresaActiva) return;
-  const evaluacion = store.getEvaluacion(empresaActiva.id);
+  const anio = store.getAnioActivo();
+  const evaluacion = store.getEvaluacion(empresaActiva.id, anio);
   const actual = evaluacion[numeral] || {};
   if (!actual.linkGuia) {
     alert("Por favor ingresa primero la URL del documento guía (Google Docs o Sheets).");

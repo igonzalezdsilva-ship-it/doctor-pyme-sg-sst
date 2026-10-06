@@ -3,7 +3,7 @@
 // =============================================================================
 import { EMPRESAS_DEMO, MATRIZ_RIESGOS_DEMO, PLAN_TRABAJO_DEMO, ACCIDENTES_DEMO } from './data.js';
 import { determinarGrupoEstandares } from './standards.js';
-import { evidenceDB } from './db.js';
+import { evidenceDB, setEvidenceStoreRef } from './db.js';
 
 const STORAGE_KEY = 'SG_SST_APP_DATA_V1';
 const ACTIVE_COMPANY_KEY = 'SG_SST_ACTIVE_COMPANY_ID';
@@ -237,7 +237,8 @@ export const EVALUACIONES_RECUPERADAS_AYER = {
     },
     "3.3.1": {
       "estado": "CUMPLE",
-      "updatedAt": "2026-10-03T11:37:49-05:00"
+      "updatedAt": "2026-10-03T11:37:49-05:00",
+      "linkGuia": "https://docs.google.com/spreadsheets/d/15m279FowJpNTtXc23roPiruQzYMYUNdVp7qnKeNUrfQ/edit?usp=sharing"
     },
     "3.3.2": {
       "estado": "CUMPLE",
@@ -289,7 +290,8 @@ export const EVALUACIONES_RECUPERADAS_AYER = {
     },
     "5.1.1": {
       "estado": "CUMPLE",
-      "updatedAt": "2026-10-03T11:37:49-05:00"
+      "updatedAt": "2026-10-03T11:37:49-05:00",
+      "linkGuia": "https://drive.google.com/file/d/17S8G1u-aBV7Hhr2T5PVzT_zRtYqSxPif/view?usp=drive_link"
     },
     "5.1.2": {
       "estado": "CUMPLE",
@@ -438,8 +440,8 @@ export const EVALUACIONES_RECUPERADAS_AYER = {
       "linkGuia": ""
     },
     "1.2.1": {
-      "linkGuia": "https://docs.google.com/spreadsheets/d/16BAHVpwmkIfIIJqKpHkpNUdwoAtZyQEs8Ozh5gdITlI/edit?usp=sharing",
-      "updatedAt": "2026-10-03T15:30:38.527Z",
+      "linkGuia": "https://docs.google.com/spreadsheets/d/16xBhbhxgWSB7zUBTaOiCFslyKDhKLlQgcmEBI4v7fb0/edit?usp=sharing",
+      "updatedAt": "2026-10-05T14:22:45.022Z",
       "estado": "CUMPLE"
     },
     "1.2.2": {
@@ -477,7 +479,8 @@ export const EVALUACIONES_RECUPERADAS_AYER = {
     },
     "2.10.1": {
       "estado": "NO_CUMPLE",
-      "updatedAt": "2026-09-30T16:04:08.458Z"
+      "updatedAt": "2026-10-05T15:53:44.090Z",
+      "planAccion": "crear manual de contratistas "
     },
     "2.11.1": {
       "estado": "NO_APLICA",
@@ -523,7 +526,7 @@ export const EVALUACIONES_RECUPERADAS_AYER = {
       "estado": "CUMPLE",
       "justificacion": "Programa de estilos de vida y entornos saludables (Prevención y Promoción de salud Pública): tabaquismo, alcoholismo, farmacodependencia, salud mental, alimentación saludable, pausas activas, ergonomía y control de enfermedades.",
       "linkGuia": "https://docs.google.com/document/d/1vfHlhlNkl3thBA5VrxDOoYrR_lb93BAMUjNfJ_L5x8A/edit?usp=sharing",
-      "updatedAt": "2026-09-30T17:10:50.287Z"
+      "updatedAt": "2026-10-05T19:08:56.576Z"
     },
     "3.1.8": {
       "estado": "CUMPLE",
@@ -611,7 +614,8 @@ export const EVALUACIONES_RECUPERADAS_AYER = {
     },
     "3.3.1": {
       "estado": "CUMPLE",
-      "updatedAt": "2026-10-03T11:37:49-05:00"
+      "updatedAt": "2026-10-05T19:55:48.856Z",
+      "linkGuia": "https://docs.google.com/spreadsheets/d/15m279FowJpNTtXc23roPiruQzYMYUNdVp7qnKeNUrfQ/edit?usp=sharing"
     },
     "3.3.2": {
       "estado": "CUMPLE",
@@ -673,6 +677,7 @@ class Store {
     this.saveStatusListeners = [];
     this.lastSaved = new Date();
     this.serverSynced = false;
+    setEvidenceStoreRef(this);
     this.init();
     this.sincronizarConServidorFisico();
   }

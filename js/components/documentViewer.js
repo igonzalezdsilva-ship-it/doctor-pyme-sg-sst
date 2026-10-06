@@ -576,25 +576,61 @@ export function abrirVisorEnlaceGuia(guia) {
   if (btnAbrirPestana) {
     btnAbrirPestana.innerHTML = `
       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-      <span class="hidden md:inline">Abrir en Google</span>
+      <span class="inline font-bold">Abrir en Google ↗</span>
     `;
     btnAbrirPestana.onclick = () => window.open(urlOriginal, '_blank');
   }
 
+  // Si es una carpeta de Google Drive, no se puede incrustar en iframe (Google bloquea iframes de carpetas)
+  if (urlOriginal.includes('drive.google.com/drive/folders/')) {
+    contenidoEl.innerHTML = `
+      <div class="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-slate-900 text-white">
+        <div class="w-20 h-20 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-4xl mb-4 border border-amber-500/30 shadow-lg">
+          📁
+        </div>
+        <h3 class="text-xl font-black text-white mb-2">Carpeta de Archivos en Google Drive</h3>
+        <p class="text-xs text-slate-300 max-w-md mb-6 leading-relaxed">
+          Esta evidencia corresponde a una carpeta compartida que aloja múltiples soportes. Por políticas de seguridad, Google no permite incrustar directorios en marcos internos.
+        </p>
+        <button onclick="window.open('${urlOriginal}', '_blank')" class="px-6 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold transition shadow-xl shadow-amber-600/30 flex items-center gap-2 cursor-pointer transform hover:-translate-y-0.5">
+          <span>Abrir Carpeta en Google Drive</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </button>
+      </div>
+    `;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    return;
+  }
+
   contenidoEl.innerHTML = `
     <div class="w-full h-full flex flex-col bg-slate-900">
-      <iframe 
-        src="${urlPreview}" 
-        class="w-full flex-1 border-0 bg-white" 
-        title="Documento Guía Base"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      ></iframe>
-      <div class="px-4 py-2 bg-slate-950 border-t border-slate-800 text-center text-xs text-slate-300 flex flex-col sm:flex-row items-center justify-between gap-2">
-        <span class="flex items-center gap-1.5 text-slate-400">
-          <span>☁️</span> Plantilla / Documento Base en Google Cloud (Docs / Sheets)
+      <!-- Barra Superior de Acceso Inmediato -->
+      <div class="px-4 py-2 bg-indigo-950/90 border-b border-indigo-800/50 flex flex-wrap items-center justify-between gap-2 text-xs text-indigo-200">
+        <span class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Documento disponible en Google Cloud</span>
         </span>
-        <button onclick="window.open('${urlOriginal}', '_blank')" class="text-indigo-400 hover:text-indigo-300 font-semibold underline text-xs flex items-center gap-1">
-          Editar o abrir directamente en Google Docs / Sheets ↗
+        <button onclick="window.open('${urlOriginal}', '_blank')" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold text-xs shadow-sm flex items-center gap-1.5 transition cursor-pointer">
+          <span>Abrir en Pestaña Completa de Google ↗</span>
+        </button>
+      </div>
+
+      <div class="flex-1 relative bg-white">
+        <iframe 
+          src="${urlPreview}" 
+          class="w-full h-full border-0" 
+          title="Documento Guía Base"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        ></iframe>
+      </div>
+
+      <div class="px-4 py-2 bg-slate-950 border-t border-slate-800 text-center text-xs text-slate-300 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <span class="text-[11px] text-slate-400">
+          💡 <em>Si tu navegador bloquea la vista previa por cookies de Google, usa el botón superior para editar directamente.</em>
+        </span>
+        <button onclick="window.open('${urlOriginal}', '_blank')" class="text-indigo-400 hover:text-indigo-300 font-bold underline text-xs">
+          Ver / Editar en Google Docs o Sheets ↗
         </button>
       </div>
     </div>
