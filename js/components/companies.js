@@ -26,6 +26,10 @@ let quitarOrganigramaFlag = false;
 
 export function renderCompanies() {
   const container = document.getElementById('main-content');
+  const esSuperAdmin = auth.isSuperAdmin();
+  if (!esSuperAdmin) {
+    pestanaEmpresas = 'directorio';
+  }
   const empresas = store.getEmpresas();
   const empresaActivaId = store.getEmpresaActivaId();
   const accesos = store.getAccesosEmpresas();
@@ -158,20 +162,28 @@ export function renderCompanies() {
       <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div>
           <div class="flex items-center gap-2 text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">
-            <span>Directorio Multi-Empresa & RBAC</span>
+            <span>${esSuperAdmin ? 'Directorio Multi-Empresa & RBAC' : 'Perfil Institucional & Estructura SG-SST'}</span>
             <span>•</span>
             <span>Doctor Pyme SG-SST</span>
           </div>
-          <h1 class="text-2xl font-bold text-slate-800">Directorio & Accesos de Empresas</h1>
-          <p class="text-sm text-slate-500">Gestiona las empresas clientes, sus diagramas estructurales, y administra sus datos de acceso para activar o suspender su ingreso.</p>
+          <h1 class="text-2xl font-bold text-slate-800">${esSuperAdmin ? 'Directorio & Accesos de Empresas' : 'Perfil Corporativo de Mi Empresa'}</h1>
+          <p class="text-sm text-slate-500">${esSuperAdmin ? 'Gestiona las empresas clientes, sus diagramas estructurales, y administra sus datos de acceso para activar o suspender su ingreso.' : 'Consulta y actualiza la información legal, logotipo oficial, ADN corporativo y diagramas estructurales de tu organización.'}</p>
         </div>
-        <button id="btn-nueva-empresa" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-          Nueva Empresa Cliente
-        </button>
+        ${esSuperAdmin ? `
+          <button id="btn-nueva-empresa" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Nueva Empresa Cliente
+          </button>
+        ` : (empresaActiva ? `
+          <button onclick="window.editarEmpresa('${empresaActiva.id}')" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            Editar Perfil y Diagramas
+          </button>
+        ` : '')}
       </div>
 
-      <!-- Barra de Pestañas de Navegación -->
+      ${esSuperAdmin ? `
+      <!-- Barra de Pestañas de Navegación (Exclusivo Super Administrador) -->
       <div class="flex border-b border-slate-200 gap-2">
         <button 
           type="button"
@@ -195,9 +207,11 @@ export function renderCompanies() {
           </span>
         </button>
       </div>
+      ` : ''}
 
       ${pestanaEmpresas === 'directorio' ? `
         <!-- VISTA 1: DIRECTORIO DE EMPRESAS (TARJETAS) -->
+        ${esSuperAdmin ? `
         <!-- Barra de Filtros y Búsqueda -->
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-3 items-center justify-between">
           <div class="relative w-full sm:w-80">
@@ -214,9 +228,10 @@ export function renderCompanies() {
             Mostrando <strong>${empresasFiltradas.length}</strong> de <strong>${empresas.length}</strong> empresas clientes
           </div>
         </div>
+        ` : ''}
 
         <!-- Tarjetas de Empresas -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="grid grid-cols-1 ${esSuperAdmin ? 'md:grid-cols-2 lg:grid-cols-3' : 'max-w-xl'} gap-5">
           ${empresasFiltradas.map(emp => {
             const esActiva = emp.id === empresaActivaId;
             const estadoAcceso = (emp.acceso?.estado || 'ACTIVO').toUpperCase();
@@ -246,6 +261,7 @@ export function renderCompanies() {
                     </div>
 
                     <div class="flex items-center gap-1">
+                      ${esSuperAdmin ? `
                       <button 
                         onclick="window.toggleAccesoEmpresa('${emp.id}')" 
                         class="p-1 text-slate-400 hover:${esAccesoActivo ? 'text-amber-600' : 'text-emerald-600'} transition cursor-pointer" 
@@ -253,12 +269,15 @@ export function renderCompanies() {
                       >
                         <span class="text-xs">${esAccesoActivo ? '⏸️' : '▶️'}</span>
                       </button>
-                      <button onclick="window.editarEmpresa('${emp.id}')" class="p-1 text-slate-400 hover:text-indigo-600 transition" title="Editar datos y diagramas">
+                      ` : ''}
+                      <button onclick="window.editarEmpresa('${emp.id}')" class="p-1 text-slate-400 hover:text-indigo-600 transition cursor-pointer" title="Editar datos y diagramas">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                       </button>
-                      <button onclick="window.eliminarEmpresa('${emp.id}')" class="p-1 text-slate-400 hover:text-red-600 transition" title="Eliminar empresa">
+                      ${esSuperAdmin ? `
+                      <button onclick="window.eliminarEmpresa('${emp.id}')" class="p-1 text-slate-400 hover:text-red-600 transition cursor-pointer" title="Eliminar empresa">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                       </button>
+                      ` : ''}
                     </div>
                   </div>
 
@@ -1514,12 +1533,21 @@ async function abrirModalEmpresa(empresa = null) {
   const event = new Event('change');
   document.getElementById('emp-riesgo').dispatchEvent(event);
 
+  const selectEstadoModal = document.getElementById('emp-acceso-estado');
+  if (selectEstadoModal) {
+    selectEstadoModal.disabled = !auth.isSuperAdmin();
+  }
+
   modal.classList.remove('hidden');
   modal.classList.add('flex');
 }
 
 if (typeof window !== 'undefined') {
   window.editarEmpresa = function(id) {
+    if (!auth.isSuperAdmin()) {
+      const activeId = store.getEmpresaActivaId();
+      if (id !== activeId) return;
+    }
     const empresa = store.getEmpresa(id);
     if (empresa) {
       abrirModalEmpresa(empresa);
@@ -1527,6 +1555,10 @@ if (typeof window !== 'undefined') {
   };
 
   window.eliminarEmpresa = function(id) {
+    if (!auth.isSuperAdmin()) {
+      alert('Solo el Super Administrador SST puede eliminar empresas clientes.');
+      return;
+    }
     store.deleteEmpresa(id);
     renderCompanies();
     if (window.actualizarSelectorCabecera) window.actualizarSelectorCabecera();
@@ -1553,6 +1585,7 @@ if (typeof window !== 'undefined') {
   };
 
   window.cambiarPestanaEmpresas = function(pestana) {
+    if (!auth.isSuperAdmin() && pestana === 'accesos') return;
     pestanaEmpresas = pestana;
     renderCompanies();
   };
@@ -1563,6 +1596,10 @@ if (typeof window !== 'undefined') {
   };
 
   window.toggleAccesoEmpresa = function(id) {
+    if (!auth.isSuperAdmin()) {
+      alert('Solo el Super Administrador SST puede activar o suspender accesos de empresas.');
+      return;
+    }
     const nuevoEstado = store.toggleEstadoEmpresa(id);
     const emp = store.getEmpresa(id);
     const nombre = emp ? emp.razonSocial : 'la empresa';

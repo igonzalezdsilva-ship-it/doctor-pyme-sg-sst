@@ -13,16 +13,9 @@ const USUARIOS_VALIDOS = [
     aliases: ['admin@doctorpyme.com', 'admin', 'consultor', 'ivan.gonzalez'],
     password: 'Stoner200',
     nombre: 'Ing. Iván David González Silva',
-    cargo: 'Consultor Principal SST - Licencia RESOLUCIÓN No. 6514 de 19/10/2022',
-    rol: 'Administrador SST'
-  },
-  {
-    email: 'consultor@doctorpyme.com',
-    aliases: ['consultor'],
-    password: 'Stoner200',
-    nombre: 'Dr. SST Pyme',
-    cargo: 'Asesor Técnico en Prevención de Riesgos',
-    rol: 'Administrador SST'
+    cargo: 'Super Administrador & Consultor Principal SST - Licencia RESOLUCIÓN No. 6514 de 19/10/2022',
+    rol: 'Super Administrador SST',
+    esSuperAdmin: true
   },
   {
     email: 'auditor@mintrabajo.gov.co',
@@ -30,7 +23,8 @@ const USUARIOS_VALIDOS = [
     password: 'pyme2026',
     nombre: 'Dr. Fernando Salazar',
     cargo: 'Inspector Técnico de Trabajo - MinTrabajo Territorial',
-    rol: 'Auditor'
+    rol: 'Auditor',
+    esSuperAdmin: false
   }
 ];
 
@@ -79,8 +73,13 @@ class Auth {
     return this.session?.rol || 'Invitado';
   }
 
+  isSuperAdmin() {
+    if (!this.session) return false;
+    return (this.session.email || '').toLowerCase() === 'i.gonzalez.dsilva@gmail.com' || this.session.esSuperAdmin === true;
+  }
+
   isAdmin() {
-    return this.session?.rol === 'Administrador SST' || this.session?.rol === 'Consultor';
+    return this.isSuperAdmin() || this.session?.rol === 'Super Administrador SST' || this.session?.rol === 'Administrador SST' || this.session?.rol === 'Consultor';
   }
 
   isCompanyAdmin() {
@@ -103,7 +102,7 @@ class Auth {
       return { ok: false, error: 'Por favor ingresa tu usuario, correo o cédula y tu contraseña.' };
     }
 
-    // 1. Verificar usuarios institucionales (Consultor Principal / Admin / Auditor)
+    // 1. Verificar usuarios institucionales (Super Administrador / Auditor)
     const userInstitucional = USUARIOS_VALIDOS.find(u => {
       const emailMatch = u.email.toLowerCase() === cleanId;
       const aliasMatch = Array.isArray(u.aliases) && u.aliases.map(a => a.toLowerCase()).includes(cleanId);
@@ -117,6 +116,7 @@ class Auth {
         nombre: userInstitucional.nombre,
         cargo: userInstitucional.cargo,
         rol: userInstitucional.rol,
+        esSuperAdmin: !!userInstitucional.esSuperAdmin,
         tipo: 'institucional',
         loginAt: new Date().toISOString()
       };
@@ -125,8 +125,8 @@ class Auth {
       return { ok: true, user: this.session };
     }
 
-    // 2. Verificar accesos de Empresas Clientes registradas
-    const empresas = store.getEmpresas();
+    // 2. Verificar accesos de Empresas Clientes registradas (lista completa sin filtro de sesión previa)
+    const empresas = store.getAllEmpresasRaw ? store.getAllEmpresasRaw() : store.getEmpresas();
     const cleanNit = cleanId.replace(/[^\d]/g, '');
 
     const empresaEncontrada = empresas.find(e => {
@@ -178,15 +178,16 @@ class Auth {
         nombre: empresaEncontrada.representanteLegal || empresaEncontrada.razonSocial,
         cargo: `Administrador de Empresa - ${empresaEncontrada.razonSocial}`,
         rol: 'Administrador Empresa',
+        esSuperAdmin: false,
         empresaId: empresaEncontrada.id,
         razonSocial: empresaEncontrada.razonSocial,
         tipo: 'empresa',
         loginAt: new Date().toISOString()
       };
 
-      store.setEmpresaActivaId(empresaEncontrada.id);
       storage.setItem(AUTH_KEY, JSON.stringify(this.session));
       storage.removeItem('DOCTOR_PYME_LOGGED_OUT');
+      store.setEmpresaActivaId(empresaEncontrada.id);
       return { ok: true, user: this.session };
     }
 
@@ -215,14 +216,15 @@ class Auth {
           correo: trabajador.correo,
           empresaId: trabajador.companyId,
           rol: 'Trabajador',
+          esSuperAdmin: false,
           tipo: 'trabajador',
           loginAt: new Date().toISOString()
         };
+        storage.setItem(AUTH_KEY, JSON.stringify(this.session));
+        storage.removeItem('DOCTOR_PYME_LOGGED_OUT');
         if (trabajador.companyId) {
           store.setEmpresaActivaId(trabajador.companyId);
         }
-        storage.setItem(AUTH_KEY, JSON.stringify(this.session));
-        storage.removeItem('DOCTOR_PYME_LOGGED_OUT');
         return { ok: true, user: this.session };
       } else {
         return {
@@ -252,6 +254,10 @@ class Auth {
   }
 
   cambiarRol(tipo) {
+    if (!this.isSuperAdmin()) {
+      alert('Esta función está reservada exclusivamente para el Super Administrador SST (i.gonzalez.dsilva@gmail.com).');
+      return { ok: false };
+    }
     const res = this.loginDirectoComo(tipo);
     if (res.ok && typeof window !== 'undefined' && window.location) {
       if (tipo === 'admin' || tipo === 'empresa' || tipo === 'ochoa') window.location.hash = '#dashboard';

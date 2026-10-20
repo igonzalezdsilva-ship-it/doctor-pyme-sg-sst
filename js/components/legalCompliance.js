@@ -16,8 +16,8 @@ export function renderLegalComplianceRepository() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  // Verificación de Acceso: Exclusivo para SuperAdmin (Administrador SST / Consultor)
-  if (!auth.isAdmin()) {
+  // Verificación de Acceso: Exclusivo para SuperAdmin (i.gonzalez.dsilva@gmail.com)
+  if (!auth.isSuperAdmin()) {
     container.innerHTML = `
       <div class="bg-white border border-amber-200 rounded-3xl p-10 text-center max-w-xl mx-auto shadow-sm my-12">
         <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl font-black shadow-inner">

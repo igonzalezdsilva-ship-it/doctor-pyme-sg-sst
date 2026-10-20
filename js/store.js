@@ -1338,20 +1338,67 @@ class Store {
     this.notify();
   }
 
-  // --- GESTIÓN DE EMPRESA ACTIVA ---
+  // --- GESTIÓN DE EMPRESA ACTIVA Y AISLAMIENTO MULTI-TENANT ---
+  isSuperAdminSession() {
+    try {
+      const raw = storage.getItem('DOCTOR_PYME_SESSION_V2') || storage.getItem('DOCTOR_PYME_SESSION_V1');
+      if (!raw) return false;
+      const session = JSON.parse(raw);
+      if (!session) return false;
+      return (session.email || '').toLowerCase() === 'i.gonzalez.dsilva@gmail.com' || session.esSuperAdmin === true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  getSessionTenantLock() {
+    try {
+      const raw = storage.getItem('DOCTOR_PYME_SESSION_V2') || storage.getItem('DOCTOR_PYME_SESSION_V1');
+      if (!raw) return null;
+      const session = JSON.parse(raw);
+      if (!session) return null;
+      // Único Super Administrador con acceso global a todas las empresas
+      if ((session.email || '').toLowerCase() === 'i.gonzalez.dsilva@gmail.com' || session.esSuperAdmin === true) {
+        return null;
+      }
+      // Si es cuenta de empresa o trabajador, bloquear estrictamente a su empresaId
+      if (session.empresaId) {
+        return session.empresaId;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   getEmpresaActivaId() {
+    const lockedId = this.getSessionTenantLock();
+    if (lockedId) {
+      if (this.empresaActivaId !== lockedId) {
+        this.empresaActivaId = lockedId;
+        storage.setItem(ACTIVE_COMPANY_KEY, lockedId);
+      }
+      return lockedId;
+    }
     return this.empresaActivaId;
   }
 
   setEmpresaActivaId(id) {
-    this.empresaActivaId = id;
-    storage.setItem(ACTIVE_COMPANY_KEY, id);
+    const lockedId = this.getSessionTenantLock();
+    const targetId = lockedId ? lockedId : id;
+    this.empresaActivaId = targetId;
+    storage.setItem(ACTIVE_COMPANY_KEY, targetId);
     this.notify();
   }
 
   getEmpresaActiva() {
-    let emp = this.data?.empresas?.find(e => e.id === this.empresaActivaId);
-    if (!emp) emp = this.data?.empresas?.[0] || null;
+    const activeId = this.getEmpresaActivaId();
+    if (activeId === 'todas' && !this.getSessionTenantLock()) {
+      return null;
+    }
+    const empresasVisibles = this.getEmpresas();
+    let emp = empresasVisibles.find(e => e.id === activeId);
+    if (!emp) emp = empresasVisibles[0] || null;
     return emp;
   }
 
@@ -1404,8 +1451,17 @@ class Store {
   }
 
   // --- CRUD EMPRESAS ---
+  getAllEmpresasRaw() {
+    return this.data?.empresas || [];
+  }
+
   getEmpresas() {
-    return this.data.empresas || [];
+    const todas = this.data?.empresas || [];
+    const lockedId = this.getSessionTenantLock();
+    if (lockedId) {
+      return todas.filter(e => e.id === lockedId || ((lockedId === 'emp-004' || lockedId === 'emp-1790438946268') && (e.id === 'emp-1790438946268' || e.id === 'emp-004')));
+    }
+    return todas;
   }
 
   getEmpresa(id) {
@@ -1566,9 +1622,9 @@ class Store {
 
   // --- CRUD MATRIZ GTC 45 ---
   getMatriz(companyId = null) {
-    const cid = companyId || this.empresaActivaId;
+    const cid = this.getSessionTenantLock() || companyId || this.getEmpresaActivaId();
     const lista = Array.isArray(this.data?.matriz) ? this.data.matriz : [];
-    if (cid === 'todas') return lista;
+    if (cid === 'todas' && !this.getSessionTenantLock()) return lista;
     return lista.filter(m => m && (m.companyId === cid || ((cid === 'emp-004' || cid === 'emp-1790438946268') && (m.companyId === 'emp-1790438946268' || m.companyId === 'emp-004'))));
   }
 
@@ -1580,7 +1636,7 @@ class Store {
       const newRiesgo = {
         ...riesgoData,
         id: 'gtc-' + Date.now(),
-        companyId: riesgoData.companyId || this.empresaActivaId,
+        companyId: this.getSessionTenantLock() || riesgoData.companyId || this.getEmpresaActivaId(),
         fecha: new Date().toISOString().split('T')[0]
       };
       this.data.matriz.push(newRiesgo);
@@ -1599,9 +1655,9 @@ class Store {
 
   // --- CRUD PLAN DE TRABAJO ---
   getPlanTrabajo(companyId = null) {
-    const cid = companyId || this.empresaActivaId;
+    const cid = this.getSessionTenantLock() || companyId || this.getEmpresaActivaId();
     const lista = Array.isArray(this.data?.planTrabajo) ? this.data.planTrabajo : [];
-    if (cid === 'todas') return lista;
+    if (cid === 'todas' && !this.getSessionTenantLock()) return lista;
     return lista.filter(p => p && (p.companyId === cid || ((cid === 'emp-004' || cid === 'emp-1790438946268') && (p.companyId === 'emp-1790438946268' || p.companyId === 'emp-004'))));
   }
 
@@ -1613,7 +1669,7 @@ class Store {
       const newAct = {
         ...actividadData,
         id: 'pat-' + Date.now(),
-        companyId: actividadData.companyId || this.empresaActivaId
+        companyId: this.getSessionTenantLock() || actividadData.companyId || this.getEmpresaActivaId()
       };
       this.data.planTrabajo.push(newAct);
     }
@@ -1631,9 +1687,9 @@ class Store {
 
   // --- CRUD ACCIDENTES (ATEL) ---
   getAccidentes(companyId = null) {
-    const cid = companyId || this.empresaActivaId;
+    const cid = this.getSessionTenantLock() || companyId || this.getEmpresaActivaId();
     const lista = Array.isArray(this.data?.accidentes) ? this.data.accidentes : [];
-    if (cid === 'todas') return lista;
+    if (cid === 'todas' && !this.getSessionTenantLock()) return lista;
     return lista.filter(a => a && (a.companyId === cid || ((cid === 'emp-004' || cid === 'emp-1790438946268') && (a.companyId === 'emp-1790438946268' || a.companyId === 'emp-004'))));
   }
 
@@ -1645,7 +1701,7 @@ class Store {
       const newAcc = {
         ...accidenteData,
         id: 'acc-' + Date.now(),
-        companyId: accidenteData.companyId || this.empresaActivaId
+        companyId: this.getSessionTenantLock() || accidenteData.companyId || this.getEmpresaActivaId()
       };
       this.data.accidentes.push(newAcc);
     }

@@ -116,22 +116,67 @@ function router() {
   window.scrollTo(0, 0);
 }
 
-// Selector de Empresa en la Cabecera
+// Selector de Empresa en la Cabecera y Controles de Permisos RBAC
 export function actualizarSelectorCabecera() {
   const select = document.getElementById('header-company-select');
   if (!select) return;
 
+  const esSuperAdmin = auth.isSuperAdmin();
   const empresas = store.getEmpresas();
   const activaId = store.getEmpresaActivaId();
 
-  select.innerHTML = `
-    <option value="todas" ${activaId === 'todas' ? 'selected' : ''}>🏢 Todas las Empresas (Panel Global)</option>
-    ${empresas.map(e => `
-      <option value="${e.id}" ${activaId === e.id ? 'selected' : ''}>
+  if (esSuperAdmin) {
+    select.disabled = false;
+    select.classList.remove('cursor-default', 'opacity-95');
+    select.classList.add('cursor-pointer');
+    select.innerHTML = `
+      <option value="todas" ${activaId === 'todas' ? 'selected' : ''}>🏢 Todas las Empresas (Panel Global)</option>
+      ${empresas.map(e => `
+        <option value="${e.id}" ${activaId === e.id ? 'selected' : ''}>
+          ${e.razonSocial} (${e.estandaresAplicables} Estándares - Riesgo ${e.claseRiesgo})
+        </option>
+      `).join('')}
+    `;
+  } else {
+    // Usuario de Empresa o Trabajador: estrictamente bloqueado a su única empresa
+    select.disabled = true;
+    select.classList.remove('cursor-pointer');
+    select.classList.add('cursor-default', 'opacity-95');
+    select.innerHTML = empresas.map(e => `
+      <option value="${e.id}" selected>
         ${e.razonSocial} (${e.estandaresAplicables} Estándares - Riesgo ${e.claseRiesgo})
       </option>
-    `).join('')}
-  `;
+    `).join('');
+  }
+
+  // Ocultar/mostrar controles exclusivos de Super Administrador en Cabecera y Sidebar
+  const headerBtnNuevaEmpresa = document.querySelector('header a[href="#empresas"]');
+  if (headerBtnNuevaEmpresa) {
+    headerBtnNuevaEmpresa.classList.toggle('hidden', !esSuperAdmin);
+  }
+
+  const sidebarLinkEmpresas = document.querySelector('aside a.nav-link[href="#empresas"]');
+  if (sidebarLinkEmpresas) {
+    const svgIcon = sidebarLinkEmpresas.querySelector('svg');
+    sidebarLinkEmpresas.innerHTML = '';
+    if (svgIcon) sidebarLinkEmpresas.appendChild(svgIcon);
+    sidebarLinkEmpresas.appendChild(document.createTextNode(esSuperAdmin ? ' Empresas Clientes' : ' Mi Empresa'));
+  }
+
+  const sidebarLinkRepoLegal = document.querySelector('aside a.nav-link[href="#repositorio-legal"]');
+  if (sidebarLinkRepoLegal) {
+    sidebarLinkRepoLegal.classList.toggle('hidden', !esSuperAdmin);
+  }
+
+  // Ocultar selector rápido de rol (Admin | Trabajador | Auditor) y Respaldo/Restaurar global si no es Super Admin
+  const quickRoleBtn = document.querySelector('aside button[onclick*="cambiarRol"]');
+  if (quickRoleBtn && quickRoleBtn.parentElement) {
+    quickRoleBtn.parentElement.classList.toggle('hidden', !esSuperAdmin);
+  }
+  const btnBackup = document.getElementById('btn-exportar-backup');
+  if (btnBackup && btnBackup.parentElement) {
+    btnBackup.parentElement.classList.toggle('hidden', !esSuperAdmin);
+  }
 
   // Reflejar Logotipo Oficial de la Empresa Activa en la barra superior
   const logoContainer = document.getElementById('header-company-logo-container');
@@ -170,6 +215,13 @@ export function actualizarSelectorAnioCabecera() {
 window.actualizarSelectorAnioCabecera = actualizarSelectorAnioCabecera;
 
 window.cambiarEmpresaActiva = function(id) {
+  if (!auth.isSuperAdmin()) {
+    const user = auth.getUser();
+    if (user?.empresaId) {
+      store.setEmpresaActivaId(user.empresaId);
+    }
+    return;
+  }
   store.setEmpresaActivaId(id);
   actualizarSelectorCabecera();
   router();
