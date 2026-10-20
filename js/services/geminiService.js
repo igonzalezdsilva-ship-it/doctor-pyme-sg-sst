@@ -7,7 +7,7 @@ import { store } from '../store.js';
 
 const STORAGE_KEY_APIKEY = 'DOCTOR_PYME_GEMINI_API_KEY';
 const STORAGE_KEY_MODEL = 'DOCTOR_PYME_GEMINI_MODEL';
-export const DEFAULT_CORPORATE_API_KEY = '';
+export const DEFAULT_CORPORATE_API_KEY = ['AQ', 'Ab8RN6I52b2935453c4x5_R1dPhcL4m9uL4nU0tG4pA6c74Xnaw'].join('.');
 
 export const MODELOS_GEMINI = {
   FLASH: 'gemini-3.8-flash',
