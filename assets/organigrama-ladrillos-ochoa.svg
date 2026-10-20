@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" width="960" height="560">
+  <defs>
+    <linearGradient id="gradHeader" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="50%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="gradGerencia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="gradSST" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="100%" stop-color="#991B1B"/>
+    </linearGradient>
+    <linearGradient id="gradCopasst" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EA580C"/>
+      <stop offset="100%" stop-color="#C2410C"/>
+    </linearGradient>
+    <linearGradient id="gradLideres" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#3730A3"/>
+    </linearGradient>
+    <linearGradient id="gradOperativo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="gradBrigada" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+    <filter id="shadowOrg" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" fill="#F8FAFC" rx="16"/>
+
+  <!-- Encabezado Institucional -->
+  <rect x="0" y="0" width="100%" height="68" fill="url(#gradHeader)" rx="16"/>
+  <text x="480" y="28" font-family="Inter, -apple-system, sans-serif" font-size="16" font-weight="900" text-anchor="middle" fill="#FFFFFF" letter-spacing="0.5">ORGANIGRAMA INSTITUCIONAL &amp; ESTRUCTURA DE ROLES EN SST</text>
+  <text x="480" y="48" font-family="Inter, -apple-system, sans-serif" font-size="12" font-weight="600" text-anchor="middle" fill="#38BDF8">LADRILLOS OCHOA LTDA • NIT: 830124631 • RIESGO CLASE V (45 TRABAJADORES)</text>
+  <text x="480" y="62" font-family="Inter, -apple-system, sans-serif" font-size="9" text-anchor="middle" fill="#94A3B8">Decreto 1072 de 2015 Art. 2.2.4.6.8 &amp; Resolución 0312 de 2019</text>
+
+  <!-- LÍNEAS CONECTORAS JERÁRQUICAS -->
+  <!-- Vertical principal desde Gerencia General -->
+  <line x1="480" y1="140" x2="480" y2="255" stroke="#64748B" stroke-width="2.5"/>
+
+  <!-- Ramal Staff Lateral Izquierdo: Responsable SST -->
+  <line x1="480" y1="185" x2="210" y2="185" stroke="#DC2626" stroke-width="2" stroke-dasharray="5 4"/>
+  <line x1="210" y1="185" x2="210" y2="200" stroke="#DC2626" stroke-width="2" stroke-dasharray="5 4"/>
+
+  <!-- Ramal Staff Lateral Derecho: COPASST & Comité de Convivencia -->
+  <line x1="480" y1="185" x2="750" y2="185" stroke="#EA580C" stroke-width="2" stroke-dasharray="5 4"/>
+  <line x1="750" y1="185" x2="750" y2="200" stroke="#EA580C" stroke-width="2" stroke-dasharray="5 4"/>
+
+  <!-- Bus Horizontal Mandos Medios -->
+  <line x1="160" y1="255" x2="800" y2="255" stroke="#64748B" stroke-width="2.5"/>
+  <line x1="160" y1="255" x2="160" y2="275" stroke="#64748B" stroke-width="2.5"/>
+  <line x1="480" y1="255" x2="480" y2="275" stroke="#64748B" stroke-width="2.5"/>
+  <line x1="800" y1="255" x2="800" y2="275" stroke="#64748B" stroke-width="2.5"/>
+
+  <!-- Conectores hacia Operativo & Brigada -->
+  <line x1="160" y1="345" x2="160" y2="390" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="480" y1="345" x2="480" y2="390" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="800" y1="345" x2="800" y2="390" stroke="#94A3B8" stroke-width="2"/>
+
+  <!-- Conexión hacia Brigada Integral -->
+  <line x1="160" y1="460" x2="480" y2="460" stroke="#D97706" stroke-width="1.8" stroke-dasharray="4 4"/>
+  <line x1="800" y1="460" x2="480" y2="460" stroke="#D97706" stroke-width="1.8" stroke-dasharray="4 4"/>
+  <line x1="480" y1="460" x2="480" y2="475" stroke="#D97706" stroke-width="1.8" stroke-dasharray="4 4"/>
+
+  <!-- ==================== NIVEL 1: ALTA DIRECCIÓN ==================== -->
+  <g transform="translate(360, 80)">
+    <rect width="240" height="60" rx="10" fill="url(#gradGerencia)" filter="url(#shadowOrg)"/>
+    <text x="120" y="26" font-family="Inter, sans-serif" font-size="13" font-weight="bold" fill="#FFFFFF" text-anchor="middle">GERENCIA GENERAL</text>
+    <text x="120" y="42" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#38BDF8" text-anchor="middle">Representante Legal</text>
+    <text x="120" y="53" font-family="Inter, sans-serif" font-size="8.5" fill="#94A3B8" text-anchor="middle">Asignación de Recursos &amp; Liderazgo SST</text>
+  </g>
+
+  <!-- ==================== ASESORÍA STAFF SST (IZQUIERDA) ==================== -->
+  <g transform="translate(100, 200)">
+    <rect width="220" height="58" rx="8" fill="#FEF2F2" stroke="#EF4444" stroke-width="2" filter="url(#shadowOrg)"/>
+    <text x="110" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="bold" fill="#991B1B" text-anchor="middle">RESPONSABLE DEL SG-SST</text>
+    <text x="110" y="35" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#B91C1C" text-anchor="middle">Ing. Ivan David Gonzalez Silva</text>
+    <text x="110" y="48" font-family="Inter, sans-serif" font-size="8" fill="#7F1D1D" text-anchor="middle">Lic. Resolución No. 6514 / 2022</text>
+  </g>
+
+  <!-- ==================== PARTICIPACIÓN LEGAL (DERECHA) ==================== -->
+  <g transform="translate(640, 200)">
+    <rect width="220" height="58" rx="8" fill="#FFF7ED" stroke="#F97316" stroke-width="2" filter="url(#shadowOrg)"/>
+    <text x="110" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="bold" fill="#9A3412" text-anchor="middle">COPASST &amp; CONVIVENCIA</text>
+    <text x="110" y="35" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#C2410C" text-anchor="middle">Comité Paritario de SST</text>
+    <text x="110" y="48" font-family="Inter, sans-serif" font-size="8" fill="#7C2D12" text-anchor="middle">Investigación de Incidentes &amp; Copasst</text>
+  </g>
+
+  <!-- ==================== NIVEL 2: LÍDERES DE PROCESO ==================== -->
+  <!-- Líder 1: Producción y Hornos -->
+  <g transform="translate(50, 275)">
+    <rect width="220" height="70" rx="8" fill="url(#gradLideres)" filter="url(#shadowOrg)"/>
+    <text x="110" y="24" font-family="Inter, sans-serif" font-size="11.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PRODUCCIÓN &amp; HORNOS</text>
+    <text x="110" y="40" font-family="Inter, sans-serif" font-size="9.5" fill="#E0E7FF" text-anchor="middle">Líder de Extrusión y Cocción</text>
+    <text x="110" y="55" font-family="Inter, sans-serif" font-size="8" fill="#C7D2FE" text-anchor="middle">Control de Temperaturas y EPP</text>
+  </g>
+
+  <!-- Líder 2: Mantenimiento y Maquinaria -->
+  <g transform="translate(370, 275)">
+    <rect width="220" height="70" rx="8" fill="url(#gradLideres)" filter="url(#shadowOrg)"/>
+    <text x="110" y="24" font-family="Inter, sans-serif" font-size="11.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">MANTENIMIENTO &amp; EQUIPO</text>
+    <text x="110" y="40" font-family="Inter, sans-serif" font-size="9.5" fill="#E0E7FF" text-anchor="middle">Líder Técnico &amp; Electromecánico</text>
+    <text x="110" y="55" font-family="Inter, sans-serif" font-size="8" fill="#C7D2FE" text-anchor="middle">Bloqueo/Tarjeteo &amp; Mantenimiento</text>
+  </g>
+
+  <!-- Líder 3: Administración y Despachos -->
+  <g transform="translate(690, 275)">
+    <rect width="220" height="70" rx="8" fill="url(#gradLideres)" filter="url(#shadowOrg)"/>
+    <text x="110" y="24" font-family="Inter, sans-serif" font-size="11.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">ADMINISTRACIÓN &amp; LOGÍSTICA</text>
+    <text x="110" y="40" font-family="Inter, sans-serif" font-size="9.5" fill="#E0E7FF" text-anchor="middle">Líder Administrativo &amp; Despachos</text>
+    <text x="110" y="55" font-family="Inter, sans-serif" font-size="8" fill="#C7D2FE" text-anchor="middle">Gestión de Proveedores &amp; Clientes</text>
+  </g>
+
+  <!-- ==================== NIVEL 3: PERSONAL OPERATIVO ==================== -->
+  <!-- Operarios de Producción -->
+  <g transform="translate(50, 390)">
+    <rect width="220" height="60" rx="8" fill="url(#gradOperativo)" filter="url(#shadowOrg)"/>
+    <text x="110" y="24" font-family="Inter, sans-serif" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">OPERARIOS DE PLANTA</text>
+    <text x="110" y="39" font-family="Inter, sans-serif" font-size="9" fill="#A7F3D0" text-anchor="middle">Mezcla, Moldeo, Cargue y Quemado</text>
+    <text x="110" y="51" font-family="Inter, sans-serif" font-size="8" fill="#ECFDF5" text-anchor="middle">Autocuidado y Reporte de Peligros</text>
+  </g>
+
+  <!-- Personal Técnico / Mantenimiento -->
+  <g transform="translate(370, 390)">
+    <rect width="220" height="60" rx="8" fill="url(#gradOperativo)" filter="url(#shadowOrg)"/>
+    <text x="110" y="24" font-family="Inter, sans-serif" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">TÉCNICOS OPERATIVOS</text>
+    <text x="110" y="39" font-family="Inter, sans-serif" font-size="9" fill="#A7F3D0" text-anchor="middle">Mecánica, Soldadura y Electricidad</text>
+    <text x="110" y="51" font-family="Inter, sans-serif" font-size="8" fill="#ECFDF5" text-anchor="middle">Permisos para Trabajo Seguro</text>
+  </g>
+
+  <!-- Despachos y Servicios -->
+  <g transform="translate(690, 390)">
+    <rect width="220" height="60" rx="8" fill="url(#gradOperativo)" filter="url(#shadowOrg)"/>
+    <text x="110" y="24" font-family="Inter, sans-serif" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">DESPACHOS &amp; SERVICIOS</text>
+    <text x="110" y="39" font-family="Inter, sans-serif" font-size="9" fill="#A7F3D0" text-anchor="middle">Cargue de Vehículos y Facturación</text>
+    <text x="110" y="51" font-family="Inter, sans-serif" font-size="8" fill="#ECFDF5" text-anchor="middle">Manejo Seguro de Cargas (Ergonomía)</text>
+  </g>
+
+  <!-- ==================== BRIGADA DE EMERGENCIA ==================== -->
+  <g transform="translate(300, 475)">
+    <rect width="360" height="52" rx="8" fill="url(#gradBrigada)" stroke="#F59E0B" stroke-width="1.5" filter="url(#shadowOrg)"/>
+    <text x="180" y="22" font-family="Inter, sans-serif" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">🚨 BRIGADA INTEGRAL DE EMERGENCIA (45 TRABAJADORES)</text>
+    <text x="180" y="37" font-family="Inter, sans-serif" font-size="9" font-weight="500" fill="#FEF3C7" text-anchor="middle">Grupos Operativos: Evacuación y Rescate • Primeros Auxilios • Control de Incendios</text>
+    <text x="180" y="47" font-family="Inter, sans-serif" font-size="7.5" fill="#FDE68A" text-anchor="middle">Coordinación directa con ARL Positiva y Bomberos Oficiales de Bogotá</text>
+  </g>
+</svg>

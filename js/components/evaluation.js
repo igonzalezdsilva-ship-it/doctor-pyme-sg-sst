@@ -7,6 +7,36 @@ import { obtenerEstandaresPorGrupo, calcularPuntaje, formatPeso } from '../stand
 import { evidenceDB } from '../db.js';
 import { previsualizarEvidencia, abrirVisorEnlaceGuia } from './documentViewer.js';
 
+function escapeHtml(text) {
+  if (text === null || text === undefined) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function clasificarFuente(url) {
+  const u = (url || '').toLowerCase();
+  if (u.includes('docs.google.com/document')) {
+    return { tipo: 'GDOCS', label: 'Google Docs', icon: '📄', color: 'blue', bg: 'bg-blue-100/90 text-blue-700 hover:bg-blue-200' };
+  }
+  if (u.includes('docs.google.com/spreadsheets')) {
+    return { tipo: 'GSHEETS', label: 'Google Sheets', icon: '📊', color: 'emerald', bg: 'bg-emerald-100/90 text-emerald-700 hover:bg-emerald-200' };
+  }
+  if (u.includes('drive.google.com')) {
+    return { tipo: 'GDRIVE', label: 'Google Drive', icon: '📁', color: 'amber', bg: 'bg-amber-100/90 text-amber-700 hover:bg-amber-200' };
+  }
+  if (u.endsWith('.pdf') || u.includes('.pdf?')) {
+    return { tipo: 'PDF', label: 'PDF en Línea', icon: '📕', color: 'red', bg: 'bg-red-100/90 text-red-700 hover:bg-red-200' };
+  }
+  if (u.startsWith('data:')) {
+    return { tipo: 'ARCHIVO', label: 'Archivo Adjunto', icon: '📎', color: 'indigo', bg: 'bg-indigo-100/90 text-indigo-700 hover:bg-indigo-200' };
+  }
+  return { tipo: 'WEB', label: 'Doc Guía / Web', icon: '🔗', color: 'indigo', bg: 'bg-indigo-100/90 text-indigo-700 hover:bg-indigo-200' };
+}
+
 let filtroCiclo = 'TODOS'; // 'TODOS', 'PLANEAR', 'HACER', 'VERIFICAR', 'ACTUAR', 'NO_CUMPLE'
 
 export async function renderEvaluation() {
@@ -176,13 +206,37 @@ export async function renderEvaluation() {
           const resp = respuestasMap[est.numeral] || { estado: '', justificacion: '', planAccion: '' };
           const estado = resp.estado;
           const evidencias = evidenciasPorNumeral[est.numeral] || [];
-          const linkGuia = resp.linkGuia || '';
-          const esGDocs = linkGuia.includes('docs.google.com/document');
-          const esGSheets = linkGuia.includes('docs.google.com/spreadsheets');
-          const esGDrive = linkGuia.includes('drive.google.com');
+          
+          // Normalizar fuentes documentales del numeral
+          let fuentes = [];
+          if (Array.isArray(resp.fuentes) && resp.fuentes.length > 0) {
+            fuentes = resp.fuentes.map((f, idx) => ({
+              id: f.id || `f-${idx + 1}`,
+              url: (f.url || '').trim(),
+              titulo: (f.titulo || '').trim()
+            }));
+          } else if ((resp.linkGuia || '').trim()) {
+            fuentes = [{
+              id: 'f-1',
+              url: (resp.linkGuia || '').trim(),
+              titulo: 'Documento Guía Principal'
+            }];
+          }
+
+          // Garantizar que SIEMPRE exista al menos 1 campo en el formulario
+          if (fuentes.length === 0) {
+            fuentes = [{ id: 'f-1', url: '', titulo: '' }];
+          }
+
+          const fuentesValidas = fuentes.filter(f => !!f.url);
+          const linkGuia = fuentesValidas.length > 0 ? fuentesValidas[0].url : (resp.linkGuia || '').trim();
+
+          const tieneDiagOrg = (est.numeral.startsWith('1.1.2') || est.numeral.startsWith('1.1.1')) && (empresaActiva.tieneOrganigrama || !!empresaActiva.organigramaUrl);
+          const tieneDiagMapa = (est.numeral === '2.1.1' || est.numeral === '2.2.1' || est.numeral === '4.1.1') && (empresaActiva.tieneMapaProcesos || !!empresaActiva.mapaProcesosUrl);
+          const totalSoportes = evidencias.length + fuentesValidas.length + (tieneDiagOrg ? 1 : 0) + (tieneDiagMapa ? 1 : 0);
 
           return `
-            <div class="bg-white rounded-xl border ${estado === 'CUMPLE' ? 'border-emerald-200 bg-emerald-50/10' : estado === 'NO_CUMPLE' ? 'border-red-200 bg-red-50/10' : 'border-slate-200'} p-5 shadow-sm transition hover:shadow-md">
+            <div class="bg-white rounded-xl border ${estado === 'CUMPLE' ? 'border-emerald-200 bg-emerald-50/10' : estado === 'NO_CUMPLE' ? 'border-red-200 bg-red-50/10' : 'border-slate-200'} p-5 shadow-sm card-estandar-optimizado">
               <div class="flex flex-col md:flex-row justify-between md:items-start gap-4">
                 <div class="flex-1">
                   <div class="flex flex-wrap items-center gap-2">
@@ -195,15 +249,29 @@ export async function renderEvaluation() {
                     <span class="text-xs font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded" title="Ponderación legal: ${est.pesoEfectivo}%">
                       Peso: ${formatPeso(est.pesoEfectivo)}
                     </span>
-                    ${evidencias.length > 0 ? `
-                      <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
-                        📎 ${evidencias.length} ${evidencias.length === 1 ? 'soporte' : 'soportes'}
+                    ${totalSoportes > 0 ? `
+                      <span class="text-xs font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-2xs">
+                        📎 ${totalSoportes} ${totalSoportes === 1 ? 'soporte documental' : 'soportes documentales'}
                       </span>
                     ` : ''}
-                    ${linkGuia ? `
-                      <a href="${linkGuia}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold ${esGDocs ? 'text-blue-700 bg-blue-100/90 hover:bg-blue-200' : esGSheets ? 'text-emerald-700 bg-emerald-100/90 hover:bg-emerald-200' : 'text-indigo-700 bg-indigo-100/90 hover:bg-indigo-200'} px-2.5 py-0.5 rounded-full flex items-center gap-1 transition" title="Abrir documento guía / base">
-                        📘 ${esGDocs ? 'Google Docs' : esGSheets ? 'Google Sheets' : 'Doc Guía'} ↗
-                      </a>
+                    ${fuentesValidas.map((f, fIdx) => {
+                      const fInfo = clasificarFuente(f.url);
+                      const badgeLabel = f.titulo || (fuentesValidas.length > 1 ? `${fInfo.label} #${fIdx + 1}` : fInfo.label);
+                      return `
+                        <a href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold ${fInfo.bg} px-2.5 py-0.5 rounded-full flex items-center gap-1 transition shadow-2xs" title="${escapeHtml(f.titulo ? `${f.titulo} (${f.url})` : f.url)}">
+                          ${fInfo.icon} ${escapeHtml(badgeLabel)} ↗
+                        </a>
+                      `;
+                    }).join('')}
+                    ${tieneDiagOrg ? `
+                      <button type="button" onclick="window.abrirVisorDiagrama('${empresaActiva.id}', 'organigrama')" class="text-xs font-bold text-purple-700 bg-purple-100/90 hover:bg-purple-200 px-2.5 py-0.5 rounded-full flex items-center gap-1 transition shadow-2xs" title="Ver Organigrama Institucional Aprobado">
+                        👥 Organigrama 👁️
+                      </button>
+                    ` : ''}
+                    ${tieneDiagMapa ? `
+                      <button type="button" onclick="window.abrirVisorDiagrama('${empresaActiva.id}', 'mapa_procesos')" class="text-xs font-bold text-teal-700 bg-teal-100/90 hover:bg-teal-200 px-2.5 py-0.5 rounded-full flex items-center gap-1 transition shadow-2xs" title="Ver Mapa de Procesos Oficial">
+                        🗺️ Mapa Procesos 👁️
+                      </button>
                     ` : ''}
                   </div>
 
@@ -260,9 +328,14 @@ export async function renderEvaluation() {
                 </div>
 
                 <div>
-                  <label class="block font-bold ${estado === 'NO_CUMPLE' ? 'text-red-700' : 'text-slate-600'} mb-1">
-                    Plan de Acción Inmediato ${estado === 'NO_CUMPLE' ? '(Exigido por Ley)' : ''}:
-                  </label>
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="block font-bold ${estado === 'NO_CUMPLE' ? 'text-red-700' : 'text-slate-600'}">
+                      Plan de Acción Inmediato ${estado === 'NO_CUMPLE' ? '(Exigido por Ley)' : ''}:
+                    </label>
+                    <button type="button" onclick="window.asistirPlanAccionConIA('${est.numeral}', '${est.criterio.replace(/'/g, "\\'")}')" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200 transition">
+                      ✨ Asistir con IA (Gemini)
+                    </button>
+                  </div>
                   <input 
                     type="text" 
                     placeholder="Acción correctiva con fecha de cierre y responsable..." 
@@ -273,120 +346,252 @@ export async function renderEvaluation() {
                 </div>
               </div>
 
-              <!-- ZONA DE DOCUMENTO GUÍA O BASE (GOOGLE DOCS / SHEETS / ENLACE CLOUD) -->
+              <!-- ZONA DE DOCUMENTOS GUÍA, PLANTILLAS BASE Y FUENTES MULTI-ENLACE -->
               <div class="mt-3 pt-3 border-t border-slate-100 bg-blue-50/40 p-3 rounded-lg border border-blue-100/80">
-                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-1.5 mb-2">
-                  <label class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                    <span class="p-1 rounded ${esGDocs ? 'bg-blue-100 text-blue-700' : esGSheets ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-100 text-indigo-700'} flex-shrink-0">
-                      ${esGDocs ? `
-                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 4h7v5h5v11H6V4zm2 8h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>
-                      ` : esGSheets ? `
-                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM9 17H5v-4h4v4zm0-6H5V7h4v4zm6 6h-4v-4h4v4zm0-6h-4V7h4v4zm4 6h-2v-4h2v4zm0-6h-2V7h2v4z"/></svg>
-                      ` : `
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-                      `}
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-2.5">
+                  <div class="flex items-center gap-1.5">
+                    <span class="p-1 rounded bg-blue-100 text-blue-700 flex-shrink-0">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     </span>
-                    <span>Documento Guía o Plantilla Base (Google Docs / Sheets):</span>
-                  </label>
-                  
-                  <div class="flex items-center gap-1.5 flex-shrink-0">
-                    ${linkGuia ? `
-                      <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${esGDocs ? 'bg-blue-100 text-blue-800' : esGSheets ? 'bg-emerald-100 text-emerald-800' : esGDrive ? 'bg-amber-100 text-amber-800' : 'bg-slate-200 text-slate-700'}">
-                        ${esGDocs ? '📄 Google Docs' : esGSheets ? '📊 Google Sheets' : esGDrive ? '📁 Google Drive' : '🔗 Enlace Externo'}
+                    <div>
+                      <label class="text-xs font-bold text-slate-800">
+                        Documento Guía, Plantillas Base y Fuentes Documentales:
+                      </label>
+                      <span class="text-[10px] text-slate-500 block">
+                        Ingresa el enlace oficial (Docs, Sheets, Drive) o adjunta archivos directamente por fuente
                       </span>
-                    ` : `
-                      <span class="text-[10px] text-slate-400 italic">Pega aquí el hipervínculo de la plantilla o instructivo</span>
-                    `}
+                    </div>
                   </div>
+                  
+                  <!-- Botón Agregar Nueva Fuente -->
+                  <button 
+                    type="button" 
+                    onclick="window.agregarFuenteGuia('${est.numeral}')"
+                    class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs transition cursor-pointer self-start sm:self-auto flex-shrink-0"
+                    title="Agregar una nueva fuente o plantilla para este estándar"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>+ Agregar nueva fuente</span>
+                  </button>
                 </div>
 
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <div class="relative flex-1">
-                    <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-                    </div>
-                    <input 
-                      type="url" 
-                      id="input-guia-${est.numeral}"
-                      placeholder="https://docs.google.com/document/d/... o https://docs.google.com/spreadsheets/d/..."
-                      value="${linkGuia}"
-                      onchange="window.guardarLinkGuia('${est.numeral}', this.value)"
-                      class="w-full pl-8 pr-8 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:outline-none transition ${linkGuia ? 'font-medium text-slate-800' : 'text-slate-500'}"
-                    >
-                    ${linkGuia ? `
-                      <button 
-                        type="button"
-                        onclick="window.limpiarLinkGuia('${est.numeral}')"
-                        class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-red-500 transition"
-                        title="Quitar hipervínculo del documento guía"
-                      >
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                      </button>
-                    ` : ''}
-                  </div>
+                <!-- Lista Dinámica de Fuentes (Siempre al menos 1 campo) -->
+                <div class="space-y-2">
+                  ${fuentes.map((f, fIdx) => {
+                    const fInfo = clasificarFuente(f.url);
+                    const tieneUrl = !!f.url;
+                    const esUnica = fuentes.length === 1;
 
-                  <div class="flex items-center gap-1.5 flex-shrink-0">
-                    ${linkGuia ? `
-                      <!-- Botón Abrir Guía en Google Docs/Sheets (Pestaña Nueva) -->
-                      <a 
-                        href="${linkGuia}" 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-xs"
-                        title="Abrir plantilla directamente en Google Docs / Sheets"
-                      >
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                        <span>Abrir Guía</span>
-                      </a>
+                    return `
+                      <div class="bg-white p-2.5 rounded-lg border ${tieneUrl ? 'border-blue-200 shadow-2xs' : 'border-slate-200'} flex flex-col md:flex-row items-stretch md:items-center gap-2">
+                        
+                        <!-- Badge Fila / Tipo -->
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                          <span class="w-5 h-5 rounded-full ${tieneUrl ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600'} text-[10px] font-black flex items-center justify-center">
+                            ${fIdx + 1}
+                          </span>
+                          <span class="text-[10px] font-bold ${tieneUrl ? 'text-blue-700' : 'text-slate-500'} min-w-[70px]">
+                            ${tieneUrl ? fInfo.label : `Fuente ${fIdx + 1}`}
+                          </span>
+                        </div>
 
-                      <!-- Botón Vista Previa Embebida sin salir de la App -->
-                      <button 
-                        type="button"
-                        onclick="window.previsualizarDocumentoGuia('${est.numeral}')"
-                        class="px-2.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-xs"
-                        title="Vista previa del documento base aquí sin salir"
-                      >
-                        <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        <span>Vista Previa</span>
-                      </button>
-                    ` : `
-                      <button 
-                        type="button"
-                        onclick="window.guardarLinkGuia('${est.numeral}', document.getElementById('input-guia-${est.numeral}').value)"
-                        class="px-3 py-1.5 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-xs font-semibold transition shadow-xs flex items-center gap-1"
-                        title="Guardar enlace del documento guía"
-                      >
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        <span>Guardar</span>
-                      </button>
-                    `}
-                  </div>
+                        <!-- Título Opcional de la Fuente -->
+                        <div class="w-full md:w-44 flex-shrink-0">
+                          <input 
+                            type="text" 
+                            placeholder="Título opcional (ej: Anexo, Plantilla)..." 
+                            value="${escapeHtml(f.titulo || '')}" 
+                            onchange="window.actualizarFuenteGuia('${est.numeral}', '${f.id}', 'titulo', this.value)"
+                            class="w-full px-2 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                            title="Nombre o descripción corta de la fuente"
+                          >
+                        </div>
+
+                        <!-- URL / Enlace de la Fuente -->
+                        <div class="relative flex-1 min-w-0">
+                          <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                          </div>
+                          <input 
+                            type="url" 
+                            id="input-url-${est.numeral}-${f.id}"
+                            placeholder="https://docs.google.com/document/... o https://docs.google.com/spreadsheets/..."
+                            value="${escapeHtml(f.url || '')}" 
+                            onchange="window.actualizarFuenteGuia('${est.numeral}', '${f.id}', 'url', this.value)"
+                            class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:ring-1 focus:ring-blue-500 focus:outline-none ${tieneUrl ? 'font-medium text-slate-800' : 'text-slate-500'}"
+                          >
+                        </div>
+
+                        <!-- Botones de Acción para esta Fuente -->
+                        <div class="flex items-center gap-1.5 flex-shrink-0 justify-end">
+                          ${tieneUrl ? `
+                            <a 
+                              href="${escapeHtml(f.url)}" 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              class="px-2 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-md text-xs font-semibold flex items-center gap-1 transition"
+                              title="Abrir en pestaña nueva"
+                            >
+                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                              <span>Abrir</span>
+                            </a>
+
+                            <button 
+                              type="button" 
+                              onclick="window.previsualizarFuenteGuia('${est.numeral}', '${f.id}')"
+                              class="px-2 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-md text-xs font-semibold flex items-center gap-1 transition"
+                              title="Vista previa del documento sin salir de la App"
+                            >
+                              <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                              <span>Ver</span>
+                            </button>
+                          ` : ''}
+
+                          <!-- Adjuntar archivo directamente a esta fila de fuente -->
+                          <label class="px-2 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-md text-xs font-semibold cursor-pointer transition flex items-center gap-1" title="Cargar archivo físico y asociarlo a esta fuente">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                            <span>Subir Archivo</span>
+                            <input type="file" onchange="window.adjuntarArchivoAFuente('${est.numeral}', '${f.id}', this.files)" class="hidden">
+                          </label>
+
+                          <!-- Botón Quitar o Limpiar -->
+                          <button 
+                            type="button" 
+                            onclick="window.eliminarFuenteGuia('${est.numeral}', '${f.id}')"
+                            class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition"
+                            title="${esUnica ? 'Limpiar campos de esta fuente' : 'Eliminar esta fuente'}"
+                          >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                          </button>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
                 </div>
               </div>
 
-              <!-- ZONA DE CARGUE Y GESTIÓN DE ARCHIVOS ADJUNTOS (EVIDENCIAS) -->
+              <!-- ZONA DE CARGUE Y GESTIÓN DE ARCHIVOS ADJUNTOS Y DOCUMENTOS DE SOPORTE -->
               <div class="mt-4 pt-3 border-t border-slate-100 bg-slate-50/70 p-3 rounded-lg border border-slate-200/80">
                 <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-2">
-                  <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                  <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                     <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
-                    Archivos de Evidencia Documental (${evidencias.length})
+                    Documentos de Soporte y Evidencias Activas (${totalSoportes})
                   </span>
 
-                  <!-- Botón para Cargar Archivos -->
+                  <!-- Botón para Cargar Archivos Locales -->
                   <label class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-semibold cursor-pointer transition shadow-sm">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                    <span>Adjuntar Archivo (PDF, Foto, Doc)</span>
+                    <span>Adjuntar Archivo Local (PDF, Foto, Doc)</span>
                     <input type="file" multiple onchange="window.adjuntarEvidencia('${est.numeral}', this.files)" class="hidden">
                   </label>
                 </div>
 
-                <!-- Lista de Archivos Adjuntos -->
-                ${evidencias.length === 0 ? `
+                <!-- Lista de Documentos de Soporte Activos -->
+                ${totalSoportes === 0 ? `
                   <div class="text-[11px] text-slate-400 italic py-1">
-                    No se han adjuntado archivos para este estándar todavía. Puedes adjuntar copias escaneadas, actas, fotos o certificados en PDF.
+                    ⚪ No se han adjuntado archivos ni documentos para este estándar todavía. Puedes vincular una plantilla en Google Docs/Sheets o adjuntar copias escaneadas, actas, fotos o certificados en PDF.
                   </div>
                 ` : `
                   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
+                    
+                    <!-- Tarjetas de Fuentes Oficiales Activas -->
+                    ${fuentesValidas.map((fuente, fIdx) => {
+                      const fInfo = clasificarFuente(fuente.url);
+                      return `
+                        <div class="bg-white p-2.5 rounded-lg border ${fInfo.tipo === 'GDOCS' ? 'border-blue-200 bg-blue-50/20' : fInfo.tipo === 'GSHEETS' ? 'border-emerald-200 bg-emerald-50/20' : fInfo.tipo === 'GDRIVE' ? 'border-amber-200 bg-amber-50/20' : 'border-indigo-200 bg-indigo-50/20'} shadow-xs flex items-center justify-between gap-2 hover:shadow-sm transition">
+                          <div class="flex items-center gap-2 overflow-hidden flex-1 min-w-0 cursor-pointer" onclick="window.previsualizarFuenteGuia('${est.numeral}', '${fuente.id}')" title="Clic para vista previa de esta fuente">
+                            <span class="p-1.5 rounded ${fInfo.tipo === 'GDOCS' ? 'bg-blue-100 text-blue-700' : fInfo.tipo === 'GSHEETS' ? 'bg-emerald-100 text-emerald-700' : fInfo.tipo === 'GDRIVE' ? 'bg-amber-100 text-amber-700' : 'bg-indigo-100 text-indigo-700'} flex-shrink-0 text-xs">
+                              ${fInfo.icon}
+                            </span>
+                            <div class="overflow-hidden min-w-0">
+                              <span class="text-xs font-semibold text-slate-800 hover:text-indigo-600 truncate block transition" title="${escapeHtml(fuente.titulo || fInfo.label)}">
+                                ${escapeHtml(fuente.titulo || (fuentesValidas.length > 1 ? `${fInfo.label} #${fIdx + 1}` : fInfo.label))}
+                              </span>
+                              <span class="text-[10px] font-medium ${fInfo.tipo === 'GDOCS' ? 'text-blue-600' : fInfo.tipo === 'GSHEETS' ? 'text-emerald-600' : fInfo.tipo === 'GDRIVE' ? 'text-amber-600' : 'text-indigo-600'} block">
+                                ✓ ${escapeHtml(fInfo.label)}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div class="flex items-center gap-1 flex-shrink-0">
+                            <button 
+                              type="button" 
+                              onclick="window.previsualizarFuenteGuia('${est.numeral}', '${fuente.id}')" 
+                              class="px-2 py-1 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-md text-[11px] font-semibold flex items-center gap-1 transition shadow-2xs" 
+                              title="Vista previa sin salir de la App"
+                            >
+                              <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                              <span>Ver</span>
+                            </button>
+                            <a 
+                              href="${escapeHtml(fuente.url)}" 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              class="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition" 
+                              title="Abrir en pestaña nueva"
+                            >
+                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </a>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+
+                    <!-- Tarjeta de Organigrama Institucional si aplica -->
+                    ${tieneDiagOrg ? `
+                      <div class="bg-white p-2.5 rounded-lg border border-purple-200 bg-purple-50/20 shadow-xs flex items-center justify-between gap-2 hover:shadow-sm transition">
+                        <div class="flex items-center gap-2 overflow-hidden flex-1 min-w-0 cursor-pointer" onclick="window.abrirVisorDiagrama('${empresaActiva.id}', 'organigrama')" title="Clic para ver Organigrama Oficial">
+                          <span class="p-1.5 rounded bg-purple-100 text-purple-700 flex-shrink-0 text-xs">
+                            👥
+                          </span>
+                          <div class="overflow-hidden min-w-0">
+                            <span class="text-xs font-semibold text-slate-800 hover:text-purple-700 truncate block transition" title="Organigrama Institucional">Organigrama Institucional</span>
+                            <span class="text-[10px] font-medium text-purple-600 block">✓ Soporte Oficial Estructura SST</span>
+                          </div>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                          <button 
+                            type="button" 
+                            onclick="window.abrirVisorDiagrama('${empresaActiva.id}', 'organigrama')" 
+                            class="px-2 py-1 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 rounded-md text-[11px] font-semibold flex items-center gap-1 transition shadow-2xs" 
+                            title="Ver Organigrama en visor de alta resolución"
+                          >
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            <span>Ver</span>
+                          </button>
+                        </div>
+                      </div>
+                    ` : ''}
+
+                    <!-- Tarjeta de Mapa de Procesos si aplica -->
+                    ${tieneDiagMapa ? `
+                      <div class="bg-white p-2.5 rounded-lg border border-teal-200 bg-teal-50/20 shadow-xs flex items-center justify-between gap-2 hover:shadow-sm transition">
+                        <div class="flex items-center gap-2 overflow-hidden flex-1 min-w-0 cursor-pointer" onclick="window.abrirVisorDiagrama('${empresaActiva.id}', 'mapa_procesos')" title="Clic para ver Mapa de Procesos">
+                          <span class="p-1.5 rounded bg-teal-100 text-teal-700 flex-shrink-0 text-xs">
+                            🗺️
+                          </span>
+                          <div class="overflow-hidden min-w-0">
+                            <span class="text-xs font-semibold text-slate-800 hover:text-teal-700 truncate block transition" title="Mapa de Procesos">Mapa de Procesos</span>
+                            <span class="text-[10px] font-medium text-teal-600 block">✓ Soporte Oficial Enfoque GTC 45</span>
+                          </div>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                          <button 
+                            type="button" 
+                            onclick="window.abrirVisorDiagrama('${empresaActiva.id}', 'mapa_procesos')" 
+                            class="px-2 py-1 bg-white hover:bg-teal-50 text-teal-700 border border-teal-200 rounded-md text-[11px] font-semibold flex items-center gap-1 transition shadow-2xs" 
+                            title="Ver Mapa de Procesos en visor"
+                          >
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            <span>Ver</span>
+                          </button>
+                        </div>
+                      </div>
+                    ` : ''}
+
+                    <!-- Archivos Locales Adjuntos (Subidos a IndexedDB) -->
                     ${evidencias.map(ev => {
                       const esPDF = ev.tipo?.includes('pdf') || ev.nombre.endsWith('.pdf');
                       const esImagen = ev.tipo?.includes('image') || ev.nombre.match(/\.(jpg|jpeg|png|webp)$/i);
@@ -501,45 +706,252 @@ window.guardarPlanAccion = function(numeral, planAccion) {
   });
 };
 
-// GESTIÓN DE DOCUMENTO GUÍA O BASE (GOOGLE DOCS / SHEETS)
-window.guardarLinkGuia = function(numeral, url) {
+// GESTIÓN DE FUENTES DOCUMENTALES Y PLANTILLAS BASE (GOOGLE DOCS / SHEETS / ARCHIVOS)
+window.agregarFuenteGuia = function(numeral) {
   const empresaActiva = store.getEmpresaActiva();
   if (!empresaActiva) return;
   const anio = store.getAnioActivo();
-  const evaluacion = store.getEvaluacion(empresaActiva.id, anio);
+  const evaluacion = store.getEvaluacion(empresaActiva.id, anio) || {};
   const actual = evaluacion[numeral] || {};
+
+  let fuentes = [];
+  if (Array.isArray(actual.fuentes) && actual.fuentes.length > 0) {
+    fuentes = actual.fuentes.map((f, idx) => ({
+      id: f.id || `f-${idx + 1}`,
+      url: (f.url || '').trim(),
+      titulo: (f.titulo || '').trim()
+    }));
+  } else if ((actual.linkGuia || '').trim()) {
+    fuentes = [{
+      id: 'f-1',
+      url: (actual.linkGuia || '').trim(),
+      titulo: 'Documento Guía Principal'
+    }];
+  }
+
+  if (fuentes.length === 0) {
+    fuentes = [{ id: 'f-1', url: '', titulo: '' }];
+  }
+
+  const nuevoId = `f-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  fuentes.push({
+    id: nuevoId,
+    url: '',
+    titulo: ''
+  });
+
+  const primeraValida = fuentes.find(f => !!f.url);
 
   store.saveEvaluacionItem(empresaActiva.id, anio, numeral, {
     ...actual,
-    linkGuia: (url || '').trim()
+    fuentes,
+    linkGuia: primeraValida ? primeraValida.url : (actual.linkGuia || '')
+  });
+
+  renderEvaluation();
+
+  setTimeout(() => {
+    const nuevoInput = document.getElementById(`input-url-${numeral}-${nuevoId}`);
+    if (nuevoInput) nuevoInput.focus();
+  }, 100);
+};
+
+window.actualizarFuenteGuia = function(numeral, fuenteId, campo, valor) {
+  const empresaActiva = store.getEmpresaActiva();
+  if (!empresaActiva) return;
+  const anio = store.getAnioActivo();
+  const evaluacion = store.getEvaluacion(empresaActiva.id, anio) || {};
+  const actual = evaluacion[numeral] || {};
+
+  let fuentes = [];
+  if (Array.isArray(actual.fuentes) && actual.fuentes.length > 0) {
+    fuentes = actual.fuentes.map((f, idx) => ({
+      id: f.id || `f-${idx + 1}`,
+      url: (f.url || '').trim(),
+      titulo: (f.titulo || '').trim()
+    }));
+  } else if ((actual.linkGuia || '').trim()) {
+    fuentes = [{
+      id: 'f-1',
+      url: (actual.linkGuia || '').trim(),
+      titulo: 'Documento Guía Principal'
+    }];
+  }
+
+  if (fuentes.length === 0) {
+    fuentes = [{ id: 'f-1', url: '', titulo: '' }];
+  }
+
+  let idx = fuentes.findIndex(f => f.id === fuenteId);
+  if (idx === -1) {
+    idx = 0;
+    fuentes[0].id = fuenteId;
+  }
+
+  if (campo === 'url') {
+    fuentes[idx].url = (valor || '').trim();
+  } else if (campo === 'titulo') {
+    fuentes[idx].titulo = (valor || '').trim();
+  }
+
+  const primeraValida = fuentes.find(f => !!f.url);
+
+  store.saveEvaluacionItem(empresaActiva.id, anio, numeral, {
+    ...actual,
+    fuentes,
+    linkGuia: primeraValida ? primeraValida.url : ''
+  });
+
+  // No re-renderizamos la vista completa de 68 estándares para mantener la fluidez absoluta de digitación
+};
+
+window.eliminarFuenteGuia = function(numeral, fuenteId) {
+  const empresaActiva = store.getEmpresaActiva();
+  if (!empresaActiva) return;
+  const anio = store.getAnioActivo();
+  const evaluacion = store.getEvaluacion(empresaActiva.id, anio) || {};
+  const actual = evaluacion[numeral] || {};
+
+  let fuentes = [];
+  if (Array.isArray(actual.fuentes) && actual.fuentes.length > 0) {
+    fuentes = actual.fuentes.map((f, idx) => ({
+      id: f.id || `f-${idx + 1}`,
+      url: (f.url || '').trim(),
+      titulo: (f.titulo || '').trim()
+    }));
+  } else if ((actual.linkGuia || '').trim()) {
+    fuentes = [{
+      id: 'f-1',
+      url: (actual.linkGuia || '').trim(),
+      titulo: 'Documento Guía Principal'
+    }];
+  }
+
+  if (fuentes.length <= 1) {
+    // Si solo hay 1 fuente, limpiamos sus valores pero dejamos el campo listo para escribir
+    fuentes = [{ id: 'f-1', url: '', titulo: '' }];
+  } else {
+    // Si hay más de 1 fuente, removemos la seleccionada
+    fuentes = fuentes.filter(f => f.id !== fuenteId);
+    if (fuentes.length === 0) {
+      fuentes = [{ id: 'f-1', url: '', titulo: '' }];
+    }
+  }
+
+  const primeraValida = fuentes.find(f => !!f.url);
+
+  store.saveEvaluacionItem(empresaActiva.id, anio, numeral, {
+    ...actual,
+    fuentes,
+    linkGuia: primeraValida ? primeraValida.url : ''
   });
 
   renderEvaluation();
 };
 
-window.limpiarLinkGuia = function(numeral) {
-  window.guardarLinkGuia(numeral, '');
+window.adjuntarArchivoAFuente = async function(numeral, fuenteId, files) {
+  const empresaActiva = store.getEmpresaActiva();
+  if (!empresaActiva || !files || files.length === 0) return;
+  const anio = store.getAnioActivo();
+
+  const file = files[0];
+  const archivoGuardado = await evidenceDB.guardarArchivo(empresaActiva.id, numeral, file);
+
+  const evaluacion = store.getEvaluacion(empresaActiva.id, anio) || {};
+  const actual = evaluacion[numeral] || {};
+
+  let fuentes = [];
+  if (Array.isArray(actual.fuentes) && actual.fuentes.length > 0) {
+    fuentes = actual.fuentes.map((f, idx) => ({
+      id: f.id || `f-${idx + 1}`,
+      url: (f.url || '').trim(),
+      titulo: (f.titulo || '').trim()
+    }));
+  } else if ((actual.linkGuia || '').trim()) {
+    fuentes = [{
+      id: 'f-1',
+      url: (actual.linkGuia || '').trim(),
+      titulo: 'Documento Guía Principal'
+    }];
+  }
+
+  if (fuentes.length === 0) {
+    fuentes = [{ id: 'f-1', url: '', titulo: '' }];
+  }
+
+  let idx = fuentes.findIndex(f => f.id === fuenteId);
+  if (idx === -1) {
+    idx = 0;
+    fuentes[0].id = fuenteId;
+  }
+
+  const targetUrl = archivoGuardado.url || archivoGuardado.dataUrl;
+  fuentes[idx].url = targetUrl;
+  if (!fuentes[idx].titulo) {
+    fuentes[idx].titulo = file.name;
+  }
+
+  const primeraValida = fuentes.find(f => !!f.url);
+
+  store.saveEvaluacionItem(empresaActiva.id, anio, numeral, {
+    ...actual,
+    fuentes,
+    linkGuia: primeraValida ? primeraValida.url : targetUrl
+  });
+
+  renderEvaluation();
 };
 
-window.previsualizarDocumentoGuia = function(numeral) {
+window.previsualizarFuenteGuia = function(numeral, fuenteId) {
   const empresaActiva = store.getEmpresaActiva();
   if (!empresaActiva) return;
   const anio = store.getAnioActivo();
-  const evaluacion = store.getEvaluacion(empresaActiva.id, anio);
+  const evaluacion = store.getEvaluacion(empresaActiva.id, anio) || {};
   const actual = evaluacion[numeral] || {};
-  if (!actual.linkGuia) {
-    alert("Por favor ingresa primero la URL del documento guía (Google Docs o Sheets).");
+
+  let targetUrl = '';
+  let targetTitulo = '';
+
+  if (Array.isArray(actual.fuentes) && actual.fuentes.length > 0) {
+    const f = fuenteId ? actual.fuentes.find(item => item.id === fuenteId) : actual.fuentes.find(item => !!item.url);
+    if (f && f.url) {
+      targetUrl = f.url;
+      targetTitulo = f.titulo || '';
+    }
+  }
+
+  if (!targetUrl) {
+    targetUrl = (actual.linkGuia || '').trim();
+  }
+
+  if (!targetUrl) {
+    alert("Por favor ingresa primero la URL o adjunta un archivo para esta fuente.");
     return;
   }
+
   const estandares = obtenerEstandaresPorGrupo(empresaActiva.estandaresAplicables || 60);
   const est = estandares.find(e => e.numeral === numeral);
 
   abrirVisorEnlaceGuia({
-    url: actual.linkGuia,
+    url: targetUrl,
     numeral,
     criterio: est ? (est.criterio || est.estandar) : '',
-    empresaNombre: empresaActiva.razonSocial
+    empresaNombre: empresaActiva.razonSocial,
+    titulo: targetTitulo
   });
+};
+
+// Compatibilidad retroactiva con llamadas heredadas
+window.guardarLinkGuia = function(numeral, url) {
+  window.actualizarFuenteGuia(numeral, 'f-1', 'url', url);
+};
+
+window.limpiarLinkGuia = function(numeral) {
+  window.eliminarFuenteGuia(numeral, 'f-1');
+};
+
+window.previsualizarDocumentoGuia = function(numeral) {
+  window.previsualizarFuenteGuia(numeral, null);
 };
 
 // GESTIÓN DE ARCHIVOS ADJUNTOS EN INDEXEDDB

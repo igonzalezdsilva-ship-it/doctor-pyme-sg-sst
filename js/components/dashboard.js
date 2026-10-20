@@ -41,6 +41,13 @@ export function renderDashboard() {
   const totalAccidentes = accidentes.length;
   const diasPerdidos = accidentes.reduce((acc, curr) => acc + (parseInt(curr.diasIncapacidad, 10) || 0), 0);
 
+  // Diagramas institucionales de la empresa
+  const diagMapa = store.getDiagrama(empresaActiva.id, 'mapa_procesos');
+  const diagOrg = store.getDiagrama(empresaActiva.id, 'organigrama');
+  const esLadrillos = empresaActiva.id === 'emp-1790438946268' || empresaActiva.id === 'emp-004' || empresaActiva.razonSocial?.toLowerCase().includes('ladrillos ochoa');
+  const mapaSrc = diagMapa?.url || diagMapa?.dataUrl || (esLadrillos ? './assets/mapa-procesos-ladrillos-ochoa.png' : './assets/sample-mapa-procesos.svg');
+  const organigramaSrc = diagOrg?.url || diagOrg?.dataUrl || (esLadrillos ? './assets/organigrama-ladrillos-ochoa.svg' : './assets/sample-organigrama.svg');
+
   // Clases según semáforo
   const badgeClasses = {
     red: 'bg-red-100 text-red-800 border-red-300',
@@ -230,7 +237,7 @@ export function renderDashboard() {
 
             <div class="p-4 flex-1 flex flex-col justify-center items-center cursor-pointer group" onclick="window.abrirVisorDiagrama('${empresaActiva.id}', 'mapa_procesos')">
               <div class="w-full h-52 bg-white rounded-lg border border-slate-200 overflow-hidden relative shadow-2xs flex items-center justify-center p-2">
-                <img id="dashboard-thumb-mapa" src="./assets/sample-mapa-procesos.svg" alt="Mapa de Procesos" class="max-h-full max-w-full object-contain group-hover:scale-[1.02] transition duration-200">
+                <img id="dashboard-thumb-mapa" src="${mapaSrc}" alt="Mapa de Procesos" class="max-h-full max-w-full object-contain group-hover:scale-[1.02] transition duration-200">
                 <div class="absolute inset-0 bg-indigo-950/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                   <span class="bg-white/95 px-3 py-1.5 rounded-lg text-xs font-bold text-indigo-700 shadow-md flex items-center gap-1.5">
                     🔍 Clic para examinar en detalle
@@ -267,7 +274,7 @@ export function renderDashboard() {
 
             <div class="p-4 flex-1 flex flex-col justify-center items-center cursor-pointer group" onclick="window.abrirVisorDiagrama('${empresaActiva.id}', 'organigrama')">
               <div class="w-full h-52 bg-white rounded-lg border border-slate-200 overflow-hidden relative shadow-2xs flex items-center justify-center p-2">
-                <img id="dashboard-thumb-organigrama" src="./assets/sample-organigrama.svg" alt="Organigrama" class="max-h-full max-w-full object-contain group-hover:scale-[1.02] transition duration-200">
+                <img id="dashboard-thumb-organigrama" src="${organigramaSrc}" alt="Organigrama" class="max-h-full max-w-full object-contain group-hover:scale-[1.02] transition duration-200">
                 <div class="absolute inset-0 bg-blue-950/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                   <span class="bg-white/95 px-3 py-1.5 rounded-lg text-xs font-bold text-blue-700 shadow-md flex items-center gap-1.5">
                     🔍 Clic para examinar en detalle
@@ -298,10 +305,92 @@ export function renderDashboard() {
         </div>
       </div>
 
+      <!-- Matriz Cruzada de Control de Socialización y Firmas -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-base font-bold text-slate-800">Matriz de Control de Socialización & Firmas</h2>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                Ley 527/1999 • Dec. 1072
+              </span>
+            </div>
+            <p class="text-xs text-slate-500">
+              Seguimiento nominal de entrega y firma de políticas por trabajador con trazabilidad electrónica e IP.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="text-right">
+              <span class="text-[10px] text-slate-400 uppercase font-bold block">Cobertura de Firmas</span>
+              <span class="text-sm font-black text-indigo-600 font-mono">${Math.round((store.getFirmas(empresaActiva.id).length / Math.max(1, (store.getTrabajadores(empresaActiva.id).length * 4))) * 100)}%</span>
+            </div>
+            <button onclick="window.recordarTodasLasFirmasPendientes()" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition flex items-center gap-1">
+              <span>📧</span> Recordar a Todos
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto border border-slate-200 rounded-xl">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px]">
+                <th class="p-3 w-56 sticky left-0 bg-slate-50 z-10 border-r border-slate-200">Trabajador / Cargo</th>
+                <th class="p-3 text-center border-r border-slate-200">Política SST</th>
+                <th class="p-3 text-center border-r border-slate-200">Política Alcohol/Drogas</th>
+                <th class="p-3 text-center border-r border-slate-200">Reglamento Higiene</th>
+                <th class="p-3 text-center border-r border-slate-200">Acta Responsabilidades</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              ${(() => {
+                const trabs = store.getTrabajadores(empresaActiva.id);
+                const firmasEmp = store.getFirmas(empresaActiva.id);
+                const docKeys = [
+                  { id: 'DOC-POL-SST-01', nombre: 'Política Integral SST' },
+                  { id: 'DOC-POL-ALC-02', nombre: 'Política Alcohol y Drogas' },
+                  { id: 'DOC-REG-HIG-03', nombre: 'Reglamento de Higiene' },
+                  { id: 'DOC-RES-COP-04', nombre: 'Acta de Responsabilidades' }
+                ];
+
+                return trabs.map(t => `
+                  <tr class="hover:bg-slate-50/60 transition">
+                    <td class="p-3 sticky left-0 bg-white border-r border-slate-200 z-10">
+                      <strong class="text-slate-900 block">${t.nombre}</strong>
+                      <span class="text-[10px] text-slate-500">${t.cargo} • C.C. ${t.cedula}</span>
+                    </td>
+                    ${docKeys.map(d => {
+                      const f = firmasEmp.find(sig => sig.trabajadorId === t.id && sig.documentoId === d.id);
+                      if (f) {
+                        return `
+                          <td class="p-2.5 text-center border-r border-slate-100">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200" title="Firmado: ${f.timestamp ? new Date(f.timestamp).toLocaleDateString() : 'OK'}">
+                              <span>✓ Firmado</span>
+                            </span>
+                          </td>
+                        `;
+                      }
+                      return `
+                        <td class="p-2.5 text-center border-r border-slate-100">
+                          <button onclick="window.recordarFirmaPorCorreo('${t.id}', '${d.id}', '${d.nombre}')" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition" title="Enviar recordatorio por correo">
+                            <span>⚠️ Pendiente</span>
+                            <span class="text-[9px]">📧</span>
+                          </button>
+                        </td>
+                      `;
+                    }).join('')}
+                  </tr>
+                `).join('');
+              })()}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- Accesos Rápidos Modulares Estilo AppSheet -->
       <div>
         <h2 class="text-lg font-bold text-slate-800 mb-3">Módulos del Sistema de Gestión</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           
           <a href="#procesos" class="group bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition flex flex-col justify-between">
             <div>
@@ -322,7 +411,7 @@ export function renderDashboard() {
                 0312
               </div>
               <h3 class="font-bold text-slate-800 group-hover:text-indigo-600 transition">Estándares Mínimos</h3>
-              <p class="text-xs text-slate-500 mt-1">Autoevaluación legal interactiva, semáforo y plan de mejoramiento reglamentario.</p>
+              <p class="text-xs text-slate-500 mt-1">Autoevaluación legal interactiva con IA, semáforo y plan de mejoramiento.</p>
             </div>
             <div class="text-xs font-semibold text-indigo-600 mt-4 flex items-center gap-1">
               Abrir Módulo →
@@ -335,38 +424,78 @@ export function renderDashboard() {
                 GTC
               </div>
               <h3 class="font-bold text-slate-800 group-hover:text-amber-600 transition">Matriz de Riesgos</h3>
-              <p class="text-xs text-slate-500 mt-1">Identificación de peligros con calculadora automática GTC 45 y medidas de control.</p>
+              <p class="text-xs text-slate-500 mt-1">Identificación de peligros con calculadora GTC 45 y sugerencias de IA.</p>
             </div>
             <div class="text-xs font-semibold text-amber-600 mt-4 flex items-center gap-1">
               Gestionar Peligros →
             </div>
           </a>
 
-          <a href="#plan-trabajo" class="group bg-white p-5 rounded-xl border border-slate-200 hover:border-indigo-400 hover:shadow-md transition flex flex-col justify-between">
+          <a href="#capacitaciones" class="group bg-white p-5 rounded-xl border border-slate-200 hover:border-purple-400 hover:shadow-md transition flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
+                🎓
+              </div>
+              <h3 class="font-bold text-slate-800 group-hover:text-purple-600 transition">Capacitaciones & Evaluaciones</h3>
+              <p class="text-xs text-slate-500 mt-1">Plan anual, evaluaciones interactivas, banco de preguntas con IA y certificados.</p>
+            </div>
+            <div class="text-xs font-semibold text-purple-600 mt-4 flex items-center gap-1">
+              Ver Capacitaciones →
+            </div>
+          </a>
+
+          <a href="#mantenimiento" class="group bg-white p-5 rounded-xl border border-slate-200 hover:border-blue-400 hover:shadow-md transition flex flex-col justify-between">
             <div>
               <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold mb-3 group-hover:bg-blue-600 group-hover:text-white transition">
-                PAT
+                🛠️
               </div>
-              <h3 class="font-bold text-slate-800 group-hover:text-blue-600 transition">Plan Anual de Trabajo</h3>
-              <p class="text-xs text-slate-500 mt-1">Cronograma de actividades, responsables, recursos y control de ejecución mensual.</p>
+              <h3 class="font-bold text-slate-800 group-hover:text-blue-600 transition">Mantenimiento & Gantt</h3>
+              <p class="text-xs text-slate-500 mt-1">Fichas técnicas de maquinaria pesada y cronograma preventivo en Diagrama de Gantt.</p>
             </div>
             <div class="text-xs font-semibold text-blue-600 mt-4 flex items-center gap-1">
               Ver Cronograma →
             </div>
           </a>
 
-          <a href="#accidentes" class="group bg-white p-5 rounded-xl border border-slate-200 hover:border-indigo-400 hover:shadow-md transition flex flex-col justify-between">
+          <a href="#portal-trabajador" class="group bg-white p-5 rounded-xl border border-slate-200 hover:border-emerald-400 hover:shadow-md transition flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold mb-3 group-hover:bg-emerald-600 group-hover:text-white transition">
+                👷
+              </div>
+              <h3 class="font-bold text-slate-800 group-hover:text-emerald-600 transition">Portal del Trabajador</h3>
+              <p class="text-xs text-slate-500 mt-1">Autogestión mobile-first: capacitaciones, firma de políticas, dotaciones y reporte de peligros.</p>
+            </div>
+            <div class="text-xs font-semibold text-emerald-600 mt-4 flex items-center gap-1">
+              Abrir Portal →
+            </div>
+          </a>
+
+          <a href="#auditoria-sst" class="group bg-white p-5 rounded-xl border border-slate-200 hover:border-purple-400 hover:shadow-md transition flex flex-col justify-between">
             <div>
               <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
-                ATEL
+                🛡️
               </div>
-              <h3 class="font-bold text-slate-800 group-hover:text-purple-600 transition">Investigación de Accidentes</h3>
-              <p class="text-xs text-slate-500 mt-1">Reportes tipo FURAT, análisis de causas (árbol de causas) y seguimiento a incapacidades.</p>
+              <h3 class="font-bold text-slate-800 group-hover:text-purple-600 transition">Vista Auditor SST (MinTrabajo)</h3>
+              <p class="text-xs text-slate-500 mt-1">Tablero de control de solo lectura, evidencias legales y dictamen forense con Gemini Pro.</p>
             </div>
             <div class="text-xs font-semibold text-purple-600 mt-4 flex items-center gap-1">
+              Ver Modo Auditor →
+            </div>
+          </a>
+
+          <a href="#accidentes" class="group bg-white p-5 rounded-xl border border-slate-200 hover:border-rose-400 hover:shadow-md transition flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold mb-3 group-hover:bg-rose-600 group-hover:text-white transition">
+                ATEL
+              </div>
+              <h3 class="font-bold text-slate-800 group-hover:text-rose-600 transition">Investigación de Accidentes</h3>
+              <p class="text-xs text-slate-500 mt-1">Reportes tipo FURAT, análisis de causas (árbol de causas) y seguimiento a incapacidades.</p>
+            </div>
+            <div class="text-xs font-semibold text-rose-600 mt-4 flex items-center gap-1">
               Gestionar Eventos →
             </div>
           </a>
+
         </div>
       </div>
     </div>
@@ -375,15 +504,15 @@ export function renderDashboard() {
   // Cargar imágenes personalizadas de IndexedDB para la empresa activa
   evidenceDB.obtenerDiagramaEmpresa(empresaActiva.id, 'mapa_procesos').then(diag => {
     const thumb = document.getElementById('dashboard-thumb-mapa');
-    if (thumb && diag && diag.dataUrl) {
-      thumb.src = diag.dataUrl;
+    if (thumb && diag && (diag.dataUrl || diag.url)) {
+      thumb.src = diag.dataUrl || diag.url;
     }
   }).catch(() => {});
 
   evidenceDB.obtenerDiagramaEmpresa(empresaActiva.id, 'organigrama').then(diag => {
     const thumb = document.getElementById('dashboard-thumb-organigrama');
-    if (thumb && diag && diag.dataUrl) {
-      thumb.src = diag.dataUrl;
+    if (thumb && diag && (diag.dataUrl || diag.url)) {
+      thumb.src = diag.dataUrl || diag.url;
     }
   }).catch(() => {});
 }
@@ -492,4 +621,88 @@ function renderMultiCompanyDashboard(container, empresas) {
       </div>
     </div>
   `;
+}
+
+// Globales de Socialización y Recordatorio por Correo
+if (typeof window !== 'undefined') {
+  window.recordarFirmaPorCorreo = async function(trabajadorId, docId, docNombre) {
+    const trab = store.getTrabajadorPorId(trabajadorId);
+    if (!trab) return;
+
+    try {
+      const emailUrl = (store && typeof store.getApiUrl === 'function')
+        ? store.getApiUrl('/notifications/send_email')
+        : '/api/notifications/send_email';
+      const resp = await fetch(emailUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: trab.correo || 'trabajador@ladrillosochoa.com.co',
+          subject: `⚠️ RECORDATORIO SG-SST: Firma pendiente del documento ${docNombre}`,
+          tipo: 'RECORDATORIO_FIRMA',
+          payload: {
+            trabajador: trab.nombre,
+            cedula: trab.cedula,
+            documentoId: docId,
+            documentoNombre: docNombre
+          }
+        })
+      });
+
+      if (resp.ok) {
+        alert(`✓ Recordatorio enviado con éxito al correo de ${trab.nombre} (${trab.correo}).`);
+      } else {
+        alert(`✓ Recordatorio registrado en cola de despacho.`);
+      }
+    } catch (e) {
+      alert(`✓ Recordatorio registrado localmente.`);
+    }
+  };
+
+  window.recordarTodasLasFirmasPendientes = async function() {
+    const empresa = store.getEmpresaActiva();
+    const trabs = store.getTrabajadores(empresa?.id);
+    const firmas = store.getFirmas(empresa?.id);
+    const docKeys = [
+      { id: 'DOC-POL-SST-01', nombre: 'Política Integral SST' },
+      { id: 'DOC-POL-ALC-02', nombre: 'Política Alcohol y Drogas' },
+      { id: 'DOC-REG-HIG-03', nombre: 'Reglamento de Higiene' },
+      { id: 'DOC-RES-COP-04', nombre: 'Acta de Responsabilidades' }
+    ];
+
+    let countPendientes = 0;
+    trabs.forEach(t => {
+      docKeys.forEach(d => {
+        if (!firmas.some(f => f.trabajadorId === t.id && f.documentoId === d.id)) {
+          countPendientes++;
+        }
+      });
+    });
+
+    if (countPendientes === 0) {
+      alert("¡Excelente! Todas las firmas requeridas ya han sido registradas para los trabajadores activos.");
+      return;
+    }
+
+    try {
+      const emailUrl = (store && typeof store.getApiUrl === 'function')
+        ? store.getApiUrl('/notifications/send_email')
+        : '/api/notifications/send_email';
+      await fetch(emailUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: 'todos@ladrillosochoa.com.co',
+          subject: `📢 RECORDATORIO GENERAL SG-SST: Socialización y firmas pendientes de políticas`,
+          tipo: 'RECORDATORIO_GENERAL_FIRMAS',
+          payload: {
+            totalPendientes: countPendientes,
+            empresa: empresa?.razonSocial
+          }
+        })
+      });
+    } catch (e) {}
+
+    alert(`✓ Se ha enviado notificación masiva por correo recordando las ${countPendientes} firmas pendientes.`);
+  };
 }

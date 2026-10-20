@@ -96,27 +96,31 @@ export async function renderReports() {
       <div class="bg-white p-8 md:p-12 rounded-xl border border-slate-200 shadow-sm print:p-0 print:border-none print:shadow-none space-y-8">
         
         <!-- Membrete Legal Oficial Doctor Pyme -->
-        <div class="border-b-2 border-indigo-900 pb-5">
+        <div class="border-b-2 border-teal-800 pb-5">
           <div class="flex justify-between items-start gap-4">
             <div class="flex items-start gap-4">
-              <img src="./assets/logo.jpg" alt="Doctor Pyme" class="w-16 h-16 object-contain p-1 rounded-xl border border-slate-200 bg-white flex-shrink-0 shadow-xs">
+              ${empresaActiva.logoUrl ? `
+                <img src="${empresaActiva.logoUrl}" alt="${empresaActiva.razonSocial}" class="w-16 h-16 object-contain p-1 rounded-xl border border-slate-200 bg-white flex-shrink-0 shadow-xs" title="Logotipo Oficial de ${empresaActiva.razonSocial}">
+              ` : ''}
+              <img src="./assets/logo-horizontal.png" alt="Doctor Pyme" class="h-14 object-contain p-1 rounded-xl border border-teal-100 bg-white flex-shrink-0 shadow-xs" title="Doctor Pyme - El Médico de tu Negocio">
               <div>
-                <div class="text-[10px] font-black uppercase text-indigo-700 tracking-wider">
-                  DOCTOR PYME • GESTIÓN SST & SEGURIDAD LABORAL
+                <div class="text-[10px] font-black uppercase text-teal-700 tracking-wider">
+                  DOCTOR PYME • EL MÉDICO DE TU NEGOCIO • SALUD, SEGURIDAD Y AMBIENTE
                 </div>
                 <h2 class="text-xl font-black text-slate-900 uppercase tracking-tight mt-0.5">${empresaActiva.razonSocial}</h2>
                 <div class="text-xs text-slate-600 mt-1 space-y-0.5">
                   <p><strong>NIT:</strong> ${empresaActiva.nit} • <strong>ARL:</strong> ${empresaActiva.arl} • <strong>Riesgo:</strong> Clase ${empresaActiva.claseRiesgo}</p>
                   <p><strong>Sede:</strong> ${empresaActiva.ciudad} - ${empresaActiva.direccion} • <strong>Trabajadores:</strong> ${empresaActiva.trabajadores}</p>
+                  <p><strong>Representante Legal:</strong> ${empresaActiva.representanteLegal || 'No especificado'}</p>
                   <p><strong>Responsable SST:</strong> ${empresaActiva.responsableSST || 'Designado por Gerencia'}</p>
                 </div>
               </div>
             </div>
 
             <div class="text-right border-l-2 border-slate-200 pl-4">
-              <span class="text-[10px] font-mono text-indigo-600 font-bold uppercase block">DOCTOR PYME SG-SST</span>
+              <span class="text-[10px] font-mono text-teal-700 font-bold uppercase block">DOCTOR PYME SG-SST</span>
               <span class="text-xs font-bold text-slate-800 block">Decreto 1072 & Res. 0312</span>
-              <span class="text-[10px] text-indigo-700 font-black block">VIGENCIA: AÑO ${anioActivo}</span>
+              <span class="text-[10px] text-teal-700 font-black block">VIGENCIA: AÑO ${anioActivo}</span>
               <span class="text-[10px] text-slate-500 block">Fecha Emisión: ${new Date().toISOString().split('T')[0]}</span>
             </div>
           </div>
@@ -138,12 +142,13 @@ export async function renderReports() {
             
             <div class="border-t border-slate-400 pt-2">
               <div class="text-xs font-bold text-slate-800">REPRESENTANTE LEGAL</div>
-              <div class="text-[11px] text-slate-500 mt-0.5">${empresaActiva.razonSocial}</div>
+              <div class="text-[11px] font-bold text-indigo-950 mt-0.5">${empresaActiva.representanteLegal || 'Gerente General / Representante Legal'}</div>
+              <div class="text-[10px] text-slate-500 mt-0.5">${empresaActiva.razonSocial}</div>
               <div class="text-[10px] text-slate-400 mt-0.5">Firma y Cédula</div>
             </div>
 
             <div class="border-t border-slate-400 pt-2">
-              <div class="text-xs font-bold text-slate-800">DOCTOR PYME - ASESOR SST</div>
+              <div class="text-xs font-bold text-slate-800">DOCTOR PYME - SALUD, SEGURIDAD Y AMBIENTE</div>
               <div class="text-[11px] text-slate-500 mt-0.5">${empresaActiva.responsableSST || 'Licencia en SST'}</div>
               <div class="text-[10px] text-slate-400 mt-0.5">Firma y Número de Licencia</div>
             </div>
@@ -521,7 +526,9 @@ function renderReporteEstructura(empresa, mapaSrc, orgSrc) {
   `;
 }
 
-window.cambiarTipoReporte = function(tipo) {
-  tipoReporte = tipo;
-  renderReports();
-};
+if (typeof window !== 'undefined') {
+  window.cambiarTipoReporte = function(tipo) {
+    tipoReporte = tipo;
+    renderReports();
+  };
+}

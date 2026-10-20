@@ -206,7 +206,7 @@ export function renderWorkPlan() {
     </div>
 
     <!-- Modal Nueva / Editar Actividad PAT -->
-    <div id="modal-pat" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div id="modal-pat" class="fixed inset-0 bg-slate-900/75 hidden items-center justify-center z-50 p-4">
       <div class="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200">
         <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
           <div>

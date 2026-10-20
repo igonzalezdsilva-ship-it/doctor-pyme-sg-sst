@@ -2,3 +2,5 @@
 Thumbs.db
 *.swp
 *~
+backups/backup_*.json
+data/*.log

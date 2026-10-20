@@ -4,10 +4,41 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
+:root {
+  --brand-navy: #0b1a2d;
+  --brand-navy-dark: #060d17;
+  --brand-teal: #0d9488;
+  --brand-teal-light: #14b8a6;
+  --brand-emerald: #10b981;
+  --brand-emerald-light: #34d399;
+  --brand-cyan: #06b6d4;
+  --brand-gradient: linear-gradient(135deg, #0d9488 0%, #10b981 100%);
+  --brand-gradient-hover: linear-gradient(135deg, #0f766e 0%, #059669 100%);
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: #f8fafc;
   color: #1e293b;
+}
+
+/* Clases utilitarias de marca Doctor Pyme */
+.bg-brand-navy { background-color: var(--brand-navy); }
+.bg-brand-teal { background-color: var(--brand-teal); }
+.bg-brand-emerald { background-color: var(--brand-emerald); }
+.text-brand-teal { color: var(--brand-teal); }
+.text-brand-emerald { color: var(--brand-emerald); }
+.border-brand-teal { border-color: var(--brand-teal); }
+.bg-brand-gradient { background: var(--brand-gradient); }
+
+.btn-brand {
+  background: var(--brand-gradient);
+  color: #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+.btn-brand:hover {
+  background: var(--brand-gradient-hover);
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3);
 }
 
 /* Scrollbar estilizado */
@@ -26,9 +57,36 @@ body {
   background: #94a3b8;
 }
 
-/* Transición suave para modales */
-#modal-empresa, #modal-riesgo, #modal-pat, #modal-accidente {
-  transition: opacity 0.2s ease-in-out;
+/* =============================================================================
+   OPTIMIZACIÓN DE RENDIMIENTO DE FORMULARIOS Y RENDERIZADO FLUIDO (60 FPS)
+   ============================================================================= */
+
+/* Aceleración de digitación de texto en formularios (evita lag de tecleo) */
+input, textarea, select {
+  text-rendering: optimizeSpeed !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Aislar capas de modales para evitar repintados costosos de la página al escribir */
+#modal-empresa, #modal-riesgo, #modal-pat, #modal-accidente, #modal-doc-vincular, .modal-formulario {
+  transform: translateZ(0);
+  will-change: opacity;
+}
+
+#modal-empresa > div, #modal-riesgo > div, #modal-pat > div, #modal-accidente > div {
+  contain: layout style;
+}
+
+/* Optimización de listas largas (Estándares Mínimos, Matriz GTC 45, Gestor Documental) */
+/* Omite el layout y renderizado de tarjetas fuera del viewport para un scroll y tecleo instantáneos */
+.card-estandar-optimizado {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 320px;
+}
+
+.fila-matriz-optimizada {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 48px;
 }
 
 /* ESTILOS DE IMPRESIÓN OFICIAL PARA AUDITORÍA Y PDF */

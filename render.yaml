@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: doctor-pyme-sg-sst
+    runtime: docker
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: GEMINI_API_KEY
+        sync: false

@@ -12,6 +12,13 @@ import { renderAccidents } from './components/accidents.js';
 import { renderReports } from './components/reports.js';
 import { renderProcessMap } from './components/processMap.js';
 import { renderDocumentation } from './components/documents.js';
+import { renderTraining } from './components/training.js';
+import { renderMaintenance } from './components/maintenance.js';
+import { renderToolsModule } from './components/toolsManagement.js';
+import { renderWorkerPortal } from './components/workerPortal.js';
+import { renderAuditorView } from './components/auditorView.js';
+import { renderLegalComplianceRepository, renderLegalConsentScreen } from './components/legalCompliance.js';
+import { initAiAssistantWidget, abrirModalIA } from './components/aiAssistant.js';
 import './components/diagramViewer.js';
 import './components/documentViewer.js';
 
@@ -24,7 +31,15 @@ const routes = {
   '#plan-trabajo': renderWorkPlan,
   '#accidentes': renderAccidents,
   '#reportes': renderReports,
-  '#documentos': renderDocumentation
+  '#documentos': renderDocumentation,
+  '#capacitaciones': renderTraining,
+  '#mantenimiento': renderMaintenance,
+  '#herramientas': renderToolsModule,
+  '#repositorio-legal': renderLegalComplianceRepository,
+  '#admin/legal-compliance-repository': renderLegalComplianceRepository,
+  '#legal-consent': renderLegalConsentScreen,
+  '#portal-trabajador': renderWorkerPortal,
+  '#auditoria-sst': renderAuditorView
 };
 
 function mostrarErrorEnPantalla(err) {
@@ -48,7 +63,27 @@ function mostrarErrorEnPantalla(err) {
 function router() {
   if (!auth.isAuthenticated()) return;
 
-  const hash = window.location.hash || '#dashboard';
+  let hash = window.location.hash || '#dashboard';
+
+  // Soporte para URLs amigables
+  if (window.location.pathname.includes('/admin/legal-compliance-repository')) {
+    hash = '#repositorio-legal';
+  } else if (window.location.pathname.includes('/legal-consent')) {
+    hash = '#legal-consent';
+  }
+
+  // Nota de Arquitectura: La Política de Tratamiento de Datos Personales (Ley 1581 / Ley 527)
+  // se solicita, autoriza y firma 1 ÚNICA VEZ al momento de registrar/crear la empresa en el módulo Empresas Clientes.
+
+  // Redirección inteligente por rol
+  if (auth.isWorker() && (!window.location.hash || window.location.hash === '#dashboard')) {
+    hash = '#portal-trabajador';
+    window.location.hash = '#portal-trabajador';
+  } else if (auth.isAuditor() && (!window.location.hash || window.location.hash === '#dashboard')) {
+    hash = '#auditoria-sst';
+    window.location.hash = '#auditoria-sst';
+  }
+
   const renderFn = routes[hash] || renderDashboard;
 
   // Actualizar clases activas en sidebar
@@ -94,6 +129,20 @@ export function actualizarSelectorCabecera() {
     `).join('')}
   `;
 
+  // Reflejar Logotipo Oficial de la Empresa Activa en la barra superior
+  const logoContainer = document.getElementById('header-company-logo-container');
+  const logoImg = document.getElementById('header-company-logo-img');
+  const empActiva = store.getEmpresaActiva();
+  if (logoContainer && logoImg) {
+    if (empActiva && empActiva.logoUrl) {
+      logoImg.src = empActiva.logoUrl;
+      logoImg.title = `${empActiva.razonSocial} • Rep. Legal: ${empActiva.representanteLegal || 'No especificado'}`;
+      logoContainer.classList.remove('hidden');
+    } else {
+      logoContainer.classList.add('hidden');
+    }
+  }
+
   actualizarSelectorAnioCabecera();
 }
 
@@ -136,7 +185,7 @@ window.abrirModalNuevoAnio = function() {
   if (!modal) {
     modal = document.createElement('div');
     modal.id = modalId;
-    modal.className = 'fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all animate-fadeIn';
+    modal.className = 'fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-4 transition-all animate-fadeIn';
     document.body.appendChild(modal);
   }
 
@@ -289,6 +338,7 @@ async function initApp() {
   });
 
   actualizarSelectorCabecera();
+  initAiAssistantWidget();
   
   const select = document.getElementById('header-company-select');
   if (select) {
@@ -348,13 +398,31 @@ async function initApp() {
 
   window.addEventListener('hashchange', router);
 
-  // Suscribirse a cambios del store para re-renderizado reactivo automático
+  // Suscribirse a cambios del store para re-renderizado reactivo inteligente
+  let routerDebounceTimer = null;
   store.subscribe(() => {
     actualizarSelectorCabecera();
-    router();
+
+    // Si el usuario está interactuando activamente con un formulario, input o modal, no interrumpir con re-renderizado
+    const activeEl = document.activeElement;
+    const isTyping = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT' || activeEl.isContentEditable);
+    const isModalOpen = document.querySelector('#modal-empresa:not(.hidden), #modal-riesgo:not(.hidden), #modal-pat:not(.hidden), #modal-accidente:not(.hidden), #modal-doc-vincular:not(.hidden), #modal-visor-documento:not(.hidden), #modal-visor-diagrama:not(.hidden)');
+
+    if (isTyping || isModalOpen) {
+      return;
+    }
+
+    if (routerDebounceTimer) clearTimeout(routerDebounceTimer);
+    routerDebounceTimer = setTimeout(() => {
+      router();
+    }, 200);
   });
 
-  // Asegurar que la información física de disco se descargue antes del render inicial
+  // Render inicial inmediato para interactividad instantánea sin retrasos
+  actualizarSelectorCabecera();
+  router();
+
+  // Asegurar que la información física de disco se descargue y sincronice
   try {
     await store.sincronizarConServidorFisico();
   } catch (e) {
@@ -375,7 +443,7 @@ window.mostrarDiagnosticoAlmacenamiento = function() {
   if (modalExistente) modalExistente.remove();
 
   const modalHtml = `
-    <div id="${modalId}" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div id="${modalId}" class="fixed inset-0 z-50 bg-slate-900/75 flex items-center justify-center p-4">
       <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-xl overflow-hidden max-h-[90vh] flex flex-col">
         
         <div class="bg-gradient-to-r from-emerald-600 to-teal-700 p-5 text-white flex justify-between items-center flex-shrink-0">

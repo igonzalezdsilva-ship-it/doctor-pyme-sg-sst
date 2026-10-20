@@ -77,3 +77,4 @@ Al ingresar o editar una empresa cliente (indicando su **número de trabajadores
 ### 8. Seguridad y Respaldos (Zero Data Loss)
 - Descarga con un solo clic copias completas de seguridad en formato `.json`.
 - Restaura copias previas en cualquier momento sin perder información.
+# doctor-pyme-sg-sst

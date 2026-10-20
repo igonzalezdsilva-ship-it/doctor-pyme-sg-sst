@@ -103,27 +103,33 @@ class EvidenceDB {
 
         // Guardar físicamente en el servidor Mac si hay conexión
         if (typeof fetch !== 'undefined') {
-          const apiPath = (typeof window !== 'undefined' && window.location && window.location.pathname.startsWith('/sst')) ? '/sst/api/upload_evidence' : '/api/upload_evidence';
-          fetch(apiPath, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              companyId,
-              numeral,
-              nombre: file.name,
-              tamanio: file.size,
-              tipo: file.type,
-              dataUrl: reader.result
-            })
-          }).then(res => res.json()).then(resJson => {
-            if (resJson && resJson.evidencia) {
-              evidencia.url = resJson.evidencia.url;
-              if (appStoreRef && appStoreRef.data) {
-                appStoreRef.data.evidencias = appStoreRef.data.evidencias || [];
-                appStoreRef.data.evidencias.push(resJson.evidencia);
+          try {
+            const apiPath = (typeof window !== 'undefined' && window.location && window.location.pathname.startsWith('/sst')) ? '/sst/api/upload_evidence' : '/api/upload_evidence';
+            const uploadResp = await fetch(apiPath, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                companyId,
+                numeral,
+                nombre: file.name,
+                tamanio: file.size,
+                tipo: file.type,
+                dataUrl: reader.result
+              })
+            });
+            if (uploadResp.ok) {
+              const resJson = await uploadResp.json();
+              if (resJson && resJson.evidencia) {
+                evidencia.url = resJson.evidencia.url;
+                if (appStoreRef && appStoreRef.data) {
+                  appStoreRef.data.evidencias = appStoreRef.data.evidencias || [];
+                  appStoreRef.data.evidencias.push(resJson.evidencia);
+                }
               }
             }
-          }).catch(e => console.warn("Evidencia preservada localmente en IndexedDB:", e));
+          } catch (e) {
+            console.warn("Evidencia preservada localmente en IndexedDB:", e);
+          }
         }
 
         if (this.db) {
@@ -322,13 +328,41 @@ class EvidenceDB {
       tamanio,
       tipo: mimeType,
       dataUrl,
+      url: dataUrl,
+      esOficial: true,
       fechaCargue: new Date().toISOString()
     };
 
-    // 1. Guardar primero en el almacenamiento de respaldo (localStorage)
+    // 1. Guardar en Store central (sincronizado)
+    if (appStoreRef && appStoreRef.saveDiagrama) {
+      appStoreRef.saveDiagrama(companyId, tipo, diagrama);
+    }
+
+    // 2. Guardar físicamente en servidor (data/uploads/ y data/database.json)
+    if (typeof fetch !== 'undefined') {
+      const apiPath = (typeof window !== 'undefined' && window.location && window.location.pathname.startsWith('/sst')) ? '/sst/api/upload_diagram' : '/api/upload_diagram';
+      fetch(apiPath, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          companyId,
+          tipo,
+          nombre,
+          tamanio,
+          tipoMime: mimeType,
+          dataUrl
+        })
+      }).then(res => res.json()).then(resJson => {
+        if (resJson && resJson.diagrama) {
+          diagrama.url = resJson.diagrama.url;
+        }
+      }).catch(e => console.warn("Diagrama preservado localmente:", e));
+    }
+
+    // 3. Guardar en almacenamiento de respaldo (localStorage)
     this.guardarEnFallback(diagrama);
 
-    // 2. Persistir en IndexedDB de manera atómica
+    // 4. Persistir en IndexedDB de manera atómica
     try {
       await this.init();
       if (this.db) {
@@ -356,7 +390,15 @@ class EvidenceDB {
   async obtenerDiagramaEmpresa(companyId, tipo) {
     const id = `diag-${companyId}-${tipo}`;
 
-    // 1. Intentar desde IndexedDB
+    // 1. Primero intentar desde appStoreRef (sincronizado con data/database.json en disco)
+    if (appStoreRef && appStoreRef.getDiagrama) {
+      const diagStore = appStoreRef.getDiagrama(companyId, tipo);
+      if (diagStore && (diagStore.dataUrl || diagStore.url)) {
+        return diagStore;
+      }
+    }
+
+    // 2. Intentar desde IndexedDB
     try {
       await this.init();
       if (this.db) {
@@ -371,12 +413,47 @@ class EvidenceDB {
             resolve(null);
           }
         });
-        if (item && item.dataUrl) return item;
+        if (item && (item.dataUrl || item.url)) return item;
       }
     } catch {}
 
-    // 2. Si no se encuentra o falla, recuperar del respaldo
-    return this.obtenerDeFallback(id);
+    // 3. Recuperar del respaldo (localStorage)
+    const fb = this.obtenerDeFallback(id);
+    if (fb && (fb.dataUrl || fb.url)) return fb;
+
+    // 4. Respaldo definitivo para Ladrillos Ochoa Ltda: imágenes institucionales oficiales
+    const isL8a = !companyId || companyId === 'todas' || companyId === 'emp-1790438946268' || companyId === 'emp-004';
+    if (isL8a) {
+      if (tipo === 'mapa_procesos') {
+        return {
+          id: `diag-${companyId || 'emp-1790438946268'}-mapa_procesos`,
+          companyId: companyId || 'emp-1790438946268',
+          numeral: '__DIAGRAMA_MAPA_PROCESOS__',
+          tipoDiagrama: 'mapa_procesos',
+          nombre: 'mapa-procesos-ladrillos-ochoa.png',
+          url: './assets/mapa-procesos-ladrillos-ochoa.png',
+          dataUrl: './assets/mapa-procesos-ladrillos-ochoa.png',
+          tipo: 'image/png',
+          esOficial: true,
+          fechaCargue: '2026-10-05T08:00:00.000Z'
+        };
+      } else if (tipo === 'organigrama') {
+        return {
+          id: `diag-${companyId || 'emp-1790438946268'}-organigrama`,
+          companyId: companyId || 'emp-1790438946268',
+          numeral: '__DIAGRAMA_ORGANIGRAMA__',
+          tipoDiagrama: 'organigrama',
+          nombre: 'Captura de pantalla 2026-10-10 a las 8.41.21 a. m..png',
+          url: '/uploads/20261010_084143_diag_emp-1790438946268_organigrama.png',
+          dataUrl: '/uploads/20261010_084143_diag_emp-1790438946268_organigrama.png',
+          tipo: 'image/png',
+          esOficial: true,
+          fechaCargue: '2026-10-10T13:41:43.593Z'
+        };
+      }
+    }
+
+    return null;
   }
 
   async eliminarDiagramaEmpresa(companyId, tipo) {
@@ -489,6 +566,64 @@ class EvidenceDB {
       });
     } catch {
       return null;
+    }
+  }
+
+  // --- AUTO-HIDRATACIÓN BIDIRECCIONAL DESDE BASE DE DATOS FÍSICA ---
+  async autoHidratarDesdeServidor(data) {
+    if (!data) return;
+    try {
+      await this.init();
+      if (!this.db) return;
+
+      const transaction = this.db.transaction([STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+
+      // 1. Hidratar diagramas oficiales si no existen o están obsoletos
+      const diagOchoa = data.diagramas?.['emp-1790438946268'] || data.diagramas?.['emp-004'];
+      if (diagOchoa) {
+        if (diagOchoa.organigrama) {
+          store.put({
+            id: 'diag-emp-1790438946268-organigrama',
+            companyId: 'emp-1790438946268',
+            numeral: '__DIAGRAMA_ORGANIGRAMA__',
+            tipoDiagrama: 'organigrama',
+            nombre: diagOchoa.organigrama.nombre || 'Captura de pantalla 2026-10-10 a las 8.41.21 a. m..png',
+            url: diagOchoa.organigrama.url || '/uploads/20261010_084143_diag_emp-1790438946268_organigrama.png',
+            dataUrl: diagOchoa.organigrama.dataUrl || diagOchoa.organigrama.url || '/uploads/20261010_084143_diag_emp-1790438946268_organigrama.png',
+            tamanio: diagOchoa.organigrama.tamanio || 742710,
+            tipo: diagOchoa.organigrama.tipo || 'image/png',
+            esOficial: true,
+            fechaCargue: diagOchoa.organigrama.fechaCargue || '2026-10-10T13:41:43.593Z'
+          });
+        }
+        if (diagOchoa.mapa_procesos) {
+          store.put({
+            id: 'diag-emp-1790438946268-mapa_procesos',
+            companyId: 'emp-1790438946268',
+            numeral: '__DIAGRAMA_MAPA_PROCESOS__',
+            tipoDiagrama: 'mapa_procesos',
+            nombre: diagOchoa.mapa_procesos.nombre || 'mapa-procesos-ladrillos-ochoa.png',
+            url: diagOchoa.mapa_procesos.url || './assets/mapa-procesos-ladrillos-ochoa.png',
+            dataUrl: diagOchoa.mapa_procesos.dataUrl || diagOchoa.mapa_procesos.url || './assets/mapa-procesos-ladrillos-ochoa.png',
+            tamanio: diagOchoa.mapa_procesos.tamanio || 45000,
+            tipo: diagOchoa.mapa_procesos.tipo || 'image/png',
+            esOficial: true,
+            fechaCargue: diagOchoa.mapa_procesos.fechaCargue || '2026-10-05T08:00:00.000Z'
+          });
+        }
+      }
+
+      // 2. Hidratar lista de evidencias adjuntas registradas en la base de datos
+      if (Array.isArray(data.evidencias) && data.evidencias.length > 0) {
+        data.evidencias.forEach(ev => {
+          if (ev && ev.id) {
+            store.put(ev);
+          }
+        });
+      }
+    } catch (e) {
+      console.warn("Aviso: auto-hidratación de IndexedDB diferida:", e);
     }
   }
 }

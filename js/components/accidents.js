@@ -149,7 +149,7 @@ export function renderAccidents() {
     </div>
 
     <!-- Modal Formulario Accidente / Incidente -->
-    <div id="modal-accidente" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div id="modal-accidente" class="fixed inset-0 bg-slate-900/75 hidden items-center justify-center z-50 p-4">
       <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-slate-200">
         <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
           <div>

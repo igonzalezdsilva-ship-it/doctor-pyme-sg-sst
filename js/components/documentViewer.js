@@ -12,7 +12,6 @@ let imageZoom = 1.0;
 let imageRotation = 0;
 
 /**
-/**
  * Convierte una cadena base64 a Uint8Array de forma compatible con todos los entornos
  */
 export function base64ToUint8Array(base64) {
@@ -94,7 +93,7 @@ function ensureModalExists() {
   if (document.getElementById('modal-visor-documento')) return;
 
   const modalHtml = `
-    <div id="modal-visor-documento" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md hidden items-center justify-center z-50 p-2 sm:p-4 transition-all">
+    <div id="modal-visor-documento" class="fixed inset-0 bg-slate-950/90 hidden items-center justify-center z-50 p-2 sm:p-4 transition-all">
       <div class="bg-white rounded-2xl max-w-5xl w-full h-[92vh] flex flex-col shadow-2xl border border-slate-700/30 overflow-hidden transform transition-all animate-fadeIn">
         
         <!-- Cabecera Superior del Visor de Documentos -->
@@ -203,7 +202,8 @@ function ensureModalExists() {
  * @param {Object} doc - Objeto con { nombre, tipo, tamanio, dataUrl, numeral, contexto, fechaCargue }
  */
 export function abrirVisorDocumento(doc) {
-  if (!doc || !doc.dataUrl) {
+  const fileUrl = doc?.dataUrl || doc?.url;
+  if (!doc || !fileUrl) {
     alert("No fue posible cargar el contenido del documento.");
     return;
   }
@@ -211,8 +211,10 @@ export function abrirVisorDocumento(doc) {
   ensureModalExists();
 
   // Liberar Blob URL anterior si existía
-  if (activeBlobUrl) {
-    URL.revokeObjectURL(activeBlobUrl);
+  if (activeBlobUrl && typeof activeBlobUrl === 'string' && activeBlobUrl.startsWith('blob:')) {
+    try {
+      URL.revokeObjectURL(activeBlobUrl);
+    } catch {}
     activeBlobUrl = null;
   }
 
@@ -254,15 +256,15 @@ export function abrirVisorDocumento(doc) {
   subtituloEl.textContent = doc.empresaNombre ? `Empresa: ${doc.empresaNombre}` : 'Evidencia de cumplimiento normativo';
 
   // Configurar descarga
-  btnDescargar.href = doc.dataUrl;
+  btnDescargar.href = fileUrl;
   btnDescargar.download = doc.nombre || 'evidencia';
 
-  // Generar Blob URL nativo para navegación e iframes fluidos
-  const blob = dataUrlToBlob(doc.dataUrl);
-  if (blob) {
-    activeBlobUrl = URL.createObjectURL(blob);
+  // Generar Blob URL nativo o enlace directo
+  if (doc.dataUrl && typeof doc.dataUrl === 'string' && doc.dataUrl.startsWith('data:')) {
+    const blob = dataUrlToBlob(doc.dataUrl);
+    activeBlobUrl = blob ? URL.createObjectURL(blob) : doc.dataUrl;
   } else {
-    activeBlobUrl = doc.dataUrl;
+    activeBlobUrl = fileUrl;
   }
 
   // Configurar apertura en nueva pestaña sin forzar descarga
@@ -313,7 +315,7 @@ export function abrirVisorDocumento(doc) {
         <div class="flex-1 w-full h-full flex items-center justify-center overflow-auto p-4">
           <img 
             id="doc-visor-img-target"
-            src="${doc.dataUrl}" 
+            src="${fileUrl}" 
             alt="${doc.nombre}" 
             class="max-w-full max-h-full object-contain shadow-lg rounded-lg border border-slate-300/40 bg-white transition-transform duration-150"
             style="transform: scale(1) rotate(0deg);"
@@ -557,7 +559,11 @@ export function abrirVisorEnlaceGuia(guia) {
     badgeTipoEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30';
   }
 
-  nombreEl.textContent = `Documento Guía / Plantilla Base - Numeral ${guia.numeral || ''}`;
+  if (guia.titulo && guia.titulo.trim().length > 0) {
+    nombreEl.textContent = `${guia.titulo.trim()} - Numeral ${guia.numeral || ''}`;
+  } else {
+    nombreEl.textContent = `Documento Guía / Plantilla Base - Numeral ${guia.numeral || ''}`;
+  }
   nombreEl.title = urlOriginal;
 
   if (guia.numeral) {
@@ -656,3 +662,5 @@ win.cerrarVisorDocumento = cerrarVisorDocumento;
 win.previsualizarEvidencia = previsualizarEvidencia;
 win.abrirVisorEnlaceGuia = abrirVisorEnlaceGuia;
 win.formatearUrlGooglePreview = formatearUrlGooglePreview;
+
+

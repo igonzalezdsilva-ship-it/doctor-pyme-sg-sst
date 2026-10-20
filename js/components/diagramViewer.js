@@ -16,7 +16,7 @@ function ensureModalExists() {
   if (document.getElementById('modal-visor-diagrama')) return;
 
   const modalHtml = `
-    <div id="modal-visor-diagrama" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md hidden items-center justify-center z-50 p-2 sm:p-4 transition-all">
+    <div id="modal-visor-diagrama" class="fixed inset-0 bg-slate-950/90 hidden items-center justify-center z-50 p-2 sm:p-4 transition-all">
       <div class="bg-white rounded-2xl max-w-5xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-700/30 overflow-hidden transform transition-all animate-fadeIn">
         
         <!-- Cabecera Superior del Visor -->
@@ -263,19 +263,20 @@ export async function abrirVisorDiagrama(companyId = null, tipo = 'mapa_procesos
     loader.classList.add('hidden');
     loader.classList.remove('flex');
 
-    if (diagrama && diagrama.dataUrl) {
-      // Imagen personalizada cargada en IndexedDB
-      imgPreview.src = diagrama.dataUrl;
+    if (diagrama && (diagrama.dataUrl || diagrama.url)) {
+      // Imagen personalizada cargada o diagrama oficial
+      const srcUrl = diagrama.dataUrl || diagrama.url;
+      imgPreview.src = srcUrl;
       imgPreview.classList.remove('hidden');
       emptyView.classList.add('hidden');
       alertaDemo.classList.add('hidden');
 
-      metaNombre.innerText = diagrama.nombre || (esMapa ? 'mapa_procesos.png' : 'organigrama.png');
-      metaTamanio.innerText = formatBytes(diagrama.tamanio);
-      metaFecha.innerText = diagrama.fechaCargue ? new Date(diagrama.fechaCargue).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Reciente';
+      metaNombre.innerText = diagrama.nombre || (esMapa ? 'mapa-procesos-ladrillos-ochoa.png' : 'organigrama-ladrillos-ochoa.svg');
+      metaTamanio.innerText = diagrama.esOficial ? '✓ Diagrama Oficial Aprobado' : formatBytes(diagrama.tamanio);
+      metaFecha.innerText = diagrama.fechaCargue ? new Date(diagrama.fechaCargue).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Oficial';
 
-      btnDescargar.href = diagrama.dataUrl;
-      btnDescargar.download = `${empresa ? empresa.razonSocial.replace(/\\s+/g, '_') : 'empresa'}_${tipo}.${diagrama.tipo?.split('/')[1] || 'png'}`;
+      btnDescargar.href = srcUrl;
+      btnDescargar.download = `${empresa ? empresa.razonSocial.replace(/\\s+/g, '_') : 'empresa'}_${tipo}.${diagrama.tipo?.split('/')[1] || (srcUrl.endsWith('.svg') ? 'svg' : 'png')}`;
       btnDescargar.classList.remove('pointer-events-none', 'opacity-50');
     } else {
       // Si es empresa demo o fallback, mostrar el SVG de ejemplo o mapa oficial
@@ -283,20 +284,29 @@ export async function abrirVisorDiagrama(companyId = null, tipo = 'mapa_procesos
       const isLadrillos = cId === 'emp-004' || cId === 'emp-1790438946268' || empresa?.razonSocial?.toLowerCase().includes('ladrillos ochoa');
       const sampleUrl = esMapa 
         ? (isLadrillos ? './assets/mapa-procesos-ladrillos-ochoa.png' : './assets/sample-mapa-procesos.svg') 
-        : './assets/sample-organigrama.svg';
+        : (isLadrillos ? '/uploads/20261010_084143_diag_emp-1790438946268_organigrama.png' : './assets/sample-organigrama.svg');
 
       if (esDemo) {
         imgPreview.src = sampleUrl;
         imgPreview.classList.remove('hidden');
         emptyView.classList.add('hidden');
-        alertaDemo.classList.remove('hidden');
+        
+        if (isLadrillos) {
+          alertaDemo.classList.add('hidden');
+        } else {
+          alertaDemo.classList.remove('hidden');
+        }
 
-        metaNombre.innerText = esMapa ? 'sample-mapa-procesos.svg' : 'sample-organigrama.svg';
-        metaTamanio.innerText = 'Diagrama Modelo Vectorial';
-        metaFecha.innerText = 'Plantilla de referencia precargada';
+        metaNombre.innerText = isLadrillos
+          ? (esMapa ? 'mapa-procesos-ladrillos-ochoa.png' : 'Captura de pantalla 2026-10-10 a las 8.41.21 a. m..png')
+          : (esMapa ? 'sample-mapa-procesos.svg' : 'sample-organigrama.svg');
+        metaTamanio.innerText = isLadrillos ? '✓ Diagrama Oficial Aprobado' : 'Diagrama Modelo Vectorial';
+        metaFecha.innerText = isLadrillos ? 'Oficial - Ladrillos Ochoa Ltda' : 'Plantilla de referencia precargada';
 
         btnDescargar.href = sampleUrl;
-        btnDescargar.download = `${tipo}_referencia.svg`;
+        btnDescargar.download = isLadrillos
+          ? (esMapa ? 'mapa_procesos_ladrillos_ochoa.png' : 'organigrama_ladrillos_ochoa.png')
+          : `${tipo}_referencia.svg`;
         btnDescargar.classList.remove('pointer-events-none', 'opacity-50');
       } else {
         // Empresa sin diagrama cargado

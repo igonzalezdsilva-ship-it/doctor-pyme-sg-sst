@@ -916,9 +916,19 @@ export const EMPRESAS_DEMO = [
     telefono: "3144001787",
     email: "sstmineroambientall8a@gmail.com",
     estandaresAplicables: 60,
+    representanteLegal: "Bernardo Ochoa Gómez - C.C. 19.245.890 de Bogotá",
+    logoUrl: "./assets/logo.jpg",
+    tieneLogo: true,
     tieneOrganigrama: true,
     tieneMapaProcesos: true,
-    createdAt: "2026-09-26T16:09:06.268Z"
+    createdAt: "2026-09-26T16:09:06.268Z",
+    acceso: {
+      usuario: "sstmineroambientall8a@gmail.com",
+      password: "Ochoa2026*",
+      estado: "ACTIVO",
+      rol: "Administrador Empresa",
+      ultimoIngreso: "2026-10-14T15:00:00Z"
+    }
   }
 ];
 
@@ -1141,5 +1151,754 @@ export const ACCIDENTES_DEMO = [
     fechaCompromiso: "2026-03-12",
     estado: "En Ejecución",
     radicadoFurat: "N/A (Incidente sin lesión)"
+  }
+];
+
+// =============================================================================
+// CATÁLOGO DE TRABAJADORES - LADRILLOS OCHOA S.A.S. (DEMO)
+// =============================================================================
+export const TRABAJADORES_DEMO = [
+  {
+    id: "trab-001",
+    companyId: "emp-1790438946268",
+    cedula: "70.123.456",
+    nombre: "Carlos Mario Ochoa",
+    cargo: "Gerente General",
+    area: "Dirección General",
+    correo: "gerencia@ladrillosochoa.com.co",
+    telefono: "3104567890",
+    fechaIngreso: "2015-01-10",
+    estado: "Activo"
+  },
+  {
+    id: "trab-002",
+    companyId: "emp-1790438946268",
+    cedula: "1.036.945.120",
+    nombre: "Andrés Felipe Restrepo",
+    cargo: "Coordinador SST",
+    area: "Seguridad y Salud en el Trabajo",
+    correo: "sst@ladrillosochoa.com.co",
+    telefono: "3127894561",
+    fechaIngreso: "2022-03-01",
+    estado: "Activo"
+  },
+  {
+    id: "trab-003",
+    companyId: "emp-1790438946268",
+    cedula: "1.144.523.890",
+    nombre: "Julián Esteban Ospina",
+    cargo: "Operador de Horno Túnel",
+    area: "Producción - Cocción",
+    correo: "jospina@ladrillosochoa.com.co",
+    telefono: "3156543210",
+    fechaIngreso: "2020-08-15",
+    estado: "Activo"
+  },
+  {
+    id: "trab-004",
+    companyId: "emp-1790438946268",
+    cedula: "71.345.981",
+    nombre: "Héctor Fabio Ramírez",
+    cargo: "Mecánico de Mantenimiento",
+    area: "Mantenimiento Industrial",
+    correo: "hramirez@ladrillosochoa.com.co",
+    telefono: "3001234567",
+    fechaIngreso: "2018-11-20",
+    estado: "Activo"
+  },
+  {
+    id: "trab-005",
+    companyId: "emp-1790438946268",
+    cedula: "43.876.543",
+    nombre: "Martha Lucía Giraldo",
+    cargo: "Asistente Administrativa",
+    area: "Administración y Talento Humano",
+    correo: "mgiraldo@ladrillosochoa.com.co",
+    telefono: "3119876543",
+    fechaIngreso: "2021-04-05",
+    estado: "Activo"
+  },
+  {
+    id: "trab-006",
+    companyId: "emp-1790438946268",
+    cedula: "98.654.321",
+    nombre: "Rodrigo Zapata",
+    cargo: "Operador de Montacargas",
+    area: "Logística y Patios de Acopio",
+    correo: "rzapata@ladrillosochoa.com.co",
+    telefono: "3184321098",
+    fechaIngreso: "2019-06-12",
+    estado: "Activo"
+  },
+  {
+    id: "trab-007",
+    companyId: "emp-1790438946268",
+    cedula: "1.017.234.567",
+    nombre: "Jorge Iván Cárdenas",
+    cargo: "Operador de Retroexcavadora",
+    area: "Extracción de Arcilla (Cantera)",
+    correo: "jcardenas@ladrillosochoa.com.co",
+    telefono: "3145678901",
+    fechaIngreso: "2017-09-01",
+    estado: "Activo"
+  },
+  {
+    id: "trab-008",
+    companyId: "emp-1790438946268",
+    cedula: "70.987.654",
+    nombre: "Wilson Albeiro Henao",
+    cargo: "Operario de Molienda y Tolvas",
+    area: "Preparación de Pastas Cerámicas",
+    correo: "whenao@ladrillosochoa.com.co",
+    telefono: "3167890123",
+    fechaIngreso: "2021-02-10",
+    estado: "Activo"
+  },
+  {
+    id: "trab-009",
+    companyId: "emp-1790438946268",
+    cedula: "1.020.345.678",
+    nombre: "Luis Fernando Duque",
+    cargo: "Operario de Prensas y Extrusión",
+    area: "Moldeo y Extrusión de Bloque",
+    correo: "lduque@ladrillosochoa.com.co",
+    telefono: "3132345678",
+    fechaIngreso: "2022-09-18",
+    estado: "Activo"
+  },
+  {
+    id: "trab-010",
+    companyId: "emp-1790438946268",
+    cedula: "71.876.543",
+    nombre: "Jhon Jairo Tamayo",
+    cargo: "Operario de Secaderos y Vagonetas",
+    area: "Secado y Enhorne",
+    correo: "jtamayo@ladrillosochoa.com.co",
+    telefono: "3178901234",
+    fechaIngreso: "2023-01-15",
+    estado: "Activo"
+  }
+];
+
+// =============================================================================
+// PLAN DE CAPACITACIONES Y EVALUACIONES (DEMO)
+// =============================================================================
+export const CAPACITACIONES_DEMO = [
+  {
+    id: "cap-001",
+    companyId: "emp-1790438946268",
+    tema: "Trabajo Seguro en Alturas y Pasarelas de Hornos (Res. 4272/2021)",
+    objetivo: "Prevenir caídas a distinto nivel en mantenimiento de cubiertas, chimeneas y pasarelas de molinos.",
+    facilitador: "Asesor Especialista ARL Positiva",
+    fecha: "2026-03-20",
+    duracion: "4 Horas",
+    cupos: 15,
+    estado: "Completada",
+    materialUrl: "https://docs.google.com/presentation/d/demo_alturas_sst/edit",
+    preguntas: [
+      {
+        pregunta: "¿A partir de qué altura sobre un nivel inferior se considera trabajo en alturas en Colombia según la Res. 4272 de 2021?",
+        opciones: ["1.50 metros", "2.00 metros", "1.80 metros", "2.50 metros"],
+        respuestaCorrecta: 1,
+        justificacion: "La Resolución 4272 de 2021 fija el trabajo en alturas a partir de 2.00 metros sobre el nivel inferior."
+      },
+      {
+        pregunta: "¿Qué componente es indispensable para la detención de caídas junto con el arnés de cuerpo entero?",
+        opciones: ["Cinturón de posicionamiento", "Eslinga con absorbedor de energía", "Cuerda de manila", "Guantes de carnaza"],
+        respuestaCorrecta: 1,
+        justificacion: "La eslinga con absorbedor de impacto disipa la energía cinética protegiendo la columna del operario."
+      },
+      {
+        pregunta: "¿Cada cuánto debe inspeccionarse formalmente un arnés por parte de una persona calificada?",
+        opciones: ["Cada 2 años", "Mínimo una vez al año", "Solo cuando se caiga", "Cada 5 años"],
+        respuestaCorrecta: 1,
+        justificacion: "La inspección técnica documentada por persona calificada debe realizarse mínimo una vez al año."
+      },
+      {
+        pregunta: "¿Qué documento debe diligenciarse y autorizarse antes de iniciar cualquier labor en altura?",
+        opciones: ["Factura de compra", "Permiso de Trabajo en Alturas y lista de chequeo", "Planilla de nómina", "Carta de recomendación"],
+        respuestaCorrecta: 1,
+        justificacion: "El Permiso de Trabajo en Alturas (PTA) es mandatorio antes de iniciar actividades según la norma."
+      },
+      {
+        pregunta: "¿Cuál es la resistencia mínima que debe certificar un punto de anclaje estructural?",
+        opciones: ["1.000 lb (4.4 kN)", "5.000 lb (22.2 kN) por trabajador conectado", "2.500 lb (11.1 kN)", "500 lb"],
+        respuestaCorrecta: 1,
+        justificacion: "La norma exige resistencia estática certificada de mínimo 5.000 libras (22.2 kN) por persona conectada."
+      }
+    ],
+    evaluaciones: [
+      { trabajadorId: "trab-003", trabajadorNombre: "Julián Esteban Ospina", nota: 4.8, aprobada: true, fecha: "2026-03-20T16:30:00Z" },
+      { trabajadorId: "trab-004", trabajadorNombre: "Héctor Fabio Ramírez", nota: 5.0, aprobada: true, fecha: "2026-03-20T16:35:00Z" },
+      { trabajadorId: "trab-006", trabajadorNombre: "Rodrigo Zapata", nota: 4.2, aprobada: true, fecha: "2026-03-20T16:40:00Z" },
+      { trabajadorId: "trab-008", trabajadorNombre: "Wilson Albeiro Henao", nota: 4.6, aprobada: true, fecha: "2026-03-20T16:42:00Z" }
+    ]
+  },
+  {
+    id: "cap-002",
+    companyId: "emp-1790438946268",
+    tema: "Manejo Seguro de Montacargas y Maquinaria Pesada en Patios",
+    objetivo: "Estandarizar velocidades máximas (10 km/h), estibado seguro de bloques de arcilla e inspección preoperacional diaria.",
+    facilitador: "Instructor Especialista Maquinaria SENA",
+    fecha: "2026-04-25",
+    duracion: "3 Horas",
+    cupos: 12,
+    estado: "Programada",
+    materialUrl: "https://docs.google.com/presentation/d/demo_montacargas_sst/edit",
+    preguntas: [
+      {
+        pregunta: "¿A qué altura del suelo deben transportarse las horquillas con carga durante el desplazamiento?",
+        opciones: ["A 1 metro", "Entre 15 y 20 cm del suelo con mástil inclinado hacia atrás", "A la altura de los ojos del conductor", "Rozando el pavimento"],
+        respuestaCorrecta: 1,
+        justificacion: "Bajar el centro de gravedad transportando a 15-20 cm previene volcamientos del montacargas."
+      },
+      {
+        pregunta: "¿Qué se debe hacer si la carga transportada obstruye la visibilidad hacia adelante?",
+        opciones: ["Acelerar para terminar rápido", "Conducir en reversa mirando hacia la trayectoria", "Ponerse de pie para ver por encima", "Tocar la bocina constantemente sin detenerse"],
+        respuestaCorrecta: 1,
+        justificacion: "Cuando la carga bloquea la visual frontal es obligatorio desplazarse en reversa con máxima precaución."
+      },
+      {
+        pregunta: "¿Cuál es la velocidad máxima permitida dentro de los patios de Ladrillos Ochoa?",
+        opciones: ["30 km/h", "10 km/h", "20 km/h", "15 km/h"],
+        respuestaCorrecta: 1,
+        justificacion: "El estándar interno de la empresa y la matriz preventiva estipula 10 km/h en patios con peatones."
+      },
+      {
+        pregunta: "¿Qué elemento es de uso obligatorio para el operador incluso dentro de la cabina protegida?",
+        opciones: ["Cinturón de seguridad", "Guantes de carnaza", "Botas de caucho", "Casco de bombero"],
+        respuestaCorrecta: 0,
+        justificacion: "El cinturón de seguridad evita que el operador sea expulsado y aplastado ante un eventual volcamiento lateral."
+      },
+      {
+        pregunta: "¿Antes de qué momento se debe realizar el formato de inspección preoperacional?",
+        opciones: ["Al finalizar el turno semanal", "Antes de iniciar la operación en cada turno de trabajo", "Solo cuando se encienda una alarma", "Una vez al mes"],
+        respuestaCorrecta: 1,
+        justificacion: "La inspección preoperacional es de obligatoriedad diaria previa al inicio del primer ciclo de trabajo."
+      }
+    ],
+    evaluaciones: []
+  },
+  {
+    id: "cap-003",
+    companyId: "emp-1790438946268",
+    tema: "Prevención del Estrés Térmico y Golpe de Calor en Hornos",
+    objetivo: "Identificar signos tempranos de agotamiento térmico, protocolos de rehidratación con sales minerales y pausas programadas.",
+    facilitador: "Dra. Carolina Mejía (Médico Especialista SST)",
+    fecha: "2026-02-12",
+    duracion: "2 Horas",
+    cupos: 20,
+    estado: "Completada",
+    materialUrl: "https://docs.google.com/presentation/d/demo_termico_sst/edit",
+    preguntas: [
+      {
+        pregunta: "¿Cuál es el síntoma de mayor alarma que indica un posible Golpe de Calor inminente?",
+        opciones: ["Sed ligera", "Piel caliente y seca sin sudoración, confusión mental y mareo", "Estornudos", "Sudoración fría en las manos"],
+        respuestaCorrecta: 1,
+        justificacion: "La detención brusca de la sudoración acompañada de hipertermia (>40°C) y confusión indica falla del sistema termorregulador."
+      },
+      {
+        pregunta: "¿Qué frecuencia de consumo de agua o electrolitos se recomienda para operarios de hornos continuos?",
+        opciones: ["Cada 4 horas", "Vasos regulares cada 15 a 20 minutos de exposición", "Solo almorzando", "Una vez por turno"],
+        respuestaCorrecta: 1,
+        justificacion: "La ingesta frecuente en pequeñas cantidades (150-200 ml cada 20 min) mantiene el volumen plasmático sin causar malestar."
+      },
+      {
+        pregunta: "¿Qué acción de primeros auxilios inmediata se debe brindar a un operario con estrés térmico severo?",
+        opciones: ["Darle café caliente", "Trasladar a zona sombreada y ventilada, aflojar ropa y aplicar compresas frescas", "Obligarlo a seguir laborando sentado", "Suministrar analgesicos fuertes"],
+        respuestaCorrecta: 1,
+        justificacion: "Retirar de la fuente calórica y enfriar el cuerpo gradualmente con ventilación y compresas húmedas."
+      },
+      {
+        pregunta: "¿Qué tipo de prendas son las más recomendadas para ambientes con radiación térmica cerámico?",
+        opciones: ["Prendas sintéticas de nylon", "Ropa de algodón 100% transpirable o con fibras reflectivas", "Chaqueta impermeable de plástico", "Ropa oscura ajustada"],
+        respuestaCorrecta: 1,
+        justificacion: "El algodón 100% permite la evaporación del sudor y no se adhiere a la piel ante cercanía al calor radiante."
+      },
+      {
+        pregunta: "¿Qué examen ocupacional periódico es clave para trabajadores de hornos?",
+        opciones: ["Audiometría solamente", "Evaluación cardiovascular, función renal y perfil osteomuscular", "Odontograma", "Prueba de alergia"],
+        respuestaCorrecta: 1,
+        justificacion: "La sobrecarga térmica impacta directamente el sistema cardiovascular y la función renal por deshidratación crónica."
+      }
+    ],
+    evaluaciones: [
+      { trabajadorId: "trab-003", trabajadorNombre: "Julián Esteban Ospina", nota: 5.0, aprobada: true, fecha: "2026-02-12T15:00:00Z" },
+      { trabajadorId: "trab-004", trabajadorNombre: "Héctor Fabio Ramírez", nota: 4.8, aprobada: true, fecha: "2026-02-12T15:05:00Z" },
+      { trabajadorId: "trab-008", trabajadorNombre: "Wilson Albeiro Henao", nota: 4.6, aprobada: true, fecha: "2026-02-12T15:10:00Z" },
+      { trabajadorId: "trab-009", trabajadorNombre: "Luis Fernando Duque", nota: 4.4, aprobada: true, fecha: "2026-02-12T15:12:00Z" },
+      { trabajadorId: "trab-010", trabajadorNombre: "Jhon Jairo Tamayo", nota: 4.8, aprobada: true, fecha: "2026-02-12T15:15:00Z" }
+    ]
+  },
+  {
+    id: "cap-004",
+    companyId: "emp-1790438946268",
+    tema: "Inducción y Reinducción Integral SG-SST 2026",
+    objetivo: "Socializar políticas de seguridad, reglamento de higiene, matriz GTC 45, plan de emergencias y derechos del trabajador.",
+    facilitador: "Andrés Felipe Restrepo (Coordinador SST)",
+    fecha: "2026-01-16",
+    duracion: "4 Horas",
+    cupos: 48,
+    estado: "Completada",
+    materialUrl: "https://docs.google.com/presentation/d/demo_induccion_sst/edit",
+    preguntas: [
+      {
+        pregunta: "¿Cuál es el principal canal interno para reportar un acto o condición insegura en Ladrillos Ochoa?",
+        opciones: ["Guardar silencio", "Módulo digital del trabajador en Doctor Pyme o comunicación al Coordinador SST", "Esperar a fin de año", "Publicarlo en redes sociales"],
+        respuestaCorrecta: 1,
+        justificacion: "El reporte oportuno a través del aplicativo o directamente al comité SST previene la materialización de accidentes."
+      },
+      {
+        pregunta: "¿Qué política prohíbe el ingreso a la planta bajo efectos de sustancias psicoactivas?",
+        opciones: ["Política de Calidad", "Política de Prevención de Consumo de Alcohol, Tabaco y Sustancias Psicoactivas", "Política Comercial", "Manual de Compras"],
+        respuestaCorrecta: 1,
+        justificacion: "Es deber legal del trabajador abstenerse de laborar bajo influjo de alcohol o drogas por seguridad colectiva."
+      },
+      {
+        pregunta: "¿Quién es el encargado de suministrar los Elementos de Protección Personal (EPP)?",
+        opciones: ["El trabajador debe comprarlos", "El empleador sin ningún costo para el trabajador", "El sindicato", "La alcaldía"],
+        respuestaCorrecta: 1,
+        justificacion: "La legislación colombiana (Código Sustantivo del Trabajo y Dec. 1072) establece que el empleador debe suministrar los EPP sin costo."
+      },
+      {
+        pregunta: "¿Dentro de cuánto tiempo máximo debe reportarse un accidente de trabajo a la ARL?",
+        opciones: ["Dentro de los 2 días hábiles siguientes al suceso", "Dentro de 30 días", "Cuando el trabajador se recupere", "No es obligatorio"],
+        respuestaCorrecta: 0,
+        justificacion: "El Decreto 1072 y la Ley 1562 establecen 2 días hábiles para radicar el FURAT ante la ARL y EPS."
+      },
+      {
+        pregunta: "¿Qué significan las siglas COPASST?",
+        opciones: ["Comité de Paseos y Salidas Técnicas", "Comité Paritario de Seguridad y Salud en el Trabajo", "Consejo Patronal de Servicios y Terrenos", "Comisión de Pagos y Sueldos"],
+        respuestaCorrecta: 1,
+        justificacion: "COPASST es el Comité Paritario de Seguridad y Salud en el Trabajo regulado por la Res. 2013 de 1986."
+      }
+    ],
+    evaluaciones: [
+      { trabajadorId: "trab-001", trabajadorNombre: "Carlos Mario Ochoa", nota: 5.0, aprobada: true, fecha: "2026-01-16T17:00:00Z" },
+      { trabajadorId: "trab-002", trabajadorNombre: "Andrés Felipe Restrepo", nota: 5.0, aprobada: true, fecha: "2026-01-16T17:00:00Z" },
+      { trabajadorId: "trab-003", trabajadorNombre: "Julián Esteban Ospina", nota: 4.8, aprobada: true, fecha: "2026-01-16T17:05:00Z" },
+      { trabajadorId: "trab-004", trabajadorNombre: "Héctor Fabio Ramírez", nota: 5.0, aprobada: true, fecha: "2026-01-16T17:08:00Z" },
+      { trabajadorId: "trab-005", trabajadorNombre: "Martha Lucía Giraldo", nota: 5.0, aprobada: true, fecha: "2026-01-16T17:10:00Z" },
+      { trabajadorId: "trab-006", trabajadorNombre: "Rodrigo Zapata", nota: 4.5, aprobada: true, fecha: "2026-01-16T17:12:00Z" },
+      { trabajadorId: "trab-007", trabajadorNombre: "Jorge Iván Cárdenas", nota: 4.6, aprobada: true, fecha: "2026-01-16T17:15:00Z" },
+      { trabajadorId: "trab-008", trabajadorNombre: "Wilson Albeiro Henao", nota: 4.7, aprobada: true, fecha: "2026-01-16T17:18:00Z" },
+      { trabajadorId: "trab-009", trabajadorNombre: "Luis Fernando Duque", nota: 4.5, aprobada: true, fecha: "2026-01-16T17:20:00Z" },
+      { trabajadorId: "trab-010", trabajadorNombre: "Jhon Jairo Tamayo", nota: 4.8, aprobada: true, fecha: "2026-01-16T17:22:00Z" }
+    ]
+  }
+];
+
+// =============================================================================
+// CATÁLOGO DE MAQUINARIA Y EQUIPOS INDUSTRIALES (DEMO)
+// =============================================================================
+export const EQUIPOS_DEMO = [
+  {
+    id: "eq-001",
+    companyId: "emp-1790438946268",
+    codigo: "EQ-HORN-01",
+    nombre: "Horno Túnel Continuo de Cocción Cerámica",
+    marca: "TecnoCeramica Hoffman",
+    modelo: "Tunnel Kiln 85M",
+    serie: "TC-2018-854",
+    ubicacion: "Nave Central de Cocción",
+    criticidad: "Alta",
+    periodicidadMantenimiento: "Trimestral",
+    responsable: "Héctor Fabio Ramírez",
+    especificaciones: "Capacidad máx 1.200°C, 18 quemadores duales gas natural, longitud 85 metros, control PLC Siemens S7-1200.",
+    fechaAdquisicion: "2018-05-10",
+    proximoMantenimiento: "2026-04-18",
+    estado: "Operativo",
+    horasOperacion: 28450
+  },
+  {
+    id: "eq-002",
+    companyId: "emp-1790438946268",
+    codigo: "EQ-EXTR-02",
+    nombre: "Extrusora y Molino Desintegrador de Arcilla",
+    marca: "Bonnot Industrial",
+    modelo: "Super Pug Mill 14",
+    serie: "BN-2020-112",
+    ubicacion: "Nave de Preparación y Extrusión",
+    criticidad: "Alta",
+    periodicidadMantenimiento: "Bimestral",
+    responsable: "Héctor Fabio Ramírez",
+    especificaciones: "Motor 125 HP, cuchillas de acero antidesgaste Hardox 500, cámara de desaireación y bomba de vacío Gardner Denver.",
+    fechaAdquisicion: "2020-08-14",
+    proximoMantenimiento: "2026-05-10",
+    estado: "Operativo",
+    horasOperacion: 14200
+  },
+  {
+    id: "eq-003",
+    companyId: "emp-1790438946268",
+    codigo: "EQ-MONT-03",
+    nombre: "Montacargas Diésel 3.5 Toneladas",
+    marca: "Toyota",
+    modelo: "8FD35N",
+    serie: "8FD35N-45912",
+    placa: "MK-42",
+    ubicacion: "Patios de Acopio y Despachos",
+    criticidad: "Media",
+    periodicidadMantenimiento: "Mensual / 250 Horas",
+    responsable: "Rodrigo Zapata / Héctor Ramírez",
+    especificaciones: "Capacidad 3.500 kg, mástil triple 4.7m, luces LED faeneras, alarma de reversa, cinturón de seguridad con sensor.",
+    fechaAdquisicion: "2022-03-20",
+    proximoMantenimiento: "2026-04-25",
+    estado: "Operativo",
+    horasOperacion: 6840
+  },
+  {
+    id: "eq-004",
+    companyId: "emp-1790438946268",
+    codigo: "EQ-RETR-04",
+    nombre: "Retroexcavadora Oruga de Extracción de Arcilla",
+    marca: "Caterpillar",
+    modelo: "320D Series 2",
+    serie: "CAT-320D-782",
+    ubicacion: "Cantera y Pozo de Arcilla",
+    criticidad: "Alta",
+    periodicidadMantenimiento: "Bimestral / 500 Horas",
+    responsable: "Jorge Iván Cárdenas",
+    especificaciones: "Motor Cat C7.1 ACERT, balde 1.2 m³, cabina ROPS/FOPS certificada con aire acondicionado y sistema extintor.",
+    fechaAdquisicion: "2019-11-05",
+    proximoMantenimiento: "2026-06-02",
+    estado: "Operativo",
+    horasOperacion: 11950
+  },
+  {
+    id: "eq-005",
+    companyId: "emp-1790438946268",
+    codigo: "EQ-CINT-05",
+    nombre: "Cinta Transportadora Principal de Alimentación",
+    marca: "Martin Sprocket",
+    modelo: "Belt Conveyor 36x40M",
+    serie: "MS-2021-360",
+    ubicacion: "Tolva de Recepción a Molino",
+    criticidad: "Media",
+    periodicidadMantenimiento: "Mensual",
+    responsable: "Héctor Fabio Ramírez",
+    especificaciones: "Ancho banda 36 pulgadas, motoreductor Sew Eurodrive 25 HP, paradas de emergencia por piola en ambos costados.",
+    fechaAdquisicion: "2021-02-18",
+    proximoMantenimiento: "2026-04-30",
+    estado: "Operativo",
+    horasOperacion: 16500
+  }
+];
+
+// =============================================================================
+// CRONOGRAMA ANUAL DE MANTENIMIENTO (DIAGRAMA DE GANTT DEMO)
+// =============================================================================
+export const MANTENIMIENTOS_DEMO = [
+  {
+    id: "mant-001",
+    companyId: "emp-1790438946268",
+    equipoId: "eq-001",
+    equipoNombre: "Horno Túnel Hoffman",
+    actividad: "Limpieza profunda de toberas, inspección de refractarios y calibración de quemadores Q1",
+    fechaInicio: "2026-01-10",
+    fechaFin: "2026-01-14",
+    mes: "Enero",
+    tipo: "Preventivo",
+    estado: "Ejecutado",
+    responsable: "Héctor Fabio Ramírez",
+    costo: 3800000,
+    observaciones: "Quemadores 4 y 7 ajustados con óptima combustión de gas natural."
+  },
+  {
+    id: "mant-002",
+    companyId: "emp-1790438946268",
+    equipoId: "eq-003",
+    equipoNombre: "Montacargas Toyota MK-42",
+    actividad: "Cambio de aceite diésel 15W40, filtro de combustible, engrase de mástil y revisión de frenos",
+    fechaInicio: "2026-01-20",
+    fechaFin: "2026-01-21",
+    mes: "Enero",
+    tipo: "Preventivo",
+    estado: "Ejecutado",
+    responsable: "Taller Mecánico Especializado",
+    costo: 1250000,
+    observaciones: "Frenos con 80% de vida útil remanente."
+  },
+  {
+    id: "mant-003",
+    companyId: "emp-1790438946268",
+    equipoId: "eq-002",
+    equipoNombre: "Extrusora Bonnot",
+    actividad: "Cambio de cuchillas desgastadas del desintegrador y chequeo de nivel de aceite de reductor",
+    fechaInicio: "2026-02-05",
+    fechaFin: "2026-02-08",
+    mes: "Febrero",
+    tipo: "Preventivo",
+    estado: "Ejecutado",
+    responsable: "Héctor Fabio Ramírez",
+    costo: 4200000,
+    observaciones: "Instaladas 8 cuchillas nuevas en acero Hardox."
+  },
+  {
+    id: "mant-004",
+    companyId: "emp-1790438946268",
+    equipoId: "eq-005",
+    equipoNombre: "Cinta Transportadora 36\"",
+    actividad: "Alineación de poleas tensoras, lubricación de chumaceras y cambio de 4 rodillos de retorno",
+    fechaInicio: "2026-02-22",
+    fechaFin: "2026-02-23",
+    mes: "Febrero",
+    tipo: "Preventivo",
+    estado: "Ejecutado",
+    responsable: "Héctor Fabio Ramírez",
+    costo: 850000,
+    observaciones: "Banda centrada sin roces laterales."
+  },
+  {
+    id: "mant-005",
+    companyId: "emp-1790438946268",
+    equipoId: "eq-004",
+    equipoNombre: "Retroexcavadora Cat 320D",
+    actividad: "Servicio 500 Horas: filtros de aire primario/secundario, aceite hidráulico y engrase de pasadores",
+    fechaInicio: "2026-03-12",
+    fechaFin: "2026-03-15",
+    mes: "Marzo",
+    tipo: "Preventivo",
+    estado: "Ejecutado",
+    responsable: "Distribuidor Caterpillar",
+    costo: 5600000,
+    observaciones: "Presión hidráulica nominal verificada."
+  },
+  {
+    id: "mant-006",
+    companyId: "emp-1790438946268",
+    equipoId: "eq-001",
+    equipoNombre: "Horno Túnel Hoffman",
+    actividad: "Mantenimiento Preventivo Q2: calibración de termocuplas tipo S y revisión de tiro de chimenea",
+    fechaInicio: "2026-04-18",
+    fechaFin: "2026-04-22",
+    mes: "Abril",
+    tipo: "Preventivo",
+    estado: "En Proceso",
+    responsable: "Héctor Fabio Ramírez",
+    costo: 2900000,
+    observaciones: "En ejecución de pruebas térmicas."
+  },
+  {
+    id: "mant-007",
+    companyId: "emp-1790438946268",
+    equipoId: "eq-003",
+    equipoNombre: "Montacargas Toyota MK-42",
+    actividad: "Inspección de cadenas de elevación y medición de elongación con micrómetro",
+    fechaInicio: "2026-04-25",
+    fechaFin: "2026-04-26",
+    mes: "Abril",
+    tipo: "Preventivo",
+    estado: "Programado",
+    responsable: "Héctor Fabio Ramírez",
+    costo: 450000,
+    observaciones: "Programado según protocolo mensual."
+  },
+  {
+    id: "mant-008",
+    companyId: "emp-1790438946268",
+    equipoId: "eq-005",
+    equipoNombre: "Cinta Transportadora 36\"",
+    actividad: "Verificación de cables de parada de emergencia en ambos lados y enclavamientos de seguridad",
+    fechaInicio: "2026-04-30",
+    fechaFin: "2026-05-01",
+    mes: "Mayo",
+    tipo: "Preventivo",
+    estado: "Programado",
+    responsable: "Andrés Restrepo / Héctor Ramírez",
+    costo: 250000,
+    observaciones: "Prueba mandatoria de seguridad de máquinas."
+  },
+  {
+    id: "mant-009",
+    companyId: "emp-1790438946268",
+    equipoId: "eq-002",
+    equipoNombre: "Extrusora Bonnot",
+    actividad: "Cambio de retenedores de aceite de la caja reductora y prueba de vacío de la cámara",
+    fechaInicio: "2026-05-10",
+    fechaFin: "2026-05-13",
+    mes: "Mayo",
+    tipo: "Preventivo",
+    estado: "Programado",
+    responsable: "Héctor Fabio Ramírez",
+    costo: 3100000,
+    observaciones: "Parada programada de 2 días hábiles."
+  },
+  {
+    id: "mant-010",
+    companyId: "emp-1790438946268",
+    equipoId: "eq-004",
+    equipoNombre: "Retroexcavadora Cat 320D",
+    actividad: "Inspección de zapatas de oruga, tensión de cadenas y comprobación de fuga en cilindro del brazo",
+    fechaInicio: "2026-06-02",
+    fechaFin: "2026-06-05",
+    mes: "Junio",
+    tipo: "Preventivo",
+    estado: "Programado",
+    responsable: "Jorge Iván Cárdenas",
+    costo: 1800000,
+    observaciones: "Trabajo en cantera."
+  },
+  {
+    id: "mant-011",
+    companyId: "emp-1790438946268",
+    equipoId: "eq-001",
+    equipoNombre: "Horno Túnel Hoffman",
+    actividad: "Mantenimiento Preventivo Q3: revisión estructural de vagonetas refractarias y ventiladores de tiro",
+    fechaInicio: "2026-07-15",
+    fechaFin: "2026-07-19",
+    mes: "Julio",
+    tipo: "Preventivo",
+    estado: "Programado",
+    responsable: "Héctor Fabio Ramírez",
+    costo: 4500000,
+    observaciones: "Programado en receso intersemestral."
+  },
+  {
+    id: "mant-012",
+    companyId: "emp-1790438946268",
+    equipoId: "eq-001",
+    equipoNombre: "Horno Túnel Hoffman",
+    actividad: "Mantenimiento Preventivo Q4: prueba de hermeticidad de válvulas de gas y certificación anual",
+    fechaInicio: "2026-10-20",
+    fechaFin: "2026-10-24",
+    mes: "Octubre",
+    tipo: "Preventivo",
+    estado: "Programado",
+    responsable: "Firma Certificadora de Gas",
+    costo: 6200000,
+    observaciones: "Auditoría obligatoria de seguridad en gas combustible."
+  }
+];
+
+// =============================================================================
+// REGISTRO DE FIRMAS ELECTRÓNICAS (LEY 527 DE 1999 DEMO)
+// =============================================================================
+export const FIRMAS_DEMO = [
+  {
+    id: "sig-demo-001",
+    companyId: "emp-1790438946268",
+    documentoId: "DOC-POL-SST-01",
+    documentoTitulo: "Política Integral de Seguridad y Salud en el Trabajo",
+    trabajadorId: "trab-001",
+    trabajadorNombre: "Carlos Mario Ochoa",
+    trabajadorCedula: "70.123.456",
+    trabajadorCargo: "Gerente General",
+    timestamp: "2026-01-15T09:30:00.000Z",
+    clientIp: "190.144.20.15",
+    hashSha256: "4a7d9b2e8f1c3a6e5b4d7c8a9e0f1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a",
+    firmaBase64: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='60'><path d='M10,40 Q40,10 80,35 T150,20' stroke='%231e1b4b' stroke-width='3' fill='none'/><text x='15' y='52' font-size='10' fill='%23666'>C. Ochoa</text></svg>",
+    tipoFirma: "DIGITAL_TRAZO"
+  },
+  {
+    id: "sig-demo-002",
+    companyId: "emp-1790438946268",
+    documentoId: "DOC-POL-SST-01",
+    documentoTitulo: "Política Integral de Seguridad y Salud en el Trabajo",
+    trabajadorId: "trab-002",
+    trabajadorNombre: "Andrés Felipe Restrepo",
+    trabajadorCedula: "1.036.945.120",
+    trabajadorCargo: "Coordinador SST",
+    timestamp: "2026-01-15T10:15:00.000Z",
+    clientIp: "190.144.20.15",
+    hashSha256: "8e2f1c4a5b6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f",
+    firmaBase64: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='60'><path d='M15,35 Q50,5 90,40 T145,25' stroke='%231e1b4b' stroke-width='3' fill='none'/><text x='20' y='52' font-size='10' fill='%23666'>A. Restrepo</text></svg>",
+    tipoFirma: "DIGITAL_TRAZO"
+  },
+  {
+    id: "sig-demo-003",
+    companyId: "emp-1790438946268",
+    documentoId: "DOC-POL-SST-01",
+    documentoTitulo: "Política Integral de Seguridad y Salud en el Trabajo",
+    trabajadorId: "trab-003",
+    trabajadorNombre: "Julián Esteban Ospina",
+    trabajadorCedula: "1.144.523.890",
+    trabajadorCargo: "Operador de Horno Túnel",
+    timestamp: "2026-01-16T17:30:00.000Z",
+    clientIp: "190.144.20.15",
+    hashSha256: "3b5d7f9a1c2e4f6a8b0d2c4e6f8a0b2c4e6f8a0b2c4e6f8a0b2c4e6f8a0b2c4e",
+    firmaBase64: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='60'><path d='M10,45 Q60,15 100,30 T150,35' stroke='%231e1b4b' stroke-width='3' fill='none'/><text x='25' y='52' font-size='10' fill='%23666'>J. Ospina</text></svg>",
+    tipoFirma: "DIGITAL_TRAZO"
+  },
+  {
+    id: "sig-demo-004",
+    companyId: "emp-1790438946268",
+    documentoId: "DOC-POL-ALC-02",
+    documentoTitulo: "Política de Prevención de Alcohol, Tabaco y Sustancias Psicoactivas",
+    trabajadorId: "trab-006",
+    trabajadorNombre: "Rodrigo Zapata",
+    trabajadorCedula: "98.654.321",
+    trabajadorCargo: "Operador de Montacargas",
+    timestamp: "2026-01-20T11:00:00.000Z",
+    clientIp: "190.144.20.15",
+    hashSha256: "9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e",
+    firmaBase64: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='60'><path d='M12,30 Q45,10 95,45 T145,15' stroke='%231e1b4b' stroke-width='3' fill='none'/><text x='30' y='52' font-size='10' fill='%23666'>R. Zapata</text></svg>",
+    tipoFirma: "DIGITAL_TRAZO"
+  }
+];
+
+// =============================================================================
+// REPORTES DE CONDICIONES INSEGURAS Y PELIGROS (DEMO)
+// =============================================================================
+export const REPORTES_PELIGRO_DEMO = [
+  {
+    id: "pel-001",
+    companyId: "emp-1790438946268",
+    trabajadorId: "trab-003",
+    trabajadorNombre: "Julián Esteban Ospina",
+    trabajadorCargo: "Operador de Horno Túnel",
+    area: "Zona de Secaderos Túnel",
+    descripcion: "Se detectó fuga de aire comprimido en el racor de la compuerta neumática del secadero túnel N° 2, genera silbido fuerte e inestabilidad en la apertura.",
+    nivelRiesgo: "Medio",
+    estado: "Atendido",
+    fechaReporte: "2026-03-25T10:15:00.000Z",
+    accionCorrectiva: "Mantenimiento reemplazó el racor y la manguera de poliuretano de 10mm.",
+    responsableCierre: "Héctor Fabio Ramírez"
+  },
+  {
+    id: "pel-002",
+    companyId: "emp-1790438946268",
+    trabajadorId: "trab-006",
+    trabajadorNombre: "Rodrigo Zapata",
+    trabajadorCargo: "Operador de Montacargas",
+    area: "Patios de Acopio - Zona Sur",
+    descripcion: "Bache profundo con acumulación de lodo en la ruta de tránsito del montacargas frente a la estibadora, riesgo de pérdida de estabilidad con carga elevada.",
+    nivelRiesgo: "Alto",
+    estado: "En Proceso",
+    fechaReporte: "2026-04-02T08:30:00.000Z",
+    accionCorrectiva: "Se delimitó el paso con conos y se programó recebo y compactación con la retroexcavadora.",
+    responsableCierre: "Andrés Felipe Restrepo"
+  }
+];
+
+// =============================================================================
+// REPORTES PREOPERACIONALES DE EQUIPOS (DEMO)
+// =============================================================================
+export const REPORTES_PREOPERACIONAL_DEMO = [
+  {
+    id: "preop-001",
+    companyId: "emp-1790438946268",
+    equipoId: "eq-003",
+    equipoNombre: "Montacargas Toyota MK-42",
+    trabajadorId: "trab-006",
+    trabajadorNombre: "Rodrigo Zapata",
+    fecha: "2026-04-10",
+    turno: "Turno Mañana (06:00 - 14:00)",
+    horasHorometro: 6840,
+    estadoOperativo: "Apto para Operar",
+    items: {
+      frenos: "Bueno",
+      direccion: "Bueno",
+      luces: "Bueno",
+      alarmaReversa: "Bueno",
+      cinturonSeguridad: "Bueno",
+      manguerasHidraulicas: "Bueno",
+      mastilYHorquillas: "Bueno",
+      extintorVigente: "Bueno",
+      nivelAceite: "Bueno",
+      llantas: "Bueno"
+    },
+    observaciones: "Equipo en condiciones operativas seguras. Presión de aire normal.",
+    firmaConfirmada: true
   }
 ];

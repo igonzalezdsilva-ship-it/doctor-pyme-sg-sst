@@ -43,14 +43,20 @@ function generarCodigoDocumental(numeral, criterio = '', ciclo = 'PLANEAR') {
 /**
  * Detecta el tipo de soporte documental
  */
-function detectarTipoSoporte(url, tieneAdjunto = false) {
+function detectarTipoSoporte(url, tieneAdjunto = false, esDiagrama = false) {
+  if (esDiagrama) {
+    return { tipo: 'DIAGRAMA', label: 'Diagrama Oficial', icon: '🖼️', color: 'teal', bg: 'bg-teal-50 text-teal-700 border-teal-200' };
+  }
   if (tieneAdjunto && !url) {
-    return { tipo: 'ADJUNTO', label: 'Archivo Adjunto', icon: '📕', color: 'rose', bg: 'bg-rose-50 text-rose-700 border-rose-200' };
+    return { tipo: 'ADJUNTO', label: 'Archivo Adjunto', icon: '📎', color: 'indigo', bg: 'bg-indigo-50 text-indigo-700 border-indigo-200' };
   }
   if (!url) {
     return { tipo: 'SIN_DOCUMENTO', label: 'Sin Documento', icon: '⚪', color: 'slate', bg: 'bg-slate-100 text-slate-500 border-slate-200' };
   }
   const u = url.toLowerCase();
+  if (u.includes('organigrama') || u.includes('mapa-procesos') || u.includes('mapa_procesos')) {
+    return { tipo: 'DIAGRAMA', label: 'Diagrama Oficial', icon: '🖼️', color: 'teal', bg: 'bg-teal-50 text-teal-700 border-teal-200' };
+  }
   if (u.includes('docs.google.com/document')) {
     return { tipo: 'GDOCS', label: 'Google Docs', icon: '📄', color: 'blue', bg: 'bg-blue-50 text-blue-700 border-blue-200' };
   }
@@ -93,24 +99,90 @@ async function recopilarDocumentos(empresa, anio) {
   const estandares = obtenerEstandaresPorGrupo(grupo);
   const evaluaciones = store.getEvaluacion(empresa.id, anio) || {};
 
-  // Cargar evidencias físicas desde IndexedDB
+  // Cargar evidencias físicas y diagramas desde IndexedDB
   let evidenciasAdjuntas = [];
+  let diagMapa = null;
+  let diagOrg = null;
   try {
     evidenciasAdjuntas = await evidenceDB.obtenerTodasEvidencias(empresa.id);
   } catch (e) {
     console.warn("No se pudieron cargar adjuntos de IndexedDB:", e);
   }
+  try {
+    diagMapa = await evidenceDB.obtenerDiagramaEmpresa(empresa.id, 'mapa_procesos');
+    diagOrg = await evidenceDB.obtenerDiagramaEmpresa(empresa.id, 'organigrama');
+  } catch (e) {
+    console.warn("No se pudieron cargar diagramas de IndexedDB:", e);
+  }
+
+  const esLadrillos = (empresa.id === 'emp-004' || empresa.id === 'emp-1790438946268' || (empresa.razonSocial && empresa.razonSocial.toLowerCase().includes('ladrillos ochoa')));
+  const tieneOrganigrama = empresa.tieneOrganigrama || !!empresa.organigramaUrl || !!diagOrg || esLadrillos;
+  const tieneMapa = empresa.tieneMapaProcesos || !!empresa.mapaProcesosUrl || !!diagMapa || esLadrillos;
+
+  const extraDocumentosFuentes = [];
 
   const items = estandares.map(est => {
     const resp = evaluaciones[est.numeral] || {};
-    const linkGuia = (resp.linkGuia || '').trim();
+    let fuentesValidas = [];
+    if (Array.isArray(resp.fuentes)) {
+      fuentesValidas = resp.fuentes.filter(f => f && (f.url || '').trim());
+    }
+
+    const primeraFuente = fuentesValidas.length > 0 ? fuentesValidas[0] : null;
+    const linkGuia = (primeraFuente ? primeraFuente.url : (resp.linkGuia || '')).trim();
     const adjuntosNumeral = evidenciasAdjuntas.filter(a => a.numeral === est.numeral);
-    const tieneDocumento = !!linkGuia || adjuntosNumeral.length > 0;
-    const soporte = detectarTipoSoporte(linkGuia, adjuntosNumeral.length > 0);
+
+    // Si hay fuentes adicionales, indexarlas en la biblioteca documental
+    if (fuentesValidas.length > 1) {
+      fuentesValidas.slice(1).forEach((fuenteExtra, extraIdx) => {
+        const extraSoporte = detectarTipoSoporte(fuenteExtra.url, false, false);
+        extraDocumentosFuentes.push({
+          numeral: est.numeral,
+          ciclo: est.ciclo,
+          estandar: est.estandar,
+          criterio: est.criterio,
+          modoVerificacion: est.modoVerificacion,
+          peso: est.pesoEfectivo,
+          codigoDocumental: `${generarCodigoDocumental(est.numeral, resp.justificacion || est.criterio, est.ciclo)}-F${extraIdx + 2}`,
+          tituloDocumento: fuenteExtra.titulo || `${est.criterio} (Fuente ${extraIdx + 2})`,
+          linkGuia: fuenteExtra.url,
+          esDiagrama: false,
+          tipoDiagrama: null,
+          companyId: empresa.id,
+          adjuntos: [],
+          tieneDocumento: true,
+          soporte: extraSoporte,
+          estadoEvaluacion: resp.estado || 'SIN_EVALUAR',
+          updatedAt: resp.updatedAt || null
+        });
+      });
+    }
+
+    // Soporte oficial de organigrama o mapa si aplica a este estándar
+    const aplicaOrg = (est.numeral.startsWith('1.1.2') || est.numeral.startsWith('1.1.1')) && tieneOrganigrama;
+    const aplicaMapa = (est.numeral === '2.1.1' || est.numeral === '2.2.1' || est.numeral === '4.1.1') && tieneMapa;
+
+    let soporteUrl = linkGuia;
+    let esDiag = false;
+    let diagTipo = null;
+    if (!soporteUrl) {
+      if (aplicaOrg) {
+        soporteUrl = diagOrg?.dataUrl || empresa.organigramaUrl || './assets/organigrama-ladrillos-ochoa.svg';
+        esDiag = true;
+        diagTipo = 'organigrama';
+      } else if (aplicaMapa) {
+        soporteUrl = diagMapa?.dataUrl || empresa.mapaProcesosUrl || './assets/mapa-procesos-ladrillos-ochoa.png';
+        esDiag = true;
+        diagTipo = 'mapa_procesos';
+      }
+    }
+
+    const tieneDocumento = !!soporteUrl || adjuntosNumeral.length > 0;
+    const soporte = detectarTipoSoporte(soporteUrl, adjuntosNumeral.length > 0, esDiag);
     const codigo = generarCodigoDocumental(est.numeral, resp.justificacion || est.criterio, est.ciclo);
 
     // Título legible del documento
-    let tituloDocumento = resp.justificacion && resp.justificacion.length > 10 ? resp.justificacion : est.criterio;
+    let tituloDocumento = (primeraFuente && primeraFuente.titulo) ? primeraFuente.titulo : (resp.justificacion && resp.justificacion.length > 10 ? resp.justificacion : est.criterio);
     if (est.numeral === '3.1.7.1') {
       tituloDocumento = "Política de prevención y consumo de tabaco, alcohol y sustancias psicoactivas, firmada por el empleador.";
     } else if (est.numeral === '3.1.7.2') {
@@ -128,16 +200,65 @@ async function recopilarDocumentos(empresa, anio) {
       peso: est.pesoEfectivo,
       codigoDocumental: codigo,
       tituloDocumento,
-      linkGuia,
+      linkGuia: soporteUrl,
+      esDiagrama: esDiag,
+      tipoDiagrama: diagTipo,
+      companyId: empresa.id,
       adjuntos: adjuntosNumeral,
       tieneDocumento,
       soporte,
-      estadoEvaluacion: resp.estado || 'SIN_EVALUAR',
+      estadoEvaluacion: resp.estado || (esDiag ? 'CUMPLE' : 'SIN_EVALUAR'),
       updatedAt: resp.updatedAt || null
     };
   });
 
-  return items;
+  // Agregar registros oficiales dedicados para Organigrama y Mapa de Procesos en el listado maestro
+  const diagramasMaestros = [];
+  if (tieneOrganigrama) {
+    diagramasMaestros.push({
+      numeral: "1.1.2",
+      ciclo: "PLANEAR",
+      estandar: "Responsabilidades en el SG-SST (Estructura Organizacional)",
+      criterio: "Organigrama institucional que define la cadena de mando, roles y responsabilidades en SST (Decreto 1072 Art. 2.2.4.6.8).",
+      modoVerificacion: "Constatar organigrama oficial aprobado de la empresa con asignación jerárquica de SST.",
+      peso: 0.5,
+      codigoDocumental: "DOC-P-ORG",
+      tituloDocumento: "Organigrama Institucional y Estructura Organizacional SST Oficial",
+      linkGuia: diagOrg?.dataUrl || empresa.organigramaUrl || './assets/organigrama-ladrillos-ochoa.svg',
+      adjuntos: [],
+      tieneDocumento: true,
+      esDiagrama: true,
+      tipoDiagrama: 'organigrama',
+      companyId: empresa.id,
+      soporte: { tipo: 'DIAGRAMA', label: 'Organigrama Oficial', icon: '👥', color: 'purple', bg: 'bg-purple-50 text-purple-700 border-purple-200' },
+      estadoEvaluacion: 'CUMPLE',
+      updatedAt: diagOrg?.fechaCargue || null
+    });
+  }
+
+  if (tieneMapa) {
+    diagramasMaestros.push({
+      numeral: "2.1.1",
+      ciclo: "PLANEAR",
+      estandar: "Política y Enfoque por Procesos del SG-SST",
+      criterio: "Mapa general de procesos que estructura los procesos Estratégicos, Misionales y de Apoyo para la identificación de peligros (GTC 45 y Decreto 1072).",
+      modoVerificacion: "Verificar el Mapa de Procesos formalizado de la organización y su articulación con la matriz de riesgos.",
+      peso: 1.0,
+      codigoDocumental: "DOC-P-MAPA",
+      tituloDocumento: "Mapa General de Procesos Oficial de la Organización",
+      linkGuia: diagMapa?.dataUrl || empresa.mapaProcesosUrl || './assets/mapa-procesos-ladrillos-ochoa.png',
+      adjuntos: [],
+      tieneDocumento: true,
+      esDiagrama: true,
+      tipoDiagrama: 'mapa_procesos',
+      companyId: empresa.id,
+      soporte: { tipo: 'DIAGRAMA', label: 'Mapa de Procesos', icon: '🗺️', color: 'teal', bg: 'bg-teal-50 text-teal-700 border-teal-200' },
+      estadoEvaluacion: 'CUMPLE',
+      updatedAt: diagMapa?.fechaCargue || null
+    });
+  }
+
+  return [...diagramasMaestros, ...items, ...extraDocumentosFuentes];
 }
 
 /**
@@ -190,7 +311,8 @@ export async function renderDocumentation() {
   const countGDocs = todosDocs.filter(d => d.soporte.tipo === 'GDOCS').length;
   const countGSheets = todosDocs.filter(d => d.soporte.tipo === 'GSHEETS').length;
   const countGDrive = todosDocs.filter(d => d.soporte.tipo === 'GDRIVE').length;
-  const countAdjuntos = todosDocs.filter(d => d.soporte.tipo === 'ADJUNTO').length;
+  const countDiagramas = todosDocs.filter(d => d.soporte.tipo === 'DIAGRAMA' || d.esDiagrama).length;
+  const countAdjuntos = todosDocs.filter(d => d.soporte.tipo === 'ADJUNTO' || (d.adjuntos && d.adjuntos.length > 0)).length;
 
   // Filtrado reactivo de documentos
   let docsFiltrados = todosDocs.filter(item => {
@@ -206,7 +328,8 @@ export async function renderDocumentation() {
       if (state.filtroTipo === 'GDOCS' && item.soporte.tipo !== 'GDOCS') return false;
       if (state.filtroTipo === 'GSHEETS' && item.soporte.tipo !== 'GSHEETS') return false;
       if (state.filtroTipo === 'GDRIVE' && item.soporte.tipo !== 'GDRIVE') return false;
-      if (state.filtroTipo === 'ADJUNTO' && item.soporte.tipo !== 'ADJUNTO') return false;
+      if (state.filtroTipo === 'DIAGRAMA' && (item.soporte.tipo !== 'DIAGRAMA' && !item.esDiagrama)) return false;
+      if (state.filtroTipo === 'ADJUNTO' && item.soporte.tipo !== 'ADJUNTO' && (!item.adjuntos || item.adjuntos.length === 0)) return false;
     }
 
     // Búsqueda en texto
@@ -252,6 +375,14 @@ export async function renderDocumentation() {
 
           <!-- Acciones Rápidas de Cabecera -->
           <div class="flex flex-wrap items-center gap-2 sm:self-center">
+            <button 
+              onclick="window.abrirModalIA({ modoInicial: 'politica' })" 
+              class="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2 cursor-pointer active:scale-95"
+              title="Redactar Políticas o Procedimientos con Google Gemini"
+            >
+              <span>✨</span>
+              <span>Redactar con IA (Gemini)</span>
+            </button>
             <button 
               id="btn-exportar-listado-maestro" 
               onclick="window.docExportarListadoMaestro()" 
@@ -354,22 +485,26 @@ export async function renderDocumentation() {
           <span>Recursos asociados al sistema</span>
         </span>
         <div class="flex flex-wrap items-center gap-2">
-          <span class="px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 font-semibold flex items-center gap-1.5">
+          <button onclick="window.docFiltrarTipo('GDOCS')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 font-semibold flex items-center gap-1.5 cursor-pointer transition ${state.filtroTipo === 'GDOCS' ? 'ring-2 ring-blue-500' : ''}">
             <span>📄 Google Docs:</span>
             <strong class="font-extrabold">${countGDocs}</strong>
-          </span>
-          <span class="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 font-semibold flex items-center gap-1.5">
+          </button>
+          <button onclick="window.docFiltrarTipo('GSHEETS')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 font-semibold flex items-center gap-1.5 cursor-pointer transition ${state.filtroTipo === 'GSHEETS' ? 'ring-2 ring-emerald-500' : ''}">
             <span>📊 Google Sheets:</span>
             <strong class="font-extrabold">${countGSheets}</strong>
-          </span>
-          <span class="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 font-semibold flex items-center gap-1.5">
+          </button>
+          <button onclick="window.docFiltrarTipo('GDRIVE')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 font-semibold flex items-center gap-1.5 cursor-pointer transition ${state.filtroTipo === 'GDRIVE' ? 'ring-2 ring-amber-500' : ''}">
             <span>📁 Google Drive:</span>
             <strong class="font-extrabold">${countGDrive}</strong>
-          </span>
-          <span class="px-2.5 py-1 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 font-semibold flex items-center gap-1.5">
-            <span>📕 Adjuntos Locales:</span>
+          </button>
+          <button onclick="window.docFiltrarTipo('DIAGRAMA')" class="px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-800 font-semibold flex items-center gap-1.5 cursor-pointer transition ${state.filtroTipo === 'DIAGRAMA' ? 'ring-2 ring-teal-500' : ''}">
+            <span>🖼️ Diagramas Oficiales:</span>
+            <strong class="font-extrabold">${countDiagramas}</strong>
+          </button>
+          <button onclick="window.docFiltrarTipo('ADJUNTO')" class="px-2.5 py-1 rounded-lg ${countAdjuntos > 0 ? 'bg-indigo-50 border-indigo-200 text-indigo-800 hover:bg-indigo-100' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'} border font-semibold flex items-center gap-1.5 cursor-pointer transition ${state.filtroTipo === 'ADJUNTO' ? 'ring-2 ring-indigo-500' : ''}">
+            <span>📎 Adjuntos Locales:</span>
             <strong class="font-extrabold">${countAdjuntos}</strong>
-          </span>
+          </button>
         </div>
       </div>
 
@@ -452,7 +587,8 @@ export async function renderDocumentation() {
               <option value="GDOCS" ${state.filtroTipo === 'GDOCS' ? 'selected' : ''}>📄 Google Docs</option>
               <option value="GSHEETS" ${state.filtroTipo === 'GSHEETS' ? 'selected' : ''}>📊 Google Sheets</option>
               <option value="GDRIVE" ${state.filtroTipo === 'GDRIVE' ? 'selected' : ''}>📁 Google Drive</option>
-              <option value="ADJUNTO" ${state.filtroTipo === 'ADJUNTO' ? 'selected' : ''}>📕 Adjuntos Locales</option>
+              <option value="DIAGRAMA" ${state.filtroTipo === 'DIAGRAMA' ? 'selected' : ''}>🖼️ Diagramas Oficiales</option>
+              <option value="ADJUNTO" ${state.filtroTipo === 'ADJUNTO' ? 'selected' : ''}>📎 Adjuntos Locales</option>
             </select>
 
           </div>
@@ -574,7 +710,26 @@ export async function renderDocumentation() {
                       <!-- Acciones -->
                       <td class="py-3.5 px-4 text-right whitespace-nowrap">
                         <div class="flex items-center justify-end gap-1.5">
-                          ${doc.linkGuia ? `
+                          ${doc.esDiagrama ? `
+                            <!-- Botón Ver Diagrama -->
+                            <button 
+                              type="button"
+                              onclick="window.abrirVisorDiagrama('${doc.companyId}', '${doc.tipoDiagrama}')" 
+                              class="px-2.5 py-1 rounded-lg text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 transition text-xs font-bold flex items-center gap-1 shadow-2xs" 
+                              title="Ver Diagrama Oficial en Alta Resolución"
+                            >
+                              <svg class="w-3.5 h-3.5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                              <span>Ver</span>
+                            </button>
+                            <a 
+                              href="${doc.linkGuia}" 
+                              download="${doc.codigoDocumental}.${doc.tipoDiagrama === 'organigrama' ? 'svg' : 'png'}" 
+                              class="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-200 transition inline-flex items-center justify-center" 
+                              title="Descargar archivo del diagrama oficial"
+                            >
+                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            </a>
+                          ` : doc.linkGuia ? `
                             <!-- Botón Previsualizar -->
                             <button 
                               onclick="window.docAbrirPrevisualizador('${doc.numeral}', '${encodeURIComponent(doc.linkGuia)}', '${encodeURIComponent(doc.tituloDocumento)}')" 
@@ -683,7 +838,25 @@ export async function renderDocumentation() {
                   </div>
 
                   <div class="flex items-center gap-1">
-                    ${doc.linkGuia ? `
+                    ${doc.esDiagrama ? `
+                      <button 
+                        type="button"
+                        onclick="window.abrirVisorDiagrama('${doc.companyId}', '${doc.tipoDiagrama}')" 
+                        class="px-2.5 py-1 rounded-lg text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 transition text-[11px] font-bold flex items-center gap-1 shadow-2xs" 
+                        title="Ver Diagrama Oficial en Alta Resolución"
+                      >
+                        <svg class="w-3.5 h-3.5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <span>Ver Diagrama</span>
+                      </button>
+                      <a 
+                        href="${doc.linkGuia}" 
+                        download="${doc.codigoDocumental}.${doc.tipoDiagrama === 'organigrama' ? 'svg' : 'png'}" 
+                        class="p-1 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-200 transition inline-flex items-center justify-center" 
+                        title="Descargar diagrama"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                      </a>
+                    ` : doc.linkGuia ? `
                       <button 
                         onclick="window.docAbrirPrevisualizador('${doc.numeral}', '${encodeURIComponent(doc.linkGuia)}', '${encodeURIComponent(doc.tituloDocumento)}')" 
                         class="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 border border-indigo-200 transition" 
@@ -701,12 +874,14 @@ export async function renderDocumentation() {
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                       </a>
                     ` : ''}
-                    <button 
-                      onclick="window.docAbrirModalVincular('${doc.numeral}', '${encodeURIComponent(doc.tituloDocumento)}', '${encodeURIComponent(doc.linkGuia || '')}')" 
-                      class="px-2.5 py-1 rounded-lg ${doc.tieneDocumento ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' : 'bg-indigo-600 hover:bg-indigo-700 text-white font-bold'} text-[10px] transition"
-                    >
-                      ${doc.tieneDocumento ? 'Modificar' : '+ Vincular'}
-                    </button>
+                    ${!doc.esDiagrama ? `
+                      <button 
+                        onclick="window.docAbrirModalVincular('${doc.numeral}', '${encodeURIComponent(doc.tituloDocumento)}', '${encodeURIComponent(doc.linkGuia || '')}')" 
+                        class="px-2.5 py-1 rounded-lg ${doc.tieneDocumento ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' : 'bg-indigo-600 hover:bg-indigo-700 text-white font-bold'} text-[10px] transition"
+                      >
+                        ${doc.tieneDocumento ? 'Modificar' : '+ Vincular'}
+                      </button>
+                    ` : ''}
                   </div>
                 </div>
 
@@ -719,7 +894,7 @@ export async function renderDocumentation() {
     </div>
 
     <!-- MODAL INTERACTIVO PARA VINCULAR O EDITAR HIPERVÍNCULO DE DOCUMENTO -->
-    <div id="modal-doc-vincular" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 animate-fadeIn">
+    <div id="modal-doc-vincular" class="fixed inset-0 bg-slate-950/85 hidden items-center justify-center z-50 p-4 animate-fadeIn">
       <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 transform transition-all">
         
         <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
@@ -835,9 +1010,13 @@ win.docFiltrarTipo = function(tipo) {
   renderDocumentation();
 };
 
+let docBuscarTimer = null;
 win.docBuscar = function(texto) {
   state.busqueda = texto || '';
-  renderDocumentation();
+  if (docBuscarTimer) clearTimeout(docBuscarTimer);
+  docBuscarTimer = setTimeout(() => {
+    renderDocumentation();
+  }, 200);
 };
 
 win.docCambiarVista = function(modo) {
