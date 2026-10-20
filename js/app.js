@@ -64,6 +64,10 @@ function router() {
   if (!auth.isAuthenticated()) return;
 
   let hash = window.location.hash || '#dashboard';
+  if (hash === '#login') {
+    hash = '#dashboard';
+    window.history.replaceState(null, '', window.location.pathname + '#dashboard');
+  }
 
   // Soporte para URLs amigables
   if (window.location.pathname.includes('/admin/legal-compliance-repository')) {
@@ -314,9 +318,18 @@ window.mostrarNotificacion = function(mensaje, tipo = 'success') {
 
 // Inicialización de la aplicación (resistente a diferimiento de módulos y readyState)
 async function initApp() {
+  // Asegurar que la base de datos del servidor se sincronice antes del login en navegadores nuevos
+  try {
+    await store.sincronizarConServidorFisico();
+  } catch (e) {
+    console.warn("Sincronización previa a login offline:", e);
+  }
+
   // Verificación de Autenticación / Inicio de Sesión
   if (!auth.isAuthenticated()) {
-    auth.renderLoginScreen(document.getElementById('app-root'), () => {
+    auth.renderLoginScreen(document.getElementById('app-root'), (user) => {
+      const targetHash = user?.rol === 'Trabajador' ? '#portal-trabajador' : (user?.rol === 'Auditor' ? '#auditoria-sst' : '#dashboard');
+      window.history.replaceState(null, '', window.location.pathname + targetHash);
       window.location.reload();
     });
     return;

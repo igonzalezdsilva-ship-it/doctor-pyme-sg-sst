@@ -1484,9 +1484,14 @@
           const uEmail = (e.email || '').toLowerCase().trim();
           const eNit = (e.nit || '').replace(/[^\d]/g, '');
           const eRazon = (e.razonSocial || '').toLowerCase().trim();
+          const uAliases = Array.isArray(e.acceso?.aliases) ? e.acceso.aliases.map(a => a.toLowerCase().trim()) : [];
+          const matchServiciosIg = (e.id === 'emp-1792009016839' || eRazon.includes('servicios ig')) &&
+            (cleanId === 'serviciosivangonzalez@gmail.com' || cleanId === 'serviciosig@doctorpyme.co');
 
           return uAcceso === cleanId || 
                  uEmail === cleanId || 
+                 uAliases.includes(cleanId) ||
+                 matchServiciosIg ||
                  (cleanNit && eNit === cleanNit) ||
                  eRazon === cleanId;
         });
@@ -1517,6 +1522,7 @@
           };
 
           localStorage.setItem('ACTIVE_COMPANY_ID', empresaEncontrada.id);
+          localStorage.setItem('SG_SST_ACTIVE_COMPANY_ID', empresaEncontrada.id);
           localStorage.setItem('DOCTOR_PYME_SESSION_V2', JSON.stringify(session));
           localStorage.removeItem('DOCTOR_PYME_LOGGED_OUT');
           window.location.href = './index.html#dashboard';

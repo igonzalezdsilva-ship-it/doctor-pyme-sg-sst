@@ -48,14 +48,9 @@ class Auth {
   }
 
   init() {
-    // Si la URL solicita explícitamente iniciar sesión o #login, no mantener sesión automática
-    const urlParams = typeof window !== 'undefined' && window.location ? new URLSearchParams(window.location.search) : null;
-    const forceLogin = urlParams?.get('login') === 'true' || (typeof window !== 'undefined' && window.location?.hash === '#login');
-
-    if (forceLogin) {
+    // Si el usuario cerró sesión expresamente, respetar su decisión
+    if (storage.getItem('DOCTOR_PYME_LOGGED_OUT') === 'true') {
       this.session = null;
-      storage.removeItem(AUTH_KEY);
-      storage.removeItem('DOCTOR_PYME_SESSION_V1');
       return;
     }
 
@@ -69,11 +64,6 @@ class Auth {
       } catch (e) {
         this.session = null;
       }
-    }
-
-    // Si el usuario cerró sesión expresamente, respetar su decisión
-    if (storage.getItem('DOCTOR_PYME_LOGGED_OUT') === 'true') {
-      this.session = null;
     }
   }
 
@@ -144,9 +134,14 @@ class Auth {
       const uEmail = (e.email || '').toLowerCase().trim();
       const eNit = (e.nit || '').replace(/[^\d]/g, '');
       const eRazon = (e.razonSocial || '').toLowerCase().trim();
+      const uAliases = Array.isArray(e.acceso?.aliases) ? e.acceso.aliases.map(a => a.toLowerCase().trim()) : [];
+      const matchServiciosIg = (e.id === 'emp-1792009016839' || eRazon.includes('servicios ig')) &&
+        (cleanId === 'serviciosivangonzalez@gmail.com' || cleanId === 'serviciosig@doctorpyme.co');
 
       return uAcceso === cleanId || 
              uEmail === cleanId || 
+             uAliases.includes(cleanId) ||
+             matchServiciosIg ||
              (cleanNit && eNit === cleanNit) ||
              eRazon === cleanId;
     });
