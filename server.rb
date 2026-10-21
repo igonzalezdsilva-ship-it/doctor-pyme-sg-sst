@@ -30,6 +30,30 @@ if !File.exist?(DB_FILE) || File.size(DB_FILE) < 1000
   end
 end
 
+# Auto-Reconstrucción de Evidencias en Disco: Si un archivo físico falta en UPLOADS_DIR, regenerarlo desde Base64
+if File.exist?(DB_FILE)
+  begin
+    boot_db = JSON.parse(File.read(DB_FILE))
+    if boot_db['evidencias'].is_a?(Array)
+      boot_db['evidencias'].each do |ev|
+        next unless ev.is_a?(Hash) && ev['dataUrl'] && ev['dataUrl'].start_with?('data:')
+        disk_filename = ev['url'] ? File.basename(ev['url']) : nil
+        next unless disk_filename && !disk_filename.empty?
+        target_path = File.join(UPLOADS_DIR, disk_filename)
+        unless File.exist?(target_path)
+          _, b64 = ev['dataUrl'].split(',', 2)
+          if b64
+            File.open(target_path, 'wb') { |f| f.write(Base64.decode64(b64)) }
+            puts "🛡️ [AUTO-RECONSTRUCCIÓN] Regenerado archivo físico en disco: #{disk_filename}"
+          end
+        end
+      end
+    end
+  rescue => e
+    puts "⚠️ Error en auto-reconstrucción de evidencias: #{e.message}"
+  end
+end
+
 # Fix crítico para macOS: Evitar Errno::EPERM al invocar sendfile() vía IO.copy_stream
 # Implementa lectura y escritura por bloques en sockets de red
 class WEBrick::HTTPResponse
@@ -609,6 +633,9 @@ mount_api(server, '/api/upload_evidence') do |req, res|
       db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       db['evidencias'] ||= []
       
+      b64_data_uri = (data_url.to_s.start_with?('data:') ? data_url : "data:#{tipo};base64,#{Base64.strict_encode64(binary_data)}")
+      url_path = "/uploads/#{disk_filename}"
+
       evidencia_record = {
         'id' => unique_id,
         'companyId' => company_id,
@@ -617,11 +644,47 @@ mount_api(server, '/api/upload_evidence') do |req, res|
         'nombre' => nombre,
         'tamanio' => binary_data.bytesize,
         'tipo' => tipo,
-        'url' => "/uploads/#{disk_filename}",
-        'dataUrl' => "/uploads/#{disk_filename}",
+        'url' => url_path,
+        'dataUrl' => b64_data_uri,
         'fechaCargue' => Time.now.iso8601
       }
       db['evidencias'] << evidencia_record
+
+      # Vincular automáticamente al estándar de evaluación para máxima persistencia
+      target_cids = [company_id]
+      target_cids << 'emp-004' if company_id == 'emp-1790438946268'
+      target_cids << 'emp-1790438946268' if company_id == 'emp-004'
+
+      target_cids.each do |cid|
+        if db['evaluaciones'] && db['evaluaciones'][cid]
+          [anio, '2026', '2025'].uniq.each do |target_yr|
+            next unless db['evaluaciones'][cid][target_yr]
+            item = db['evaluaciones'][cid][target_yr][numeral] ||= {}
+            item['estado'] = 'CUMPLE' if item['estado'].nil? || item['estado'] == 'SIN_EVALUAR'
+            if !item['justificacion'] || item['justificacion'].strip.empty? || item['justificacion'].include?('Sin soporte')
+              item['justificacion'] = "Evidencia documental adjunta: #{nombre}"
+            end
+            item['archivoAdjunto'] = {
+              'id' => unique_id,
+              'nombre' => nombre,
+              'url' => url_path,
+              'dataUrl' => b64_data_uri,
+              'tipo' => tipo,
+              'tamanio' => binary_data.bytesize,
+              'fechaCargue' => Time.now.iso8601
+            }
+            item['fuentes'] ||= []
+            # Evitar duplicados en fuentes
+            item['fuentes'].reject! { |f| f.is_a?(Hash) && f['url'] == url_path }
+            item['fuentes'].unshift({
+              'id' => "f-evid-#{Time.now.to_i}",
+              'url' => url_path,
+              'titulo' => "📄 #{nombre} (Evidencia Firmada)"
+            })
+            item['linkGuia'] = url_path
+          end
+        end
+      end
 
       # Guardar base de datos
       tmp_file = "#{DB_FILE}.tmp"

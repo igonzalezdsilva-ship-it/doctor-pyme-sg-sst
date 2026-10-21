@@ -466,7 +466,57 @@ export async function previsualizarEvidencia(id) {
   const empresaActiva = store.getEmpresaActiva();
   if (!empresaActiva) return;
 
-  const archivo = await evidenceDB.obtenerEvidenciaPorId(id);
+  let archivo = null;
+  try {
+    archivo = await evidenceDB.obtenerEvidenciaPorId(id);
+  } catch (e) {
+    console.warn("Aviso en evidenceDB.obtenerEvidenciaPorId:", e);
+  }
+
+  // Si no se encuentra en IndexedDB, buscar en la base de datos sincronizada del store
+  if (!archivo && store && store.data) {
+    const evidencias = store.data.evidencias || [];
+    archivo = evidencias.find(e => e.id === id || e.url === id || e.numeral === id || (e.nombre && e.nombre === id));
+  }
+
+  // Si aún no se encuentra, buscar en las evaluaciones del año activo
+  if (!archivo && store) {
+    const anio = store.getAnioActivo ? store.getAnioActivo() : '2026';
+    const evals = store.getEvaluacion(empresaActiva.id, anio) || {};
+    if (evals[id] && evals[id].archivoAdjunto) {
+      const adj = evals[id].archivoAdjunto;
+      archivo = {
+        id: `adj-${id}`,
+        companyId: empresaActiva.id,
+        numeral: id,
+        nombre: adj.nombre || `${id}_Evidencia.pdf`,
+        url: adj.url,
+        dataUrl: adj.dataUrl || '',
+        tipo: adj.tipo || 'application/pdf',
+        tamanio: adj.tamano || adj.tamanio || 15000,
+        fechaCargue: adj.fechaSubida || new Date().toISOString()
+      };
+    } else {
+      for (const [num, evItem] of Object.entries(evals)) {
+        if (evItem && evItem.archivoAdjunto && (evItem.archivoAdjunto.url === id || evItem.archivoAdjunto.nombre === id)) {
+          const adj = evItem.archivoAdjunto;
+          archivo = {
+            id: `adj-${num}`,
+            companyId: empresaActiva.id,
+            numeral: num,
+            nombre: adj.nombre,
+            url: adj.url,
+            dataUrl: adj.dataUrl || '',
+            tipo: adj.tipo || 'application/pdf',
+            tamanio: adj.tamano || adj.tamanio || 15000,
+            fechaCargue: adj.fechaSubida || new Date().toISOString()
+          };
+          break;
+        }
+      }
+    }
+  }
+
   if (!archivo) {
     if (typeof alert === 'function') alert("No se encontró el archivo de evidencia seleccionado para generar la vista previa.");
     return;
@@ -585,6 +635,51 @@ export function abrirVisorEnlaceGuia(guia) {
       <span class="inline font-bold">Abrir en Google ↗</span>
     `;
     btnAbrirPestana.onclick = () => window.open(urlOriginal, '_blank');
+  }
+
+  const esPDF = urlOriginal.toLowerCase().endsWith('.pdf') || urlOriginal.includes('/uploads/');
+  if (esPDF) {
+    iconoEl.textContent = '📕';
+    badgeTipoEl.textContent = 'PDF FIRMADO';
+    badgeTipoEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30';
+    subtituloEl.textContent = 'Documento Oficial Firmado - Evidencia SG-SST';
+    pesoEl.textContent = 'PDF';
+    fechaEl.textContent = 'Evidencia Registrada';
+
+    if (btnDescargar) {
+      btnDescargar.classList.remove('hidden');
+      btnDescargar.href = urlOriginal;
+      btnDescargar.download = guia.criterio ? `${guia.criterio.replace(/\s+/g, '_')}.pdf` : 'evidencia_firmada.pdf';
+    }
+    if (btnAbrirPestana) {
+      btnAbrirPestana.innerHTML = `
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        <span class="inline font-bold">Abrir PDF ↗</span>
+      `;
+      btnAbrirPestana.onclick = () => window.open(urlOriginal, '_blank');
+    }
+
+    contenidoEl.innerHTML = `
+      <div class="w-full h-full flex flex-col bg-slate-800">
+        <iframe 
+          src="${urlOriginal}#toolbar=1&navpanes=1&view=FitH" 
+          class="w-full flex-1 border-0 bg-white" 
+          title="Documento Oficial Firmado"
+        ></iframe>
+        <div class="px-4 py-2 bg-slate-900 border-t border-slate-700/80 text-center text-xs text-slate-300 flex items-center justify-between">
+          <span class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Documento Oficial Firmado - Evidencia SG-SST
+          </span>
+          <button onclick="window.open('${urlOriginal}', '_blank')" class="text-indigo-400 hover:text-indigo-300 font-semibold underline text-xs">
+            Abrir PDF en pantalla completa ↗
+          </button>
+        </div>
+      </div>
+    `;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    return;
   }
 
   // Si es una carpeta de Google Drive, no se puede incrustar en iframe (Google bloquea iframes de carpetas)

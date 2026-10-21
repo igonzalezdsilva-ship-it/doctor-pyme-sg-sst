@@ -191,8 +191,9 @@ class EvidenceDB {
 
   async obtenerEvidenciaPorId(id) {
     await this.init();
+    const serverItem = (appStoreRef?.data?.evidencias || []).find(i => i.id === id || i.url === id || i.numeral === id) || null;
     return new Promise((resolve) => {
-      const fallback = this.obtenerDeFallback(id);
+      const fallback = this.obtenerDeFallback(id) || serverItem;
       if (!this.db) return resolve(fallback);
       try {
         const transaction = this.db.transaction([STORE_NAME], 'readonly');

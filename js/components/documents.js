@@ -47,15 +47,15 @@ function detectarTipoSoporte(url, tieneAdjunto = false, esDiagrama = false) {
   if (esDiagrama) {
     return { tipo: 'DIAGRAMA', label: 'Diagrama Oficial', icon: '🖼️', color: 'teal', bg: 'bg-teal-50 text-teal-700 border-teal-200' };
   }
-  if (tieneAdjunto && !url) {
-    return { tipo: 'ADJUNTO', label: 'Archivo Adjunto', icon: '📎', color: 'indigo', bg: 'bg-indigo-50 text-indigo-700 border-indigo-200' };
+  const u = (url || '').toLowerCase();
+  if (u.includes('organigrama') || u.includes('mapa-procesos') || u.includes('mapa_procesos')) {
+    return { tipo: 'DIAGRAMA', label: 'Diagrama Oficial', icon: '🖼️', color: 'teal', bg: 'bg-teal-50 text-teal-700 border-teal-200' };
+  }
+  if (tieneAdjunto || u.endsWith('.pdf') || u.includes('.pdf?') || u.includes('/uploads/')) {
+    return { tipo: 'PDF_FIRMADO', label: 'PDF Firmado', icon: '📕', color: 'rose', bg: 'bg-rose-50 text-rose-700 border-rose-200' };
   }
   if (!url) {
     return { tipo: 'SIN_DOCUMENTO', label: 'Sin Documento', icon: '⚪', color: 'slate', bg: 'bg-slate-100 text-slate-500 border-slate-200' };
-  }
-  const u = url.toLowerCase();
-  if (u.includes('organigrama') || u.includes('mapa-procesos') || u.includes('mapa_procesos')) {
-    return { tipo: 'DIAGRAMA', label: 'Diagrama Oficial', icon: '🖼️', color: 'teal', bg: 'bg-teal-50 text-teal-700 border-teal-200' };
   }
   if (u.includes('docs.google.com/document')) {
     return { tipo: 'GDOCS', label: 'Google Docs', icon: '📄', color: 'blue', bg: 'bg-blue-50 text-blue-700 border-blue-200' };
@@ -65,9 +65,6 @@ function detectarTipoSoporte(url, tieneAdjunto = false, esDiagrama = false) {
   }
   if (u.includes('drive.google.com')) {
     return { tipo: 'GDRIVE', label: 'Google Drive', icon: '📁', color: 'amber', bg: 'bg-amber-50 text-amber-700 border-amber-200' };
-  }
-  if (u.endsWith('.pdf') || u.includes('.pdf?')) {
-    return { tipo: 'PDF_WEB', label: 'PDF en Línea', icon: '📕', color: 'red', bg: 'bg-red-50 text-red-700 border-red-200' };
   }
   return { tipo: 'WEB', label: 'Enlace Web', icon: '🔗', color: 'indigo', bg: 'bg-indigo-50 text-indigo-700 border-indigo-200' };
 }
@@ -139,9 +136,34 @@ async function recopilarDocumentos(empresa, anio) {
       fuentesValidas = resp.fuentes.filter(f => f && (f.url || '').trim());
     }
 
+    const adjuntosNumeral = evidenciasAdjuntas.filter(a => a.numeral === est.numeral);
+    if (resp.archivoAdjunto && resp.archivoAdjunto.url) {
+      if (!adjuntosNumeral.some(a => a.url === resp.archivoAdjunto.url || a.nombre === resp.archivoAdjunto.nombre)) {
+        adjuntosNumeral.unshift({
+          id: 'adj-' + est.numeral,
+          companyId: empresa.id,
+          numeral: est.numeral,
+          nombre: resp.archivoAdjunto.nombre || `${est.numeral}_Evidencia_Firmada.pdf`,
+          url: resp.archivoAdjunto.url,
+          dataUrl: resp.archivoAdjunto.dataUrl || '',
+          tipo: resp.archivoAdjunto.tipo || 'application/pdf',
+          tamanio: resp.archivoAdjunto.tamano || resp.archivoAdjunto.tamanio || 15000,
+          fechaCargue: resp.archivoAdjunto.fechaSubida || resp.updatedAt || new Date().toISOString()
+        });
+      }
+    }
+
     const primeraFuente = fuentesValidas.length > 0 ? fuentesValidas[0] : null;
     const linkGuia = (primeraFuente ? primeraFuente.url : (resp.linkGuia || '')).trim();
-    const adjuntosNumeral = evidenciasAdjuntas.filter(a => a.numeral === est.numeral);
+
+    // Identificar enlace editable a Google Docs/Sheets si existe
+    let linkPlantilla = '';
+    const fuentePlantilla = fuentesValidas.find(f => f.url && (f.url.includes('docs.google.com') || f.url.includes('drive.google.com')));
+    if (fuentePlantilla) {
+      linkPlantilla = fuentePlantilla.url;
+    } else if (resp.linkGuia && (resp.linkGuia.includes('docs.google.com') || resp.linkGuia.includes('drive.google.com'))) {
+      linkPlantilla = resp.linkGuia;
+    }
 
     // Si hay fuentes adicionales, indexarlas en la biblioteca documental
     if (fuentesValidas.length > 1) {
@@ -157,6 +179,7 @@ async function recopilarDocumentos(empresa, anio) {
           codigoDocumental: `${generarCodigoDocumental(est.numeral, resp.justificacion || est.criterio, est.ciclo)}-F${extraIdx + 2}`,
           tituloDocumento: fuenteExtra.titulo || `${est.criterio} (Fuente ${extraIdx + 2})`,
           linkGuia: fuenteExtra.url,
+          linkPlantilla: '',
           esDiagrama: false,
           tipoDiagrama: null,
           companyId: empresa.id,
@@ -169,7 +192,7 @@ async function recopilarDocumentos(empresa, anio) {
       });
     }
 
-    let soporteUrl = linkGuia;
+    let soporteUrl = linkGuia || (adjuntosNumeral.length > 0 ? adjuntosNumeral[0].url : '');
     let esDiag = false;
     let diagTipo = null;
 
@@ -197,6 +220,7 @@ async function recopilarDocumentos(empresa, anio) {
       codigoDocumental: codigo,
       tituloDocumento,
       linkGuia: soporteUrl,
+      linkPlantilla: linkPlantilla,
       esDiagrama: esDiag,
       tipoDiagrama: diagTipo,
       companyId: empresa.id,
@@ -305,11 +329,12 @@ export async function renderDocumentation() {
   });
 
   // Tipología de soportes
-  const countGDocs = todosDocs.filter(d => d.soporte.tipo === 'GDOCS').length;
-  const countGSheets = todosDocs.filter(d => d.soporte.tipo === 'GSHEETS').length;
+  const countPDFFirmados = todosDocs.filter(d => d.soporte.tipo === 'PDF_FIRMADO' || (d.adjuntos && d.adjuntos.length > 0) || (d.linkGuia && (d.linkGuia.endsWith('.pdf') || d.linkGuia.includes('/uploads/')))).length;
+  const countGDocs = todosDocs.filter(d => d.soporte.tipo === 'GDOCS' || (d.linkPlantilla && d.linkPlantilla.includes('document'))).length;
+  const countGSheets = todosDocs.filter(d => d.soporte.tipo === 'GSHEETS' || (d.linkPlantilla && d.linkPlantilla.includes('spreadsheets'))).length;
   const countGDrive = todosDocs.filter(d => d.soporte.tipo === 'GDRIVE').length;
   const countDiagramas = todosDocs.filter(d => d.soporte.tipo === 'DIAGRAMA' || d.esDiagrama).length;
-  const countAdjuntos = todosDocs.filter(d => d.soporte.tipo === 'ADJUNTO' || (d.adjuntos && d.adjuntos.length > 0)).length;
+  const countAdjuntos = countPDFFirmados;
 
   // Filtrado reactivo de documentos
   let docsFiltrados = todosDocs.filter(item => {
@@ -322,11 +347,12 @@ export async function renderDocumentation() {
 
     // Filtro por tipo de soporte
     if (state.filtroTipo !== 'TODOS') {
-      if (state.filtroTipo === 'GDOCS' && item.soporte.tipo !== 'GDOCS') return false;
-      if (state.filtroTipo === 'GSHEETS' && item.soporte.tipo !== 'GSHEETS') return false;
+      if (state.filtroTipo === 'PDF_FIRMADO' && (item.soporte.tipo !== 'PDF_FIRMADO' && (!item.adjuntos || item.adjuntos.length === 0) && (!item.linkGuia || !item.linkGuia.endsWith('.pdf')))) return false;
+      if (state.filtroTipo === 'GDOCS' && (item.soporte.tipo !== 'GDOCS' && (!item.linkPlantilla || !item.linkPlantilla.includes('document')))) return false;
+      if (state.filtroTipo === 'GSHEETS' && (item.soporte.tipo !== 'GSHEETS' && (!item.linkPlantilla || !item.linkPlantilla.includes('spreadsheets')))) return false;
       if (state.filtroTipo === 'GDRIVE' && item.soporte.tipo !== 'GDRIVE') return false;
       if (state.filtroTipo === 'DIAGRAMA' && (item.soporte.tipo !== 'DIAGRAMA' && !item.esDiagrama)) return false;
-      if (state.filtroTipo === 'ADJUNTO' && item.soporte.tipo !== 'ADJUNTO' && (!item.adjuntos || item.adjuntos.length === 0)) return false;
+      if (state.filtroTipo === 'ADJUNTO' && item.soporte.tipo !== 'PDF_FIRMADO' && (!item.adjuntos || item.adjuntos.length === 0)) return false;
     }
 
     // Búsqueda en texto
@@ -487,6 +513,10 @@ export async function renderDocumentation() {
           <span>Recursos asociados al sistema</span>
         </span>
         <div class="flex flex-wrap items-center gap-2">
+          <button onclick="window.docFiltrarTipo('PDF_FIRMADO')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 font-semibold flex items-center gap-1.5 cursor-pointer transition ${state.filtroTipo === 'PDF_FIRMADO' ? 'ring-2 ring-rose-500' : ''}">
+            <span>📕 PDFs Firmados:</span>
+            <strong class="font-extrabold">${countPDFFirmados}</strong>
+          </button>
           <button onclick="window.docFiltrarTipo('GDOCS')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 font-semibold flex items-center gap-1.5 cursor-pointer transition ${state.filtroTipo === 'GDOCS' ? 'ring-2 ring-blue-500' : ''}">
             <span>📄 Google Docs:</span>
             <strong class="font-extrabold">${countGDocs}</strong>
@@ -502,10 +532,6 @@ export async function renderDocumentation() {
           <button onclick="window.docFiltrarTipo('DIAGRAMA')" class="px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-800 font-semibold flex items-center gap-1.5 cursor-pointer transition ${state.filtroTipo === 'DIAGRAMA' ? 'ring-2 ring-teal-500' : ''}">
             <span>🖼️ Diagramas Oficiales:</span>
             <strong class="font-extrabold">${countDiagramas}</strong>
-          </button>
-          <button onclick="window.docFiltrarTipo('ADJUNTO')" class="px-2.5 py-1 rounded-lg ${countAdjuntos > 0 ? 'bg-indigo-50 border-indigo-200 text-indigo-800 hover:bg-indigo-100' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'} border font-semibold flex items-center gap-1.5 cursor-pointer transition ${state.filtroTipo === 'ADJUNTO' ? 'ring-2 ring-indigo-500' : ''}">
-            <span>📎 Adjuntos Locales:</span>
-            <strong class="font-extrabold">${countAdjuntos}</strong>
           </button>
         </div>
       </div>
@@ -731,51 +757,58 @@ export async function renderDocumentation() {
                             >
                               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                             </a>
-                          ` : doc.linkGuia ? `
-                            <!-- Botón Previsualizar -->
-                            <button 
-                              onclick="window.docAbrirPrevisualizador('${doc.numeral}', '${encodeURIComponent(doc.linkGuia)}', '${encodeURIComponent(doc.tituloDocumento)}')" 
-                              class="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 border border-indigo-200 transition" 
-                              title="Previsualizar documento sin salir"
-                            >
-                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                            </button>
+                          ` : `
+                            <!-- Botón Ver PDF Firmado Oficial (si existe adjunto físico o url PDF) -->
+                            ${(doc.adjuntos && doc.adjuntos.length > 0) || (doc.linkGuia && (doc.linkGuia.endsWith('.pdf') || doc.linkGuia.includes('/uploads/'))) ? `
+                              <button 
+                                type="button"
+                                onclick="${doc.adjuntos && doc.adjuntos.length > 0 ? `window.docAbrirAdjunto('${doc.adjuntos[0].id}')` : `window.docAbrirPrevisualizador('${doc.numeral}', '${encodeURIComponent(doc.linkGuia)}', '${encodeURIComponent(doc.tituloDocumento)}')`}" 
+                                class="px-2.5 py-1 rounded-lg text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition text-xs font-bold flex items-center gap-1 shadow-2xs" 
+                                title="Ver Evidencia en PDF Firmada Oficial"
+                              >
+                                <svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                <span>PDF Firmado</span>
+                              </button>
+                            ` : ''}
 
-                            <!-- Botón Abrir en Google Cloud en nueva pestaña -->
-                            <a 
-                              href="${doc.linkGuia}" 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              class="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-200 transition inline-flex items-center justify-center" 
-                              title="Abrir en Google Cloud ↗"
-                            >
-                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            </a>
+                            <!-- Botones Plantilla en Google Cloud (Docs, Sheets o Drive) -->
+                            ${(doc.linkPlantilla || (doc.linkGuia && !doc.linkGuia.endsWith('.pdf') && !doc.linkGuia.includes('/uploads/'))) ? `
+                              <!-- Botón Previsualizar Plantilla -->
+                              <button 
+                                onclick="window.docAbrirPrevisualizador('${doc.numeral}', '${encodeURIComponent(doc.linkPlantilla || doc.linkGuia)}', '${encodeURIComponent(doc.tituloDocumento)}')" 
+                                class="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 border border-indigo-200 transition" 
+                                title="Previsualizar plantilla en Google Cloud"
+                              >
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                              </button>
 
-                            <!-- Botón Copiar URL -->
-                            <button 
-                              onclick="window.docCopiarEnlace('${escapeHtml(doc.linkGuia)}', this)" 
-                              class="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-200 transition" 
-                              title="Copiar hipervínculo"
-                            >
-                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-                            </button>
-                          ` : doc.adjuntos && doc.adjuntos.length > 0 ? `
-                            <!-- Previsualizar evidencia física -->
-                            <button 
-                              onclick="window.docAbrirAdjunto('${doc.adjuntos[0].id}')" 
-                              class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 border border-rose-200 transition" 
-                              title="Previsualizar archivo adjunto"
-                            >
-                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                            </button>
-                          ` : ''}
+                              <!-- Botón Abrir en Google Cloud en nueva pestaña -->
+                              <a 
+                                href="${doc.linkPlantilla || doc.linkGuia}" 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                class="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-200 transition inline-flex items-center justify-center" 
+                                title="Abrir en Google Cloud ↗"
+                              >
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                              </a>
 
-                          <!-- Botón Editar / Vincular Enlace -->
+                              <!-- Botón Copiar URL -->
+                              <button 
+                                onclick="window.docCopiarEnlace('${escapeHtml(doc.linkPlantilla || doc.linkGuia)}', this)" 
+                                class="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-200 transition" 
+                                title="Copiar hipervínculo"
+                              >
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                              </button>
+                            ` : ''}
+                          `}
+
+                          <!-- Botón Editar / Subir / Vincular -->
                           <button 
-                            onclick="window.docAbrirModalVincular('${doc.numeral}', '${encodeURIComponent(doc.tituloDocumento)}', '${encodeURIComponent(doc.linkGuia || '')}')" 
+                            onclick="window.docAbrirModalVincular('${doc.numeral}', '${encodeURIComponent(doc.tituloDocumento)}', '${encodeURIComponent(doc.linkPlantilla || (doc.linkGuia && !doc.linkGuia.endsWith('.pdf') ? doc.linkGuia : ''))}')" 
                             class="px-2 py-1 rounded-lg ${doc.tieneDocumento ? 'text-slate-600 hover:bg-slate-100 border border-slate-200' : 'bg-indigo-600 hover:bg-indigo-700 text-white font-bold'} text-[11px] transition flex items-center gap-1"
-                            title="${doc.tieneDocumento ? 'Modificar hipervínculo' : 'Vincular documento de Google Docs o Sheets'}"
+                            title="${doc.tieneDocumento ? 'Modificar soporte o cargar PDF firmado' : 'Vincular documento o subir evidencia'}"
                           >
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                             <span>${doc.tieneDocumento ? 'Editar' : '+ Vincular'}</span>
@@ -858,32 +891,48 @@ export async function renderDocumentation() {
                       >
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                       </a>
-                    ` : doc.linkGuia ? `
+                    ` : `
+                      <!-- PDF Firmado Oficial -->
+                      ${(doc.adjuntos && doc.adjuntos.length > 0) || (doc.linkGuia && (doc.linkGuia.endsWith('.pdf') || doc.linkGuia.includes('/uploads/'))) ? `
+                        <button 
+                          type="button"
+                          onclick="${doc.adjuntos && doc.adjuntos.length > 0 ? `window.docAbrirAdjunto('${doc.adjuntos[0].id}')` : `window.docAbrirPrevisualizador('${doc.numeral}', '${encodeURIComponent(doc.linkGuia)}', '${encodeURIComponent(doc.tituloDocumento)}')`}" 
+                          class="px-2 py-1 rounded-lg text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition text-[11px] font-bold flex items-center gap-1 shadow-2xs" 
+                          title="Ver Evidencia en PDF Firmada"
+                        >
+                          <svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                          <span>PDF</span>
+                        </button>
+                      ` : ''}
+
+                      <!-- Plantilla Cloud -->
+                      ${(doc.linkPlantilla || (doc.linkGuia && !doc.linkGuia.endsWith('.pdf') && !doc.linkGuia.includes('/uploads/'))) ? `
+                        <button 
+                          onclick="window.docAbrirPrevisualizador('${doc.numeral}', '${encodeURIComponent(doc.linkPlantilla || doc.linkGuia)}', '${encodeURIComponent(doc.tituloDocumento)}')" 
+                          class="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 border border-indigo-200 transition" 
+                          title="Previsualizar plantilla en Google Cloud"
+                        >
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </button>
+                        <a 
+                          href="${doc.linkPlantilla || doc.linkGuia}" 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          class="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-200 transition inline-flex items-center justify-center" 
+                          title="Abrir en Nube ↗"
+                        >
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                      ` : ''}
+
                       <button 
-                        onclick="window.docAbrirPrevisualizador('${doc.numeral}', '${encodeURIComponent(doc.linkGuia)}', '${encodeURIComponent(doc.tituloDocumento)}')" 
-                        class="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 border border-indigo-200 transition" 
-                        title="Previsualizar"
-                      >
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                      </button>
-                      <a 
-                        href="${doc.linkGuia}" 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        class="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-200 transition inline-flex items-center justify-center" 
-                        title="Abrir en Nube ↗"
-                      >
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                      </a>
-                    ` : ''}
-                    ${!doc.esDiagrama ? `
-                      <button 
-                        onclick="window.docAbrirModalVincular('${doc.numeral}', '${encodeURIComponent(doc.tituloDocumento)}', '${encodeURIComponent(doc.linkGuia || '')}')" 
+                        onclick="window.docAbrirModalVincular('${doc.numeral}', '${encodeURIComponent(doc.tituloDocumento)}', '${encodeURIComponent(doc.linkPlantilla || (doc.linkGuia && !doc.linkGuia.endsWith('.pdf') ? doc.linkGuia : ''))}')" 
                         class="px-2.5 py-1 rounded-lg ${doc.tieneDocumento ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' : 'bg-indigo-600 hover:bg-indigo-700 text-white font-bold'} text-[10px] transition"
+                        title="${doc.tieneDocumento ? 'Modificar soporte o cargar PDF firmado' : 'Vincular documento o subir evidencia'}"
                       >
-                        ${doc.tieneDocumento ? 'Modificar' : '+ Vincular'}
+                        ${doc.tieneDocumento ? 'Editar' : '+ Vincular'}
                       </button>
-                    ` : ''}
+                    `}
                   </div>
                 </div>
 
@@ -936,6 +985,27 @@ export async function renderDocumentation() {
             <p class="text-[10px] text-slate-400 mt-1">
               Tip: Puedes pegar el enlace de compartición con permisos de lectura o edición de Google Workspace.
             </p>
+          </div>
+
+          <!-- Opción de Subir Evidencia en PDF Firmada Directamente -->
+          <div class="border-t border-slate-100 pt-3">
+            <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
+              <span>Cargar Evidencia en PDF Firmada:</span>
+              <span class="text-[10px] text-rose-600 font-semibold bg-rose-50 px-2 py-0.5 rounded border border-rose-100">Blindaje de Durabilidad</span>
+            </label>
+            <label class="cursor-pointer bg-slate-50 hover:bg-slate-100 border-2 border-dashed border-slate-300 hover:border-indigo-400 rounded-xl p-3 text-center transition flex flex-col items-center justify-center group">
+              <svg class="w-6 h-6 text-slate-400 group-hover:text-indigo-500 mb-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+              <span class="text-xs font-semibold text-slate-700 group-hover:text-indigo-700 transition" id="modal-doc-file-label">Seleccionar archivo PDF, imagen o acta firmada...</span>
+              <span class="text-[10px] text-slate-400 mt-0.5">PDF, JPG, PNG (hasta 25MB). Se almacena con copia Base64 a prueba de reinicios.</span>
+              <input type="file" id="modal-doc-input-file" accept=".pdf,image/*,.doc,.docx" class="hidden" onchange="window.docArchivoSeleccionado(this)">
+            </label>
+            <div id="modal-doc-file-status" class="hidden mt-2 text-xs font-medium text-emerald-800 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 flex items-center justify-between">
+              <div class="flex items-center gap-2 overflow-hidden">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span id="modal-doc-file-status-text" class="truncate font-semibold text-xs">Archivo listo</span>
+              </div>
+              <button type="button" onclick="window.docLimpiarArchivoModal()" class="text-rose-600 hover:text-rose-800 text-xs font-bold ml-2 px-1">✕ Quitar</button>
+            </div>
           </div>
 
           <!-- Sugerencia rápida de plantilla de ejemplo si no existe -->
@@ -1079,6 +1149,33 @@ win.docCopiarEnlace = function(url, btnElement) {
   }
 };
 
+let modalDocSelectedFile = null;
+
+win.docArchivoSeleccionado = function(input) {
+  if (!input || !input.files || input.files.length === 0) return;
+  modalDocSelectedFile = input.files[0];
+  const label = document.getElementById('modal-doc-file-label');
+  const status = document.getElementById('modal-doc-file-status');
+  const statusText = document.getElementById('modal-doc-file-status-text');
+  
+  if (label) label.textContent = `Archivo: ${modalDocSelectedFile.name}`;
+  if (status && statusText) {
+    const kb = Math.round(modalDocSelectedFile.size / 1024);
+    statusText.textContent = `${modalDocSelectedFile.name} (${kb} KB) listo para guardar`;
+    status.classList.remove('hidden');
+  }
+};
+
+win.docLimpiarArchivoModal = function() {
+  modalDocSelectedFile = null;
+  const fileInput = document.getElementById('modal-doc-input-file');
+  if (fileInput) fileInput.value = '';
+  const label = document.getElementById('modal-doc-file-label');
+  if (label) label.textContent = 'Seleccionar archivo PDF, imagen o acta firmada...';
+  const status = document.getElementById('modal-doc-file-status');
+  if (status) status.classList.add('hidden');
+};
+
 /**
  * Control del Modal de Vinculación / Edición de Documento
  */
@@ -1086,6 +1183,8 @@ win.docAbrirModalVincular = function(numeral, encodedTitulo, encodedUrl) {
   modalNumeralActivo = numeral;
   const titulo = decodeURIComponent(encodedTitulo || '');
   const url = decodeURIComponent(encodedUrl || '');
+
+  win.docLimpiarArchivoModal();
 
   const modal = document.getElementById('modal-doc-vincular');
   const badgeEl = document.getElementById('modal-doc-numeral-badge');
@@ -1109,10 +1208,11 @@ win.docCerrarModalVincular = function() {
     modal.classList.add('hidden');
     modal.classList.remove('flex');
   }
+  win.docLimpiarArchivoModal();
   modalNumeralActivo = null;
 };
 
-win.docConfirmarGuardarEnlace = function() {
+win.docConfirmarGuardarEnlace = async function() {
   if (!modalNumeralActivo) return;
   const inputEl = document.getElementById('modal-doc-input-url');
   const nuevoUrl = (inputEl ? inputEl.value : '').trim();
@@ -1124,9 +1224,48 @@ win.docConfirmarGuardarEnlace = function() {
   const evaluacion = store.getEvaluacion(empresa.id, anio);
   const actual = evaluacion[modalNumeralActivo] || {};
 
+  let nuevoArchivoAdjunto = actual.archivoAdjunto || null;
+  let fuentesActuales = Array.isArray(actual.fuentes) ? [...actual.fuentes] : [];
+
+  // Si se seleccionó un archivo físico / PDF firmado para subir
+  if (modalDocSelectedFile) {
+    try {
+      const guardado = await evidenceDB.guardarArchivo(empresa.id, modalNumeralActivo, modalDocSelectedFile);
+      nuevoArchivoAdjunto = {
+        nombre: modalDocSelectedFile.name,
+        url: guardado?.url || `/uploads/${modalDocSelectedFile.name}`,
+        dataUrl: guardado?.dataUrl || '',
+        tipo: modalDocSelectedFile.type || 'application/pdf',
+        tamano: modalDocSelectedFile.size,
+        fechaSubida: new Date().toISOString()
+      };
+      if (!fuentesActuales.some(f => f.url === nuevoArchivoAdjunto.url)) {
+        fuentesActuales.unshift({
+          titulo: `${modalDocSelectedFile.name.replace(/\.[^/.]+$/, "")} (PDF Firmado)`,
+          url: nuevoArchivoAdjunto.url
+        });
+      }
+    } catch (eGuardar) {
+      console.error("Error guardando archivo en modal:", eGuardar);
+      alert("Hubo un problema guardando el archivo. Por favor verifica la conexión.");
+    }
+  }
+
+  // Si se ingresó una URL de Google Docs / Drive
+  if (nuevoUrl) {
+    if (!fuentesActuales.some(f => f.url === nuevoUrl)) {
+      fuentesActuales.push({
+        titulo: `Documento Guía / Plantilla (Cloud)`,
+        url: nuevoUrl
+      });
+    }
+  }
+
   store.saveEvaluacionItem(empresa.id, anio, modalNumeralActivo, {
     ...actual,
-    linkGuia: nuevoUrl,
+    linkGuia: nuevoUrl || actual.linkGuia || (nuevoArchivoAdjunto ? nuevoArchivoAdjunto.url : ''),
+    archivoAdjunto: nuevoArchivoAdjunto,
+    fuentes: fuentesActuales,
     // Si aún estaba sin evaluar y ahora le adjuntamos documento, facilitamos el flujo
     estado: actual.estado && actual.estado !== 'SIN_EVALUAR' ? actual.estado : 'CUMPLE'
   });

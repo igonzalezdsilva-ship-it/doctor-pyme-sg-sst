@@ -85,6 +85,30 @@ export async function renderEvaluation() {
     evidenciasPorNumeral[ev.numeral].push(ev);
   });
 
+  // Asegurar que cualquier evidencia registrada en la evaluación aparezca en evidenciasPorNumeral
+  Object.keys(respuestasMap).forEach(numeral => {
+    const item = respuestasMap[numeral];
+    if (item && item.archivoAdjunto && item.archivoAdjunto.url) {
+      if (!evidenciasPorNumeral[numeral]) {
+        evidenciasPorNumeral[numeral] = [];
+      }
+      const adj = item.archivoAdjunto;
+      if (!evidenciasPorNumeral[numeral].some(e => e.url === adj.url || e.nombre === adj.nombre)) {
+        evidenciasPorNumeral[numeral].push({
+          id: `adj-${numeral}`,
+          companyId: empresaActiva.id,
+          numeral: numeral,
+          nombre: adj.nombre || `${numeral}_Evidencia.pdf`,
+          url: adj.url,
+          dataUrl: adj.dataUrl || '',
+          tamanio: adj.tamano || adj.tamanio || 15000,
+          tipo: adj.tipo || 'application/pdf',
+          fechaCargue: adj.fechaSubida || item.updatedAt || new Date().toISOString()
+        });
+      }
+    }
+  });
+
   // Filtrado de estándares
   const estandaresFiltrados = estandares.filter(est => {
     const resp = respuestasMap[est.numeral];
@@ -897,15 +921,47 @@ window.previsualizarDocumentoGuia = function(numeral) {
   window.previsualizarFuenteGuia(numeral, null);
 };
 
-// GESTIÓN DE ARCHIVOS ADJUNTOS EN INDEXEDDB
+// GESTIÓN DE ARCHIVOS ADJUNTOS EN INDEXEDDB Y STORE
 window.adjuntarEvidencia = async function(numeral, files) {
   const empresaActiva = store.getEmpresaActiva();
   if (!empresaActiva || !files || files.length === 0) return;
 
+  const anio = store.getAnioActivo ? store.getAnioActivo() : '2026';
+  const evals = store.getEvaluacion(empresaActiva.id, anio) || {};
+  let actual = { ...(evals[numeral] || {}) };
+  let fuentesActuales = Array.isArray(actual.fuentes) ? [...actual.fuentes] : [];
+  let ultimoArchivo = actual.archivoAdjunto || null;
+
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
-    await evidenceDB.guardarArchivo(empresaActiva.id, numeral, file);
+    try {
+      const guardado = await evidenceDB.guardarArchivo(empresaActiva.id, numeral, file);
+      ultimoArchivo = {
+        nombre: file.name,
+        url: guardado?.url || `/uploads/${file.name}`,
+        dataUrl: guardado?.dataUrl || '',
+        tipo: file.type || 'application/pdf',
+        tamano: file.size,
+        fechaSubida: new Date().toISOString()
+      };
+      if (!fuentesActuales.some(f => f.url === ultimoArchivo.url)) {
+        fuentesActuales.unshift({
+          titulo: `${file.name.replace(/\.[^/.]+$/, "")} (Evidencia Firmada/Adjunta)`,
+          url: ultimoArchivo.url
+        });
+      }
+    } catch (eAdj) {
+      console.error("Error guardando archivo adjunto:", eAdj);
+    }
   }
+
+  // Guardar vinculación en la evaluación del estándar
+  store.saveEvaluacionItem(empresaActiva.id, anio, numeral, {
+    ...actual,
+    archivoAdjunto: ultimoArchivo,
+    fuentes: fuentesActuales,
+    estado: actual.estado && actual.estado !== 'SIN_EVALUAR' ? actual.estado : 'CUMPLE'
+  });
 
   // Refrescar vista
   renderEvaluation();
