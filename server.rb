@@ -214,11 +214,13 @@ def merge_database_safely(existing_db, incoming_payload)
   if existing_db['empresas'].is_a?(Array) && (!merged['empresas'].is_a?(Array) || merged['empresas'].empty?)
     merged['empresas'] = existing_db['empresas']
   elsif existing_db['empresas'].is_a?(Array) && merged['empresas'].is_a?(Array)
-    # Preservar banderas de diagramas oficiales en las empresas
+    # Preservar todas las empresas existentes y actualizar con las recibidas
     existing_map = existing_db['empresas'].each_with_object({}) { |e, h| h[e['id']] = e }
-    merged['empresas'] = merged['empresas'].map do |emp|
-      orig = existing_map[emp['id']]
-      if orig
+    incoming_map = merged['empresas'].each_with_object({}) { |e, h| h[e['id']] = e }
+    merged_empresas = []
+    existing_map.each do |e_id, orig|
+      if incoming_map[e_id]
+        emp = incoming_map[e_id]
         emp['tieneOrganigrama'] = true if orig['tieneOrganigrama']
         emp['tieneMapaProcesos'] = true if orig['tieneMapaProcesos']
         emp['organigramaUrl'] ||= orig['organigramaUrl']
@@ -231,9 +233,15 @@ def merge_database_safely(existing_db, incoming_payload)
         emp['operational_how_it_works'] ||= orig['operational_how_it_works']
         emp['years_operating'] ||= orig['years_operating']
         emp['ai_context_summary'] ||= orig['ai_context_summary']
+        merged_empresas << emp
+      else
+        merged_empresas << orig
       end
-      emp
     end
+    incoming_map.each do |e_id, new_emp|
+      merged_empresas << new_emp unless existing_map[e_id]
+    end
+    merged['empresas'] = merged_empresas
   end
 
   # 2. Proteger evaluaciones año por año y numeral por numeral
@@ -302,9 +310,29 @@ def merge_database_safely(existing_db, incoming_payload)
     merged['evidencias'] = existing_db['evidencias']
   end
 
+  # 4.1 Proteger y fusionar Super Administradores
+  if existing_db['super_admins'].is_a?(Array) && (!merged['super_admins'].is_a?(Array) || merged['super_admins'].empty?)
+    merged['super_admins'] = existing_db['super_admins']
+  elsif existing_db['super_admins'].is_a?(Array) && merged['super_admins'].is_a?(Array)
+    existing_sa = existing_db['super_admins'].each_with_object({}) { |sa, h| h[sa['id'] || sa['email']] = sa }
+    incoming_sa = merged['super_admins'].each_with_object({}) { |sa, h| h[sa['id'] || sa['email']] = sa }
+    merged_sa = []
+    existing_sa.each do |k, orig_sa|
+      if incoming_sa[k]
+        merged_sa << incoming_sa[k]
+      else
+        merged_sa << orig_sa
+      end
+    end
+    incoming_sa.each do |k, new_sa|
+      merged_sa << new_sa unless existing_sa[k]
+    end
+    merged['super_admins'] = merged_sa
+  end
+
   # 5. Proteger Matriz, Plan de Trabajo, Accidentes, Trabajadores, Perfiles de Cargo, Herramientas, Políticas Legales, Procesos y Capacitaciones
   # Solo restaurar desde BD existente si el cliente NO envió la clave (nil). Si envió un array vacío [], respetar la eliminación.
-  ['matriz', 'planTrabajo', 'accidentes', 'trabajadores', 'perfiles_cargo', 'tools_inventory', 'tools_sst', 'tools_maintenance_plan', 'tools_assignments', 'tools_interventions_log', 'data_privacy_consents', 'legal_policy_versions', 'process_maps', 'processes', 'process_activities', 'job_positions', 'process_activity_positions', 'job_position_documents', 'capacitaciones', 'worker_evaluations'].each do |col|
+  ['matriz', 'planTrabajo', 'accidentes', 'trabajadores', 'perfiles_cargo', 'tools_inventory', 'tools_sst', 'tools_maintenance_plan', 'tools_assignments', 'tools_interventions_log', 'data_privacy_consents', 'legal_policy_versions', 'process_maps', 'processes', 'process_activities', 'job_positions', 'process_activity_positions', 'job_position_documents', 'capacitaciones', 'worker_evaluations', 'super_admins'].each do |col|
     if existing_db[col].is_a?(Array) && merged[col].nil?
       merged[col] = existing_db[col]
     end

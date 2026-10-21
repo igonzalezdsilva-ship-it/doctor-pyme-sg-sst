@@ -99,7 +99,7 @@ async function recopilarDocumentos(empresa, anio) {
   const estandares = obtenerEstandaresPorGrupo(grupo);
   const evaluaciones = store.getEvaluacion(empresa.id, anio) || {};
 
-  // Cargar evidencias físicas y diagramas desde IndexedDB
+  // Cargar evidencias físicas y diagramas desde IndexedDB y desde la Base de Datos del Store
   let evidenciasAdjuntas = [];
   let diagMapa = null;
   let diagOrg = null;
@@ -107,6 +107,17 @@ async function recopilarDocumentos(empresa, anio) {
     evidenciasAdjuntas = await evidenceDB.obtenerTodasEvidencias(empresa.id);
   } catch (e) {
     console.warn("No se pudieron cargar adjuntos de IndexedDB:", e);
+  }
+  // Fusionar con las evidencias persistidas en el Store / Servidor Físico
+  try {
+    const evidenciasStore = store.getEvidencias ? store.getEvidencias(empresa.id, anio) : [];
+    evidenciasStore.forEach(ev => {
+      if (!evidenciasAdjuntas.some(ea => ea.id === ev.id)) {
+        evidenciasAdjuntas.push(ev);
+      }
+    });
+  } catch (eStoreEv) {
+    console.warn("Aviso fusionando evidencias de store:", eStoreEv);
   }
   try {
     diagMapa = await evidenceDB.obtenerDiagramaEmpresa(empresa.id, 'mapa_procesos');

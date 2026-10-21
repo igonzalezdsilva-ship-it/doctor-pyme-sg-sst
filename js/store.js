@@ -740,6 +740,38 @@ class Store {
           if (!Array.isArray(this.data.job_positions)) this.data.job_positions = [];
           if (!Array.isArray(this.data.process_activity_positions)) this.data.process_activity_positions = [];
           if (!Array.isArray(this.data.job_position_documents)) this.data.job_position_documents = [];
+          if (!Array.isArray(this.data.super_admins)) {
+            this.data.super_admins = [
+              {
+                id: 'sa-001',
+                email: 'i.gonzalez.dsilva@gmail.com',
+                nombre: 'Ing. Iván David González Silva',
+                cargo: 'Super Administrador & Consultor Principal SST',
+                licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
+                telefono: '3144001787',
+                password: 'Stoner200',
+                estado: 'ACTIVO',
+                creadoEn: '2026-10-10T00:00:00.000Z',
+                ultimoIngreso: new Date().toISOString()
+              }
+            ];
+          }
+          if (!Array.isArray(this.data.super_admins)) {
+            this.data.super_admins = [
+              {
+                id: 'sa-001',
+                email: 'i.gonzalez.dsilva@gmail.com',
+                nombre: 'Ing. Iván David González Silva',
+                cargo: 'Super Administrador & Consultor Principal SST',
+                licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
+                telefono: '3144001787',
+                password: 'Stoner200',
+                estado: 'ACTIVO',
+                creadoEn: '2026-10-10T00:00:00.000Z',
+                ultimoIngreso: new Date().toISOString()
+              }
+            ];
+          }
           if (!this.data.evaluaciones || typeof this.data.evaluaciones !== 'object') this.data.evaluaciones = {};
 
           // Migración estructural: garantizar que cada empresa almacena sus evaluaciones por AÑO (iniciando en 2025)
@@ -927,9 +959,9 @@ class Store {
     }
 
     let savedCompany = storage.getItem(ACTIVE_COMPANY_KEY);
-    if (!savedCompany || savedCompany === 'todas' || ['emp-001', 'emp-002', 'emp-003', 'emp-004'].includes(savedCompany) || !this.data?.empresas?.some(e => e.id === savedCompany)) {
-      savedCompany = 'emp-1790438946268';
-      storage.setItem(ACTIVE_COMPANY_KEY, 'emp-1790438946268');
+    if (!savedCompany || ['emp-001', 'emp-002', 'emp-003'].includes(savedCompany) || (savedCompany !== 'todas' && !this.data?.empresas?.some(e => e.id === savedCompany || (savedCompany === 'emp-004' && e.id === 'emp-1790438946268')))) {
+      savedCompany = 'todas';
+      storage.setItem(ACTIVE_COMPANY_KEY, 'todas');
     }
     this.empresaActivaId = savedCompany;
 
@@ -973,15 +1005,19 @@ class Store {
       if (resp.ok) {
         const serverData = await resp.json();
         if (serverData && Array.isArray(serverData.empresas) && serverData.empresas.length > 0) {
-          const localUpdated = this.data?.updatedAt ? new Date(this.data.updatedAt).getTime() : 0;
-          const serverUpdated = serverData?.updatedAt ? new Date(serverData.updatedAt).getTime() : 0;
-
-          // Si el navegador tiene cambios locales más recientes que el servidor, preservarlos y sincronizar hacia el servidor
-          if (localUpdated > serverUpdated + 1000) {
-            console.log("⚡ [SYNC] Los datos locales del navegador son más recientes que el servidor. Preservando y sincronizando con el servidor...");
-            this.serverSynced = true;
-            this.enviarAlServidorFisico(true);
-            return;
+          // Fusionar de forma segura: el servidor es la fuente autoritativa de empresas y datos institucionales
+          // Si el navegador tiene datos locales, fusionar empresas asegurando que NINGUNA empresa del servidor se pierda
+          if (Array.isArray(this.data?.empresas) && this.data.empresas.length > 0) {
+            const serverEmpMap = new Map();
+            serverData.empresas.forEach(e => serverEmpMap.set(e.id, e));
+            this.data.empresas.forEach(localEmp => {
+              if (serverEmpMap.has(localEmp.id)) {
+                serverEmpMap.set(localEmp.id, { ...serverEmpMap.get(localEmp.id), ...localEmp });
+              } else {
+                serverEmpMap.set(localEmp.id, localEmp);
+              }
+            });
+            serverData.empresas = Array.from(serverEmpMap.values());
           }
 
           console.log("✓ Sincronizado con Base de Datos Física en Disco (data/database.json)");
@@ -1027,6 +1063,22 @@ class Store {
           if (!Array.isArray(this.data.job_positions)) this.data.job_positions = [];
           if (!Array.isArray(this.data.process_activity_positions)) this.data.process_activity_positions = [];
           if (!Array.isArray(this.data.job_position_documents)) this.data.job_position_documents = [];
+          if (!Array.isArray(this.data.super_admins)) {
+            this.data.super_admins = [
+              {
+                id: 'sa-001',
+                email: 'i.gonzalez.dsilva@gmail.com',
+                nombre: 'Ing. Iván David González Silva',
+                cargo: 'Super Administrador & Consultor Principal SST',
+                licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
+                telefono: '3144001787',
+                password: 'Stoner200',
+                estado: 'ACTIVO',
+                creadoEn: '2026-10-10T00:00:00.000Z',
+                ultimoIngreso: new Date().toISOString()
+              }
+            ];
+          }
 
           // Garantizar 1 único registro de Política de Tratamiento de Datos por empresa (Ley 1581 / Ley 527)
           const seenTenants = new Set();
@@ -1146,9 +1198,21 @@ class Store {
           }
 
           // Garantizar que la empresa activa esté seleccionada (evitar pantalla vacía)
-          if (!this.empresaActivaId || this.empresaActivaId === 'todas' || !this.data.empresas.some(e => e.id === this.empresaActivaId)) {
-            this.empresaActivaId = ID_OCHOA;
-            storage.setItem(ACTIVE_COMPANY_KEY, this.empresaActivaId);
+          const esSuper = this.isSuperAdminSession();
+          if (esSuper) {
+            if (!this.empresaActivaId) {
+              this.empresaActivaId = 'todas';
+              storage.setItem(ACTIVE_COMPANY_KEY, 'todas');
+            }
+          } else {
+            const locked = this.getSessionTenantLock();
+            if (locked) {
+              this.empresaActivaId = locked;
+              storage.setItem(ACTIVE_COMPANY_KEY, locked);
+            } else if (!this.empresaActivaId || !this.data.empresas.some(e => e.id === this.empresaActivaId)) {
+              this.empresaActivaId = ID_OCHOA;
+              storage.setItem(ACTIVE_COMPANY_KEY, this.empresaActivaId);
+            }
           }
 
           if (!this.anioActivo || !['2025', '2026'].includes(this.anioActivo)) {
@@ -1380,7 +1444,12 @@ class Store {
       if (!raw) return false;
       const session = JSON.parse(raw);
       if (!session) return false;
-      return (session.email || '').toLowerCase() === 'i.gonzalez.dsilva@gmail.com' || session.esSuperAdmin === true;
+      const email = (session.email || '').toLowerCase().trim();
+      if (session.esSuperAdmin === true || email === 'i.gonzalez.dsilva@gmail.com') {
+        return true;
+      }
+      const superAdmins = this.getSuperAdmins();
+      return superAdmins.some(sa => (sa.email || '').toLowerCase().trim() === email && (sa.estado || 'ACTIVO').toUpperCase() === 'ACTIVO');
     } catch (e) {
       return false;
     }
@@ -1388,14 +1457,14 @@ class Store {
 
   getSessionTenantLock() {
     try {
+      // Si la sesión activa es de Super Administrador, nunca bloquear
+      if (this.isSuperAdminSession()) {
+        return null;
+      }
       const raw = storage.getItem('DOCTOR_PYME_SESSION_V2') || storage.getItem('DOCTOR_PYME_SESSION_V1');
       if (!raw) return null;
       const session = JSON.parse(raw);
       if (!session) return null;
-      // Único Super Administrador con acceso global a todas las empresas
-      if ((session.email || '').toLowerCase() === 'i.gonzalez.dsilva@gmail.com' || session.esSuperAdmin === true) {
-        return null;
-      }
       // Si es cuenta de empresa o trabajador, bloquear estrictamente a su empresaId
       if (session.empresaId) {
         return session.empresaId;
@@ -1404,6 +1473,99 @@ class Store {
     } catch (e) {
       return null;
     }
+  }
+
+  // --- GESTIÓN DE SUPER ADMINISTRADORES ---
+  getSuperAdmins() {
+    if (!this.data) this.data = {};
+    if (!Array.isArray(this.data.super_admins)) {
+      this.data.super_admins = [
+        {
+          id: 'sa-001',
+          email: 'i.gonzalez.dsilva@gmail.com',
+          nombre: 'Ing. Iván David González Silva',
+          cargo: 'Super Administrador & Consultor Principal SST',
+          licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
+          telefono: '3144001787',
+          password: 'Stoner200',
+          estado: 'ACTIVO',
+          creadoEn: '2026-10-10T00:00:00.000Z',
+          ultimoIngreso: new Date().toISOString()
+        }
+      ];
+    }
+    return this.data.super_admins;
+  }
+
+  getSuperAdmin(id) {
+    return this.getSuperAdmins().find(a => a.id === id || a.email.toLowerCase() === id.toLowerCase()) || null;
+  }
+
+  saveSuperAdmin(adminData) {
+    this.getSuperAdmins();
+    const cleanEmail = (adminData.email || '').trim().toLowerCase();
+    if (!cleanEmail) return { ok: false, error: 'El correo electrónico es obligatorio.' };
+
+    const idxExistente = this.data.super_admins.findIndex(a => a.id === adminData.id || a.email.toLowerCase() === cleanEmail);
+    const nowIso = new Date().toISOString();
+
+    if (idxExistente >= 0) {
+      const actual = this.data.super_admins[idxExistente];
+      this.data.super_admins[idxExistente] = {
+        ...actual,
+        ...adminData,
+        email: cleanEmail,
+        updatedAt: nowIso
+      };
+    } else {
+      const nuevo = {
+        id: adminData.id || `sa-${Date.now()}`,
+        nombre: adminData.nombre || 'Super Administrador',
+        email: cleanEmail,
+        password: adminData.password || 'Stoner200',
+        cargo: adminData.cargo || 'Consultor Principal SST',
+        licencia: adminData.licencia || 'RESOLUCIÓN No. 6514 de 19/10/2022',
+        telefono: adminData.telefono || '3144001787',
+        estado: adminData.estado || 'ACTIVO',
+        creadoEn: nowIso,
+        ultimoIngreso: null
+      };
+      this.data.super_admins.push(nuevo);
+    }
+
+    this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
+    return { ok: true };
+  }
+
+  deleteSuperAdmin(id) {
+    this.getSuperAdmins();
+    this.data.super_admins = this.data.super_admins.filter(a => a.id !== id && a.email.toLowerCase() !== id.toLowerCase());
+    this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
+  }
+
+  toggleEstadoSuperAdmin(id) {
+    const admin = this.getSuperAdmin(id);
+    if (!admin) return 'INACTIVO';
+    admin.estado = (admin.estado || 'ACTIVO').toUpperCase() === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO';
+    this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
+    return admin.estado;
+  }
+
+  getEvidencias(companyId = null, anio = null) {
+    if (!this.data) return [];
+    const cid = companyId || this.getEmpresaActivaId();
+    const list = this.data.evidencias || [];
+    return list.filter(ev => {
+      const matchComp = ev.companyId === cid || ((cid === 'emp-004' || cid === 'emp-1790438946268') && (ev.companyId === 'emp-1790438946268' || ev.companyId === 'emp-004'));
+      const matchAnio = anio ? String(ev.anio || '2026') === String(anio) : true;
+      return matchComp && matchAnio;
+    });
   }
 
   getEmpresaActivaId() {
@@ -1492,6 +1654,9 @@ class Store {
 
   getEmpresas() {
     const todas = this.data?.empresas || [];
+    if (this.isSuperAdminSession()) {
+      return todas;
+    }
     const lockedId = this.getSessionTenantLock();
     if (lockedId) {
       return todas.filter(e => e.id === lockedId || ((lockedId === 'emp-004' || lockedId === 'emp-1790438946268') && (e.id === 'emp-1790438946268' || e.id === 'emp-004')));

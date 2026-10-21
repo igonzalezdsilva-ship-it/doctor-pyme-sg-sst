@@ -18,6 +18,7 @@ import { renderToolsModule } from './components/toolsManagement.js';
 import { renderWorkerPortal } from './components/workerPortal.js';
 import { renderAuditorView } from './components/auditorView.js';
 import { renderLegalComplianceRepository, renderLegalConsentScreen } from './components/legalCompliance.js';
+import { renderSuperAdmins } from './components/superAdmins.js';
 import { initAiAssistantWidget, abrirModalIA } from './components/aiAssistant.js';
 import './components/diagramViewer.js';
 import './components/documentViewer.js';
@@ -25,6 +26,7 @@ import './components/documentViewer.js';
 const routes = {
   '#dashboard': renderDashboard,
   '#empresas': renderCompanies,
+  '#super-admins': renderSuperAdmins,
   '#procesos': renderProcessMap,
   '#evaluacion': renderEvaluation,
   '#matriz': renderMatrix,
@@ -166,6 +168,15 @@ export function actualizarSelectorCabecera() {
   const sidebarLinkRepoLegal = document.querySelector('aside a.nav-link[href="#repositorio-legal"]');
   if (sidebarLinkRepoLegal) {
     sidebarLinkRepoLegal.classList.toggle('hidden', !esSuperAdmin);
+  }
+
+  const sidebarLinkSuperAdmins = document.querySelector('aside a.nav-link[href="#super-admins"]');
+  if (sidebarLinkSuperAdmins) {
+    sidebarLinkSuperAdmins.classList.toggle('hidden', !esSuperAdmin);
+  }
+  const sidebarSuperAdminGroup = document.getElementById('sidebar-superadmin-group');
+  if (sidebarSuperAdminGroup) {
+    sidebarSuperAdminGroup.classList.toggle('hidden', !esSuperAdmin);
   }
 
   // Ocultar selector rápido de rol (Admin | Trabajador | Auditor) y Respaldo/Restaurar global si no es Super Admin

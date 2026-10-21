@@ -65,8 +65,18 @@ export async function renderEvaluation() {
   const respuestasMap = store.getEvaluacion(empresaActiva.id, anioActivo);
   const resultado = calcularPuntaje(respuestasMap, estandares);
 
-  // Cargar evidencias adjuntas desde IndexedDB
+  // Cargar evidencias adjuntas desde IndexedDB y Base de Datos del Store
   const todasEvidencias = await evidenceDB.obtenerTodasEvidencias(empresaActiva.id);
+  try {
+    const evidenciasStore = store.getEvidencias ? store.getEvidencias(empresaActiva.id, anioActivo) : [];
+    evidenciasStore.forEach(ev => {
+      if (!todasEvidencias.some(e => e.id === ev.id)) {
+        todasEvidencias.push(ev);
+      }
+    });
+  } catch (eEv) {
+    console.warn("Aviso fusionando evidencias en evaluación:", eEv);
+  }
   const evidenciasPorNumeral = {};
   todasEvidencias.forEach(ev => {
     if (!evidenciasPorNumeral[ev.numeral]) {
