@@ -277,6 +277,59 @@ mount_api(server, '/admin/legal-compliance-repository') do |req, res|
   end
 end
 
+# Rutas amigables para navegación directa en navegador
+['/procesos', '/empresas', '/evaluacion', '/documentos', '/cargos', '/matriz'].each do |route_path|
+  mount_api(server, route_path) do |req, res|
+    add_cors_headers(res)
+    index_file = File.join(root, 'index.html')
+    if File.exist?(index_file)
+      res['Content-Type'] = 'text/html; charset=utf-8'
+      res.body = File.read(index_file)
+    else
+      res.status = 404
+      res.body = "Aplicativo principal no encontrado"
+    end
+  end
+end
+
+# Favicon handler
+mount_api(server, '/favicon.ico') do |req, res|
+  add_cors_headers(res)
+  fav_png = File.join(root, 'assets', 'favicon.png')
+  fav_svg = File.join(root, 'favicon.svg')
+  if File.exist?(fav_png)
+    res['Content-Type'] = 'image/png'
+    res.body = File.binread(fav_png)
+  elsif File.exist?(fav_svg)
+    res['Content-Type'] = 'image/svg+xml'
+    res.body = File.read(fav_svg)
+  else
+    res.status = 204
+  end
+end
+
+# Endpoint y redirección para /api/processes
+mount_api(server, '/api/processes') do |req, res|
+  add_cors_headers(res)
+  accept_header = req['Accept'].to_s
+  if accept_header.include?('text/html')
+    # Si fue abierto en el navegador directamente, redirigir a la vista de Procesos de la SPA
+    res.status = 302
+    res['Location'] = '/#procesos'
+    res.body = "Redirigiendo al módulo de Procesos y Organigrama..."
+  else
+    db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+    res['Content-Type'] = 'application/json; charset=utf-8'
+    res.body = {
+      ok: true,
+      processes: db['processes'] || [],
+      process_maps: db['process_maps'] || [],
+      process_activities: db['process_activities'] || [],
+      job_positions: db['job_positions'] || []
+    }.to_json
+  end
+end
+
 # -----------------------------------------------------------------------------
 # API: Obtener Base de Datos Física en Disco
 # -----------------------------------------------------------------------------
