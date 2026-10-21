@@ -1017,12 +1017,17 @@ window.imprimirMatrizGTC45PDF = function() {
       <div class="no-print" style="margin-bottom:10px; text-align:right;">
         <button onclick="window.print()" style="padding:8px 16px; background:#4f46e5; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🖨️ Imprimir / Guardar en PDF</button>
       </div>
-      <div class="header">
-        <div>
-          <h1>MATRIZ DE IDENTIFICACIÓN DE PELIGROS, EVALUACIÓN Y VALORACIÓN DE RIESGOS (GTC 45)</h1>
-          <div><strong>Empresa:</strong> ${empresaActiva.razonSocial} | <strong>NIT:</strong> ${empresaActiva.nit} | <strong>Clase de Riesgo:</strong> ${empresaActiva.claseRiesgo}</div>
+      <div class="header" style="display: flex; align-items: center; justify-content: space-between; border: 2px solid #0f172a; padding: 10px 14px; margin-bottom: 12px; gap: 15px;">
+        <div style="flex-shrink: 0; min-width: 140px; text-align: center;">
+          ${empresaActiva.logoUrl 
+            ? `<img src="${empresaActiva.logoUrl}" alt="${empresaActiva.razonSocial}" style="max-height: 52px; max-width: 145px; object-fit: contain;">`
+            : `<div style="font-weight: 900; font-size: 13pt; color: #0f172a;">${empresaActiva.razonSocial}</div>`}
         </div>
-        <div style="text-align:right;">
+        <div style="flex: 1; padding: 0 10px;">
+          <h1 style="font-size: 13px; margin: 0 0 4px; color: #0f172a; text-transform: uppercase;">MATRIZ DE IDENTIFICACIÓN DE PELIGROS, EVALUACIÓN Y VALORACIÓN DE RIESGOS (GTC 45)</h1>
+          <div style="font-size: 9.5px; color: #334155;"><strong>Empresa:</strong> ${empresaActiva.razonSocial} | <strong>NIT:</strong> ${empresaActiva.nit} | <strong>Clase de Riesgo:</strong> ${empresaActiva.claseRiesgo}</div>
+        </div>
+        <div style="text-align: right; font-size: 9px; line-height: 1.4; flex-shrink: 0;">
           <div><strong>Código:</strong> FT-SST-GTC45-01</div>
           <div><strong>Fecha:</strong> ${new Date().toLocaleDateString('es-CO')}</div>
           <div><strong>Registros:</strong> ${matriz.length} peligros</div>

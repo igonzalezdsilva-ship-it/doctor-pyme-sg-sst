@@ -2552,6 +2552,32 @@ window.eliminarCargoDirecto = function(cargoId) {
 // GENERADORES DE LOS 6 DOCUMENTOS OFICIALES EN PDF / VENTANA DE IMPRESIÓN
 // =============================================================================
 
+function generarCeldaLogoEmpresa(empresa, subtexto = '') {
+  const razon = (empresa?.razonSocial || 'EMPRESA CLIENTE').toUpperCase();
+  const nit = empresa?.nit ? `NIT: ${empresa.nit}` : '';
+
+  if (empresa?.logoUrl) {
+    return `
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px; text-align: center;">
+        <img src="${empresa.logoUrl}" alt="${razon}" style="max-height: 52px; max-width: 145px; object-fit: contain; margin-bottom: 3px;">
+        <strong style="font-size: 7.5pt; color: #0f172a; line-height: 1.15; max-width: 160px; word-break: break-word;">${razon}</strong>
+        ${nit ? `<span style="font-size: 6.5pt; color: #64748b; line-height: 1.1;">${nit}</span>` : ''}
+      </div>
+    `;
+  }
+
+  const initials = razon.split(/\s+/).filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase() || 'SG';
+  return `
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px; text-align: center;">
+      <div style="width: 44px; height: 44px; border-radius: 8px; background: #0f172a; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13pt; margin-bottom: 3px; letter-spacing: 0.5px;">
+        ${initials}
+      </div>
+      <strong style="font-size: 8pt; color: #0f172a; line-height: 1.15; max-width: 160px; word-break: break-word;">${razon}</strong>
+      ${nit ? `<span style="font-size: 6.5pt; color: #64748b; line-height: 1.1;">${nit}</span>` : ''}
+    </div>
+  `;
+}
+
 function abrirVentanaImpresion(tituloDoc, htmlBody) {
   const printWin = window.open('', '_blank', 'width=950,height=900,menubar=no,toolbar=no,status=no');
   if (!printWin) {
@@ -2623,9 +2649,8 @@ window.imprimirManualDeCargo = function(cargoId) {
   const html = `
     <table class="header-table">
       <tr>
-        <td style="width: 25%; text-align: center;">
-          <strong style="font-size: 14pt; color: #0f172a;">DOCTOR PYME</strong><br>
-          <span style="font-size: 8pt; color: #475569;">SG-SST Multitenant</span>
+        <td style="width: 25%; text-align: center; vertical-align: middle;">
+          ${generarCeldaLogoEmpresa(empresa, 'Manual de Funciones')}
         </td>
         <td style="width: 50%;">
           <div class="doc-title">MANUAL ESPECÍFICO DE FUNCIONES Y RESPONSABILIDADES EN SST</div>
@@ -2634,7 +2659,8 @@ window.imprimirManualDeCargo = function(cargoId) {
         <td style="width: 25%; font-size: 8pt; line-height: 1.4;">
           <strong>CÓDIGO:</strong> MN-CARG-${cargo.code}<br>
           <strong>VERSIÓN:</strong> 01<br>
-          <strong>FECHA:</strong> ${new Date().toLocaleDateString('es-CO')}
+          <strong>FECHA:</strong> ${new Date().toLocaleDateString('es-CO')}<br>
+          <strong>EMPRESA:</strong> ${empresa.razonSocial}
         </td>
       </tr>
     </table>
@@ -2735,9 +2761,8 @@ window.imprimirPerfilDeCargo = function(cargoId) {
   const html = `
     <table class="header-table">
       <tr>
-        <td style="width: 25%; text-align: center;">
-          <strong style="font-size: 14pt; color: #0f172a;">DOCTOR PYME</strong><br>
-          <span style="font-size: 8pt; color: #475569;">Talento Humano & SG-SST</span>
+        <td style="width: 25%; text-align: center; vertical-align: middle;">
+          ${generarCeldaLogoEmpresa(empresa, 'Perfil de Cargo')}
         </td>
         <td style="width: 50%;">
           <div class="doc-title">PERFIL DE CARGO Y REQUISITOS DE COMPETENCIA</div>
@@ -2746,7 +2771,8 @@ window.imprimirPerfilDeCargo = function(cargoId) {
         <td style="width: 25%; font-size: 8pt; line-height: 1.4;">
           <strong>CÓDIGO:</strong> PF-CARG-${cargo.code}<br>
           <strong>VERSIÓN:</strong> 01<br>
-          <strong>FECHA:</strong> ${new Date().toLocaleDateString('es-CO')}
+          <strong>FECHA:</strong> ${new Date().toLocaleDateString('es-CO')}<br>
+          <strong>EMPRESA:</strong> ${empresa.razonSocial}
         </td>
       </tr>
     </table>
@@ -2845,9 +2871,8 @@ window.imprimirPlanTrabajoSeguro = function(cargoId) {
   const html = `
     <table class="header-table">
       <tr>
-        <td style="width: 25%; text-align: center;">
-          <strong style="font-size: 14pt; color: #0f172a;">DOCTOR PYME</strong><br>
-          <span style="font-size: 8pt; color: #475569;">Seguridad Operacional</span>
+        <td style="width: 25%; text-align: center; vertical-align: middle;">
+          ${generarCeldaLogoEmpresa(empresa, 'Seguridad Operacional')}
         </td>
         <td style="width: 50%;">
           <div class="doc-title">PROCEDIMIENTO Y PLAN DE TRABAJO SEGURO (PTS)</div>
@@ -2856,6 +2881,7 @@ window.imprimirPlanTrabajoSeguro = function(cargoId) {
         <td style="width: 25%; font-size: 8pt; line-height: 1.4;">
           <strong>CÓDIGO:</strong> PTS-${cargo.code}<br>
           <strong>VERSIÓN:</strong> 01<br>
+          <strong>FECHA:</strong> ${new Date().toLocaleDateString('es-CO')}<br>
           <strong>EMPRESA:</strong> ${empresa.razonSocial}
         </td>
       </tr>
@@ -2942,9 +2968,8 @@ window.imprimirProfesiograma = function(cargoId) {
   const html = `
     <table class="header-table">
       <tr>
-        <td style="width: 25%; text-align: center;">
-          <strong style="font-size: 14pt; color: #0f172a;">DOCTOR PYME</strong><br>
-          <span style="font-size: 8pt; color: #475569;">Medicina del Trabajo</span>
+        <td style="width: 25%; text-align: center; vertical-align: middle;">
+          ${generarCeldaLogoEmpresa(empresa, 'Medicina del Trabajo')}
         </td>
         <td style="width: 50%;">
           <div class="doc-title">PROFESIOGRAMA Y EXÁMENES MÉDICOS OCUPACIONALES</div>
@@ -2953,6 +2978,7 @@ window.imprimirProfesiograma = function(cargoId) {
         <td style="width: 25%; font-size: 8pt; line-height: 1.4;">
           <strong>CÓDIGO:</strong> MED-PROF-${cargo.code}<br>
           <strong>VERSIÓN:</strong> 01<br>
+          <strong>FECHA:</strong> ${new Date().toLocaleDateString('es-CO')}<br>
           <strong>EMPRESA:</strong> ${empresa.razonSocial}
         </td>
       </tr>
@@ -3046,9 +3072,8 @@ window.imprimirMatrizEPP = function(cargoId) {
   const html = `
     <table class="header-table">
       <tr>
-        <td style="width: 25%; text-align: center;">
-          <strong style="font-size: 14pt; color: #0f172a;">DOCTOR PYME</strong><br>
-          <span style="font-size: 8pt; color: #475569;">Protección & EPP</span>
+        <td style="width: 25%; text-align: center; vertical-align: middle;">
+          ${generarCeldaLogoEmpresa(empresa, 'Protección & EPP')}
         </td>
         <td style="width: 50%;">
           <div class="doc-title">MATRIZ DE ELEMENTOS DE PROTECCIÓN PERSONAL Y DOTACIÓN</div>
@@ -3057,6 +3082,7 @@ window.imprimirMatrizEPP = function(cargoId) {
         <td style="width: 25%; font-size: 8pt; line-height: 1.4;">
           <strong>CÓDIGO:</strong> EPP-CARG-${cargo.code}<br>
           <strong>VERSIÓN:</strong> 01<br>
+          <strong>FECHA:</strong> ${new Date().toLocaleDateString('es-CO')}<br>
           <strong>EMPRESA:</strong> ${empresa.razonSocial}
         </td>
       </tr>
@@ -3153,9 +3179,8 @@ window.imprimirAnexoContractual = function(cargoId) {
   const html = `
     <table class="header-table">
       <tr>
-        <td style="width: 25%; text-align: center;">
-          <strong style="font-size: 14pt; color: #0f172a;">DOCTOR PYME</strong><br>
-          <span style="font-size: 8pt; color: #475569;">Blindaje Jurídico Laboral</span>
+        <td style="width: 25%; text-align: center; vertical-align: middle;">
+          ${generarCeldaLogoEmpresa(empresa, 'Blindaje Jurídico Laboral')}
         </td>
         <td style="width: 50%;">
           <div class="doc-title">ANEXO CONTRACTUAL DE SST Y NOTIFICACIÓN EXPRESA DE RIESGOS</div>
@@ -3164,7 +3189,8 @@ window.imprimirAnexoContractual = function(cargoId) {
         <td style="width: 25%; font-size: 8pt; line-height: 1.4;">
           <strong>ANEXO AL CONTRATO LABORAL</strong><br>
           <strong>CARGO:</strong> ${cargo.title}<br>
-          <strong>FECHA:</strong> ${new Date().toLocaleDateString('es-CO')}
+          <strong>FECHA:</strong> ${new Date().toLocaleDateString('es-CO')}<br>
+          <strong>EMPRESA:</strong> ${empresa.razonSocial}
         </td>
       </tr>
     </table>

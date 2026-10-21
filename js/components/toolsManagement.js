@@ -1542,8 +1542,7 @@ window.generarPdfHojaDeVida = function(toolId) {
 
       <div class="header">
         <div class="logo-box">
-          <strong style="color: #0f766e; font-size: 14px;">DOCTOR PYME</strong>
-          <div style="font-size: 9px; color: #64748b;">SG-SST Digital</div>
+          ${empresa?.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 48px; max-width: 135px; object-fit: contain;">` : `<strong style="color: #0f766e; font-size: 14px;">${empresa?.razonSocial || 'EMPRESA'}</strong><div style="font-size: 9px; color: #64748b;">SG-SST Digital</div>`}
         </div>
         <div class="title-box">
           <h1>Hoja de Vida de Maquinaria y Equipos</h1>
@@ -1710,7 +1709,7 @@ window.generarPdfFichaSST = function(toolId) {
 
       <div class="header">
         <div>
-          <strong style="color: #b91c1c; font-size: 14px;">DOCTOR PYME SG-SST</strong>
+          ${empresa?.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 48px; max-width: 135px; object-fit: contain;">` : `<strong style="color: #b91c1c; font-size: 14px;">${empresa?.razonSocial || 'EMPRESA'}</strong>`}
           <div style="font-size: 9px; color: #64748b;">Seguridad Industrial y Prevención</div>
         </div>
         <div style="text-align: center;">
@@ -1810,7 +1809,7 @@ window.generarPdfPlanMantenimiento = function(toolId) {
 
       <div class="header">
         <div>
-          <strong style="color: #4338ca; font-size: 14px;">DOCTOR PYME SG-SST</strong>
+          ${empresa?.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 48px; max-width: 135px; object-fit: contain;">` : `<strong style="color: #4338ca; font-size: 14px;">${empresa?.razonSocial || 'EMPRESA'}</strong>`}
           <div style="font-size: 9px; color: #64748b;">Mantenimiento Predictivo y Preventivo</div>
         </div>
         <div style="text-align: center;">

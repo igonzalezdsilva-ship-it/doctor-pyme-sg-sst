@@ -1799,9 +1799,12 @@ window.generarPdfCartaPreaviso = function(trabajadorId) {
         </button>
       </div>
 
-      <div class="header">
-        <strong style="font-size: 15px; color: #0f172a;">${empresa.razonSocial}</strong>
-        <div class="meta-empresa">NIT: ${empresa.nit} • Dirección de Talento Humano & Seguridad Social</div>
+      <div class="header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 20px; gap: 15px;">
+        <div>
+          <strong style="font-size: 15px; color: #0f172a;">${empresa.razonSocial}</strong>
+          <div class="meta-empresa">NIT: ${empresa.nit} • Dirección de Talento Humano & Seguridad Social</div>
+        </div>
+        ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 55px; max-width: 140px; object-fit: contain;">` : ''}
       </div>
 
       <div style="margin-bottom: 18px;">
@@ -2216,6 +2219,7 @@ window.generarPdfContratoTrabajador = function(trabajadorId) {
       </div>
 
       <div class="header">
+        ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 55px; max-width: 150px; object-fit: contain; margin-bottom: 6px;"><br>` : ''}
         <strong style="font-size: 14px; color: #0f172a;">${empresa.razonSocial}</strong>
         <div style="font-size: 10px; color: #64748b;">NIT: ${empresa.nit} • Matriz de Talento Humano & SG-SST</div>
         <h1>CONTRATO INDIVIDUAL DE TRABAJO A ${trabajador.tipoContrato ? trabajador.tipoContrato.toUpperCase() : 'TÉRMINO INDEFINIDO'}</h1>
@@ -2347,6 +2351,7 @@ window.generarPdfPerfilCargo = function(cargoName, companyId) {
       </div>
 
       <div class="header">
+        ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 52px; max-width: 150px; object-fit: contain; margin-bottom: 5px;"><br>` : ''}
         <strong style="font-size: 13px; color: #0f172a;">${empresa.razonSocial}</strong>
         <div style="font-size: 9px; color: #64748b;">NIT: ${empresa.nit} • Sistema de Gestión de Seguridad y Salud en el Trabajo</div>
         <h1>PERFIL OCUPACIONAL Y DESCRIPTOR DEL CARGO</h1>
@@ -2441,6 +2446,7 @@ window.generarPdfManualFunciones = function(cargoName, companyId) {
       </div>
 
       <div class="header">
+        ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 52px; max-width: 150px; object-fit: contain; margin-bottom: 5px;"><br>` : ''}
         <strong style="font-size: 13px; color: #0f172a;">${empresa.razonSocial}</strong>
         <div style="font-size: 9px; color: #64748b;">NIT: ${empresa.nit} • Sistema de Gestión de Seguridad y Salud en el Trabajo</div>
         <h1>MANUAL DE FUNCIONES Y ASIGNACIÓN DE RESPONSABILIDADES SST</h1>
@@ -2507,6 +2513,7 @@ window.generarPdfPtsCargo = function(cargoName, companyId) {
       </div>
 
       <div class="header">
+        ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 52px; max-width: 150px; object-fit: contain; margin-bottom: 5px;"><br>` : ''}
         <strong style="font-size: 13px; color: #0f172a;">${empresa.razonSocial}</strong>
         <div style="font-size: 9px; color: #64748b;">NIT: ${empresa.nit} • Control Operacional SG-SST (GTC 45)</div>
         <h1>PROCEDIMIENTO DE TRABAJO SEGURO (PTS)</h1>
