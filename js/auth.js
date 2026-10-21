@@ -413,71 +413,6 @@ class Auth {
               </button>
             </form>
 
-            <!-- Acceso Rápido por Perfiles Demostrativos -->
-            <div class="mt-6 pt-5 border-t border-slate-100">
-              <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2.5 text-center">
-                Perfiles de Acceso Rápido (Pruebas)
-              </span>
-              
-              <div class="grid grid-cols-1 gap-2">
-                <!-- 1. Perfil Admin -->
-                <button type="button" id="btn-quick-admin" class="p-2.5 bg-teal-50 hover:bg-teal-100 border border-teal-200/80 rounded-xl text-left transition flex items-center justify-between group cursor-pointer">
-                  <div class="flex items-center gap-2.5">
-                    <div class="w-7 h-7 rounded-lg bg-teal-700 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
-                      👑
-                    </div>
-                    <div>
-                      <span class="text-xs font-bold text-teal-950 block">Consultor SST / Administrador</span>
-                      <span class="text-[10px] text-teal-700 block">i.gonzalez.dsilva@gmail.com • Gestión Total</span>
-                    </div>
-                  </div>
-                  <span class="text-xs text-teal-600 font-bold group-hover:translate-x-0.5 transition">→</span>
-                </button>
-
-                <!-- 2. Perfil Empresa Cliente -->
-                <button type="button" id="btn-quick-empresa" class="p-2.5 bg-blue-50 hover:bg-blue-100 border border-blue-200/80 rounded-xl text-left transition flex items-center justify-between group cursor-pointer">
-                  <div class="flex items-center gap-2.5">
-                    <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
-                      🏢
-                    </div>
-                    <div>
-                      <span class="text-xs font-bold text-blue-950 block">Empresa Cliente: Ladrillos Ochoa Ltda</span>
-                      <span class="text-[10px] text-blue-700 block">sstmineroambientall8a@gmail.com</span>
-                    </div>
-                  </div>
-                  <span class="text-xs text-blue-600 font-bold group-hover:translate-x-0.5 transition">→</span>
-                </button>
-
-                <!-- 3. Perfil Trabajador -->
-                <button type="button" id="btn-quick-worker" class="p-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 rounded-xl text-left transition flex items-center justify-between group cursor-pointer">
-                  <div class="flex items-center gap-2.5">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
-                      👷
-                    </div>
-                    <div>
-                      <span class="text-xs font-bold text-emerald-950 block">Portal del Trabajador (Julián Ospina)</span>
-                      <span class="text-[10px] text-emerald-700 block">Capacitaciones, firmas, preoperacional</span>
-                    </div>
-                  </div>
-                  <span class="text-xs text-emerald-600 font-bold group-hover:translate-x-0.5 transition">→</span>
-                </button>
-
-                <!-- 4. Perfil Auditor -->
-                <button type="button" id="btn-quick-auditor" class="p-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl text-left transition flex items-center justify-between group cursor-pointer">
-                  <div class="flex items-center gap-2.5">
-                    <div class="w-7 h-7 rounded-lg bg-slate-700 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
-                      🛡️
-                    </div>
-                    <div>
-                      <span class="text-xs font-bold text-slate-900 block">Auditor SST / MinTrabajo</span>
-                      <span class="text-[10px] text-slate-600 block">Vista oficial de solo lectura e informe legal</span>
-                    </div>
-                  </div>
-                  <span class="text-xs text-slate-600 font-bold group-hover:translate-x-0.5 transition">→</span>
-                </button>
-              </div>
-            </div>
-
           </div>
 
           <div class="text-center text-[11px] text-slate-400 mt-5">
@@ -520,32 +455,6 @@ class Auth {
         errorEl.classList.remove('hidden');
       }
     });
-
-    // Accesos rápidos
-    document.getElementById('btn-quick-admin').onclick = () => {
-      const res = this.loginDirectoComo('admin');
-      if (res.ok) onLoginSuccess(res.user);
-    };
-
-    document.getElementById('btn-quick-empresa').onclick = () => {
-      const res = this.loginDirectoComo('empresa');
-      if (res.ok) onLoginSuccess(res.user);
-      else {
-        const errorEl = document.getElementById('login-error');
-        errorEl.innerText = res.error || 'No se pudo iniciar sesión con la empresa.';
-        errorEl.classList.remove('hidden');
-      }
-    };
-
-    document.getElementById('btn-quick-worker').onclick = () => {
-      const res = this.loginDirectoComo('trabajador');
-      if (res.ok) onLoginSuccess(res.user);
-    };
-
-    document.getElementById('btn-quick-auditor').onclick = () => {
-      const res = this.loginDirectoComo('auditor');
-      if (res.ok) onLoginSuccess(res.user);
-    };
   }
 }
 

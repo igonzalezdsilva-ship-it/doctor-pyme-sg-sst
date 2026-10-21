@@ -169,24 +169,9 @@ async function recopilarDocumentos(empresa, anio) {
       });
     }
 
-    // Soporte oficial de organigrama o mapa si aplica a este estándar
-    const aplicaOrg = (est.numeral.startsWith('1.1.2') || est.numeral.startsWith('1.1.1')) && tieneOrganigrama;
-    const aplicaMapa = (est.numeral === '2.1.1' || est.numeral === '2.2.1' || est.numeral === '4.1.1') && tieneMapa;
-
     let soporteUrl = linkGuia;
     let esDiag = false;
     let diagTipo = null;
-    if (!soporteUrl) {
-      if (aplicaOrg) {
-        soporteUrl = diagOrg?.dataUrl || empresa.organigramaUrl || './assets/organigrama-ladrillos-ochoa.svg';
-        esDiag = true;
-        diagTipo = 'organigrama';
-      } else if (aplicaMapa) {
-        soporteUrl = diagMapa?.dataUrl || empresa.mapaProcesosUrl || './assets/mapa-procesos-ladrillos-ochoa.png';
-        esDiag = true;
-        diagTipo = 'mapa_procesos';
-      }
-    }
 
     const tieneDocumento = !!soporteUrl || adjuntosNumeral.length > 0;
     const soporte = detectarTipoSoporte(soporteUrl, adjuntosNumeral.length > 0, esDiag);
@@ -281,6 +266,7 @@ export async function renderDocumentation() {
 
   const empresaActiva = store.getEmpresaActiva();
   const anioActivo = store.getAnioActivo();
+  const aniosDisponibles = store.getAniosDisponibles ? store.getAniosDisponibles(empresaActiva?.id) : ['2025', '2026'];
 
   if (!empresaActiva) {
     container.innerHTML = `
@@ -370,9 +356,14 @@ export async function renderDocumentation() {
               <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wider uppercase bg-indigo-500/30 text-indigo-300 border border-indigo-500/40">
                 Decreto 1072 de 2015 • Art. 2.2.4.6.12 & 2.2.4.6.13
               </span>
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/10 text-white border border-white/20">
-                Vigencia ${anioActivo}
-              </span>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/10 text-white border border-white/20">
+                <span>Vigencia:</span>
+                <select onchange="window.cambiarAnioActivo(this.value)" class="bg-indigo-950/90 text-white text-[11px] font-extrabold rounded px-1.5 py-0.5 border border-indigo-400/40 focus:outline-none cursor-pointer">
+                  ${aniosDisponibles.map(a => `
+                    <option value="${a}" ${a === anioActivo ? 'selected' : ''} class="bg-slate-900 text-white">Año ${a} ${a === '2025' ? '(Inicial)' : ''}</option>
+                  `).join('')}
+                </select>
+              </div>
             </div>
             <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3">
               <span class="p-2 rounded-2xl bg-indigo-600/60 border border-indigo-400/40 shadow-inner">📚</span>

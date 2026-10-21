@@ -240,10 +240,7 @@ export async function renderEvaluation() {
 
           const fuentesValidas = fuentes.filter(f => !!f.url);
           const linkGuia = fuentesValidas.length > 0 ? fuentesValidas[0].url : (resp.linkGuia || '').trim();
-
-          const tieneDiagOrg = (est.numeral.startsWith('1.1.2') || est.numeral.startsWith('1.1.1')) && (empresaActiva.tieneOrganigrama || !!empresaActiva.organigramaUrl);
-          const tieneDiagMapa = (est.numeral === '2.1.1' || est.numeral === '2.2.1' || est.numeral === '4.1.1') && (empresaActiva.tieneMapaProcesos || !!empresaActiva.mapaProcesosUrl);
-          const totalSoportes = evidencias.length + fuentesValidas.length + (tieneDiagOrg ? 1 : 0) + (tieneDiagMapa ? 1 : 0);
+          const totalSoportes = evidencias.length + fuentesValidas.length;
 
           return `
             <div class="bg-white rounded-xl border ${estado === 'CUMPLE' ? 'border-emerald-200 bg-emerald-50/10' : estado === 'NO_CUMPLE' ? 'border-red-200 bg-red-50/10' : 'border-slate-200'} p-5 shadow-sm card-estandar-optimizado">
@@ -273,16 +270,6 @@ export async function renderEvaluation() {
                         </a>
                       `;
                     }).join('')}
-                    ${tieneDiagOrg ? `
-                      <button type="button" onclick="window.abrirVisorDiagrama('${empresaActiva.id}', 'organigrama')" class="text-xs font-bold text-purple-700 bg-purple-100/90 hover:bg-purple-200 px-2.5 py-0.5 rounded-full flex items-center gap-1 transition shadow-2xs" title="Ver Organigrama Institucional Aprobado">
-                        👥 Organigrama 👁️
-                      </button>
-                    ` : ''}
-                    ${tieneDiagMapa ? `
-                      <button type="button" onclick="window.abrirVisorDiagrama('${empresaActiva.id}', 'mapa_procesos')" class="text-xs font-bold text-teal-700 bg-teal-100/90 hover:bg-teal-200 px-2.5 py-0.5 rounded-full flex items-center gap-1 transition shadow-2xs" title="Ver Mapa de Procesos Oficial">
-                        🗺️ Mapa Procesos 👁️
-                      </button>
-                    ` : ''}
                   </div>
 
                   <h3 class="font-bold text-slate-800 text-base mt-2">${est.estandar}</h3>
@@ -546,60 +533,6 @@ export async function renderEvaluation() {
                         </div>
                       `;
                     }).join('')}
-
-                    <!-- Tarjeta de Organigrama Institucional si aplica -->
-                    ${tieneDiagOrg ? `
-                      <div class="bg-white p-2.5 rounded-lg border border-purple-200 bg-purple-50/20 shadow-xs flex items-center justify-between gap-2 hover:shadow-sm transition">
-                        <div class="flex items-center gap-2 overflow-hidden flex-1 min-w-0 cursor-pointer" onclick="window.abrirVisorDiagrama('${empresaActiva.id}', 'organigrama')" title="Clic para ver Organigrama Oficial">
-                          <span class="p-1.5 rounded bg-purple-100 text-purple-700 flex-shrink-0 text-xs">
-                            👥
-                          </span>
-                          <div class="overflow-hidden min-w-0">
-                            <span class="text-xs font-semibold text-slate-800 hover:text-purple-700 truncate block transition" title="Organigrama Institucional">Organigrama Institucional</span>
-                            <span class="text-[10px] font-medium text-purple-600 block">✓ Soporte Oficial Estructura SST</span>
-                          </div>
-                        </div>
-
-                        <div class="flex items-center gap-1.5 flex-shrink-0">
-                          <button 
-                            type="button" 
-                            onclick="window.abrirVisorDiagrama('${empresaActiva.id}', 'organigrama')" 
-                            class="px-2 py-1 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 rounded-md text-[11px] font-semibold flex items-center gap-1 transition shadow-2xs" 
-                            title="Ver Organigrama en visor de alta resolución"
-                          >
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                            <span>Ver</span>
-                          </button>
-                        </div>
-                      </div>
-                    ` : ''}
-
-                    <!-- Tarjeta de Mapa de Procesos si aplica -->
-                    ${tieneDiagMapa ? `
-                      <div class="bg-white p-2.5 rounded-lg border border-teal-200 bg-teal-50/20 shadow-xs flex items-center justify-between gap-2 hover:shadow-sm transition">
-                        <div class="flex items-center gap-2 overflow-hidden flex-1 min-w-0 cursor-pointer" onclick="window.abrirVisorDiagrama('${empresaActiva.id}', 'mapa_procesos')" title="Clic para ver Mapa de Procesos">
-                          <span class="p-1.5 rounded bg-teal-100 text-teal-700 flex-shrink-0 text-xs">
-                            🗺️
-                          </span>
-                          <div class="overflow-hidden min-w-0">
-                            <span class="text-xs font-semibold text-slate-800 hover:text-teal-700 truncate block transition" title="Mapa de Procesos">Mapa de Procesos</span>
-                            <span class="text-[10px] font-medium text-teal-600 block">✓ Soporte Oficial Enfoque GTC 45</span>
-                          </div>
-                        </div>
-
-                        <div class="flex items-center gap-1.5 flex-shrink-0">
-                          <button 
-                            type="button" 
-                            onclick="window.abrirVisorDiagrama('${empresaActiva.id}', 'mapa_procesos')" 
-                            class="px-2 py-1 bg-white hover:bg-teal-50 text-teal-700 border border-teal-200 rounded-md text-[11px] font-semibold flex items-center gap-1 transition shadow-2xs" 
-                            title="Ver Mapa de Procesos en visor"
-                          >
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                            <span>Ver</span>
-                          </button>
-                        </div>
-                      </div>
-                    ` : ''}
 
                     <!-- Archivos Locales Adjuntos (Subidos a IndexedDB) -->
                     ${evidencias.map(ev => {
