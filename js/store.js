@@ -681,10 +681,25 @@ class Store {
     this.saveStatusListeners = [];
     this.lastSaved = new Date();
     this.serverSynced = false;
-    this._bloqueoGuardado = true; // Blindaje: Evitar sobrescrituras al arrancar antes de sincronizar con el disco
     setEvidenceStoreRef(this);
     this.init();
     this.sincronizarConServidorFisico();
+
+    // Sincronización automática periódica y reactiva a cambios de pestaña o foco
+    if (typeof window !== 'undefined') {
+      window.addEventListener('focus', () => this.sincronizarConServidorFisico());
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          this.sincronizarConServidorFisico();
+        }
+      });
+      // Comprobación de integridad con el servidor cada 30 segundos
+      setInterval(() => {
+        if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+          this.sincronizarConServidorFisico();
+        }
+      }, 30000);
+    }
   }
 
   init() {
@@ -700,17 +715,17 @@ class Store {
           this.resetearDatosDemo();
           this.intentarRecuperarDeIndexedDB();
         } else {
-          // Garantizar integridad estructural de todas las colecciones
-          if (!Array.isArray(this.data.matriz)) this.data.matriz = [...MATRIZ_RIESGOS_DEMO];
-          if (!Array.isArray(this.data.planTrabajo)) this.data.planTrabajo = [...PLAN_TRABAJO_DEMO];
-          if (!Array.isArray(this.data.accidentes)) this.data.accidentes = [...ACCIDENTES_DEMO];
-          if (!Array.isArray(this.data.trabajadores)) this.data.trabajadores = [...TRABAJADORES_DEMO];
-          if (!Array.isArray(this.data.capacitaciones)) this.data.capacitaciones = [...CAPACITACIONES_DEMO];
-          if (!Array.isArray(this.data.equipos)) this.data.equipos = [...EQUIPOS_DEMO];
-          if (!Array.isArray(this.data.mantenimientos)) this.data.mantenimientos = [...MANTENIMIENTOS_DEMO];
-          if (!Array.isArray(this.data.firmas)) this.data.firmas = [...FIRMAS_DEMO];
-          if (!Array.isArray(this.data.reportesPeligro)) this.data.reportesPeligro = [...REPORTES_PELIGRO_DEMO];
-          if (!Array.isArray(this.data.reportesPreoperacional)) this.data.reportesPreoperacional = [...REPORTES_PREOPERACIONAL_DEMO];
+          // Garantizar integridad estructural de todas las colecciones sin forzar duplicados demo
+          if (!Array.isArray(this.data.matriz)) this.data.matriz = [];
+          if (!Array.isArray(this.data.planTrabajo)) this.data.planTrabajo = [];
+          if (!Array.isArray(this.data.accidentes)) this.data.accidentes = [];
+          if (!Array.isArray(this.data.trabajadores)) this.data.trabajadores = [];
+          if (!Array.isArray(this.data.capacitaciones)) this.data.capacitaciones = [];
+          if (!Array.isArray(this.data.equipos)) this.data.equipos = [];
+          if (!Array.isArray(this.data.mantenimientos)) this.data.mantenimientos = [];
+          if (!Array.isArray(this.data.firmas)) this.data.firmas = [];
+          if (!Array.isArray(this.data.reportesPeligro)) this.data.reportesPeligro = [];
+          if (!Array.isArray(this.data.reportesPreoperacional)) this.data.reportesPreoperacional = [];
           if (!Array.isArray(this.data.tools_inventory)) this.data.tools_inventory = [];
           if (!Array.isArray(this.data.tools_sst)) this.data.tools_sst = [];
           if (!Array.isArray(this.data.tools_maintenance_plan)) this.data.tools_maintenance_plan = [];
@@ -924,6 +939,9 @@ class Store {
 
   saveToStorage() {
     this.lastSaved = new Date();
+    if (this.data) {
+      this.data.updatedAt = this.lastSaved.toISOString();
+    }
     try {
       storage.setItem(STORAGE_KEY, JSON.stringify(this.data));
       if (typeof evidenceDB !== 'undefined' && evidenceDB.guardarSnapshot) {
@@ -955,10 +973,20 @@ class Store {
       if (resp.ok) {
         const serverData = await resp.json();
         if (serverData && Array.isArray(serverData.empresas) && serverData.empresas.length > 0) {
+          const localUpdated = this.data?.updatedAt ? new Date(this.data.updatedAt).getTime() : 0;
+          const serverUpdated = serverData?.updatedAt ? new Date(serverData.updatedAt).getTime() : 0;
+
+          // Si el navegador tiene cambios locales más recientes que el servidor, preservarlos y sincronizar hacia el servidor
+          if (localUpdated > serverUpdated + 1000) {
+            console.log("⚡ [SYNC] Los datos locales del navegador son más recientes que el servidor. Preservando y sincronizando con el servidor...");
+            this.serverSynced = true;
+            this.enviarAlServidorFisico(true);
+            return;
+          }
+
           console.log("✓ Sincronizado con Base de Datos Física en Disco (data/database.json)");
           this.data = serverData;
           this.serverSynced = true;
-          this._bloqueoGuardado = false;
           this.lastSaved = new Date();
 
           // Asegurar estructura de acceso en todas las empresas
@@ -977,14 +1005,14 @@ class Store {
             });
           }
 
-          // Asegurar integridad de colecciones operativas
-          if (!Array.isArray(this.data.trabajadores) || this.data.trabajadores.length === 0) this.data.trabajadores = [...TRABAJADORES_DEMO];
-          if (!Array.isArray(this.data.capacitaciones) || this.data.capacitaciones.length === 0) this.data.capacitaciones = [...CAPACITACIONES_DEMO];
-          if (!Array.isArray(this.data.equipos) || this.data.equipos.length === 0) this.data.equipos = [...EQUIPOS_DEMO];
-          if (!Array.isArray(this.data.mantenimientos) || this.data.mantenimientos.length === 0) this.data.mantenimientos = [...MANTENIMIENTOS_DEMO];
-          if (!Array.isArray(this.data.firmas) || this.data.firmas.length === 0) this.data.firmas = [...FIRMAS_DEMO];
-          if (!Array.isArray(this.data.reportesPeligro) || this.data.reportesPeligro.length === 0) this.data.reportesPeligro = [...REPORTES_PELIGRO_DEMO];
-          if (!Array.isArray(this.data.reportesPreoperacional) || this.data.reportesPreoperacional.length === 0) this.data.reportesPreoperacional = [...REPORTES_PREOPERACIONAL_DEMO];
+          // Asegurar integridad de colecciones operativas SIN sobrescribir listas vacías con demos
+          if (!Array.isArray(this.data.trabajadores)) this.data.trabajadores = [];
+          if (!Array.isArray(this.data.capacitaciones)) this.data.capacitaciones = [];
+          if (!Array.isArray(this.data.equipos)) this.data.equipos = [];
+          if (!Array.isArray(this.data.mantenimientos)) this.data.mantenimientos = [];
+          if (!Array.isArray(this.data.firmas)) this.data.firmas = [];
+          if (!Array.isArray(this.data.reportesPeligro)) this.data.reportesPeligro = [];
+          if (!Array.isArray(this.data.reportesPreoperacional)) this.data.reportesPreoperacional = [];
           if (!Array.isArray(this.data.tools_inventory)) this.data.tools_inventory = [];
           if (!Array.isArray(this.data.tools_sst)) this.data.tools_sst = [];
           if (!Array.isArray(this.data.tools_maintenance_plan)) this.data.tools_maintenance_plan = [];
@@ -1151,15 +1179,16 @@ class Store {
     }
   }
 
-  enviarAlServidorFisico() {
+  enviarAlServidorFisico(forceImmediate = false) {
     if (typeof fetch === 'undefined') return;
-    if (this._bloqueoGuardado) {
-      console.log("Guardado físico en pausa preventiva mientras finaliza la sincronización.");
-      return;
-    }
     if (this._saveTimeout) clearTimeout(this._saveTimeout);
-    this._saveTimeout = setTimeout(async () => {
+
+    const ejecutarEnvio = async () => {
       try {
+        if (!this.data) return;
+        if (!this.data.updatedAt) {
+          this.data.updatedAt = new Date().toISOString();
+        }
         const resp = await fetch(this.getApiUrl('/save'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1182,7 +1211,13 @@ class Store {
         this.serverSynced = false;
         console.warn("Servidor físico desconectado, datos preservados en almacenamiento local:", e);
       }
-    }, 250);
+    };
+
+    if (forceImmediate) {
+      ejecutarEnvio();
+    } else {
+      this._saveTimeout = setTimeout(ejecutarEnvio, 150);
+    }
   }
 
   async getBackupsList() {
@@ -1529,6 +1564,8 @@ class Store {
         storage.setItem(ACTIVE_COMPANY_KEY, this.empresaActivaId);
       }
       this.saveToStorage();
+      this.enviarAlServidorFisico(true);
+      this.notify();
     }
   }
 
@@ -1649,6 +1686,8 @@ class Store {
       if (Array.isArray(this.data.matriz)) {
         this.data.matriz = this.data.matriz.filter(m => m.id !== id);
         this.saveToStorage();
+        this.enviarAlServidorFisico(true);
+        this.notify();
       }
     }
   }
@@ -1674,6 +1713,7 @@ class Store {
       this.data.planTrabajo.push(newAct);
     }
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
   }
 
   deleteActividadPAT(id) {
@@ -1681,6 +1721,8 @@ class Store {
       if (Array.isArray(this.data.planTrabajo)) {
         this.data.planTrabajo = this.data.planTrabajo.filter(p => p.id !== id);
         this.saveToStorage();
+        this.enviarAlServidorFisico(true);
+        this.notify();
       }
     }
   }
@@ -1706,6 +1748,7 @@ class Store {
       this.data.accidentes.push(newAcc);
     }
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
   }
 
   deleteAccidente(id) {
@@ -1713,6 +1756,8 @@ class Store {
       if (Array.isArray(this.data.accidentes)) {
         this.data.accidentes = this.data.accidentes.filter(a => a.id !== id);
         this.saveToStorage();
+        this.enviarAlServidorFisico(true);
+        this.notify();
       }
     }
   }
@@ -1888,9 +1933,10 @@ class Store {
 
   // --- CRUD TRABAJADORES CON AISLAMIENTO MULTI-TENANT ESTRICTO ---
   getTrabajadores(companyId = null) {
-    const cid = (companyId !== null && companyId !== undefined) ? companyId : this.empresaActivaId;
+    const lockedId = this.getSessionTenantLock();
+    const cid = lockedId || ((companyId !== null && companyId !== undefined) ? companyId : this.getEmpresaActivaId());
     const lista = Array.isArray(this.data?.trabajadores) ? this.data.trabajadores : [];
-    if (cid === 'todas') return lista;
+    if (cid === 'todas' && !lockedId) return lista;
     // Aislamiento estricto por tenant_id / companyId
     return lista.filter(t => t && (t.companyId === cid || ((cid === 'emp-004' || cid === 'emp-1790438946268') && (t.companyId === 'emp-1790438946268' || t.companyId === 'emp-004'))));
   }
@@ -1915,7 +1961,8 @@ class Store {
 
   guardarTrabajador(trabajadorData) {
     if (!Array.isArray(this.data.trabajadores)) this.data.trabajadores = [];
-    const targetCompanyId = trabajadorData.companyId || (this.empresaActivaId !== 'todas' ? this.empresaActivaId : (this.getEmpresas()[0]?.id || 'emp-1790438946268'));
+    const lockedId = this.getSessionTenantLock();
+    const targetCompanyId = lockedId || trabajadorData.companyId || (this.getEmpresaActivaId() !== 'todas' ? this.getEmpresaActivaId() : (this.getEmpresas()[0]?.id || 'emp-1790438946268'));
 
     const cleanIdentificacion = (trabajadorData.identificacion || trabajadorData.cedula || '').trim();
     const cleanFecha = (trabajadorData.fechaContrato || trabajadorData.fechaIngreso || new Date().toISOString().slice(0, 10)).trim();
@@ -1955,6 +2002,7 @@ class Store {
       this.data.trabajadores.push(cleaned);
     }
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
     this.notify();
     return cleaned;
   }
@@ -1965,7 +2013,8 @@ class Store {
     }
     if (!Array.isArray(this.data.trabajadores)) this.data.trabajadores = [];
 
-    const targetCompanyId = companyId || (this.empresaActivaId !== 'todas' ? this.empresaActivaId : (this.getEmpresas()[0]?.id || 'emp-1790438946268'));
+    const lockedId = this.getSessionTenantLock();
+    const targetCompanyId = lockedId || companyId || (this.getEmpresaActivaId() !== 'todas' ? this.getEmpresaActivaId() : (this.getEmpresas()[0]?.id || 'emp-1790438946268'));
     let importados = 0;
     let actualizados = 0;
 
@@ -2018,6 +2067,7 @@ class Store {
     });
 
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
     this.notify();
     return { importados, actualizados, total: importados + actualizados };
   }
@@ -2050,6 +2100,7 @@ class Store {
       if (Array.isArray(this.data.trabajadores)) {
         this.data.trabajadores = this.data.trabajadores.filter(t => t.id !== id);
         this.saveToStorage();
+        this.enviarAlServidorFisico(true);
         this.notify();
       }
     }
@@ -2057,9 +2108,10 @@ class Store {
 
   // --- GESTIÓN DE INSTRUMENTOS POR CARGO (CONTRATOS, PERFILES, MANUAL DE FUNCIONES, PTS) ---
   getPerfilesCargo(companyId = null) {
-    const cid = (companyId !== null && companyId !== undefined) ? companyId : this.empresaActivaId;
+    const lockedId = this.getSessionTenantLock();
+    const cid = lockedId || ((companyId !== null && companyId !== undefined) ? companyId : this.getEmpresaActivaId());
     const lista = Array.isArray(this.data?.perfiles_cargo) ? this.data.perfiles_cargo : [];
-    if (cid === 'todas') return lista;
+    if (cid === 'todas' && !lockedId) return lista;
     return lista.filter(p => p && (p.companyId === cid || ((cid === 'emp-004' || cid === 'emp-1790438946268') && (p.companyId === 'emp-1790438946268' || p.companyId === 'emp-004'))));
   }
 
@@ -2531,7 +2583,8 @@ class Store {
   }
 
   getCapacitaciones(companyId = null) {
-    const cid = companyId || this.empresaActivaId;
+    const lockedId = this.getSessionTenantLock();
+    const cid = lockedId || companyId || this.getEmpresaActivaId();
     if (cid && cid !== 'todas') {
       this.ensureDefaultCapacitacion(cid);
     }
@@ -2580,6 +2633,8 @@ class Store {
     }
     this.data.capacitaciones = this.data.capacitaciones.filter(c => c && c.id !== id);
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
     return true;
   }
 
@@ -2756,26 +2811,30 @@ class Store {
 
   // --- CRUD EQUIPOS Y MAQUINARIA ---
   getEquipos(companyId = null) {
-    const cid = companyId || this.empresaActivaId;
+    const lockedId = this.getSessionTenantLock();
+    const cid = lockedId || companyId || this.getEmpresaActivaId();
     const lista = Array.isArray(this.data?.equipos) ? this.data.equipos : [];
-    if (cid === 'todas') return lista;
+    if (cid === 'todas' && !lockedId) return lista;
     return lista.filter(e => e && (e.companyId === cid || ((cid === 'emp-004' || cid === 'emp-1790438946268') && (e.companyId === 'emp-1790438946268' || e.companyId === 'emp-004'))));
   }
 
   guardarEquipo(equipoData) {
     if (!Array.isArray(this.data.equipos)) this.data.equipos = [];
+    const lockedId = this.getSessionTenantLock();
     if (equipoData.id) {
       this.data.equipos = this.data.equipos.map(e => e.id === equipoData.id ? { ...e, ...equipoData } : e);
     } else {
       const newEq = {
         ...equipoData,
         id: 'eq-' + Date.now(),
-        companyId: equipoData.companyId || this.empresaActivaId,
+        companyId: lockedId || equipoData.companyId || this.getEmpresaActivaId(),
         estado: equipoData.estado || 'Operativo'
       };
       this.data.equipos.push(newEq);
     }
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
   }
 
   deleteEquipo(id) {
@@ -2783,31 +2842,37 @@ class Store {
       if (Array.isArray(this.data.equipos)) {
         this.data.equipos = this.data.equipos.filter(e => e.id !== id);
         this.saveToStorage();
+        this.enviarAlServidorFisico(true);
+        this.notify();
       }
     }
   }
 
   // --- CRUD MANTENIMIENTOS (DIAGRAMA DE GANTT) ---
   getMantenimientos(companyId = null) {
-    const cid = companyId || this.empresaActivaId;
+    const lockedId = this.getSessionTenantLock();
+    const cid = lockedId || companyId || this.getEmpresaActivaId();
     const lista = Array.isArray(this.data?.mantenimientos) ? this.data.mantenimientos : [];
-    if (cid === 'todas') return lista;
+    if (cid === 'todas' && !lockedId) return lista;
     return lista.filter(m => m && (m.companyId === cid || ((cid === 'emp-004' || cid === 'emp-1790438946268') && (m.companyId === 'emp-1790438946268' || m.companyId === 'emp-004'))));
   }
 
   guardarMantenimiento(mantData) {
     if (!Array.isArray(this.data.mantenimientos)) this.data.mantenimientos = [];
+    const lockedId = this.getSessionTenantLock();
     if (mantData.id) {
       this.data.mantenimientos = this.data.mantenimientos.map(m => m.id === mantData.id ? { ...m, ...mantData } : m);
     } else {
       const newMant = {
         ...mantData,
         id: 'mant-' + Date.now(),
-        companyId: mantData.companyId || this.empresaActivaId
+        companyId: lockedId || mantData.companyId || this.getEmpresaActivaId()
       };
       this.data.mantenimientos.push(newMant);
     }
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
   }
 
   deleteMantenimiento(id) {
@@ -2815,15 +2880,18 @@ class Store {
       if (Array.isArray(this.data.mantenimientos)) {
         this.data.mantenimientos = this.data.mantenimientos.filter(m => m.id !== id);
         this.saveToStorage();
+        this.enviarAlServidorFisico(true);
+        this.notify();
       }
     }
   }
 
   // --- REGISTRO DE FIRMAS ELECTRÓNICAS (LEY 527/1999) ---
   getFirmas(companyId = null) {
-    const cid = companyId || this.empresaActivaId;
+    const lockedId = this.getSessionTenantLock();
+    const cid = lockedId || companyId || this.getEmpresaActivaId();
     const lista = Array.isArray(this.data?.firmas) ? this.data.firmas : [];
-    if (cid === 'todas') return lista;
+    if (cid === 'todas' && !lockedId) return lista;
     return lista.filter(f => f && (f.companyId === cid || ((cid === 'emp-004' || cid === 'emp-1790438946268') && (f.companyId === 'emp-1790438946268' || f.companyId === 'emp-004'))));
   }
 
@@ -2863,27 +2931,31 @@ class Store {
 
   // --- CRUD REPORTES DE PELIGRO ---
   getReportesPeligro(companyId = null) {
-    const cid = companyId || this.empresaActivaId;
+    const lockedId = this.getSessionTenantLock();
+    const cid = lockedId || companyId || this.getEmpresaActivaId();
     const lista = Array.isArray(this.data?.reportesPeligro) ? this.data.reportesPeligro : [];
-    if (cid === 'todas') return lista;
+    if (cid === 'todas' && !lockedId) return lista;
     return lista.filter(r => r && (r.companyId === cid || ((cid === 'emp-004' || cid === 'emp-1790438946268') && (r.companyId === 'emp-1790438946268' || r.companyId === 'emp-004'))));
   }
 
   guardarReportePeligro(repData) {
     if (!Array.isArray(this.data.reportesPeligro)) this.data.reportesPeligro = [];
+    const lockedId = this.getSessionTenantLock();
     if (repData.id) {
       this.data.reportesPeligro = this.data.reportesPeligro.map(r => r.id === repData.id ? { ...r, ...repData } : r);
     } else {
       const newRep = {
         ...repData,
         id: 'pel-' + Date.now(),
-        companyId: repData.companyId || this.empresaActivaId,
+        companyId: lockedId || repData.companyId || this.getEmpresaActivaId(),
         fechaReporte: new Date().toISOString(),
         estado: repData.estado || 'Reportado'
       };
       this.data.reportesPeligro.unshift(newRep);
     }
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
   }
 
   registrarReportePeligro(repData) {
@@ -2892,22 +2964,26 @@ class Store {
 
   // --- CRUD REPORTES PREOPERACIONALES ---
   getReportesPreoperacional(companyId = null) {
-    const cid = companyId || this.empresaActivaId;
+    const lockedId = this.getSessionTenantLock();
+    const cid = lockedId || companyId || this.getEmpresaActivaId();
     const lista = Array.isArray(this.data?.reportesPreoperacional) ? this.data.reportesPreoperacional : [];
-    if (cid === 'todas') return lista;
+    if (cid === 'todas' && !lockedId) return lista;
     return lista.filter(r => r && (r.companyId === cid || ((cid === 'emp-004' || cid === 'emp-1790438946268') && (r.companyId === 'emp-1790438946268' || r.companyId === 'emp-004'))));
   }
 
   guardarReportePreoperacional(preopData) {
     if (!Array.isArray(this.data.reportesPreoperacional)) this.data.reportesPreoperacional = [];
+    const lockedId = this.getSessionTenantLock();
     const newPreop = {
       ...preopData,
       id: 'preop-' + Date.now(),
-      companyId: preopData.companyId || this.empresaActivaId,
+      companyId: lockedId || preopData.companyId || this.getEmpresaActivaId(),
       fechaCreacion: new Date().toISOString()
     };
     this.data.reportesPreoperacional.unshift(newPreop);
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
     return newPreop;
   }
 
@@ -2919,9 +2995,10 @@ class Store {
 
   // 1. INVENTARIO DE HERRAMIENTAS (tools_inventory)
   getToolsInventory(tenantId = null) {
-    const tid = tenantId || this.empresaActivaId;
+    const lockedId = this.getSessionTenantLock();
+    const tid = lockedId || tenantId || this.getEmpresaActivaId();
     const lista = Array.isArray(this.data?.tools_inventory) ? this.data.tools_inventory : [];
-    if (tid === 'todas') return lista;
+    if (tid === 'todas' && !lockedId) return lista;
     return lista.filter(t => t && (t.tenant_id === tid || ((tid === 'emp-004' || tid === 'emp-1790438946268') && (t.tenant_id === 'emp-1790438946268' || t.tenant_id === 'emp-004'))));
   }
 
@@ -2937,7 +3014,8 @@ class Store {
 
   saveTool(toolData, assignmentIfActive = null) {
     if (!Array.isArray(this.data.tools_inventory)) this.data.tools_inventory = [];
-    const tenantId = toolData.tenant_id || this.empresaActivaId;
+    const lockedId = this.getSessionTenantLock();
+    const tenantId = lockedId || toolData.tenant_id || this.getEmpresaActivaId();
     let toolId = toolData.id;
 
     // Validación 1: Si current_status es "En Funcionamiento", se exige obligatoriamente
@@ -2991,6 +3069,8 @@ class Store {
     }
 
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
     return savedTool;
   }
 
@@ -2998,6 +3078,8 @@ class Store {
     if (!Array.isArray(this.data.tools_inventory)) return false;
     this.data.tools_inventory = this.data.tools_inventory.filter(t => t.id !== toolId);
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
     return true;
   }
 
@@ -3624,6 +3706,8 @@ class Store {
     }
 
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
     return record;
   }
 
@@ -3664,6 +3748,8 @@ class Store {
     }
 
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
     return record;
   }
 
@@ -3671,12 +3757,16 @@ class Store {
     this.data.processes = (this.data.processes || []).filter(p => p.id !== processId);
     this.data.process_activities = (this.data.process_activities || []).filter(a => a.process_id !== processId);
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
   }
 
   deleteProcessActivity(activityId) {
     this.data.process_activities = (this.data.process_activities || []).filter(a => a.id !== activityId);
     this.data.process_activity_positions = (this.data.process_activity_positions || []).filter(pap => pap.process_activity_id !== activityId);
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
   }
 
   // --- CATÁLOGO DE CARGOS Y PROPAGACIÓN ---
@@ -3723,6 +3813,8 @@ class Store {
     }
 
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
     return record;
   }
 
@@ -3734,6 +3826,8 @@ class Store {
       if (t.job_position_id === id) t.job_position_id = null;
     });
     this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
   }
 
   propagateActivityPosition(activityId, jobTitleOrId, role = 'Responsable_Ejecutor', companyId = null) {

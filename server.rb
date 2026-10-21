@@ -185,7 +185,13 @@ mount_api(server, '/api/data') do |req, res|
   elsif req.request_method == 'GET'
     res['Content-Type'] = 'application/json; charset=utf-8'
     if File.exist?(DB_FILE)
-      res.body = File.read(DB_FILE)
+      begin
+        db_content = JSON.parse(File.read(DB_FILE))
+        db_content['updatedAt'] ||= File.mtime(DB_FILE).iso8601
+        res.body = db_content.to_json
+      rescue
+        res.body = File.read(DB_FILE)
+      end
     else
       res.status = 404
       res.body = { error: 'Base de datos física no encontrada en data/database.json' }.to_json
@@ -297,8 +303,9 @@ def merge_database_safely(existing_db, incoming_payload)
   end
 
   # 5. Proteger Matriz, Plan de Trabajo, Accidentes, Trabajadores, Perfiles de Cargo, Herramientas, Políticas Legales, Procesos y Capacitaciones
+  # Solo restaurar desde BD existente si el cliente NO envió la clave (nil). Si envió un array vacío [], respetar la eliminación.
   ['matriz', 'planTrabajo', 'accidentes', 'trabajadores', 'perfiles_cargo', 'tools_inventory', 'tools_sst', 'tools_maintenance_plan', 'tools_assignments', 'tools_interventions_log', 'data_privacy_consents', 'legal_policy_versions', 'process_maps', 'processes', 'process_activities', 'job_positions', 'process_activity_positions', 'job_position_documents', 'capacitaciones', 'worker_evaluations'].each do |col|
-    if existing_db[col].is_a?(Array) && !existing_db[col].empty? && (!merged[col].is_a?(Array) || merged[col].empty?)
+    if existing_db[col].is_a?(Array) && merged[col].nil?
       merged[col] = existing_db[col]
     end
   end
@@ -373,14 +380,15 @@ mount_api(server, '/api/save') do |req, res|
           end
         end
 
+        now = Time.now
+        iso_time = now.iso8601
+        payload['updatedAt'] = iso_time
+
         tmp_file = "#{DB_FILE}.tmp"
         File.open(tmp_file, 'w:UTF-8') do |f|
           f.write(JSON.pretty_generate(payload))
         end
         File.rename(tmp_file, DB_FILE)
-
-        now = Time.now
-        iso_time = now.iso8601
         date_str = now.strftime('%Y-%m-%d_%H-%M-%S')
 
         # Auto-backup cada 3 minutos o primer guardado
