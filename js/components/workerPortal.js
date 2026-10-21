@@ -1025,9 +1025,11 @@ window.calcularFechaFinRapida = function(meses) {
   inputFin.value = fechaBase.toISOString().slice(0, 10);
 };
 
-window.eliminarTrabajadorConfirm = function(id) {
-  store.deleteTrabajador(id);
-  renderWorkerPortal();
+window.eliminarTrabajadorConfirm = async function(id) {
+  if (confirm("¿Deseas eliminar este trabajador del sistema?")) {
+    await store.deleteTrabajador(id);
+    renderWorkerPortal();
+  }
 };
 
 window.verPortalComoTrabajador = function(trabajadorId) {

@@ -20,7 +20,7 @@ import { renderAuditorView } from './components/auditorView.js';
 import { renderLegalComplianceRepository, renderLegalConsentScreen } from './components/legalCompliance.js';
 import { renderSuperAdmins } from './components/superAdmins.js';
 import { renderMasterRepository } from './components/masterRepository.js';
-import { initAiAssistantWidget, abrirModalIA } from './components/aiAssistant.js';
+import { abrirModalIA } from './components/aiAssistant.js';
 import './components/diagramViewer.js';
 import './components/documentViewer.js';
 
@@ -421,7 +421,7 @@ async function initApp() {
   });
 
   actualizarSelectorCabecera();
-  initAiAssistantWidget();
+  // initAiAssistantWidget desactivado según requerimiento de usuario
   
   const select = document.getElementById('header-company-select');
   if (select) {

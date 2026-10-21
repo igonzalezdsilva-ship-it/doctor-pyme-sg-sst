@@ -157,15 +157,21 @@ class EvidenceDB {
   }
 
   coincideEmpresa(regCompanyId, targetCompanyId) {
-    if (!regCompanyId || !targetCompanyId) return true;
-    if (targetCompanyId === 'todas') return true;
+    if (!targetCompanyId || targetCompanyId === 'todas') return true;
+    if (!regCompanyId) return false;
     if (regCompanyId === targetCompanyId) return true;
     const aliases = ['emp-1790438946268', 'emp-004'];
     if (aliases.includes(regCompanyId) && aliases.includes(targetCompanyId)) return true;
     return false;
   }
 
-  obtenerTodasDeFallback(companyId) {
+  coincideAnio(regAnio, targetAnio) {
+    if (!targetAnio || targetAnio === 'todos' || targetAnio === 'ambos') return true;
+    if (!regAnio || regAnio === 'todos' || regAnio === 'ambos') return true;
+    return String(regAnio) === String(targetAnio);
+  }
+
+  obtenerTodasDeFallback(companyId, anio = null) {
     const list = [];
     if (typeof localStorage === 'undefined') return list;
     try {
@@ -174,7 +180,7 @@ class EvidenceDB {
         if (key && key.startsWith('DP_FILE_')) {
           try {
             const item = JSON.parse(localStorage.getItem(key));
-            if (item && item.id && this.coincideEmpresa(item.companyId, companyId)) {
+            if (item && item.id && this.coincideEmpresa(item.companyId, companyId) && this.coincideAnio(item.anio, anio)) {
               list.push(item);
             }
           } catch {}
@@ -246,10 +252,10 @@ class EvidenceDB {
     return conteo;
   }
 
-  async obtenerTodasEvidencias(companyId) {
+  async obtenerTodasEvidencias(companyId, anio = null) {
     await this.init();
-    const fallbackList = this.obtenerTodasDeFallback(companyId);
-    const serverList = (appStoreRef?.data?.evidencias || []).filter(i => this.coincideEmpresa(i.companyId, companyId));
+    const fallbackList = this.obtenerTodasDeFallback(companyId, anio);
+    const serverList = (appStoreRef?.data?.evidencias || []).filter(i => this.coincideEmpresa(i.companyId, companyId) && this.coincideAnio(i.anio, anio));
 
     return new Promise((resolve) => {
       if (!this.db) {
@@ -265,7 +271,7 @@ class EvidenceDB {
         request.onsuccess = () => {
           const listaIndexed = (request.result || []).filter(i => {
             if (!i || i.id === '__APP_DATA_SNAPSHOT__') return false;
-            return this.coincideEmpresa(i.companyId, companyId);
+            return this.coincideEmpresa(i.companyId, companyId) && this.coincideAnio(i.anio, anio);
           });
 
           // Unir con fallback y con evidencias del servidor sin duplicar

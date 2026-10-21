@@ -12,7 +12,7 @@ import { evidenceDB, setEvidenceStoreRef } from './db.js';
 const STORAGE_KEY = 'SG_SST_APP_DATA_V1';
 const ACTIVE_COMPANY_KEY = 'SG_SST_ACTIVE_COMPANY_ID';
 const ACTIVE_YEAR_KEY = 'SG_SST_ACTIVE_YEAR';
-const ANIO_BASE_INICIAL = '2026';
+const ANIO_BASE_INICIAL = '2025';
 
 export const EVALUACIONES_RECUPERADAS_AYER = {
   "2025": {
@@ -1197,21 +1197,7 @@ class Store {
       if (resp.ok) {
         const serverData = await resp.json();
         if (serverData && Array.isArray(serverData.empresas) && serverData.empresas.length > 0) {
-          // Fusionar de forma segura: el servidor es la fuente autoritativa de empresas y datos institucionales
-          // Si el navegador tiene datos locales, fusionar empresas asegurando que NINGUNA empresa del servidor se pierda
-          if (Array.isArray(this.data?.empresas) && this.data.empresas.length > 0) {
-            const serverEmpMap = new Map();
-            serverData.empresas.forEach(e => serverEmpMap.set(e.id, e));
-            this.data.empresas.forEach(localEmp => {
-              if (serverEmpMap.has(localEmp.id)) {
-                serverEmpMap.set(localEmp.id, { ...serverEmpMap.get(localEmp.id), ...localEmp });
-              } else {
-                serverEmpMap.set(localEmp.id, localEmp);
-              }
-            });
-            serverData.empresas = Array.from(serverEmpMap.values());
-          }
-
+          // El servidor físico (data/database.json) es la única fuente autoritativa de verdad
           console.log("✓ Sincronizado con Base de Datos Física en Disco (data/database.json)");
           this.data = serverData;
           this.serverSynced = true;
@@ -1410,8 +1396,8 @@ class Store {
           }
 
           if (!this.anioActivo || !['2025', '2026'].includes(this.anioActivo)) {
-            this.anioActivo = '2026';
-            storage.setItem(ACTIVE_YEAR_KEY, '2026');
+            this.anioActivo = '2025';
+            storage.setItem(ACTIVE_YEAR_KEY, '2025');
           }
 
           try {
@@ -2598,15 +2584,25 @@ class Store {
     });
   }
 
-  deleteTrabajador(id) {
-    if (confirm("¿Deseas eliminar este trabajador del sistema?")) {
-      if (Array.isArray(this.data.trabajadores)) {
-        this.data.trabajadores = this.data.trabajadores.filter(t => t.id !== id);
-        this.saveToStorage();
-        this.enviarAlServidorFisico(true);
-        this.notify();
-      }
+  async deleteTrabajador(id) {
+    if (!id) return;
+    if (Array.isArray(this.data.trabajadores)) {
+      this.data.trabajadores = this.data.trabajadores.filter(t => t.id !== id);
     }
+    try {
+      if (typeof fetch !== 'undefined') {
+        await fetch(this.getApiUrl('/delete_record'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'trabajador', id: id })
+        });
+      }
+    } catch (e) {
+      console.warn("Aviso en borrado atómico de trabajador en servidor:", e);
+    }
+    this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
   }
 
   // --- GESTIÓN DE INSTRUMENTOS POR CARGO (CONTRATOS, PERFILES, MANUAL DE FUNCIONES, PTS) ---
@@ -4256,9 +4252,26 @@ class Store {
     return record;
   }
 
-  deleteProcess(processId) {
+  async deleteProcess(processId) {
+    if (!processId) return;
     this.data.processes = (this.data.processes || []).filter(p => p.id !== processId);
+    const removedActs = (this.data.process_activities || []).filter(a => a.process_id === processId);
+    const actIds = new Set(removedActs.map(a => a.id));
     this.data.process_activities = (this.data.process_activities || []).filter(a => a.process_id !== processId);
+    this.data.process_activity_positions = (this.data.process_activity_positions || []).filter(pap => !actIds.has(pap.process_activity_id));
+    
+    try {
+      if (typeof fetch !== 'undefined') {
+        await fetch(this.getApiUrl('/delete_record'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'process', id: processId })
+        });
+      }
+    } catch (e) {
+      console.warn("Aviso en borrado atómico de proceso:", e);
+    }
+
     this.saveToStorage();
     this.enviarAlServidorFisico(true);
     this.notify();
@@ -4321,47 +4334,76 @@ class Store {
     return record;
   }
 
-  deleteJobPosition(id) {
+  async deleteJobPosition(id) {
+    if (!id) return;
+    const targetCargo = (this.data.job_positions || []).find(j => j.id === id);
+    const targetTitle = targetCargo?.title ? targetCargo.title.toLowerCase().trim() : '';
+
     this.data.job_positions = (this.data.job_positions || []).filter(j => j.id !== id);
     this.data.process_activity_positions = (this.data.process_activity_positions || []).filter(pap => pap.job_position_id !== id);
+    
+    // Desvincular de actividades existentes para evitar auto-recreación
+    (this.data.process_activities || []).forEach(act => {
+      if (act.job_position_id === id || (targetTitle && (act.job_position_title || '').toLowerCase().trim() === targetTitle)) {
+        act.job_position_id = null;
+        act.job_position_title = null;
+      }
+    });
+
     // Desvincular de trabajadores si estaban asignados
     (this.data.trabajadores || []).forEach(t => {
       if (t.job_position_id === id) t.job_position_id = null;
     });
+
+    try {
+      if (typeof fetch !== 'undefined') {
+        await fetch(this.getApiUrl('/delete_record'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'job_position', id: id })
+        });
+      }
+    } catch (e) {
+      console.warn("Aviso en borrado atómico de cargo en servidor:", e);
+    }
+
     this.saveToStorage();
     this.enviarAlServidorFisico(true);
     this.notify();
   }
 
   propagateActivityPosition(activityId, jobTitleOrId, role = 'Responsable_Ejecutor', companyId = null) {
+    if (!jobTitleOrId || !jobTitleOrId.toString().trim()) return null;
     const targetCid = companyId || this.getEmpresaActivaId();
     this.data.job_positions = this.data.job_positions || [];
     this.data.process_activity_positions = this.data.process_activity_positions || [];
 
+    const cleanTitle = jobTitleOrId.toString().trim();
     // Buscar si existe por ID o por título
-    let jp = this.data.job_positions.find(j => j.tenant_id === targetCid && (j.id === jobTitleOrId || j.title.toLowerCase().trim() === jobTitleOrId.toLowerCase().trim()));
+    let jp = this.data.job_positions.find(j => this._matchTenant(j.tenant_id, targetCid) && (j.id === cleanTitle || (j.title || '').toLowerCase().trim() === cleanTitle.toLowerCase()));
 
-    // Si no existe, crearlo automáticamente
+    // Solo vincular si el cargo ya existe en el catálogo. NO auto-crear cargos fantasma eliminados.
     if (!jp) {
-      jp = this.saveJobPosition({
-        title: jobTitleOrId,
-        hierarchy_level: jobTitleOrId.toLowerCase().includes('gerente') ? 'Directivo' : (jobTitleOrId.toLowerCase().includes('coordinador') ? 'Profesional' : 'Operativo')
-      }, targetCid);
+      return null;
     }
 
-    // Vincular en process_activity_positions
-    const existingPap = this.data.process_activity_positions.find(pap => pap.process_activity_id === activityId && pap.job_position_id === jp.id);
-    if (!existingPap) {
-      this.data.process_activity_positions.push({
-        id: `pap-${activityId}-${jp.id}`,
-        tenant_id: targetCid,
-        process_activity_id: activityId,
-        job_position_id: jp.id,
-        role_in_activity: role,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      });
-      this.saveToStorage();
+    // Vincular en process_activity_positions sin duplicar
+    const existingIndex = this.data.process_activity_positions.findIndex(pap => pap.process_activity_id === activityId && pap.job_position_id === jp.id);
+    const nowIso = new Date().toISOString();
+    const linkRecord = {
+      id: existingIndex >= 0 ? this.data.process_activity_positions[existingIndex].id : `pap-${activityId}-${jp.id}`,
+      tenant_id: targetCid,
+      process_activity_id: activityId,
+      job_position_id: jp.id,
+      role_in_activity: role,
+      is_mandatory_accountable: true,
+      updatedAt: nowIso
+    };
+
+    if (existingIndex >= 0) {
+      this.data.process_activity_positions[existingIndex] = { ...this.data.process_activity_positions[existingIndex], ...linkRecord };
+    } else {
+      this.data.process_activity_positions.push(linkRecord);
     }
 
     return jp;

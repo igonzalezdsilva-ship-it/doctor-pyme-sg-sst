@@ -66,7 +66,7 @@ export async function renderEvaluation() {
   const resultado = calcularPuntaje(respuestasMap, estandares);
 
   // Cargar evidencias adjuntas desde IndexedDB y Base de Datos del Store
-  const todasEvidencias = await evidenceDB.obtenerTodasEvidencias(empresaActiva.id);
+  const todasEvidencias = await evidenceDB.obtenerTodasEvidencias(empresaActiva.id, anioActivo);
   try {
     const evidenciasStore = store.getEvidencias ? store.getEvidencias(empresaActiva.id, anioActivo) : [];
     evidenciasStore.forEach(ev => {
@@ -79,6 +79,7 @@ export async function renderEvaluation() {
   }
   const evidenciasPorNumeral = {};
   todasEvidencias.forEach(ev => {
+    if (!ev || !ev.numeral || ev.numeral.startsWith('__DIAGRAMA_')) return;
     if (!evidenciasPorNumeral[ev.numeral]) {
       evidenciasPorNumeral[ev.numeral] = [];
     }

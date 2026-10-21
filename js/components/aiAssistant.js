@@ -19,39 +19,11 @@ import {
 let historialChat = [];
 
 /**
- * Inicializa el botón flotante permanente en la interfaz
+ * Inicializa el widget de asistente (Desactivado según instrucción del usuario)
  */
 export function initAiAssistantWidget() {
-  if (document.getElementById('btn-flotante-ia')) return;
-
-  const floatingBtn = document.createElement('div');
-  floatingBtn.id = 'btn-flotante-ia';
-  floatingBtn.className = 'fixed bottom-6 right-6 z-40 no-print flex items-center gap-2 animate-bounce hover:animate-none';
-  
-  floatingBtn.innerHTML = `
-    <button 
-      id="btn-trigger-ia" 
-      class="flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-500 hover:to-purple-600 text-white rounded-full shadow-2xl hover:shadow-indigo-500/50 border border-indigo-400/30 transition-all transform hover:scale-105 active:scale-95 group"
-      title="Abrir Asistente Técnico SG-SST (Google Gemini Pro Activo)"
-    >
-      <div class="relative w-7 h-7 flex items-center justify-center bg-white/10 rounded-full">
-        <svg class="w-5 h-5 text-amber-300 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2L14.4 7.2L20 8.4L16 12.8L17.2 18.5L12 15.6L6.8 18.5L8 12.8L4 8.4L9.6 7.2L12 2Z"/>
-        </svg>
-        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-indigo-900"></span>
-      </div>
-      <div class="text-left hidden sm:block">
-        <span class="block text-xs font-black tracking-tight leading-none text-white">IA Asistente SST</span>
-        <span class="block text-[9px] text-emerald-300 font-bold uppercase tracking-wider mt-0.5">Gemini Pro Activo</span>
-      </div>
-    </button>
-  `;
-
-  document.body.appendChild(floatingBtn);
-
-  document.getElementById('btn-trigger-ia').addEventListener('click', () => {
-    abrirModalIA();
-  });
+  const existing = document.getElementById('btn-flotante-ia');
+  if (existing) existing.remove();
 }
 
 /**

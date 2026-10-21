@@ -333,14 +333,6 @@ class Auth {
 
         <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
           
-          <!-- Enlace de Retorno al Portal Comercial -->
-          <div class="mb-4 text-center">
-            <a href="./landing.html" class="inline-flex items-center gap-1.5 text-xs text-teal-400/90 hover:text-teal-200 font-semibold py-1 px-3 rounded-full bg-slate-900/80 border border-teal-500/30 transition shadow-xs">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-              <span>Volver a la Página Principal (Portal Comercial)</span>
-            </a>
-          </div>
-
           <!-- Logotipo Oficial Doctor Pyme -->
           <div class="flex flex-col items-center">
             <div class="bg-white p-3 rounded-2xl shadow-2xl border border-teal-500/20 mb-2 flex items-center justify-center max-w-[280px]">

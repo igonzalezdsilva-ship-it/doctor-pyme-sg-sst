@@ -365,19 +365,17 @@ def merge_database_safely(existing_db, incoming_payload)
 
   merged = incoming_payload.dup
 
-  # 1. Proteger empresas: no permitir que se borren empresas existentes si el payload no las trae
+  # 1. Empresas: fusionar campos enriquecidos sin resucitar empresas eliminadas
   if existing_db['empresas'].is_a?(Array) && (!merged['empresas'].is_a?(Array) || merged['empresas'].empty?)
     merged['empresas'] = existing_db['empresas']
   elsif existing_db['empresas'].is_a?(Array) && merged['empresas'].is_a?(Array)
-    # Preservar todas las empresas existentes y actualizar con las recibidas
     existing_map = existing_db['empresas'].each_with_object({}) { |e, h| h[e['id']] = e }
-    incoming_map = merged['empresas'].each_with_object({}) { |e, h| h[e['id']] = e }
-    merged_empresas = []
-    existing_map.each do |e_id, orig|
-      if incoming_map[e_id]
-        emp = incoming_map[e_id]
-        emp['tieneOrganigrama'] = true if orig['tieneOrganigrama']
-        emp['tieneMapaProcesos'] = true if orig['tieneMapaProcesos']
+    merged['empresas'] = merged['empresas'].map do |emp|
+      next emp unless emp.is_a?(Hash)
+      orig = existing_map[emp['id']]
+      if orig
+        emp['tieneOrganigrama'] = true if orig['tieneOrganigrama'] && emp['tieneOrganigrama'].nil?
+        emp['tieneMapaProcesos'] = true if orig['tieneMapaProcesos'] && emp['tieneMapaProcesos'].nil?
         emp['organigramaUrl'] ||= orig['organigramaUrl']
         emp['mapaProcesosUrl'] ||= orig['mapaProcesosUrl']
         emp['representanteLegal'] ||= orig['representanteLegal']
@@ -388,65 +386,60 @@ def merge_database_safely(existing_db, incoming_payload)
         emp['operational_how_it_works'] ||= orig['operational_how_it_works']
         emp['years_operating'] ||= orig['years_operating']
         emp['ai_context_summary'] ||= orig['ai_context_summary']
-        merged_empresas << emp
-      else
-        merged_empresas << orig
       end
+      emp
     end
-    incoming_map.each do |e_id, new_emp|
-      merged_empresas << new_emp unless existing_map[e_id]
-    end
-    merged['empresas'] = merged_empresas
   end
 
-  # 2. Proteger evaluaciones año por año y numeral por numeral
+  # 2. Evaluaciones: Si el cliente envió evaluaciones para una empresa y año, respetar su contenido (ej. año 2026 limpio)
   if existing_db['evaluaciones'].is_a?(Hash)
     merged['evaluaciones'] ||= {}
     existing_db['evaluaciones'].each do |cid, years|
+      next unless years.is_a?(Hash)
+      if !merged['evaluaciones'].key?(cid)
+        merged['evaluaciones'][cid] = years
+        next
+      end
       merged['evaluaciones'][cid] ||= {}
-      if years.is_a?(Hash)
-        years.each do |yr, stds|
-          merged['evaluaciones'][cid][yr] ||= {}
-          if stds.is_a?(Hash)
-            stds.each do |numeral, orig_val|
-              curr_val = merged['evaluaciones'][cid][yr][numeral]
-              if curr_val.nil? || !curr_val.is_a?(Hash)
-                # El cliente no envió este numeral: PRESERVAR completamente de disco
-                merged['evaluaciones'][cid][yr][numeral] = orig_val
-              else
-                # Preservar o sincronizar fuentes documentales múltiples
-                if curr_val['fuentes'].is_a?(Array)
-                  first_with_url = curr_val['fuentes'].find { |f| f.is_a?(Hash) && f['url'] && !f['url'].to_s.strip.empty? }
-                  if first_with_url
-                    curr_val['linkGuia'] = first_with_url['url']
-                  end
-                elsif orig_val['fuentes'].is_a?(Array) && !orig_val['fuentes'].empty?
-                  curr_val['fuentes'] = orig_val['fuentes']
-                end
+      years.each do |yr, stds|
+        next unless stds.is_a?(Hash)
+        if !merged['evaluaciones'][cid].key?(yr)
+          merged['evaluaciones'][cid][yr] = stds
+          next
+        end
+        # Si el año está vacío deliberadamente (ej. 2026 limpio), NO repoblar desde disco
+        next if merged['evaluaciones'][cid][yr].empty?
 
-                # Preservar linkGuia si el cliente envió un string vacío pero existía un enlace válido en disco
-                if (!curr_val['linkGuia'] || curr_val['linkGuia'].to_s.strip.empty?) && (orig_val['linkGuia'] && !orig_val['linkGuia'].to_s.strip.empty?)
-                  curr_val['linkGuia'] = orig_val['linkGuia']
-                end
-                # Preservar justificación si el cliente envió vacía pero existía en disco
-                if (!curr_val['justificacion'] || curr_val['justificacion'].to_s.strip.empty?) && (orig_val['justificacion'] && !orig_val['justificacion'].to_s.strip.empty?)
-                  curr_val['justificacion'] = orig_val['justificacion']
-                end
-                # Preservar estado si el cliente envió vacío o nulo
-                if (!curr_val['estado'] || curr_val['estado'].to_s.strip.empty?) && (orig_val['estado'] && !orig_val['estado'].to_s.strip.empty?)
-                  curr_val['estado'] = orig_val['estado']
-                end
-              end
-            end
+        # Enriquecer numerales existentes con fuentes o justificaciones de disco si faltaban
+        stds.each do |numeral, orig_val|
+          curr_val = merged['evaluaciones'][cid][yr][numeral]
+          next if curr_val.nil? || !curr_val.is_a?(Hash)
+
+          if curr_val['fuentes'].is_a?(Array)
+            first_with_url = curr_val['fuentes'].find { |f| f.is_a?(Hash) && f['url'] && !f['url'].to_s.strip.empty? }
+            curr_val['linkGuia'] = first_with_url['url'] if first_with_url
+          elsif orig_val['fuentes'].is_a?(Array) && !orig_val['fuentes'].empty?
+            curr_val['fuentes'] = orig_val['fuentes']
+          end
+
+          if (!curr_val['linkGuia'] || curr_val['linkGuia'].to_s.strip.empty?) && (orig_val['linkGuia'] && !orig_val['linkGuia'].to_s.strip.empty?)
+            curr_val['linkGuia'] = orig_val['linkGuia']
+          end
+          if (!curr_val['justificacion'] || curr_val['justificacion'].to_s.strip.empty?) && (orig_val['justificacion'] && !orig_val['justificacion'].to_s.strip.empty?)
+            curr_val['justificacion'] = orig_val['justificacion']
+          end
+          if (!curr_val['estado'] || curr_val['estado'].to_s.strip.empty?) && (orig_val['estado'] && !orig_val['estado'].to_s.strip.empty?)
+            curr_val['estado'] = orig_val['estado']
           end
         end
       end
     end
   end
 
-  # 3. Proteger Diagramas oficiales
-  if existing_db['diagramas'].is_a?(Hash)
-    merged['diagramas'] ||= {}
+  # 3. Diagramas oficiales
+  if existing_db['diagramas'].is_a?(Hash) && (!merged['diagramas'].is_a?(Hash) || merged['diagramas'].empty?)
+    merged['diagramas'] = existing_db['diagramas']
+  elsif existing_db['diagramas'].is_a?(Hash) && merged['diagramas'].is_a?(Hash)
     existing_db['diagramas'].each do |cid, diag_map|
       merged['diagramas'][cid] ||= {}
       if diag_map.is_a?(Hash)
@@ -460,34 +453,18 @@ def merge_database_safely(existing_db, incoming_payload)
     end
   end
 
-  # 4. Proteger Evidencias
+  # 4. Proteger Evidencias si no se enviaron
   if existing_db['evidencias'].is_a?(Array) && (!merged['evidencias'].is_a?(Array) || merged['evidencias'].empty?)
     merged['evidencias'] = existing_db['evidencias']
   end
 
-  # 4.1 Proteger y fusionar Super Administradores
+  # 4.1 Super Administradores: respetar la lista recibida si es válida
   if existing_db['super_admins'].is_a?(Array) && (!merged['super_admins'].is_a?(Array) || merged['super_admins'].empty?)
     merged['super_admins'] = existing_db['super_admins']
-  elsif existing_db['super_admins'].is_a?(Array) && merged['super_admins'].is_a?(Array)
-    existing_sa = existing_db['super_admins'].each_with_object({}) { |sa, h| h[sa['id'] || sa['email']] = sa }
-    incoming_sa = merged['super_admins'].each_with_object({}) { |sa, h| h[sa['id'] || sa['email']] = sa }
-    merged_sa = []
-    existing_sa.each do |k, orig_sa|
-      if incoming_sa[k]
-        merged_sa << incoming_sa[k]
-      else
-        merged_sa << orig_sa
-      end
-    end
-    incoming_sa.each do |k, new_sa|
-      merged_sa << new_sa unless existing_sa[k]
-    end
-    merged['super_admins'] = merged_sa
   end
 
-  # 5. Proteger Matriz, Plan de Trabajo, Accidentes, Trabajadores, Perfiles de Cargo, Herramientas, Políticas Legales, Procesos y Capacitaciones
-  # Solo restaurar desde BD existente si el cliente NO envió la clave (nil). Si envió un array vacío [], respetar la eliminación.
-  ['matriz', 'planTrabajo', 'accidentes', 'trabajadores', 'perfiles_cargo', 'tools_inventory', 'tools_sst', 'tools_maintenance_plan', 'tools_assignments', 'tools_interventions_log', 'data_privacy_consents', 'legal_policy_versions', 'process_maps', 'processes', 'process_activities', 'job_positions', 'process_activity_positions', 'job_position_documents', 'capacitaciones', 'worker_evaluations', 'super_admins'].each do |col|
+  # 5. Proteger Matriz, Plan de Trabajo, Accidentes, Trabajadores, Cargos, Procesos si el cliente NO envió la clave (nil)
+  ['matriz', 'planTrabajo', 'accidentes', 'trabajadores', 'perfiles_cargo', 'tools_inventory', 'tools_sst', 'tools_maintenance_plan', 'tools_assignments', 'tools_interventions_log', 'data_privacy_consents', 'legal_policy_versions', 'process_maps', 'processes', 'process_activities', 'job_positions', 'process_activity_positions', 'job_position_documents', 'capacitaciones', 'worker_evaluations'].each do |col|
     if existing_db[col].is_a?(Array) && merged[col].nil?
       merged[col] = existing_db[col]
     end
@@ -499,28 +476,34 @@ def merge_database_safely(existing_db, incoming_payload)
     existing_repo = existing_db['legal_acceptance_repository']
     incoming_repo = merged['legal_acceptance_repository'].is_a?(Array) ? merged['legal_acceptance_repository'] : []
     
-    # Preservar íntegramente todos los registros históricos existentes sin permitir modificación de ningún campo
     existing_map = {}
     existing_repo.each { |rec| existing_map[rec['id']] = rec }
-
-    # Solo incorporar registros estrictamente NUEVOS que no existían previamente
     new_records = incoming_repo.select { |rec| rec.is_a?(Hash) && rec['id'] && !existing_map.key?(rec['id']) }
-    
     merged['legal_acceptance_repository'] = existing_repo + new_records
   end
 
-  # 6. Sanear Diagramas y Empresas: Evitar que cadenas Base64 enormes (>50KB) inflen database.json
+  # 6. Sanear Diagramas y Empresas: Decodificar Base64 físico a UPLOADS_DIR sin sobreescribir con otra empresa
   if merged['diagramas'].is_a?(Hash)
-    merged['diagramas'].each_value do |diag_map|
+    merged['diagramas'].each do |cid, diag_map|
       next unless diag_map.is_a?(Hash)
       diag_map.each do |tipo, diag|
         next unless diag.is_a?(Hash)
-        if diag['dataUrl'] && diag['dataUrl'].start_with?('data:') && diag['dataUrl'].bytesize > 50000
-          if diag['url'] && !diag['url'].start_with?('data:')
-            diag['dataUrl'] = diag['url']
-          else
-            diag['url'] = (tipo == 'mapa_procesos' ? './assets/mapa-procesos-ladrillos-ochoa.png' : '/uploads/20261010_084143_diag_emp-1790438946268_organigrama.png')
-            diag['dataUrl'] = diag['url']
+        if diag['dataUrl'] && diag['dataUrl'].start_with?('data:')
+          begin
+            _, b64 = diag['dataUrl'].split(',', 2)
+            if b64
+              bin = Base64.decode64(b64)
+              clean_cid = cid.to_s.gsub(/[^a-zA-Z0-9_-]/, '')
+              ts = Time.now.strftime('%Y%m%d_%H%M%S')
+              fname = "#{ts}_diag_#{clean_cid}_#{tipo}.png"
+              fpath = File.join(UPLOADS_DIR, fname)
+              File.open(fpath, 'wb') { |f| f.write(bin) }
+              diag['url'] = "/uploads/#{fname}"
+              diag['dataUrl'] = "/uploads/#{fname}"
+              diag['tamanio'] = bin.bytesize
+            end
+          rescue => err_diag
+            puts "⚠️ Error decodificando diagrama #{tipo}: #{err_diag.message}"
           end
         end
       end
@@ -530,11 +513,36 @@ def merge_database_safely(existing_db, incoming_payload)
   if merged['empresas'].is_a?(Array)
     merged['empresas'].each do |emp|
       next unless emp.is_a?(Hash)
-      if emp['organigramaUrl'] && emp['organigramaUrl'].start_with?('data:') && emp['organigramaUrl'].bytesize > 50000
-        emp['organigramaUrl'] = '/uploads/20261010_084143_diag_emp-1790438946268_organigrama.png'
+      cid = emp['id'] || "emp_#{Time.now.to_i}"
+      clean_cid = cid.to_s.gsub(/[^a-zA-Z0-9_-]/, '')
+      ts = Time.now.strftime('%Y%m%d_%H%M%S')
+
+      if emp['organigramaUrl'] && emp['organigramaUrl'].start_with?('data:')
+        begin
+          _, b64 = emp['organigramaUrl'].split(',', 2)
+          if b64
+            bin = Base64.decode64(b64)
+            fname = "#{ts}_diag_#{clean_cid}_organigrama.png"
+            File.open(File.join(UPLOADS_DIR, fname), 'wb') { |f| f.write(bin) }
+            emp['organigramaUrl'] = "/uploads/#{fname}"
+          end
+        rescue => e_org
+          puts "⚠️ Error guardando organigrama en disco: #{e_org.message}"
+        end
       end
-      if emp['mapaProcesosUrl'] && emp['mapaProcesosUrl'].start_with?('data:') && emp['mapaProcesosUrl'].bytesize > 50000
-        emp['mapaProcesosUrl'] = './assets/mapa-procesos-ladrillos-ochoa.png'
+
+      if emp['mapaProcesosUrl'] && emp['mapaProcesosUrl'].start_with?('data:')
+        begin
+          _, b64 = emp['mapaProcesosUrl'].split(',', 2)
+          if b64
+            bin = Base64.decode64(b64)
+            fname = "#{ts}_diag_#{clean_cid}_mapa_procesos.png"
+            File.open(File.join(UPLOADS_DIR, fname), 'wb') { |f| f.write(bin) }
+            emp['mapaProcesosUrl'] = "/uploads/#{fname}"
+          end
+        rescue => e_map
+          puts "⚠️ Error guardando mapa de procesos en disco: #{e_map.message}"
+        end
       end
     end
   end
@@ -739,7 +747,7 @@ mount_api(server, '/api/upload_evidence') do |req, res|
       payload = JSON.parse(req.body)
       company_id = payload['companyId'] || 'emp-1790438946268'
       numeral = payload['numeral'] || 'general'
-      anio = payload['anio'] || '2026'
+      anio = payload['anio'] || '2025'
       nombre = payload['nombre'] || 'archivo.pdf'
       data_url = payload['dataUrl'] || ''
       tipo = payload['tipo'] || 'application/octet-stream'
@@ -788,7 +796,7 @@ mount_api(server, '/api/upload_evidence') do |req, res|
 
       target_cids.each do |cid|
         if db['evaluaciones'] && db['evaluaciones'][cid]
-          [anio, '2026', '2025'].uniq.each do |target_yr|
+          [anio].each do |target_yr|
             next unless db['evaluaciones'][cid][target_yr]
             item = db['evaluaciones'][cid][target_yr][numeral] ||= {}
             item['estado'] = 'CUMPLE' if item['estado'].nil? || item['estado'] == 'SIN_EVALUAR'
@@ -880,6 +888,112 @@ mount_api(server, '/api/delete_evidence') do |req, res|
     res.status = 405
     res.body = { error: 'Método no permitido' }.to_json
   end
+end
+
+# -----------------------------------------------------------------------------
+# API: Borrado Atómico Real de Registros Físicos (Trabajadores, Cargos, Procesos, Empresas)
+# -----------------------------------------------------------------------------
+mount_api(server, '/api/delete_record') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body)
+      type = payload['type'].to_s
+      id = payload['id'].to_s
+
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+
+      case type
+      when 'trabajador'
+        if db['trabajadores'].is_a?(Array)
+          db['trabajadores'].reject! { |t| t['id'] == id }
+        end
+      when 'job_position'
+        if db['job_positions'].is_a?(Array)
+          db['job_positions'].reject! { |jp| jp['id'] == id }
+        end
+        if db['process_activity_positions'].is_a?(Array)
+          db['process_activity_positions'].reject! { |pap| pap['job_position_id'] == id }
+        end
+        if db['process_activities'].is_a?(Array)
+          db['process_activities'].each do |act|
+            if act['job_position_id'] == id
+              act['job_position_id'] = nil
+              act['job_position_title'] = nil
+            end
+          end
+        end
+        if db['trabajadores'].is_a?(Array)
+          db['trabajadores'].each do |t|
+            t['job_position_id'] = nil if t['job_position_id'] == id
+          end
+        end
+      when 'process'
+        if db['processes'].is_a?(Array)
+          db['processes'].reject! { |p| p['id'] == id }
+        end
+        removed_act_ids = []
+        if db['process_activities'].is_a?(Array)
+          db['process_activities'].reject! do |act|
+            if act['process_id'] == id
+              removed_act_ids << act['id']
+              true
+            else
+              false
+            end
+          end
+        end
+        if db['process_activity_positions'].is_a?(Array)
+          db['process_activity_positions'].reject! { |pap| removed_act_ids.include?(pap['process_activity_id']) }
+        end
+      when 'empresa'
+        if db['empresas'].is_a?(Array)
+          db['empresas'].reject! { |e| e['id'] == id }
+        end
+        db['evaluaciones']&.delete(id)
+        db['diagramas']&.delete(id)
+        db['trabajadores']&.reject! { |t| t['companyId'] == id || t['empresaId'] == id }
+        db['job_positions']&.reject! { |jp| jp['tenant_id'] == id }
+        db['processes']&.reject! { |p| p['tenant_id'] == id }
+        db['process_activities']&.reject! { |pa| pa['tenant_id'] == id }
+        db['process_activity_positions']&.reject! { |pap| pap['tenant_id'] == id }
+      end
+
+      now = Time.now
+      db['updatedAt'] = now.iso8601
+      tmp_file = "#{DB_FILE}.tmp"
+      File.open(tmp_file, 'w:UTF-8') { |f| f.write(JSON.pretty_generate(db)) }
+      File.rename(tmp_file, DB_FILE)
+
+      audit_entry = {
+        timestamp: now.iso8601,
+        action: 'DELETE_RECORD',
+        recordType: type,
+        recordId: id
+      }
+      File.open(AUDIT_FILE, 'a:UTF-8') { |af| af.puts(audit_entry.to_json) }
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { status: 'ok', type: type, id: id, timestamp: now.iso8601 }.to_json
+    rescue => e
+      res.status = 500
+      res.body = { error: e.message }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# -----------------------------------------------------------------------------
+# API: Health Check
+# -----------------------------------------------------------------------------
+mount_api(server, '/api/health') do |req, res|
+  add_cors_headers(res)
+  res['Content-Type'] = 'application/json; charset=utf-8'
+  res.body = { status: 'ok', time: Time.now.iso8601, db_exists: File.exist?(DB_FILE), uploads: Dir.glob(File.join(UPLOADS_DIR, '*')).size }.to_json
 end
 
 # -----------------------------------------------------------------------------

@@ -34,12 +34,44 @@ export async function renderReports() {
   const plan = store.getPlanTrabajo(empresaActiva.id);
   const accidentes = store.getAccidentes(empresaActiva.id);
 
-  // Evidencias adjuntas desde IndexedDB
-  const todasEvidencias = await evidenceDB.obtenerTodasEvidencias(empresaActiva.id);
+  // Evidencias adjuntas desde IndexedDB y Store filtradas por vigencia activa
+  const todasEvidencias = await evidenceDB.obtenerTodasEvidencias(empresaActiva.id, anioActivo);
+  try {
+    const evidenciasStore = store.getEvidencias ? store.getEvidencias(empresaActiva.id, anioActivo) : [];
+    evidenciasStore.forEach(ev => {
+      if (!todasEvidencias.some(e => e.id === ev.id)) todasEvidencias.push(ev);
+    });
+  } catch (eStore) {
+    console.warn("Aviso fusionando evidencias de store en reportes:", eStore);
+  }
+
   const evidenciasPorNumeral = {};
   todasEvidencias.forEach(ev => {
+    if (!ev || !ev.numeral || ev.numeral.startsWith('__DIAGRAMA_')) return;
     if (!evidenciasPorNumeral[ev.numeral]) evidenciasPorNumeral[ev.numeral] = [];
     evidenciasPorNumeral[ev.numeral].push(ev);
+  });
+
+  // Asegurar que archivos adjuntos de la evaluación del año activo se muestren
+  Object.keys(evaluacion).forEach(numeral => {
+    const item = evaluacion[numeral];
+    if (item && item.archivoAdjunto && item.archivoAdjunto.url) {
+      if (!evidenciasPorNumeral[numeral]) evidenciasPorNumeral[numeral] = [];
+      const adj = item.archivoAdjunto;
+      if (!evidenciasPorNumeral[numeral].some(e => e.url === adj.url || e.nombre === adj.nombre)) {
+        evidenciasPorNumeral[numeral].push({
+          id: adj.id || `adj-${numeral}`,
+          companyId: empresaActiva.id,
+          numeral: numeral,
+          nombre: adj.nombre || `${numeral}_Evidencia.pdf`,
+          url: adj.url,
+          dataUrl: adj.dataUrl || '',
+          tamanio: adj.tamano || adj.tamanio || 15000,
+          tipo: adj.tipo || 'application/pdf',
+          fechaCargue: adj.fechaSubida || item.updatedAt || new Date().toISOString()
+        });
+      }
+    }
   });
 
   // Diagramas de la empresa para informes técnicos

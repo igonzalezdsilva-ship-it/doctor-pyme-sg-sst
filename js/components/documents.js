@@ -101,7 +101,7 @@ async function recopilarDocumentos(empresa, anio) {
   let diagMapa = null;
   let diagOrg = null;
   try {
-    evidenciasAdjuntas = await evidenceDB.obtenerTodasEvidencias(empresa.id);
+    evidenciasAdjuntas = await evidenceDB.obtenerTodasEvidencias(empresa.id, anio);
   } catch (e) {
     console.warn("No se pudieron cargar adjuntos de IndexedDB:", e);
   }
@@ -136,7 +136,7 @@ async function recopilarDocumentos(empresa, anio) {
       fuentesValidas = resp.fuentes.filter(f => f && (f.url || '').trim());
     }
 
-    const adjuntosNumeral = evidenciasAdjuntas.filter(a => a.numeral === est.numeral);
+    const adjuntosNumeral = evidenciasAdjuntas.filter(a => a.numeral === est.numeral && !a.numeral.startsWith('__DIAGRAMA_'));
     if (resp.archivoAdjunto && resp.archivoAdjunto.url) {
       if (!adjuntosNumeral.some(a => a.url === resp.archivoAdjunto.url || a.nombre === resp.archivoAdjunto.nombre)) {
         adjuntosNumeral.unshift({

@@ -2223,11 +2223,11 @@ window.abrirModalProceso = function(procesoId = null) {
   modal.classList.add('flex');
 };
 
-window.eliminarProcesoDirecto = function(procesoId) {
+window.eliminarProcesoDirecto = async function(procesoId) {
   const proc = store.getProcess(procesoId);
   if (!proc) return;
   if (confirm(`¿Estás seguro de eliminar el proceso "${proc.code} - ${proc.name}" y todas sus actividades asociadas?`)) {
-    store.deleteProcess(procesoId);
+    await store.deleteProcess(procesoId);
     renderProcessMap();
   }
 };
@@ -2551,11 +2551,11 @@ window.abrirModalCargo = function(cargoId = null) {
   modal.classList.add('flex');
 };
 
-window.eliminarCargoDirecto = function(cargoId) {
+window.eliminarCargoDirecto = async function(cargoId) {
   const cargo = store.getJobPosition(cargoId);
   if (!cargo) return;
   if (confirm(`¿Estás seguro de eliminar el cargo "${cargo.title}"?`)) {
-    store.deleteJobPosition(cargoId);
+    await store.deleteJobPosition(cargoId);
     renderProcessMap();
   }
 };
