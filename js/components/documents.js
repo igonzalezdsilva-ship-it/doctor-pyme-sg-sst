@@ -382,11 +382,11 @@ export async function renderDocumentation() {
               <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wider uppercase bg-indigo-500/30 text-indigo-300 border border-indigo-500/40">
                 Decreto 1072 de 2015 • Art. 2.2.4.6.12 & 2.2.4.6.13
               </span>
-              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/10 text-white border border-white/20">
-                <span>Vigencia:</span>
-                <select onchange="window.cambiarAnioActivo(this.value)" class="bg-indigo-950/90 text-white text-[11px] font-extrabold rounded px-1.5 py-0.5 border border-indigo-400/40 focus:outline-none cursor-pointer">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-white border border-white/20 shadow-xs">
+                <span class="text-amber-300 font-black tracking-wide">Año de Evaluación:</span>
+                <select onchange="window.cambiarAnioActivo(this.value)" class="bg-indigo-950 text-white text-xs font-black rounded-md px-2.5 py-0.5 border border-amber-400/50 focus:outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer">
                   ${aniosDisponibles.map(a => `
-                    <option value="${a}" ${a === anioActivo ? 'selected' : ''} class="bg-slate-900 text-white">Año ${a} ${a === '2025' ? '(Inicial)' : ''}</option>
+                    <option value="${a}" ${a === anioActivo ? 'selected' : ''} class="bg-slate-900 text-white font-bold">Año ${a} ${a === '2025' ? '(Inicial)' : ''}</option>
                   `).join('')}
                 </select>
               </div>
@@ -402,31 +402,42 @@ export async function renderDocumentation() {
           </div>
 
           <!-- Acciones Rápidas de Cabecera -->
-          <div class="flex flex-wrap items-center gap-2 sm:self-center">
+          <div class="flex flex-wrap items-center gap-2.5 sm:self-center">
+            <!-- Botón Destacado: Descarga Masiva del Repositorio Oficial (.ZIP) -->
+            <button 
+              id="btn-descargar-repositorio-oficial-zip" 
+              onclick="window.docDescargarRepositorioOficialZip('${empresaActiva.id}', '${anioActivo}')" 
+              class="px-4 py-2.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 rounded-xl text-xs font-black transition shadow-xl flex items-center gap-2 cursor-pointer active:scale-95 border border-amber-300"
+              title="Descargar todos los soportes y evidencias activas del año ${anioActivo} en un paquete ZIP oficial con nombres normalizados"
+            >
+              <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+              <span>Descargar Repositorio Oficial del Año ${anioActivo} (.ZIP)</span>
+            </button>
+
             <button 
               onclick="window.abrirModalIA({ modoInicial: 'politica' })" 
-              class="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2 cursor-pointer active:scale-95"
+              class="px-3.5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2 cursor-pointer active:scale-95"
               title="Redactar Políticas o Procedimientos con Google Gemini"
             >
               <span>✨</span>
-              <span>Redactar con IA (Gemini)</span>
+              <span>Redactar con IA</span>
             </button>
             <button 
               id="btn-exportar-listado-maestro" 
               onclick="window.docExportarListadoMaestro()" 
-              class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2 cursor-pointer active:scale-95"
+              class="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2 cursor-pointer active:scale-95"
               title="Descargar Listado Maestro en formato CSV para auditoría"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-              <span>Exportar Listado Maestro (.csv)</span>
+              <span>Listado (.csv)</span>
             </button>
             <button 
               onclick="window.location.hash='#evaluacion'" 
-              class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold transition flex items-center gap-2"
+              class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold transition flex items-center gap-2"
               title="Ir a autoevaluación de estándares"
             >
               <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-              <span>Ir a Evaluación 0312</span>
+              <span>Evaluación 0312</span>
             </button>
           </div>
         </div>
@@ -1341,4 +1352,50 @@ win.docExportarListadoMaestro = async function() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+};
+
+/**
+ * Descarga masiva del Repositorio Oficial en formato .ZIP por Año de Evaluación
+ * Conforme a la normativa Res. 0312 de 2019 y nombres estructurados normalizados
+ */
+win.docDescargarRepositorioOficialZip = function(tenantId, year) {
+  const empresa = store.getEmpresaActiva();
+  const idEmpresa = tenantId || (empresa ? empresa.id : null);
+  const anio = year || store.getAnioActivo() || '2025';
+
+  if (!idEmpresa) {
+    alert("Por favor selecciona una empresa primero.");
+    return;
+  }
+
+  const endpoint = store.getApiUrl(`/tenants/${encodeURIComponent(idEmpresa)}/evaluations/${encodeURIComponent(anio)}/download-official-repository`);
+
+  const btn = document.getElementById('btn-descargar-repositorio-oficial-zip');
+  const originalHtml = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.innerHTML = `
+      <svg class="w-4 h-4 animate-spin text-slate-950" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span>Generando Repositorio ZIP...</span>
+    `;
+    btn.disabled = true;
+  }
+
+  // Descarga directa vía enlace nativo para stream binario ZIP
+  const a = document.createElement('a');
+  const safeName = (empresa ? empresa.razonSocial : 'Empresa').replace(/[^a-zA-Z0-9_\-]/g, '_');
+  a.href = endpoint;
+  a.download = `Repositorio_Oficial_SGSST_${safeName}_${anio}.zip`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  setTimeout(() => {
+    if (btn) {
+      btn.innerHTML = originalHtml;
+      btn.disabled = false;
+    }
+  }, 2500);
 };

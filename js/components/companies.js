@@ -720,6 +720,29 @@ export function renderCompanies() {
             </div>
           </div>
 
+          <!-- SECCIÓN: VINCULACIÓN CONDICIONAL DE REPOSITORIO BASE (RES. 0312) -->
+          <div class="p-4 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border border-indigo-200 rounded-xl space-y-2.5">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold text-slate-800 flex items-center gap-1.5 uppercase tracking-wide">
+                <span>📚</span> ¿Desea cargar el repositorio de información base para los Estándares Mínimos?
+              </label>
+              <span class="text-[10px] px-2 py-0.5 rounded font-bold bg-indigo-100 text-indigo-700">Res. 0312 de 2019</span>
+            </div>
+            <p class="text-[11px] text-slate-600 leading-tight">
+              Si selecciona SÍ, se vincularán automáticamente los documentos guía y plantillas estructuradas base en cada numeral de la evaluación Res. 0312.
+            </p>
+            <div class="flex items-center gap-6 pt-1">
+              <label class="inline-flex items-center gap-2 cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-slate-200 hover:border-indigo-400 transition shadow-2xs">
+                <input type="radio" name="emp-load-base-repo" id="emp-load-base-repo-si" value="true" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-slate-300">
+                <span class="text-xs font-bold text-slate-800">SÍ, vincular repositorio base</span>
+              </label>
+              <label class="inline-flex items-center gap-2 cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-slate-200 hover:border-indigo-400 transition shadow-2xs">
+                <input type="radio" name="emp-load-base-repo" id="emp-load-base-repo-no" value="false" checked class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-slate-300">
+                <span class="text-xs font-bold text-slate-600">NO, iniciar evaluación en limpio</span>
+              </label>
+            </div>
+          </div>
+
           <!-- Ubicación y Responsable -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -1193,9 +1216,11 @@ export function renderCompanies() {
       const accesoUsuario = document.getElementById('emp-acceso-usuario')?.value.trim();
       const accesoPassword = document.getElementById('emp-acceso-password')?.value.trim();
       const accesoEstado = document.getElementById('emp-acceso-estado')?.value || 'ACTIVO';
+      const loadBaseRepo = document.querySelector('input[name="emp-load-base-repo"]:checked')?.value === 'true';
 
       const empresaData = {
         id: id || undefined,
+        load_base_repository: loadBaseRepo,
         razonSocial: document.getElementById('emp-razon').value.trim(),
         nit: document.getElementById('emp-nit').value.trim(),
         representanteLegal: document.getElementById('emp-representante').value.trim(),
@@ -1405,6 +1430,15 @@ async function abrirModalEmpresa(empresa = null) {
     document.getElementById('emp-company-desc').value = empresa.company_description || '';
     document.getElementById('emp-operational-how').value = empresa.operational_how_it_works || '';
 
+    // Cargar opción de repositorio base
+    const loadRepoVal = empresa.load_base_repository === true;
+    const radioSi = document.getElementById('emp-load-base-repo-si');
+    const radioNo = document.getElementById('emp-load-base-repo-no');
+    if (radioSi && radioNo) {
+      radioSi.checked = loadRepoVal;
+      radioNo.checked = !loadRepoVal;
+    }
+
     const aiBadgeContainer = document.getElementById('badge-ai-summary-container');
     const aiMaturityText = document.getElementById('texto-ai-maturity');
     if (empresa.ai_context_summary) {
@@ -1499,6 +1533,13 @@ async function abrirModalEmpresa(empresa = null) {
     document.getElementById('emp-company-desc').value = '';
     document.getElementById('emp-operational-how').value = '';
     document.getElementById('badge-ai-summary-container')?.classList.add('hidden');
+
+    const radioSi = document.getElementById('emp-load-base-repo-si');
+    const radioNo = document.getElementById('emp-load-base-repo-no');
+    if (radioSi && radioNo) {
+      radioSi.checked = false;
+      radioNo.checked = true; // Por defecto NO
+    }
 
     signedBanner?.classList.add('hidden');
     createBox?.classList.remove('hidden');

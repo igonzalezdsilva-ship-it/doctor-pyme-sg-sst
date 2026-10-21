@@ -19,6 +19,7 @@ import { renderWorkerPortal } from './components/workerPortal.js';
 import { renderAuditorView } from './components/auditorView.js';
 import { renderLegalComplianceRepository, renderLegalConsentScreen } from './components/legalCompliance.js';
 import { renderSuperAdmins } from './components/superAdmins.js';
+import { renderMasterRepository } from './components/masterRepository.js';
 import { initAiAssistantWidget, abrirModalIA } from './components/aiAssistant.js';
 import './components/diagramViewer.js';
 import './components/documentViewer.js';
@@ -27,6 +28,7 @@ const routes = {
   '#dashboard': renderDashboard,
   '#empresas': renderCompanies,
   '#super-admins': renderSuperAdmins,
+  '#repositorio-base': renderMasterRepository,
   '#procesos': renderProcessMap,
   '#evaluacion': renderEvaluation,
   '#matriz': renderMatrix,
@@ -168,6 +170,11 @@ export function actualizarSelectorCabecera() {
   const sidebarLinkRepoLegal = document.querySelector('aside a.nav-link[href="#repositorio-legal"]');
   if (sidebarLinkRepoLegal) {
     sidebarLinkRepoLegal.classList.toggle('hidden', !esSuperAdmin);
+  }
+
+  const sidebarLinkRepoBase = document.querySelector('aside a.nav-link[href="#repositorio-base"]');
+  if (sidebarLinkRepoBase) {
+    sidebarLinkRepoBase.classList.toggle('hidden', !esSuperAdmin);
   }
 
   const sidebarLinkSuperAdmins = document.querySelector('aside a.nav-link[href="#super-admins"]');

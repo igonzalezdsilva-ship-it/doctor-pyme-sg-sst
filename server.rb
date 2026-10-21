@@ -7,6 +7,65 @@ require 'net/http'
 require 'uri'
 require 'digest'
 require 'securerandom'
+require 'zlib'
+require 'stringio'
+
+# Módulo de generación de archivos ZIP en memoria sin dependencias externas
+module PureRubyZip
+  def self.create_zip(files_hash) # { "path/to/file.ext" => "content_bytes" }
+    out = StringIO.new
+    out.set_encoding("ASCII-8BIT")
+    central_dir = StringIO.new
+    central_dir.set_encoding("ASCII-8BIT")
+    offset = 0
+
+    files_hash.each do |filename, data|
+      bytes = data.to_s.b
+      uncompressed_size = bytes.bytesize
+      crc = Zlib.crc32(bytes)
+      deflater = Zlib::Deflate.new(Zlib::DEFAULT_COMPRESSION, -Zlib::MAX_WBITS)
+      compressed = deflater.deflate(bytes, Zlib::FINISH)
+      deflater.close
+      compressed_size = compressed.bytesize
+
+      method = (compressed_size < uncompressed_size) ? 8 : 0
+      body = (method == 8) ? compressed : bytes
+      actual_comp_size = body.bytesize
+
+      fn_bytes = filename.encode("UTF-8").b
+      local_header = [
+        0x04034b50, 20, 0x0800, method, 0, 0, crc,
+        actual_comp_size, uncompressed_size, fn_bytes.bytesize, 0
+      ].pack("VvvvvvVVVvv")
+
+      out.write(local_header)
+      out.write(fn_bytes)
+      out.write(body)
+
+      cd_header = [
+        0x02014b50, 20, 20, 0x0800, method, 0, 0, crc,
+        actual_comp_size, uncompressed_size, fn_bytes.bytesize,
+        0, 0, 0, 0, 0, offset
+      ].pack("VvvvvvvVVVvvvvvVV")
+
+      central_dir.write(cd_header)
+      central_dir.write(fn_bytes)
+
+      offset += local_header.bytesize + fn_bytes.bytesize + actual_comp_size
+    end
+
+    cd_size = central_dir.string.bytesize
+    cd_offset = offset
+
+    eocd = [
+      0x06054b50, 0, 0, files_hash.size, files_hash.size, cd_size, cd_offset, 0
+    ].pack("VvvvvVVv")
+
+    out.write(central_dir.string)
+    out.write(eocd)
+    out.string
+  end
+end
 
 root = File.expand_path(File.dirname(__FILE__))
 port = (ENV['PORT'] || 3000).to_i
@@ -45,6 +104,25 @@ if File.exist?(DB_FILE)
           if b64
             File.open(target_path, 'wb') { |f| f.write(Base64.decode64(b64)) }
             puts "🛡️ [AUTO-RECONSTRUCCIÓN] Regenerado archivo físico en disco: #{disk_filename}"
+          end
+        end
+      end
+    end
+
+    # Auto-Reconstrucción de Plantillas Maestras en data/uploads/templates/
+    if boot_db['master_standard_templates'].is_a?(Array)
+      templates_dir = File.join(UPLOADS_DIR, 'templates')
+      FileUtils.mkdir_p(templates_dir)
+      boot_db['master_standard_templates'].each do |tpl|
+        next unless tpl.is_a?(Hash) && tpl['dataUrl'] && tpl['dataUrl'].start_with?('data:')
+        disk_filename = tpl['file_name'] || (tpl['file_url'] ? File.basename(tpl['file_url']) : nil)
+        next unless disk_filename && !disk_filename.empty?
+        target_path = File.join(templates_dir, disk_filename)
+        unless File.exist?(target_path)
+          _, b64 = tpl['dataUrl'].split(',', 2)
+          if b64
+            File.open(target_path, 'wb') { |f| f.write(Base64.decode64(b64)) }
+            puts "🛡️ [AUTO-RECONSTRUCCIÓN] Regenerada plantilla base en disco: #{disk_filename}"
           end
         end
       end
@@ -1568,9 +1646,281 @@ mount_api(server, '/api/tenants') do |req, res|
       res['Content-Type'] = 'application/json; charset=utf-8'
       res.body = { ok: false, error: "Error generando perfil contextual IA: #{err.message}" }.to_json
     end
+  elsif req.request_method == 'GET' && req.path =~ %r{(?:/sst)?/api/tenants/([^/]+)/evaluations/([^/]+)/download-official-repository}
+    tenant_id = $1
+    year = $2
+    begin
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      empresas = db['empresas'] || []
+      empresa = empresas.find { |e| e['id'] == tenant_id || (tenant_id == 'emp-004' && e['id'] == 'emp-1790438946268') || (tenant_id == 'emp-1790438946268' && e['id'] == 'emp-004') }
+      empresa_nombre = (empresa && empresa['razonSocial'] ? empresa['razonSocial'] : 'Empresa').gsub(/[^a-zA-Z0-9_\-]/, '_').gsub(/_+/, '_')
+      
+      evaluaciones_empresa = db.dig('evaluaciones', tenant_id, year) || db.dig('evaluaciones', 'emp-1790438946268', year) || db.dig('evaluaciones', 'emp-004', year) || {}
+      evidencias_totales = db['evidencias'] || []
+
+      # Recolectar exclusivamente archivos activos de "Documentos de Soporte y Evidencias Activas"
+      # (Ignorando las plantillas en blanco del repositorio base)
+      archivos_a_comprimir = {}
+      hashes_vistos = {}
+
+      # Helper para limpiar nombres de archivos
+      sanitizar_nombre = lambda do |orig, ext|
+        b = File.basename(orig, ext).to_s
+        b = b.gsub(/^[0-9_\-]+/, '')
+        b = b.gsub(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u, '')
+        b = b.gsub(/[^\p{Alnum}\s\-_()]/, '').strip
+        b = b.gsub(/\s+/, '_')
+        b.empty? ? "Evidencia" : b
+      end
+
+      # 1. Desde evaluaciones[tenant_id][year]
+      evaluaciones_empresa.each do |numeral, eval_item|
+        next unless eval_item.is_a?(Hash)
+        criterio_nombre = (eval_item['criterio'] || eval_item['justificacion'] || "Requisito_#{numeral}").to_s.gsub(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ_\- ]/, '').strip.gsub(/\s+/, '_')
+        criterio_nombre = criterio_nombre[0..50] if criterio_nombre.length > 50
+
+        # Archivo adjunto directo
+        if eval_item['archivoAdjunto'].is_a?(Hash) && eval_item['archivoAdjunto']['url']
+          adj = eval_item['archivoAdjunto']
+          nombre_orig = adj['nombre'] || File.basename(adj['url'])
+          contenido = nil
+          
+          # Intentar leer desde Base64
+          if adj['dataUrl'] && adj['dataUrl'].start_with?('data:')
+            _, b64 = adj['dataUrl'].split(',', 2)
+            contenido = Base64.decode64(b64) if b64
+          end
+          
+          # Si no, leer desde disco
+          if !contenido && adj['url']
+            disk_path = File.join(DATA_DIR, adj['url'].sub(%r{\A/sst/}, '/').sub(%r{\A/}, ''))
+            contenido = File.binread(disk_path) if File.exist?(disk_path)
+          end
+
+          # Buscar en db['evidencias'] si aún no lo tenemos
+          if !contenido
+            ev_match = evidencias_totales.find { |ev| ev['url'] == adj['url'] || ev['nombre'] == adj['nombre'] }
+            if ev_match && ev_match['dataUrl'] && ev_match['dataUrl'].start_with?('data:')
+              _, b64 = ev_match['dataUrl'].split(',', 2)
+              contenido = Base64.decode64(b64) if b64
+            elsif ev_match && ev_match['url']
+              disk_path = File.join(DATA_DIR, ev_match['url'].sub(%r{\A/sst/}, '/').sub(%r{\A/}, ''))
+              contenido = File.binread(disk_path) if File.exist?(disk_path)
+            end
+          end
+
+          if contenido && !contenido.empty?
+            h = Digest::MD5.hexdigest(contenido)
+            unless hashes_vistos[h]
+              hashes_vistos[h] = true
+              ext = File.extname(nombre_orig)
+              ext = '.pdf' if ext.empty?
+              base_clean = sanitizar_nombre.call(nombre_orig, ext)
+              nombre_final = "#{numeral} - #{criterio_nombre} - #{base_clean}#{ext}"
+              archivos_a_comprimir[nombre_final] = contenido
+            end
+          end
+        end
+
+        # Fuentes que correspondan a evidencias activas
+        if eval_item['fuentes'].is_a?(Array)
+          eval_item['fuentes'].each do |fuente|
+            next unless fuente.is_a?(Hash) && fuente['url']
+            next if fuente['origen'] == 'REPOSITORIO_BASE' # Ignorar plantillas neutras base
+            next if fuente['url'].include?('docs.google.com') || fuente['url'].include?('drive.google.com')
+            
+            f_url = fuente['url']
+            nombre_orig = fuente['titulo'] || File.basename(f_url)
+            ext = File.extname(nombre_orig)
+            ext = '.pdf' if ext.empty?
+            
+            contenido = nil
+            disk_path = File.join(DATA_DIR, f_url.sub(%r{\A/sst/}, '/').sub(%r{\A/}, ''))
+            contenido = File.binread(disk_path) if File.exist?(disk_path)
+            
+            if !contenido
+              ev_match = evidencias_totales.find { |ev| ev['url'] == f_url || ev['nombre'] == nombre_orig }
+              if ev_match && ev_match['dataUrl'] && ev_match['dataUrl'].start_with?('data:')
+                _, b64 = ev_match['dataUrl'].split(',', 2)
+                contenido = Base64.decode64(b64) if b64
+              end
+            end
+
+            if contenido && !contenido.empty?
+              h = Digest::MD5.hexdigest(contenido)
+              unless hashes_vistos[h]
+                hashes_vistos[h] = true
+                base_clean = sanitizar_nombre.call(nombre_orig, ext)
+                nombre_final = "#{numeral} - #{criterio_nombre} - #{base_clean}#{ext}"
+                archivos_a_comprimir[nombre_final] = contenido
+              end
+            end
+          end
+        end
+      end
+
+      # 2. Agregar cualquier evidencia directa de db['evidencias'] para esta empresa y año
+      evidencias_totales.each do |ev|
+        next unless ev.is_a?(Hash)
+        next unless (ev['companyId'] == tenant_id || (tenant_id == 'emp-004' && ev['companyId'] == 'emp-1790438946268') || (tenant_id == 'emp-1790438946268' && ev['companyId'] == 'emp-004'))
+        next if ev['anio'] && ev['anio'].to_s != year.to_s && ev['anio'] != 'todos' && ev['anio'] != 'ambos'
+        next if ev['origen'] == 'REPOSITORIO_BASE'
+
+        numeral = ev['numeral'] || 'SST'
+        nombre_orig = ev['nombre'] || File.basename(ev['url'] || 'evidencia.pdf')
+        ext = File.extname(nombre_orig)
+        ext = '.pdf' if ext.empty?
+
+        contenido = nil
+        if ev['dataUrl'] && ev['dataUrl'].start_with?('data:')
+          _, b64 = ev['dataUrl'].split(',', 2)
+          contenido = Base64.decode64(b64) if b64
+        end
+        if !contenido && ev['url']
+          disk_path = File.join(DATA_DIR, ev['url'].sub(%r{\A/sst/}, '/').sub(%r{\A/}, ''))
+          contenido = File.binread(disk_path) if File.exist?(disk_path)
+        end
+
+        if contenido && !contenido.empty?
+          h = Digest::MD5.hexdigest(contenido)
+          unless hashes_vistos[h]
+            hashes_vistos[h] = true
+            base_clean = sanitizar_nombre.call(nombre_orig, ext)
+            nombre_final = "#{numeral} - Soporte_Evidencia - #{base_clean}#{ext}"
+            archivos_a_comprimir[nombre_final] = contenido
+          end
+        end
+      end
+
+      # Si hay más de 20 archivos, organizar en subcarpetas por Ciclo PHVA
+      if archivos_a_comprimir.size > 20
+        carpetas_phva = {}
+        archivos_a_comprimir.each do |fname, bytes|
+          numeral = fname.split(' - ').first || ''
+          ciclo_folder = case numeral.chr
+          when '1', '2' then 'I_PLANEAR'
+          when '3', '4', '5' then 'II_HACER'
+          when '6' then 'III_VERIFICAR'
+          when '7' then 'IV_ACTUAR'
+          else 'SOPORTES_SST'
+          end
+          carpetas_phva["#{ciclo_folder}/#{fname}"] = bytes
+        end
+        archivos_a_comprimir = carpetas_phva
+      end
+
+      # Si no hay archivos, generar un manifiesto explicativo
+      if archivos_a_comprimir.empty?
+        manifiesto = "DOCTOR PYME SG-SST - REPOSITORIO OFICIAL DE EVIDENCIAS\nEmpresa: #{empresa ? empresa['razonSocial'] : tenant_id}\nNIT: #{empresa ? empresa['nit'] : 'N/A'}\nAño de Evaluación: #{year}\nFecha de Generación: #{Time.now.iso8601}\n\nNota: No se encontraron archivos cargados en 'Documentos de Soporte y Evidencias Activas' para la vigencia #{year}."
+        archivos_a_comprimir["Manifiesto_Evidencias_#{year}.txt"] = manifiesto
+      end
+
+      zip_data = PureRubyZip.create_zip(archivos_a_comprimir)
+      zip_filename = "Repositorio_Oficial_SGSST_#{empresa_nombre}_#{year}.zip"
+
+      res['Content-Type'] = 'application/zip'
+      res['Content-Disposition'] = "attachment; filename=\"#{zip_filename}\""
+      res['Content-Length'] = zip_data.bytesize.to_s
+      res.body = zip_data
+    rescue => e
+      res.status = 500
+      res['Content-Type'] = 'application/json'
+      res.body = { ok: false, error: "Error generando ZIP del repositorio oficial: #{e.message}" }.to_json
+    end
   else
     res.status = 405
     res.body = { error: 'Método o ruta no permitida en /api/tenants' }.to_json
+  end
+end
+
+# 1.1 Endpoint: Repositorio Maestro de Documentación Base (Res. 0312 de 2019)
+# GET /api/master-templates
+# POST /api/master-templates
+mount_api(server, '/api/master-templates') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'GET'
+    begin
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      templates = db['master_standard_templates'] || []
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { ok: true, templates: templates }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { ok: false, error: err.message }.to_json
+    end
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body) rescue {}
+      numeral = payload['standard_numeral']
+      unless numeral
+        res.status = 400
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { ok: false, error: 'Se requiere standard_numeral' }.to_json
+        next
+      end
+
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      templates = db['master_standard_templates'] || []
+      tpl_idx = templates.find_index { |t| t['standard_numeral'] == numeral }
+      
+      template_item = tpl_idx ? templates[tpl_idx] : {
+        'id' => "tpl-#{numeral.gsub('.', '-')}",
+        'standard_numeral' => numeral,
+        'standard_name' => payload['standard_name'] || "Estándar #{numeral}"
+      }
+
+      template_item['template_title'] = payload['template_title'] if payload['template_title']
+      template_item['description_guide'] = payload['description_guide'] if payload['description_guide']
+      template_item['version'] = payload['version'] || template_item['version'] || '1.0'
+      template_item['is_active'] = payload['is_active'] != false
+      template_item['updated_at'] = Time.now.utc.iso8601
+
+      if payload['dataUrl'] && payload['dataUrl'].start_with?('data:')
+        nombre_archivo = payload['file_name'] || "PLANTILLA_NEUTRA_#{numeral.gsub('.', '_')}.docx"
+        template_dir = File.join(UPLOADS_DIR, 'templates')
+        FileUtils.mkdir_p(template_dir)
+        disk_path = File.join(template_dir, nombre_archivo)
+        
+        _, b64 = payload['dataUrl'].split(',', 2)
+        if b64
+          File.open(disk_path, 'wb') { |f| f.write(Base64.decode64(b64)) }
+        end
+
+        template_item['file_name'] = nombre_archivo
+        template_item['mime_type'] = payload['mime_type'] || 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        template_item['file_size'] = payload['file_size'] || (File.exist?(disk_path) ? File.size(disk_path) : 0)
+        template_item['file_s3_key'] = "master-base-templates/#{numeral}_#{nombre_archivo}"
+        template_item['file_url'] = "/uploads/templates/#{nombre_archivo}"
+        template_item['dataUrl'] = payload['dataUrl']
+        template_item['has_file'] = true
+      elsif payload['has_file'] == false || payload['action'] == 'DELETE'
+        template_item['has_file'] = false
+        template_item['file_name'] = ''
+        template_item['file_url'] = ''
+        template_item['dataUrl'] = ''
+        template_item['file_size'] = 0
+      end
+
+      if tpl_idx
+        templates[tpl_idx] = template_item
+      else
+        templates << template_item
+      end
+
+      db['master_standard_templates'] = templates
+      db['updatedAt'] = Time.now.utc.iso8601
+      File.open(DB_FILE, 'w') { |f| f.write(JSON.pretty_generate(db)) }
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { ok: true, template: template_item }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { ok: false, error: err.message }.to_json
+    end
   end
 end
 

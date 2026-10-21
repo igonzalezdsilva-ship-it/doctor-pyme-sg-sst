@@ -1880,10 +1880,14 @@ class Store {
             estado: 'ACTIVO',
             rol: 'Administrador Empresa'
           };
-          return { ...e, ...empresaData, acceso: accesoActualizado, estandaresAplicables: estandares };
+          const loadBaseRepo = empresaData.load_base_repository !== undefined ? (empresaData.load_base_repository === true) : (e.load_base_repository === true);
+          return { ...e, ...empresaData, load_base_repository: loadBaseRepo, acceso: accesoActualizado, estandaresAplicables: estandares };
         }
         return e;
       });
+      if (empresaData.load_base_repository === true) {
+        this.vincularRepositorioBaseAEmpresa(finalId);
+      }
     } else {
       // Crear nueva
       finalId = 'emp-' + Date.now();
@@ -1891,6 +1895,7 @@ class Store {
       const newEmpresa = {
         ...empresaData,
         id: finalId,
+        load_base_repository: empresaData.load_base_repository === true,
         estandaresAplicables: estandares,
         createdAt: new Date().toISOString(),
         acceso: empresaData.acceso || {
@@ -1905,6 +1910,11 @@ class Store {
       this.data.empresas.push(newEmpresa);
       this.empresaActivaId = newEmpresa.id;
       storage.setItem(ACTIVE_COMPANY_KEY, newEmpresa.id);
+
+      // Si se configuró vinculación condicional del repositorio base en SÍ, poblar plantillas neutras
+      if (newEmpresa.load_base_repository === true) {
+        this.vincularRepositorioBaseAEmpresa(finalId);
+      }
     }
     this.saveToStorage();
     return finalId;
@@ -2214,7 +2224,141 @@ class Store {
     if (!this.data.evaluaciones[cid][year]) {
       this.data.evaluaciones[cid][year] = {};
     }
+
+    // Si la empresa tiene configurado load_base_repository = true y el año está vacío de fuentes, auto-vincular
+    const empresaActual = this.getEmpresa(cid);
+    if (empresaActual && empresaActual.load_base_repository === true) {
+      const tieneFuentes = Object.values(this.data.evaluaciones[cid][year]).some(ev => ev && Array.isArray(ev.fuentes) && ev.fuentes.length > 0);
+      if (!tieneFuentes) {
+        this.vincularRepositorioBaseAEmpresa(cid, year);
+      }
+    }
+
     return this.data.evaluaciones[cid][year];
+  }
+
+  // --- REPOSITORIO MAESTRO DE DOCUMENTACIÓN BASE (RES. 0312) ---
+  getMasterTemplates() {
+    return this.data?.master_standard_templates || [];
+  }
+
+  async saveMasterTemplate(tplData) {
+    if (!this.data) this.data = {};
+    if (!this.data.master_standard_templates) this.data.master_standard_templates = [];
+
+    const numeral = tplData.standard_numeral;
+    const idx = this.data.master_standard_templates.findIndex(t => t.standard_numeral === numeral);
+
+    const updated = {
+      id: tplData.id || `tpl-${numeral.replace(/\./g, '-')}`,
+      standard_numeral: numeral,
+      standard_name: tplData.standard_name || '',
+      ciclo: tplData.ciclo || '',
+      estandar: tplData.estandar || '',
+      template_title: tplData.template_title || `Formato Base - ${numeral}`,
+      description_guide: tplData.description_guide || '',
+      file_s3_key: tplData.file_s3_key || `master-base-templates/${numeral}_${tplData.file_name || 'template.docx'}`,
+      file_name: tplData.file_name || '',
+      mime_type: tplData.mime_type || 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      file_size: tplData.file_size || 0,
+      file_url: tplData.file_url || (tplData.file_name ? `/uploads/templates/${tplData.file_name}` : ''),
+      dataUrl: tplData.dataUrl || '',
+      version: tplData.version || '1.0',
+      is_active: tplData.is_active !== false,
+      has_file: tplData.has_file !== false && !!(tplData.dataUrl || tplData.file_name),
+      updated_at: new Date().toISOString()
+    };
+
+    if (idx >= 0) {
+      this.data.master_standard_templates[idx] = updated;
+    } else {
+      this.data.master_standard_templates.push(updated);
+    }
+
+    this.saveToStorage();
+
+    // Sincronizar con el backend
+    if (typeof fetch !== 'undefined') {
+      try {
+        const apiPath = (typeof window !== 'undefined' && window.location && window.location.pathname.startsWith('/sst')) ? '/sst/api/master-templates' : '/api/master-templates';
+        await fetch(apiPath, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updated)
+        });
+      } catch (err) {
+        console.warn("Aviso sincronizando plantilla maestra con el servidor:", err);
+      }
+    }
+
+    return updated;
+  }
+
+  async deleteMasterTemplate(numeral) {
+    if (!this.data?.master_standard_templates) return;
+    const tpl = this.data.master_standard_templates.find(t => t.standard_numeral === numeral);
+    if (!tpl) return;
+
+    tpl.has_file = false;
+    tpl.file_name = '';
+    tpl.file_url = '';
+    tpl.dataUrl = '';
+    tpl.file_size = 0;
+    tpl.updated_at = new Date().toISOString();
+
+    this.saveToStorage();
+
+    if (typeof fetch !== 'undefined') {
+      try {
+        const apiPath = (typeof window !== 'undefined' && window.location && window.location.pathname.startsWith('/sst')) ? '/sst/api/master-templates' : '/api/master-templates';
+        await fetch(apiPath, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ standard_numeral: numeral, action: 'DELETE', has_file: false })
+        });
+      } catch (err) {
+        console.warn("Aviso eliminando plantilla maestra en el servidor:", err);
+      }
+    }
+  }
+
+  vincularRepositorioBaseAEmpresa(companyId, anio = null) {
+    const year = String(anio || this.getAnioActivo());
+    const empresa = this.getEmpresa(companyId);
+    if (!empresa) return;
+
+    const templates = this.getMasterTemplates().filter(t => t.is_active && (t.has_file || (t.file_url && t.file_url.length > 0)));
+    if (!templates || templates.length === 0) return;
+
+    if (!this.data.evaluaciones) this.data.evaluaciones = {};
+    if (!this.data.evaluaciones[companyId]) this.data.evaluaciones[companyId] = {};
+    if (!this.data.evaluaciones[companyId][year]) this.data.evaluaciones[companyId][year] = {};
+
+    templates.forEach(tpl => {
+      const numeral = tpl.standard_numeral;
+      const current = this.data.evaluaciones[companyId][year][numeral] || {};
+      let fuentes = Array.isArray(current.fuentes) ? [...current.fuentes] : [];
+      
+      const yaExiste = fuentes.some(f => f.origen === 'REPOSITORIO_BASE' || f.id === `src-${tpl.id}`);
+      if (!yaExiste) {
+        fuentes.unshift({
+          id: `src-${tpl.id}`,
+          titulo: tpl.template_title || `${tpl.standard_name} (Plantilla Base)`,
+          url: tpl.file_url || `/uploads/templates/${tpl.file_name}`,
+          tipo: tpl.mime_type || 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          origen: 'REPOSITORIO_BASE'
+        });
+      }
+
+      this.data.evaluaciones[companyId][year][numeral] = {
+        ...current,
+        linkGuia: current.linkGuia || (tpl.file_url || `/uploads/templates/${tpl.file_name}`),
+        fuentes: fuentes,
+        estado: current.estado || 'SIN_EVALUAR'
+      };
+    });
+
+    this.saveToStorage();
   }
 
   saveEvaluacionItem(companyId, arg2, arg3, arg4) {
