@@ -6205,16 +6205,6 @@
   ],
   "process_maps": [
     {
-      "id": "pmap-emp-1792009016839-01",
-      "tenant_id": "emp-1792009016839",
-      "version": "v1.0",
-      "status": "Vigente",
-      "approved_by": "Jose Ivan Gonzalez Mora - CC: 3004889",
-      "approved_at": "2026-10-15T08:22:38-05:00",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
       "id": "pmap-emp-1792010387578-1792525691",
       "tenant_id": "emp-1792010387578",
       "version": "v1.0",
@@ -6233,107 +6223,19 @@
       "approved_at": "2026-10-20T14:55:02-05:00",
       "createdAt": "2026-10-20T14:55:02-05:00",
       "updatedAt": "2026-10-20T14:55:02-05:00"
+    },
+    {
+      "id": "pmap-emp-1792009016839-1792612438",
+      "tenant_id": "emp-1792009016839",
+      "version": "v1.0",
+      "status": "Vigente",
+      "approved_by": "Jose Ivan Gonzalez Mora - CC: 3004889",
+      "approved_at": "2026-10-21T14:53:58-05:00",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
     }
   ],
   "processes": [
-    {
-      "id": "proc-emp-1792009016839-de01",
-      "tenant_id": "emp-1792009016839",
-      "process_map_id": "pmap-emp-1792009016839-01",
-      "code": "DE-01",
-      "name": "Direccionamiento Estratégico y Gobierno Corporativo",
-      "process_type": "Estrategico",
-      "objective": "Establecer la planeación estratégica, políticas organizacionales, asignación presupuestal y directrices gerenciales para garantizar la rentabilidad, sostenibilidad y continuidad del negocio.",
-      "scope": "Aplica a todas las sedes, proyectos y unidades de negocio de la organización.",
-      "leader_job_position_id": "jp-emp-1792009016839-1",
-      "leader_title": "Ingeniero Residente de Instalaciones",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "proc-emp-1792009016839-sg02",
-      "tenant_id": "emp-1792009016839",
-      "process_map_id": "pmap-emp-1792009016839-01",
-      "code": "SG-02",
-      "name": "Gestión Integral del SG-SST y Sostenibilidad Ambiental",
-      "process_type": "Estrategico",
-      "objective": "Prevenir incidentes, accidentes y enfermedades de origen laboral mediante la identificación oportuna de peligros, valoración de riesgos (GTC 45) y ejecución del plan de trabajo anual bajo la Resolución 0312 de 2019.",
-      "scope": "Cubre el 100% de los trabajadores directos, contratistas, proveedores y visitantes en todas las instalaciones de la empresa.",
-      "leader_job_position_id": "jp-emp-1792009016839-3",
-      "leader_title": "Coordinador SST",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "proc-emp-1792009016839-op01",
-      "tenant_id": "emp-1792009016839",
-      "process_map_id": "pmap-emp-1792009016839-01",
-      "code": "OP-01",
-      "name": "Estudio Técnico, Diseño y Presupuesto de Instalaciones",
-      "process_type": "Misional",
-      "objective": "Diseñar planos eléctricos y memorias de cálculo cumpliendo la norma RETIE y especificaciones técnicas de obra.",
-      "scope": "Desde la solicitud del cliente hasta la entrega de la cotización y cronograma de obra.",
-      "leader_job_position_id": "jp-emp-1792009016839-1",
-      "leader_title": "Ingeniero Residente de Instalaciones",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "proc-emp-1792009016839-op02",
-      "tenant_id": "emp-1792009016839",
-      "process_map_id": "pmap-emp-1792009016839-01",
-      "code": "OP-02",
-      "name": "Montaje de Redes, Tendido de Tubería e Instalaciones Eléctricas",
-      "process_type": "Misional",
-      "objective": "Ejecutar las obras eléctricas en sitio garantizando cero accidentes, conexiones seguras y cumplimiento del cronograma.",
-      "scope": "Naves industriales, tableros de distribución, canalizaciones y acometidas de media y baja tensión.",
-      "leader_job_position_id": "jp-emp-1792009016839-2",
-      "leader_title": "Técnico Electricista y Redes",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "proc-emp-1792009016839-ap01",
-      "tenant_id": "emp-1792009016839",
-      "process_map_id": "pmap-emp-1792009016839-01",
-      "code": "AP-01",
-      "name": "Gestión del Talento Humano y Contratación Laboral (CST)",
-      "process_type": "Apoyo",
-      "objective": "Administrar el ciclo integral del colaborador (selección, vinculación formal, afiliación a seguridad social, preavisos y bienestar laboral) conforme al Código Sustantivo del Trabajo de Colombia.",
-      "scope": "Aplica a todos los aspirantes, trabajadores directos y personal retirado de la organización.",
-      "leader_job_position_id": "jp-emp-1792009016839-3",
-      "leader_title": "Coordinador SST",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "proc-emp-1792009016839-ap02",
-      "tenant_id": "emp-1792009016839",
-      "process_map_id": "pmap-emp-1792009016839-01",
-      "code": "AP-02",
-      "name": "Mantenimiento Preventivo y Correctivo de Maquinaria y Equipos",
-      "process_type": "Apoyo",
-      "objective": "Asegurar la máxima disponibilidad, confiabilidad y seguridad intrínseca de los equipos productivos mediante lubricación, calibración y planes de mantenimiento preventivo.",
-      "scope": "Toda la maquinaria industrial, herramientas manuales, eléctricas, neumáticas e instalaciones locativas.",
-      "leader_job_position_id": "jp-emp-1792009016839-2",
-      "leader_title": "Técnico Electricista y Redes",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "proc-emp-1792009016839-ev01",
-      "tenant_id": "emp-1792009016839",
-      "process_map_id": "pmap-emp-1792009016839-01",
-      "code": "EV-01",
-      "name": "Auditoría Interna, Rendición de Cuentas y Mejora Continua",
-      "process_type": "Evaluacion",
-      "objective": "Evaluar sistemáticamente la conformidad del SG-SST y los procesos corporativos frente a la Resolución 0312 de 2019, generando acciones preventivas y de mejora.",
-      "scope": "Todos los procesos estratégicos, misionales y de apoyo de la organización.",
-      "leader_job_position_id": "jp-emp-1792009016839-3",
-      "leader_title": "Coordinador SST",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
     {
       "id": "proc-emp-1792010387578-01",
       "tenant_id": "emp-1792010387578",
@@ -6557,486 +6459,107 @@
       "leader_title": "Coordinador SST",
       "createdAt": "2026-10-20T14:55:02-05:00",
       "updatedAt": "2026-10-20T14:55:02-05:00"
+    },
+    {
+      "id": "proc-emp-1792009016839-01",
+      "tenant_id": "emp-1792009016839",
+      "process_map_id": "pmap-emp-1792009016839-1792612438",
+      "code": "DE-01",
+      "name": "Direccionamiento Estratégico y Gobierno Corporativo",
+      "process_type": "Estrategico",
+      "objective": "Establecer la planeación estratégica, políticas organizacionales, asignación presupuestal y directrices gerenciales para garantizar la rentabilidad, sostenibilidad y continuidad del negocio.",
+      "scope": "Aplica a todas las sedes, proyectos y unidades de negocio de la organización desde la planificación anual hasta la rendición gerencial.",
+      "leader_job_position_id": "jp-emp-1792009016839-ad772a30",
+      "leader_title": "Gerente General",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "proc-emp-1792009016839-02",
+      "tenant_id": "emp-1792009016839",
+      "process_map_id": "pmap-emp-1792009016839-1792612438",
+      "code": "SG-02",
+      "name": "Gestión Integral del SG-SST y Sostenibilidad Ambiental",
+      "process_type": "Estrategico",
+      "objective": "Prevenir incidentes, accidentes y enfermedades de origen laboral mediante la identificación oportuna de peligros, valoración de riesgos (GTC 45) y ejecución del plan de trabajo anual bajo la Resolución 0312 de 2019.",
+      "scope": "Cubre el 100% de los trabajadores directos, contratistas, proveedores y visitantes en todas las instalaciones y frentes de trabajo de la empresa.",
+      "leader_job_position_id": "jp-emp-1792009016839-3",
+      "leader_title": "Coordinador SST",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "proc-emp-1792009016839-03",
+      "tenant_id": "emp-1792009016839",
+      "process_map_id": "pmap-emp-1792009016839-1792612438",
+      "code": "OP-01",
+      "name": "Planificación Técnica, Diseño y Presupuesto de Instalaciones",
+      "process_type": "Misional",
+      "objective": "Diseñar planos eléctricos y memorias de cálculo cumpliendo la norma RETIE y especificaciones técnicas de obra.",
+      "scope": "Desde la solicitud del cliente hasta la entrega de la cotización y cronograma de obra.",
+      "leader_job_position_id": "jp-emp-1792009016839-1",
+      "leader_title": "Ingeniero Residente de Instalaciones",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "proc-emp-1792009016839-04",
+      "tenant_id": "emp-1792009016839",
+      "process_map_id": "pmap-emp-1792009016839-1792612438",
+      "code": "OP-02",
+      "name": "Montaje de Redes, Tendido de Tubería e Instalaciones Eléctricas",
+      "process_type": "Misional",
+      "objective": "Ejecutar las obras eléctricas en sitio garantizando cero accidentes, conexiones seguras y cumplimiento del cronograma.",
+      "scope": "Naves industriales, tableros de distribución, canalizaciones y acometidas de media y baja tensión.",
+      "leader_job_position_id": "jp-emp-1792009016839-2",
+      "leader_title": "Técnico Electricista y Redes",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "proc-emp-1792009016839-05",
+      "tenant_id": "emp-1792009016839",
+      "process_map_id": "pmap-emp-1792009016839-1792612438",
+      "code": "AP-01",
+      "name": "Gestión del Talento Humano y Contratación Laboral (CST)",
+      "process_type": "Apoyo",
+      "objective": "Administrar el ciclo integral del colaborador (selección, vinculación formal, afiliación a seguridad social, preavisos y bienestar laboral) conforme al Código Sustantivo del Trabajo de Colombia.",
+      "scope": "Aplica a todos los aspirantes, trabajadores directos y personal retirado de la organización.",
+      "leader_job_position_id": "jp-emp-1792009016839-9f95d2ad",
+      "leader_title": "Asistente Administrativa",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "proc-emp-1792009016839-06",
+      "tenant_id": "emp-1792009016839",
+      "process_map_id": "pmap-emp-1792009016839-1792612438",
+      "code": "AP-02",
+      "name": "Mantenimiento Preventivo y Correctivo de Maquinaria y Equipos",
+      "process_type": "Apoyo",
+      "objective": "Asegurar la máxima disponibilidad, confiabilidad y seguridad intrínseca de los equipos productivos mediante lubricación, calibración y planes de mantenimiento preventivo.",
+      "scope": "Toda la maquinaria industrial, herramientas manuales, eléctricas, neumáticas e instalaciones locativas.",
+      "leader_job_position_id": "jp-emp-1792009016839-8e71ba91",
+      "leader_title": "Mecánico de Mantenimiento",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "proc-emp-1792009016839-07",
+      "tenant_id": "emp-1792009016839",
+      "process_map_id": "pmap-emp-1792009016839-1792612438",
+      "code": "EV-01",
+      "name": "Auditoría Interna, Rendición de Cuentas y Mejora Continua",
+      "process_type": "Evaluacion",
+      "objective": "Evaluar sistemáticamente la conformidad del SG-SST y los procesos corporativos frente a la Resolución 0312 de 2019, generando acciones preventivas y de mejora.",
+      "scope": "Todos los procesos estratégicos, misionales y de apoyo de la organización.",
+      "leader_job_position_id": "jp-emp-1792009016839-3",
+      "leader_title": "Coordinador SST",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
     }
   ],
   "process_activities": [
-    {
-      "id": "act-proc-emp-1792009016839-de01-1",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-de01",
-      "phva_phase": "Planear",
-      "activity_order": 1,
-      "activity_name": "Definición de Objetivos y Plan de Inversión Anual",
-      "description": "Formular metas estratégicas anuales, presupuestos y asignación de recursos para la operación y el SG-SST.",
-      "inputs": "Balance financiero, análisis DOFA, marco regulatorio",
-      "outputs": "Plan Estratégico y Presupuesto Oficial Aprobado",
-      "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-de01-2",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-de01",
-      "phva_phase": "Hacer",
-      "activity_order": 2,
-      "activity_name": "Despliegue y Comunicación Directiva",
-      "description": "Socializar directrices gerenciales y metas organizacionales con líderes de proceso y partes interesadas.",
-      "inputs": "Plan Estratégico",
-      "outputs": "Actas de alineación directiva y compromisos",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-de01-3",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-de01",
-      "phva_phase": "Verificar",
-      "activity_order": 3,
-      "activity_name": "Revisión por la Dirección (Decreto 1072 Art. 2.2.4.6.31)",
-      "description": "Evaluar el desempeño del sistema integral, cumplimiento de metas y eficacia de los controles.",
-      "inputs": "Informes de gestión, auditorías, estados financieros",
-      "outputs": "Acta formal de Revisión Gerencial",
-      "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-de01-4",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-de01",
-      "phva_phase": "Actuar",
-      "activity_order": 4,
-      "activity_name": "Toma de Decisiones y Asignación de Recursos de Mejora",
-      "description": "Ajustar planes estratégicos y aprobar recursos para proyectos de modernización y mitigación de riesgos.",
-      "inputs": "Hallazgos de revisión gerencial",
-      "outputs": "Planes de mejora y reasignación de partidas",
-      "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-sg02-1",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-sg02",
-      "phva_phase": "Planear",
-      "activity_order": 1,
-      "activity_name": "Elaboración del Plan Anual de Trabajo y Presupuesto SST",
-      "description": "Diseñar el cronograma normativo anual, programas de vigilancia y capacitaciones reglamentarias.",
-      "inputs": "Autoevaluación Res. 0312, matriz de peligros previa",
-      "outputs": "Plan Anual de Trabajo SST firmado por Gerencia",
-      "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-sg02-2",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-sg02",
-      "phva_phase": "Hacer",
-      "activity_order": 2,
-      "activity_name": "Ejecución de Inducciones, Inspecciones Preoperacionales y Entrega de EPP",
-      "description": "Verificar condiciones de seguridad en campo, dotar de EPPs certificados e impartir capacitaciones operacionales.",
-      "inputs": "Fichas de seguridad, matrices de EPP, inventario",
-      "outputs": "Registros de entrega de EPP, actas de inducción y planillas",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-sg02-3",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-sg02",
-      "phva_phase": "Verificar",
-      "activity_order": 3,
-      "activity_name": "Medición de Indicadores de SST y Auditoría Interna",
-      "description": "Monitorear indicadores de estructura, proceso y resultado (frecuencia, severidad y ausentismo laboral).",
-      "inputs": "Reportes de incidentes, estadísticas de nómina",
-      "outputs": "Tablero de Control de Indicadores SST",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-sg02-4",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-sg02",
-      "phva_phase": "Actuar",
-      "activity_order": 4,
-      "activity_name": "Implementación de Acciones Correctivas y Preventivas",
-      "description": "Gestionar no conformidades derivadas de inspecciones, accidentes o auditorías para evitar recurrencias.",
-      "inputs": "Informes de investigación de accidentes (FURAT)",
-      "outputs": "Plan de Acciones Correctivas cerrado y verificado",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-op01-1",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-op01",
-      "phva_phase": "Planear",
-      "activity_order": 1,
-      "activity_name": "Levantamiento de Campo y Cálculo de Cargas Eléctricas",
-      "description": "Inspeccionar instalaciones existentes, medir acometidas y diseñar diagramas unifilares.",
-      "inputs": "Planos arquitectónicos, requerimientos de obra",
-      "outputs": "Memoria de cálculo y plano de redes",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-op01-2",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-op01",
-      "phva_phase": "Hacer",
-      "activity_order": 2,
-      "activity_name": "Formulación de Presupuesto y Cronograma de Obra",
-      "description": "Costear materiales certificados, mano de obra especializada y definir hitos de entrega.",
-      "inputs": "Catálogos RETIE, tarifas comerciales",
-      "outputs": "Propuesta técnica y económica aprobada",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-op01-3",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-op01",
-      "phva_phase": "Verificar",
-      "activity_order": 3,
-      "activity_name": "Revisión Normativa de Diseños (RETIE / NTC 2050)",
-      "description": "Validar calibres de conductores, protecciones termomagnéticas y sistemas de puesta a tierra.",
-      "inputs": "Diseño técnico preliminar",
-      "outputs": "Plano eléctrico visado y aprobado",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-op01-4",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-op01",
-      "phva_phase": "Actuar",
-      "activity_order": 4,
-      "activity_name": "Ajuste de Planos conforme a Observaciones de Interventoría",
-      "description": "Incorporar requerimientos de los constructores y emitir versión final para ejecución.",
-      "inputs": "Observaciones de interventoría",
-      "outputs": "Juego de planos definitivos",
-      "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-op02-1",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-op02",
-      "phva_phase": "Planear",
-      "activity_order": 1,
-      "activity_name": "Permiso de Trabajo Eléctrico y Charla de Seguridad de 5 Minutos",
-      "description": "Evaluar riesgos de arco eléctrico, verificar bloqueo y etiquetado (LOTO) y estado de EPP dieléctrico.",
-      "inputs": "Matriz GTC 45, orden de trabajo",
-      "outputs": "Permiso de trabajo seguro en alturas/eléctrico firmado",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-        "tool-sig-001"
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-op02-2",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-op02",
-      "phva_phase": "Hacer",
-      "activity_order": 2,
-      "activity_name": "Tendido de Cableado, Ranurado y Montaje de Tableros Eléctricos",
-      "description": "Instalar tubería EMT/conduit, cablear circuitos de potencia e iluminación y peinar tableros.",
-      "inputs": "Conductores certificados, canalizaciones",
-      "outputs": "Redes eléctricas cableadas e instaladas",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-        "tool-sig-001",
-        "tool-sig-002"
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-op02-3",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-op02",
-      "phva_phase": "Verificar",
-      "activity_order": 3,
-      "activity_name": "Pruebas de Aislamiento (Megado) y Continuidad de Redes",
-      "description": "Medir resistencia de aislamiento entre fases y tierra para prevenir cortocircuitos.",
-      "inputs": "Circuitos terminados",
-      "outputs": "Protocolo de pruebas de megado conforme",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-op02-4",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-op02",
-      "phva_phase": "Actuar",
-      "activity_order": 4,
-      "activity_name": "Corrección de Empalmes y Rotulado Definitivo de Circuitos",
-      "description": "Ajustar bornes con torquímetro y colocar marquillas identificadoras en tableros y tomas.",
-      "inputs": "Hallazgos de inspección",
-      "outputs": "Instalación rotulada y lista para energización",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-ap01-1",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-ap01",
-      "phva_phase": "Planear",
-      "activity_order": 1,
-      "activity_name": "Definición de Perfiles de Cargo y Profesiogramas de Ingreso",
-      "description": "Estructurar requisitos académicos, competencias y exámenes médicos ocupacionales obligatorios (Res. 2346/2007).",
-      "inputs": "Catálogo de cargos, manual de funciones",
-      "outputs": "Profesiograma oficial actualizado",
-      "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-ap01-2",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-ap01",
-      "phva_phase": "Hacer",
-      "activity_order": 2,
-      "activity_name": "Contratación, Afiliación a Seguridad Social e Inducción",
-      "description": "Suscribir contrato individual de trabajo, afiliar a EPS, AFP, ARL y Caja de Compensación antes del inicio de labores.",
-      "inputs": "Documentos del aspirante, examen de ingreso",
-      "outputs": "Contrato firmado, anexos SST y afiliaciones activas",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-ap01-3",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-ap01",
-      "phva_phase": "Verificar",
-      "activity_order": 3,
-      "activity_name": "Control de Vencimientos Contractuales y Alertas CST (Art. 46)",
-      "description": "Monitorear fechas de culminación de contratos a término fijo y emitir preavisos legales con 30 días de anticipación.",
-      "inputs": "Base de datos de contratos",
-      "outputs": "Cartas de preaviso o actas de prórroga emitidas",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-ap01-4",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-ap01",
-      "phva_phase": "Actuar",
-      "activity_order": 4,
-      "activity_name": "Liquidación Final y Práctica de Examen Médico de Egreso",
-      "description": "Expedir orden de examen ocupacional de retiro y cancelar liquidación definitiva de prestaciones sociales.",
-      "inputs": "Paz y salvo laboral, entrega de puesto",
-      "outputs": "Liquidación salarial pagada y certificado de examen",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-ap02-1",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-ap02",
-      "phva_phase": "Planear",
-      "activity_order": 1,
-      "activity_name": "Formulación del Plan Maestro de Mantenimiento y Calibraciones",
-      "description": "Definir periodicidad, fichas técnicas y repuestos críticos para cada equipo del inventario.",
-      "inputs": "Manuales de fabricante, inventario tools_inventory",
-      "outputs": "Cronograma anual de mantenimiento preventivo",
-      "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-ap02-2",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-ap02",
-      "phva_phase": "Hacer",
-      "activity_order": 2,
-      "activity_name": "Ejecución de Rutinas de Lubricación, Engrase y Ajustes Mecánicos",
-      "description": "Aplicar procedimientos de bloqueo/tarjeteo LOTO y realizar intervenciones técnicas preventivas.",
-      "inputs": "Órdenes de trabajo, lubricantes, repuestos",
-      "outputs": "Bitácora técnica de mantenimiento diligenciada",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-ap02-3",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-ap02",
-      "phva_phase": "Verificar",
-      "activity_order": 3,
-      "activity_name": "Pruebas de Arranque en Vacío e Inspección Térmica",
-      "description": "Medir vibración, consumo eléctrico y temperatura en rodamientos para certificar operatividad.",
-      "inputs": "Equipos intervenidos",
-      "outputs": "Acta de entrega conforme al área operativa",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-ap02-4",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-ap02",
-      "phva_phase": "Actuar",
-      "activity_order": 4,
-      "activity_name": "Actualización de Hoja de Vida y Reprogramación de Próxima Fecha",
-      "description": "Registrar la intervención en tools_interventions_log y actualizar next_date en tools_maintenance_plan.",
-      "inputs": "Reporte de trabajo finalizado",
-      "outputs": "Hoja de vida de la herramienta actualizada",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-ev01-1",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-ev01",
-      "phva_phase": "Planear",
-      "activity_order": 1,
-      "activity_name": "Programa y Plan de Auditorías Internas Anuales",
-      "description": "Establecer alcance, criterios de auditoría y equipo auditor competente e independiente.",
-      "inputs": "Procedimiento de auditoría, estándares mínimos",
-      "outputs": "Plan de auditoría formalizado y comunicado",
-      "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-ev01-2",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-ev01",
-      "phva_phase": "Hacer",
-      "activity_order": 2,
-      "activity_name": "Ejecución de Auditoría en Campo y Revisión Documental",
-      "description": "Verificar evidencias físicas y digitales en plataforma, entrevistar personal y registrar hallazgos.",
-      "inputs": "Listas de verificación Res. 0312, evidencias",
-      "outputs": "Libro de notas de auditoría y registros fotográficos",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-ev01-3",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-ev01",
-      "phva_phase": "Verificar",
-      "activity_order": 3,
-      "activity_name": "Informe Oficial de Auditoría y Clasificación de Hallazgos",
-      "description": "Emitir dictamen con conformidades, no conformidades mayores, menores y oportunidades de mejora.",
-      "inputs": "Hallazgos consolidados",
-      "outputs": "Informe de Auditoría Interna entregado a Gerencia",
-      "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "act-proc-emp-1792009016839-ev01-4",
-      "tenant_id": "emp-1792009016839",
-      "process_id": "proc-emp-1792009016839-ev01",
-      "phva_phase": "Actuar",
-      "activity_order": 4,
-      "activity_name": "Formulación y Cierre de Planes de Acción",
-      "description": "Hacer seguimiento al cierre de causas raíz y validar la eficacia de las soluciones adoptadas.",
-      "inputs": "Planes de acción propuestos",
-      "outputs": "Certificado de cierre de no conformidades",
-      "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
     {
       "id": "act-proc-emp-1792010387578-01-1",
       "tenant_id": "emp-1792010387578",
@@ -8137,6 +7660,487 @@
       ],
       "createdAt": "2026-10-20T14:55:02-05:00",
       "updatedAt": "2026-10-20T14:55:02-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-01-1",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-01",
+      "phva_phase": "Planear",
+      "activity_order": 1,
+      "activity_name": "Definición de Objetivos y Plan de Inversión",
+      "description": "Formular las metas estratégicas anuales, presupuestos y recursos para la operación y el SG-SST.",
+      "inputs": "Balance financiero, análisis DOFA, marco regulatorio",
+      "outputs": "Plan Estratégico y Presupuesto Oficial Aprobado",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-01-2",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-01",
+      "phva_phase": "Hacer",
+      "activity_order": 2,
+      "activity_name": "Despliegue y Comunicación Directiva",
+      "description": "Socializar directrices gerenciales y metas organizacionales con líderes de proceso y partes interesadas.",
+      "inputs": "Plan Estratégico",
+      "outputs": "Actas de alineación directiva y compromisos",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-01-3",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-01",
+      "phva_phase": "Verificar",
+      "activity_order": 3,
+      "activity_name": "Revisión por la Dirección (Decreto 1072 Art. 2.2.4.6.31)",
+      "description": "Evaluar el desempeño del sistema integral, cumplimiento de metas y eficacia de los controles.",
+      "inputs": "Informes de gestión, auditorías, estados financieros",
+      "outputs": "Acta formal de Revisión Gerencial",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-01-4",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-01",
+      "phva_phase": "Actuar",
+      "activity_order": 4,
+      "activity_name": "Toma de Decisiones y Asignación de Recursos de Mejora",
+      "description": "Ajustar planes estratégicos y aprobar recursos para proyectos de modernización y mitigación de riesgos.",
+      "inputs": "Hallazgos de revisión gerencial",
+      "outputs": "Planes de mejora y reasignación de partidas",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+        "tool-sig-001"
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-02-1",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-02",
+      "phva_phase": "Planear",
+      "activity_order": 1,
+      "activity_name": "Elaboración del Plan Anual de Trabajo y Presupuesto SST",
+      "description": "Diseñar el cronograma normativo anual, programas de vigilancia y capacitaciones reglamentarias.",
+      "inputs": "Autoevaluación Res. 0312, matriz de peligros previa",
+      "outputs": "Plan Anual de Trabajo SST firmado por Gerencia",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-02-2",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-02",
+      "phva_phase": "Hacer",
+      "activity_order": 2,
+      "activity_name": "Ejecución de Inducciones, Inspecciones Preoperacionales y Entrega de EPP",
+      "description": "Verificar condiciones de seguridad en campo, dotar de EPPs certificados e impartir capacitaciones operacionales.",
+      "inputs": "Fichas de seguridad, matrices de EPP, inventario",
+      "outputs": "Registros de entrega de EPP, actas de inducción y planillas",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+        "tool-och-004"
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-02-3",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-02",
+      "phva_phase": "Verificar",
+      "activity_order": 3,
+      "activity_name": "Medición de Indicadores de SST y Auditoría Interna",
+      "description": "Monitorear indicadores de estructura, proceso y resultado (frecuencia, severidad y ausentismo laboral).",
+      "inputs": "Reportes de incidentes, estadísticas de nómina",
+      "outputs": "Tablero de Control de Indicadores SST",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-02-4",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-02",
+      "phva_phase": "Actuar",
+      "activity_order": 4,
+      "activity_name": "Implementación de Acciones Correctivas y Preventivas",
+      "description": "Gestionar no conformidades derivadas de inspecciones, accidentes o auditorías para evitar recurrencias.",
+      "inputs": "Informes de investigación de accidentes (FURAT)",
+      "outputs": "Plan de Acciones Correctivas cerrado y verificado",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-03-1",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-03",
+      "phva_phase": "Planear",
+      "activity_order": 1,
+      "activity_name": "Levantamiento de Campo y Cálculo de Cargas Eléctricas",
+      "description": "Inspeccionar instalaciones existentes, medir acometidas y diseñar diagramas unifilares.",
+      "inputs": "Planos arquitectónicos, requerimientos de obra",
+      "outputs": "Memoria de cálculo y plano de redes",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-03-2",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-03",
+      "phva_phase": "Hacer",
+      "activity_order": 2,
+      "activity_name": "Formulación de Presupuesto y Cronograma de Obra",
+      "description": "Costear materiales certificados, mano de obra especializada y definir hitos de entrega.",
+      "inputs": "Catálogos RETIE, tarifas comerciales",
+      "outputs": "Propuesta técnica y económica aprobada",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-03-3",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-03",
+      "phva_phase": "Verificar",
+      "activity_order": 3,
+      "activity_name": "Revisión Normativa de Diseños (RETIE / NTC 2050)",
+      "description": "Validar calibres de conductores, protecciones termomagnéticas y sistemas de puesta a tierra.",
+      "inputs": "Diseño técnico preliminar",
+      "outputs": "Plano eléctrico visado y aprobado",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-03-4",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-03",
+      "phva_phase": "Actuar",
+      "activity_order": 4,
+      "activity_name": "Ajuste de Planos conforme a Observaciones de Interventoría",
+      "description": "Incorporar requerimientos de los constructores y emitir versión final para ejecución.",
+      "inputs": "Observaciones de interventoría",
+      "outputs": "Juego de planos definitivos",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-04-1",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-04",
+      "phva_phase": "Planear",
+      "activity_order": 1,
+      "activity_name": "Permiso de Trabajo Eléctrico y Charla de Seguridad de 5 Minutos",
+      "description": "Evaluar riesgos de arco eléctrico, verificar bloqueo y etiquetado (LOTO) y estado de EPP dieléctrico.",
+      "inputs": "Matriz GTC 45, orden de trabajo",
+      "outputs": "Permiso de trabajo seguro en alturas/eléctrico firmado",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+        "tool-sig-002",
+        "tool-sig-001"
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-04-2",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-04",
+      "phva_phase": "Hacer",
+      "activity_order": 2,
+      "activity_name": "Tendido de Cableado, Ranurado y Montaje de Tableros Eléctricos",
+      "description": "Instalar tubería EMT/conduit, cablear circuitos de potencia e iluminación y peinar tableros.",
+      "inputs": "Conductores certificados, canalizaciones",
+      "outputs": "Redes eléctricas cableadas e instaladas",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+        "tool-sig-001",
+        "tool-sig-002"
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-04-3",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-04",
+      "phva_phase": "Verificar",
+      "activity_order": 3,
+      "activity_name": "Pruebas de Aislamiento (Megado) y Continuidad de Redes",
+      "description": "Medir resistencia de aislamiento entre fases y tierra para prevenir cortocircuitos.",
+      "inputs": "Circuitos terminados",
+      "outputs": "Protocolo de pruebas de megado conforme",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-04-4",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-04",
+      "phva_phase": "Actuar",
+      "activity_order": 4,
+      "activity_name": "Corrección de Empalmes y Rotulado Definitivo de Circuitos",
+      "description": "Ajustar bornes con torquímetro y colocar marquillas identificadoras en tableros y tomas.",
+      "inputs": "Hallazgos de inspección",
+      "outputs": "Instalación rotulada y lista para energización",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-05-1",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-05",
+      "phva_phase": "Planear",
+      "activity_order": 1,
+      "activity_name": "Definición de Perfiles de Cargo y Profesiogramas de Ingreso",
+      "description": "Estructurar requisitos académicos, competencias y exámenes médicos ocupacionales obligatorios (Res. 2346/2007).",
+      "inputs": "Catálogo de cargos, manual de funciones",
+      "outputs": "Profesiograma oficial actualizado",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-05-2",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-05",
+      "phva_phase": "Hacer",
+      "activity_order": 2,
+      "activity_name": "Contratación, Afiliación a Seguridad Social e Inducción",
+      "description": "Suscribir contrato individual de trabajo, afiliar a EPS, AFP, ARL y Caja de Compensación antes del inicio de labores.",
+      "inputs": "Documentos del aspirante, examen de ingreso",
+      "outputs": "Contrato firmado, anexos SST y afiliaciones activas",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-05-3",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-05",
+      "phva_phase": "Verificar",
+      "activity_order": 3,
+      "activity_name": "Control de Vencimientos Contractuales y Alertas CST (Art. 46)",
+      "description": "Monitorear fechas de culminación de contratos a término fijo y emitir preavisos legales con 30 días de anticipación.",
+      "inputs": "Base de datos de contratos",
+      "outputs": "Cartas de preaviso o actas de prórroga emitidas",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-05-4",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-05",
+      "phva_phase": "Actuar",
+      "activity_order": 4,
+      "activity_name": "Liquidación Final y Práctica de Examen Médico de Egreso",
+      "description": "Expedir orden de examen ocupacional de retiro y cancelar liquidación definitiva de prestaciones sociales.",
+      "inputs": "Paz y salvo laboral, entrega de puesto",
+      "outputs": "Liquidación salarial pagada y certificado de examen",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-06-1",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-06",
+      "phva_phase": "Planear",
+      "activity_order": 1,
+      "activity_name": "Formulación del Plan Maestro de Mantenimiento y Calibraciones",
+      "description": "Definir periodicidad, fichas técnicas y repuestos críticos para cada equipo del inventario.",
+      "inputs": "Manuales de fabricante, inventario tools_inventory",
+      "outputs": "Cronograma anual de mantenimiento preventivo",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+        "tool-och-005"
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-06-2",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-06",
+      "phva_phase": "Hacer",
+      "activity_order": 2,
+      "activity_name": "Ejecución de Rutinas de Lubricación, Engrase y Ajustes Mecánicos",
+      "description": "Aplicar procedimientos de bloqueo/tarjeteo LOTO y realizar intervenciones técnicas preventivas.",
+      "inputs": "Órdenes de trabajo, lubricantes, repuestos",
+      "outputs": "Bitácora técnica de mantenimiento diligenciada",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+        "tool-och-002",
+        "tool-och-003",
+        "tool-och-005"
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-06-3",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-06",
+      "phva_phase": "Verificar",
+      "activity_order": 3,
+      "activity_name": "Pruebas de Arranque en Vacío e Inspección Térmica",
+      "description": "Medir vibración, consumo eléctrico y temperatura en rodamientos para certificar operatividad.",
+      "inputs": "Equipos intervenidos",
+      "outputs": "Acta de entrega conforme al área operativa",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+        "tool-sig-002",
+        "tool-och-004"
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-06-4",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-06",
+      "phva_phase": "Actuar",
+      "activity_order": 4,
+      "activity_name": "Actualización de Hoja de Vida y Reprogramación de Próxima Fecha",
+      "description": "Registrar la intervención en tools_interventions_log y actualizar next_date en tools_maintenance_plan.",
+      "inputs": "Reporte de trabajo finalizado",
+      "outputs": "Hoja de vida de la herramienta actualizada",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-07-1",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-07",
+      "phva_phase": "Planear",
+      "activity_order": 1,
+      "activity_name": "Programa y Plan de Auditorías Internas Anuales",
+      "description": "Establecer alcance, criterios de auditoría y equipo auditor competente e independiente.",
+      "inputs": "Procedimiento de auditoría, estándares mínimos",
+      "outputs": "Plan de auditoría formalizado y comunicado",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-07-2",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-07",
+      "phva_phase": "Hacer",
+      "activity_order": 2,
+      "activity_name": "Ejecución de Auditoría en Campo y Revisión Documental",
+      "description": "Verificar evidencias físicas y digitales en plataforma, entrevistar personal y registrar hallazgos.",
+      "inputs": "Listas de verificación Res. 0312, evidencias",
+      "outputs": "Libro de notas de auditoría y registros fotográficos",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-07-3",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-07",
+      "phva_phase": "Verificar",
+      "activity_order": 3,
+      "activity_name": "Informe Oficial de Auditoría y Clasificación de Hallazgos",
+      "description": "Emitir dictamen con conformidades, no conformidades mayores, menores y oportunidades de mejora.",
+      "inputs": "Hallazgos consolidados",
+      "outputs": "Informe de Auditoría Interna entregado a Gerencia",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792009016839-07-4",
+      "tenant_id": "emp-1792009016839",
+      "process_id": "proc-emp-1792009016839-07",
+      "phva_phase": "Actuar",
+      "activity_order": 4,
+      "activity_name": "Formulación y Cierre de Planes de Acción",
+      "description": "Hacer seguimiento al cierre de causas raíz y validar la eficacia de las soluciones adoptadas.",
+      "inputs": "Planes de acción propuestos",
+      "outputs": "Certificado de cierre de no conformidades",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
     }
   ],
   "job_positions": [
@@ -8867,261 +8871,114 @@
       "is_active": true,
       "createdAt": "2026-10-15T08:22:38-05:00",
       "updatedAt": "2026-10-15T08:22:38-05:00"
+    },
+    {
+      "id": "jp-emp-1792009016839-ad772a30",
+      "tenant_id": "emp-1792009016839",
+      "code": "CARG-004",
+      "title": "Gerente General",
+      "hierarchy_level": "Directivo",
+      "summary_objective": "Liderar y responder por la adecuada gestión y continuidad de los procesos asignados al puesto de Gerente General.",
+      "required_education": "Educación técnica o profesional acorde al nivel jerárquico",
+      "required_experience": "1 a 2 años en cargos equivalentes",
+      "required_skills": [
+        "Liderazgo",
+        "Comunicación asertiva",
+        "Gestión de riesgos"
+      ],
+      "medical_exams_profesiograma": {
+        "ingreso": [
+          "Médico general",
+          "Visiometría"
+        ],
+        "periodico": [
+          "Control anual"
+        ],
+        "egreso": [
+          "Examen egreso"
+        ]
+      },
+      "required_epp_list": [
+        "Casco",
+        "Botas de seguridad",
+        "Gafas"
+      ],
+      "is_active": true,
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "jp-emp-1792009016839-9f95d2ad",
+      "tenant_id": "emp-1792009016839",
+      "code": "CARG-005",
+      "title": "Asistente Administrativa",
+      "hierarchy_level": "Operativo",
+      "summary_objective": "Liderar y responder por la adecuada gestión y continuidad de los procesos asignados al puesto de Asistente Administrativa.",
+      "required_education": "Educación técnica o profesional acorde al nivel jerárquico",
+      "required_experience": "1 a 2 años en cargos equivalentes",
+      "required_skills": [
+        "Liderazgo",
+        "Comunicación asertiva",
+        "Gestión de riesgos"
+      ],
+      "medical_exams_profesiograma": {
+        "ingreso": [
+          "Médico general",
+          "Visiometría"
+        ],
+        "periodico": [
+          "Control anual"
+        ],
+        "egreso": [
+          "Examen egreso"
+        ]
+      },
+      "required_epp_list": [
+        "Casco",
+        "Botas de seguridad",
+        "Gafas"
+      ],
+      "is_active": true,
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "jp-emp-1792009016839-8e71ba91",
+      "tenant_id": "emp-1792009016839",
+      "code": "CARG-006",
+      "title": "Mecánico de Mantenimiento",
+      "hierarchy_level": "Operativo",
+      "summary_objective": "Liderar y responder por la adecuada gestión y continuidad de los procesos asignados al puesto de Mecánico de Mantenimiento.",
+      "required_education": "Educación técnica o profesional acorde al nivel jerárquico",
+      "required_experience": "1 a 2 años en cargos equivalentes",
+      "required_skills": [
+        "Liderazgo",
+        "Comunicación asertiva",
+        "Gestión de riesgos"
+      ],
+      "medical_exams_profesiograma": {
+        "ingreso": [
+          "Médico general",
+          "Visiometría"
+        ],
+        "periodico": [
+          "Control anual"
+        ],
+        "egreso": [
+          "Examen egreso"
+        ]
+      },
+      "required_epp_list": [
+        "Casco",
+        "Botas de seguridad",
+        "Gafas"
+      ],
+      "is_active": true,
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
     }
   ],
   "process_activity_positions": [
-    {
-      "id": "pap-act-proc-emp-1792009016839-de01-1-jp-emp-1792009016839-1",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-de01-1",
-      "job_position_id": "jp-emp-1792009016839-1",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-de01-2-jp-emp-1792009016839-1",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-de01-2",
-      "job_position_id": "jp-emp-1792009016839-1",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-de01-3-jp-emp-1792009016839-1",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-de01-3",
-      "job_position_id": "jp-emp-1792009016839-1",
-      "role_in_activity": "Supervisor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-de01-4-jp-emp-1792009016839-1",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-de01-4",
-      "job_position_id": "jp-emp-1792009016839-1",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-sg02-1-jp-emp-1792009016839-3",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-sg02-1",
-      "job_position_id": "jp-emp-1792009016839-3",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-sg02-2-jp-emp-1792009016839-3",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-sg02-2",
-      "job_position_id": "jp-emp-1792009016839-3",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-sg02-3-jp-emp-1792009016839-3",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-sg02-3",
-      "job_position_id": "jp-emp-1792009016839-3",
-      "role_in_activity": "Supervisor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-sg02-4-jp-emp-1792009016839-3",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-sg02-4",
-      "job_position_id": "jp-emp-1792009016839-3",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-op01-1-jp-emp-1792009016839-1",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-op01-1",
-      "job_position_id": "jp-emp-1792009016839-1",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-op01-2-jp-emp-1792009016839-1",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-op01-2",
-      "job_position_id": "jp-emp-1792009016839-1",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-op01-3-jp-emp-1792009016839-1",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-op01-3",
-      "job_position_id": "jp-emp-1792009016839-1",
-      "role_in_activity": "Supervisor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-op01-4-jp-emp-1792009016839-1",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-op01-4",
-      "job_position_id": "jp-emp-1792009016839-1",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-op02-1-jp-emp-1792009016839-2",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-op02-1",
-      "job_position_id": "jp-emp-1792009016839-2",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-op02-2-jp-emp-1792009016839-2",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-op02-2",
-      "job_position_id": "jp-emp-1792009016839-2",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-op02-3-jp-emp-1792009016839-2",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-op02-3",
-      "job_position_id": "jp-emp-1792009016839-2",
-      "role_in_activity": "Supervisor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-op02-4-jp-emp-1792009016839-2",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-op02-4",
-      "job_position_id": "jp-emp-1792009016839-2",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-ap01-1-jp-emp-1792009016839-3",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-ap01-1",
-      "job_position_id": "jp-emp-1792009016839-3",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-ap01-2-jp-emp-1792009016839-3",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-ap01-2",
-      "job_position_id": "jp-emp-1792009016839-3",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-ap01-3-jp-emp-1792009016839-3",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-ap01-3",
-      "job_position_id": "jp-emp-1792009016839-3",
-      "role_in_activity": "Supervisor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-ap01-4-jp-emp-1792009016839-3",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-ap01-4",
-      "job_position_id": "jp-emp-1792009016839-3",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-ap02-1-jp-emp-1792009016839-2",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-ap02-1",
-      "job_position_id": "jp-emp-1792009016839-2",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-ap02-2-jp-emp-1792009016839-2",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-ap02-2",
-      "job_position_id": "jp-emp-1792009016839-2",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-ap02-3-jp-emp-1792009016839-2",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-ap02-3",
-      "job_position_id": "jp-emp-1792009016839-2",
-      "role_in_activity": "Supervisor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-ap02-4-jp-emp-1792009016839-2",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-ap02-4",
-      "job_position_id": "jp-emp-1792009016839-2",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-ev01-1-jp-emp-1792009016839-3",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-ev01-1",
-      "job_position_id": "jp-emp-1792009016839-3",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-ev01-2-jp-emp-1792009016839-3",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-ev01-2",
-      "job_position_id": "jp-emp-1792009016839-3",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-ev01-3-jp-emp-1792009016839-3",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-ev01-3",
-      "job_position_id": "jp-emp-1792009016839-3",
-      "role_in_activity": "Supervisor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
-    {
-      "id": "pap-act-proc-emp-1792009016839-ev01-4-jp-emp-1792009016839-3",
-      "tenant_id": "emp-1792009016839",
-      "process_activity_id": "act-proc-emp-1792009016839-ev01-4",
-      "job_position_id": "jp-emp-1792009016839-3",
-      "role_in_activity": "Responsable_Ejecutor",
-      "createdAt": "2026-10-15T08:22:38-05:00",
-      "updatedAt": "2026-10-15T08:22:38-05:00"
-    },
     {
       "id": "pap-act-proc-emp-1792010387578-01-1-jp-emp-1792010387578-bd8bf99d",
       "tenant_id": "emp-1792010387578",
@@ -9697,6 +9554,258 @@
       "role_in_activity": "Responsable_Ejecutor",
       "createdAt": "2026-10-20T19:55:02.957Z",
       "updatedAt": "2026-10-20T19:55:02.957Z"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-01-1-jp-emp-1792009016839-ad772a30",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-01-1",
+      "job_position_id": "jp-emp-1792009016839-ad772a30",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-01-2-jp-emp-1792009016839-ad772a30",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-01-2",
+      "job_position_id": "jp-emp-1792009016839-ad772a30",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-01-3-jp-emp-1792009016839-ad772a30",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-01-3",
+      "job_position_id": "jp-emp-1792009016839-ad772a30",
+      "role_in_activity": "Supervisor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-01-4-jp-emp-1792009016839-ad772a30",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-01-4",
+      "job_position_id": "jp-emp-1792009016839-ad772a30",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-02-1-jp-emp-1792009016839-3",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-02-1",
+      "job_position_id": "jp-emp-1792009016839-3",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-02-2-jp-emp-1792009016839-3",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-02-2",
+      "job_position_id": "jp-emp-1792009016839-3",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-02-3-jp-emp-1792009016839-3",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-02-3",
+      "job_position_id": "jp-emp-1792009016839-3",
+      "role_in_activity": "Supervisor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-02-4-jp-emp-1792009016839-3",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-02-4",
+      "job_position_id": "jp-emp-1792009016839-3",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-03-1-jp-emp-1792009016839-1",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-03-1",
+      "job_position_id": "jp-emp-1792009016839-1",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-03-2-jp-emp-1792009016839-1",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-03-2",
+      "job_position_id": "jp-emp-1792009016839-1",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-03-3-jp-emp-1792009016839-1",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-03-3",
+      "job_position_id": "jp-emp-1792009016839-1",
+      "role_in_activity": "Supervisor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-03-4-jp-emp-1792009016839-1",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-03-4",
+      "job_position_id": "jp-emp-1792009016839-1",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-04-1-jp-emp-1792009016839-2",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-04-1",
+      "job_position_id": "jp-emp-1792009016839-2",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-04-2-jp-emp-1792009016839-2",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-04-2",
+      "job_position_id": "jp-emp-1792009016839-2",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-04-3-jp-emp-1792009016839-2",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-04-3",
+      "job_position_id": "jp-emp-1792009016839-2",
+      "role_in_activity": "Supervisor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-04-4-jp-emp-1792009016839-2",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-04-4",
+      "job_position_id": "jp-emp-1792009016839-2",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-05-1-jp-emp-1792009016839-9f95d2ad",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-05-1",
+      "job_position_id": "jp-emp-1792009016839-9f95d2ad",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-05-2-jp-emp-1792009016839-9f95d2ad",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-05-2",
+      "job_position_id": "jp-emp-1792009016839-9f95d2ad",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-05-3-jp-emp-1792009016839-9f95d2ad",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-05-3",
+      "job_position_id": "jp-emp-1792009016839-9f95d2ad",
+      "role_in_activity": "Supervisor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-05-4-jp-emp-1792009016839-9f95d2ad",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-05-4",
+      "job_position_id": "jp-emp-1792009016839-9f95d2ad",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-06-1-jp-emp-1792009016839-8e71ba91",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-06-1",
+      "job_position_id": "jp-emp-1792009016839-8e71ba91",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-06-2-jp-emp-1792009016839-8e71ba91",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-06-2",
+      "job_position_id": "jp-emp-1792009016839-8e71ba91",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-06-3-jp-emp-1792009016839-8e71ba91",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-06-3",
+      "job_position_id": "jp-emp-1792009016839-8e71ba91",
+      "role_in_activity": "Supervisor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-06-4-jp-emp-1792009016839-8e71ba91",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-06-4",
+      "job_position_id": "jp-emp-1792009016839-8e71ba91",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-07-1-jp-emp-1792009016839-3",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-07-1",
+      "job_position_id": "jp-emp-1792009016839-3",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-07-2-jp-emp-1792009016839-3",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-07-2",
+      "job_position_id": "jp-emp-1792009016839-3",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-07-3-jp-emp-1792009016839-3",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-07-3",
+      "job_position_id": "jp-emp-1792009016839-3",
+      "role_in_activity": "Supervisor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792009016839-07-4-jp-emp-1792009016839-3",
+      "tenant_id": "emp-1792009016839",
+      "process_activity_id": "act-proc-emp-1792009016839-07-4",
+      "job_position_id": "jp-emp-1792009016839-3",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-21T14:53:58-05:00",
+      "updatedAt": "2026-10-21T14:53:58-05:00"
     }
   ],
   "job_position_documents": [

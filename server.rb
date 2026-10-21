@@ -1937,12 +1937,12 @@ mount_api(server, '/api/processes/ai-suggest-map') do |req, res|
 
       db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       empresas = db['empresas'] || []
-      empresa = empresas.find { |e| e['id'] == tenant_id } || empresas.first
+      empresa = empresas.find { |e| e['id'] == tenant_id }
 
       unless empresa
         res.status = 404
         res['Content-Type'] = 'application/json; charset=utf-8'
-        res.body = { error: "Empresa #{tenant_id} no encontrada" }.to_json
+        res.body = { error: "Empresa con ID '#{tenant_id}' no encontrada en el sistema" }.to_json
         next
       end
 

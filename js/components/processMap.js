@@ -307,13 +307,14 @@ export async function renderProcessMap() {
             </div>
 
             <div class="flex items-center gap-2.5 flex-wrap">
-              <!-- Botón AI Generador de Mapa -->
+              <!-- Botón Generador Paramétrico de Mapa -->
               <button 
                 type="button" 
                 onclick="window.abrirModalAsistenteMapaIA()" 
-                class="px-4 py-2 bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 hover:from-purple-500 hover:to-indigo-600 text-white rounded-xl text-xs font-black shadow-md transition flex items-center gap-2 cursor-pointer active:scale-95"
+                class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white rounded-xl text-xs font-black shadow-md transition flex items-center gap-2 cursor-pointer active:scale-95"
+                title="Estructurar procesos SIPOC y catálogo de cargos adaptados al sector económico de la empresa"
               >
-                <span>✨ Proponer Mapa y SIPOC con IA</span>
+                <span>📐 Estructurar Procesos y Cargos por Sector</span>
               </button>
 
               <button 
@@ -329,18 +330,18 @@ export async function renderProcessMap() {
           <!-- Listado de Procesos y Caracterización -->
           ${procesosFiltrados.length === 0 ? `
             <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-lg mx-auto shadow-sm">
-              <div class="w-16 h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
-                🤖
+              <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
+                📐
               </div>
               <h3 class="text-base font-bold text-slate-800">No se encontraron procesos caracterizados</h3>
               <p class="text-xs text-slate-500 mt-2 mb-5">
-                Puedes auto-generar la estructura completa con el botón inteligente o crear manualmente el primer proceso.
+                Puedes auto-generar la estructura completa según el sector económico de la empresa o crear manualmente el primer proceso.
               </p>
               <button 
                 onclick="window.abrirModalAsistenteMapaIA()" 
-                class="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl text-xs font-black shadow-md hover:from-purple-500 hover:to-indigo-500 transition"
+                class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl text-xs font-black shadow-md hover:from-indigo-500 hover:to-indigo-600 transition"
               >
-                ✨ Proponer Mapa y Caracterización con IA
+                📐 Estructurar Mapa y Procesos por Sector
               </button>
             </div>
           ` : `
@@ -557,7 +558,7 @@ export async function renderProcessMap() {
             </div>
           </div>
 
-          <!-- Barra de Búsqueda y Botón Nuevo Cargo -->
+          <!-- Barra de Búsqueda y Botones de Acción -->
           <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between sm:items-center gap-3">
             <div>
               <h3 class="text-sm font-black text-slate-800">Catálogo de Cargos y Matriz de Instrumentos</h3>
@@ -566,13 +567,24 @@ export async function renderProcessMap() {
               </p>
             </div>
 
-            <button 
-              type="button" 
-              onclick="window.abrirModalCargo()" 
-              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer whitespace-nowrap"
-            >
-              <span>+ Nuevo Cargo</span>
-            </button>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button 
+                type="button" 
+                onclick="window.cargarCargosSugeridosPorSector()" 
+                class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer whitespace-nowrap"
+                title="Carga una estructura recomendada de cargos típicos según el sector de la empresa activa"
+              >
+                <span>📋 Cargar Cargos Sugeridos por Sector</span>
+              </button>
+
+              <button 
+                type="button" 
+                onclick="window.abrirModalCargo()" 
+                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer whitespace-nowrap"
+              >
+                <span>+ Nuevo Cargo</span>
+              </button>
+            </div>
           </div>
 
           <!-- Listado de Tarjetas de Cargos -->
@@ -1673,15 +1685,15 @@ window.abrirModalAsistenteMapaIA = function() {
     modal.id = 'modal-asistente-mapa-ia';
     modal.className = 'fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50';
     modal.innerHTML = `
-      <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-purple-200 animate-fade-in">
+      <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-indigo-200 animate-fade-in">
         <div class="flex items-center justify-between pb-4 border-b border-slate-100">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xl font-bold">
-              ✨
+            <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-xl font-bold">
+              📐
             </div>
             <div>
-              <h3 class="text-base font-black text-slate-900">Diseño Automático de Mapa y SIPOC con IA</h3>
-              <p class="text-xs text-purple-600 font-semibold">Generación integral de procesos, actividades PHVA y catálogo de cargos</p>
+              <h3 class="text-base font-black text-slate-900">Estructuración de Procesos y Cargos por Sector</h3>
+              <p class="text-xs text-indigo-600 font-semibold">Generación guiada de procesos SIPOC, actividades PHVA y catálogo de cargos</p>
             </div>
           </div>
           <button onclick="document.getElementById('modal-asistente-mapa-ia').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-2xl font-bold cursor-pointer">&times;</button>
@@ -1689,16 +1701,16 @@ window.abrirModalAsistenteMapaIA = function() {
 
         <div class="my-4 space-y-3 text-xs text-slate-600 leading-relaxed">
           <p>
-            El motor de Inteligencia Artificial analizará el ADN corporativo de <strong class="text-slate-800" id="modal-ia-empresa-nombre"></strong> (actividad económica, flujo operativo e inventario de herramientas) para auto-construir:
+            El sistema analizará los datos de <strong class="text-slate-800" id="modal-ia-empresa-nombre"></strong> (sector económico, actividad y nivel de riesgo) para configurar:
           </p>
           <ul class="space-y-1.5 pl-4 list-disc text-slate-700 font-medium">
             <li>Estructura completa de procesos (Estratégicos, Misionales, Apoyo y Evaluación).</li>
             <li>Caracterización SIPOC por proceso (Objetivo, Entradas, Salidas y Requisitos).</li>
-            <li>Desglose detallado de actividades en el ciclo <strong>PHVA</strong> (Planear, Hacer, Verificar, Actuar).</li>
-            <li>Extracción automática de cargos ejecutores y matching con las herramientas del módulo de activos.</li>
+            <li>Desglose de actividades en el ciclo continuo <strong>PHVA</strong> (Planear, Hacer, Verificar, Actuar).</li>
+            <li>Asignación de cargos responsables correspondientes a la actividad económica.</li>
           </ul>
-          <div class="bg-purple-50 p-3 rounded-xl border border-purple-200 text-purple-900 text-[11px]">
-            ⚡ <em>Nota:</em> Si ya existen procesos registrados, se actualizarán y complementarán manteniendo la integridad de tus registros.
+          <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-200 text-indigo-900 text-[11px]">
+            ⚡ <em>Nota:</em> Si ya existen procesos registrados, se actualizarán manteniendo la integridad de los datos de la empresa.
           </div>
         </div>
 
@@ -1706,8 +1718,8 @@ window.abrirModalAsistenteMapaIA = function() {
           <button onclick="document.getElementById('modal-asistente-mapa-ia').classList.add('hidden')" class="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-xs font-bold transition cursor-pointer">
             Cancelar
           </button>
-          <button id="btn-ejecutar-ai-map" onclick="window.ejecutarGeneracionMapaIA()" class="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-xs font-black shadow-md transition flex items-center gap-2 cursor-pointer active:scale-95">
-            <span>🤖 Generar Mapa y SIPOC con IA</span>
+          <button id="btn-ejecutar-ai-map" onclick="window.ejecutarGeneracionMapaIA()" class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white rounded-xl text-xs font-black shadow-md transition flex items-center gap-2 cursor-pointer active:scale-95">
+            <span>📐 Estructurar Procesos y Cargos</span>
           </button>
         </div>
       </div>
@@ -3482,5 +3494,303 @@ window.eliminarEvidenciaCargo = async function(evId) {
     await renderProcessMap();
   } catch (err) {
     alert("Error al eliminar el documento: " + err.message);
+  }
+};
+
+/**
+ * Carga determinista de cargos sugeridos adaptados al sector económico real de la empresa
+ * 100% libre de alucinaciones y sin dependencia de IA externa para la Versión 1.0
+ */
+window.cargarCargosSugeridosPorSector = function() {
+  const empresaActiva = store.getEmpresaActiva();
+  if (!empresaActiva) {
+    alert("Por favor selecciona una empresa activa primero.");
+    return;
+  }
+
+  const sectorLower = `${empresaActiva.sector || ''} ${empresaActiva.razonSocial || ''} ${empresaActiva.actividadEconomica || ''}`.toLowerCase();
+  const esConstruccionOInstalaciones = sectorLower.includes('instalacion') || sectorLower.includes('eléctric') || sectorLower.includes('construc') || sectorLower.includes('mantenimiento') || sectorLower.includes('servicios ig');
+  const esManufacturaMuebles = sectorLower.includes('mobili') || sectorLower.includes('mueble') || sectorLower.includes('madera') || sectorLower.includes('matma') || sectorLower.includes('wiwa');
+  const esLadrillosOArcillas = sectorLower.includes('ladrill') || sectorLower.includes('arcill') || sectorLower.includes('cerámic') || sectorLower.includes('minería');
+
+  let cargosSugeridos = [];
+
+  if (esConstruccionOInstalaciones) {
+    cargosSugeridos = [
+      {
+        title: 'Gerente General',
+        hierarchy_level: 'Directivo',
+        summary_objective: 'Direccionar la estrategia corporativa, asignación presupuestal y liderar el cumplimiento del SG-SST.',
+        required_education: 'Profesional en Ingeniería, Administración o afines con posgrado',
+        required_experience: 'Más de 3 años en cargos directivos',
+        required_skills: ['Liderazgo estratégico', 'Toma de decisiones', 'Gestión de riesgos'],
+        medical_exams_profesiograma: { ingreso: ['Examen médico ocupacional con énfasis osteomuscular', 'Visiometría'], periodico: ['Control anual osteomuscular'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Casco de seguridad tipo I', 'Botas con puntera dieléctrica', 'Gafas de seguridad']
+      },
+      {
+        title: 'Ingeniero Residente / Director de Obra',
+        hierarchy_level: 'Profesional',
+        summary_objective: 'Planificar, supervisar y ejecutar obras e instalaciones técnicas garantizando especificaciones técnicas y estándares de seguridad.',
+        required_education: 'Ingeniero Civil, Eléctrico, Mecánico o Arquitecto con matrícula profesional vigente',
+        required_experience: '2 a 3 años en residencia de obra o proyectos técnicos',
+        required_skills: ['Supervisión de obras', 'Control de calidad RETIE', 'Coordinación de contratistas'],
+        medical_exams_profesiograma: { ingreso: ['Examen con énfasis osteomuscular', 'Visiometría', 'Audiometría', 'Aptitud para trabajo en alturas'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Casco con barbuquejo', 'Botas dieléctricas', 'Gafas de seguridad con protección UV', 'Chaleco reflectivo']
+      },
+      {
+        title: 'Coordinador de Seguridad y Salud en el Trabajo (SST)',
+        hierarchy_level: 'Profesional',
+        summary_objective: 'Diseñar, administrar y verificar la implementación del SG-SST conforme al Decreto 1072 de 2015 y Resolución 0312 de 2019.',
+        required_education: 'Profesional o Especialista en SST con licencia vigente',
+        required_experience: '1 a 2 años en coordinación del SG-SST',
+        required_skills: ['Auditoría normativa', 'Investigación de accidentes', 'Capacitación del personal'],
+        medical_exams_profesiograma: { ingreso: ['Examen médico ocupacional osteomuscular', 'Visiometría'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Casco de seguridad', 'Botas de seguridad', 'Gafas de protección', 'Chaleco de alta visibilidad']
+      },
+      {
+        title: 'Técnico de Mantenimiento / Electricista',
+        hierarchy_level: 'Técnico',
+        summary_objective: 'Ejecutar las labores técnicas de instalación, cableado, mantenimiento preventivo y correctivo bajo normas RETIE y de seguridad.',
+        required_education: 'Técnico o Tecnólogo Electricista / Mantenimiento con tarjeta CONALTE',
+        required_experience: '1 a 2 años en mantenimiento eléctrico o locativo',
+        required_skills: ['Manejo de herramienta dieléctrica', 'Bloqueo y etiquetado LOTO', 'Trabajo seguro en alturas'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Visiometría', 'Audiometría', 'Aptitud para trabajo en alturas y riesgo eléctrico'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Casco dieléctrico con barbuquejo', 'Guantes dieléctricos certificados', 'Botas dieléctricas', 'Gafas de seguridad', 'Arnés de cuerpo entero']
+      },
+      {
+        title: 'Oficial de Mantenimiento Locativo / Obra',
+        hierarchy_level: 'Operativo',
+        summary_objective: 'Realizar actividades de albañilería, pintura, adecuación física y reparaciones locativas asegurando el orden y limpieza.',
+        required_education: 'Bachiller académico con cursos técnicos de construcción',
+        required_experience: '1 año en labores de mantenimiento locativo o construcción',
+        required_skills: ['Manejo de herramientas manuales', 'Ergonomía en manipulación de cargas'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular con énfasis de columna', 'Visiometría', 'Audiometría'], periodico: ['Control osteomuscular'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Casco de seguridad', 'Botas con puntera de acero', 'Guantes de vaqueta/nitrilo', 'Gafas de seguridad', 'Protector auditivo']
+      },
+      {
+        title: 'Auxiliar de Almacén y Suministros',
+        hierarchy_level: 'Operativo',
+        summary_objective: 'Controlar el inventario, recepción, almacenamiento y entrega de herramientas, materiales y EPP del proyecto.',
+        required_education: 'Bachiller con formación en logística o inventarios',
+        required_experience: '6 meses a 1 año en bodegas o almacenes de obra',
+        required_skills: ['Control de inventarios', 'Manipulación segura de cargas'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Visiometría'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Botas con puntera', 'Guantes de nitrilo', 'Faja lumbar de apoyo ergonómico']
+      }
+    ];
+  } else if (esManufacturaMuebles) {
+    cargosSugeridos = [
+      {
+        title: 'Gerente General',
+        hierarchy_level: 'Directivo',
+        summary_objective: 'Direccionar la estrategia corporativa, asignación de recursos y liderar el SG-SST.',
+        required_education: 'Profesional en Administración, Diseño o Ingeniería',
+        required_experience: 'Más de 3 años en cargos directivos',
+        required_skills: ['Planeación estratégica', 'Gestión empresarial'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Visiometría'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Gafas de seguridad', 'Botas con puntera para visitas a planta']
+      },
+      {
+        title: 'Jefe de Producción y Diseño',
+        hierarchy_level: 'Profesional',
+        summary_objective: 'Planificar la programación de corte, ensamble y acabados cumpliendo estándares de calidad y seguridad.',
+        required_education: 'Ingeniero Industrial, Diseñador Industrial o afines',
+        required_experience: '2 años en manufactura o carpintería industrial',
+        required_skills: ['Control de calidad', 'Optimización de procesos', 'Seguridad en máquinas'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Visiometría', 'Audiometría'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Casco de seguridad', 'Botas con puntera', 'Gafas de protección', 'Protector auditivo']
+      },
+      {
+        title: 'Coordinador de Seguridad y Salud en el Trabajo (SST)',
+        hierarchy_level: 'Profesional',
+        summary_objective: 'Diseñar y ejecutar el SG-SST conforme a la Resolución 0312 de 2019.',
+        required_education: 'Profesional o Especialista en SST con licencia vigente',
+        required_experience: '1 a 2 años en industrias manufactureras',
+        required_skills: ['Matriz GTC 45', 'Capacitación', 'Investigación de accidentes'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Visiometría'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Casco de seguridad', 'Botas con puntera', 'Gafas de seguridad', 'Protector auditivo tipo copa']
+      },
+      {
+        title: 'Operario de Corte y Maquinado',
+        hierarchy_level: 'Operativo',
+        summary_objective: 'Operar sierras circulares, escuadradoras y canteadoras aplicando guardas de seguridad y aspiración de viruta.',
+        required_education: 'Bachiller con formación técnica en ebanistería o corte',
+        required_experience: '1 año en operación de maquinaria para madera',
+        required_skills: ['Corte seguro', 'Uso de empujadores de madera', 'Mantenimiento de discos'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Audiometría tonal', 'Visiometría', 'Espirometría por polvo de madera'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Gafas de seguridad herméticas', 'Protector auditivo copa NRR > 25 dB', 'Respirador N95 contra polvo', 'Botas con puntera']
+      },
+      {
+        title: 'Operario de Ensamble y Acabados',
+        hierarchy_level: 'Operativo',
+        summary_objective: 'Armar estructuras de mobiliario, aplicación de herrajes, pegantes y lijado con controles ergonómicos.',
+        required_education: 'Bachiller académico',
+        required_experience: '6 meses a 1 año en ensamble',
+        required_skills: ['Ensamble manual', 'Manejo seguro de herramientas neumáticas'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Audiometría', 'Visiometría'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Guantes antideslizantes', 'Gafas de protección', 'Botas con puntera de acero', 'Protección respiratoria']
+      }
+    ];
+  } else if (esLadrillosOArcillas) {
+    cargosSugeridos = [
+      {
+        title: 'Gerente General',
+        hierarchy_level: 'Directivo',
+        summary_objective: 'Direccionar la estrategia corporativa, rentabilidad y liderar el SG-SST.',
+        required_education: 'Profesional universitario con posgrado',
+        required_experience: 'Más de 3 años en gerencia industrial',
+        required_skills: ['Dirección estratégica', 'Gestión minero-energética'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Visiometría'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Casco de seguridad', 'Botas con puntera', 'Gafas de protección']
+      },
+      {
+        title: 'Jefe de Planta y Producción',
+        hierarchy_level: 'Profesional',
+        summary_objective: 'Supervisar las líneas de molienda, extrusión, secado y cocción en horno túnel.',
+        required_education: 'Ingeniero Mecánico, Químico o Industrial',
+        required_experience: '2 a 3 años en plantas industriales de proceso continuo',
+        required_skills: ['Control térmico', 'Seguridad en máquinas pesadas'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Audiometría', 'Espirometría y Rx Tórax OIT'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Casco de seguridad', 'Botas de seguridad', 'Gafas de protección', 'Protección auditiva']
+      },
+      {
+        title: 'Coordinador SST',
+        hierarchy_level: 'Profesional',
+        summary_objective: 'Administrar el SG-SST con énfasis en riesgo V conforme a la Res. 0312.',
+        required_education: 'Profesional en SST con licencia vigente',
+        required_experience: '2 años en industrias de alto riesgo',
+        required_skills: ['Control de sílice', 'Investigación de accidentes', 'Auditoría'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Audiometría', 'Visiometría'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Casco con barbuquejo', 'Botas con puntera', 'Respirador P100 para sílice', 'Gafas de protección']
+      },
+      {
+        title: 'Operario de Molienda y Tolvas',
+        hierarchy_level: 'Operativo',
+        summary_objective: 'Operar trituradores, bandas transportadoras y alimentación de arcilla.',
+        required_education: 'Bachiller',
+        required_experience: '1 año en plantas mineras o molienda',
+        required_skills: ['Inspección preoperacional', 'Trabajo seguro en bandas'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Audiometría', 'Espirometría y Rx Tórax OIT'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Respirador P100 contra sílice', 'Protección auditiva', 'Botas con puntera', 'Gafas herméticas']
+      },
+      {
+        title: 'Operador de Horno Túnel',
+        hierarchy_level: 'Operativo',
+        summary_objective: 'Monitorear curvas de temperatura, inyección de gas y avance de vagonetas.',
+        required_education: 'Bachiller técnico',
+        required_experience: '1 a 2 años en combustión u hornos continuos',
+        required_skills: ['Control de pirómetros', 'Manejo de estrés térmico'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Visiometría', 'Audiometría', 'Aptitud para estrés térmico'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Guantes de kevlar térmicos', 'Delantal aluminizado', 'Gafas de seguridad', 'Botas con suela aislante']
+      },
+      {
+        title: 'Operador de Montacargas',
+        hierarchy_level: 'Operativo',
+        summary_objective: 'Movilización de estibas de producto terminado y cargue de vehículos de distribución.',
+        required_education: 'Bachiller con certificado de operador de montacargas y licencia C2',
+        required_experience: '1 año en manejo de montacargas',
+        required_skills: ['Manejo defensivo', 'Preoperacional de maquinaria'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Visiometría', 'Audiometría'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Casco de seguridad', 'Botas con puntera', 'Chaleco reflectivo', 'Cinturón de 3 puntos']
+      }
+    ];
+  } else {
+    // Sector Servicios / Comercial / General
+    cargosSugeridos = [
+      {
+        title: 'Gerente General',
+        hierarchy_level: 'Directivo',
+        summary_objective: 'Liderar la planeación estratégica, administración general y asignación de recursos para el SG-SST.',
+        required_education: 'Profesional en Administración, Economía o Ingeniería',
+        required_experience: 'Más de 3 años en cargos directivos',
+        required_skills: ['Dirección empresarial', 'Gestión de recursos'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Visiometría'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['No aplica para oficina / Calzado ergonómico']
+      },
+      {
+        title: 'Coordinador de Operaciones / Proyectos',
+        hierarchy_level: 'Profesional',
+        summary_objective: 'Coordinar la prestación de servicios, atención a clientes y supervisión del cumplimiento operativo.',
+        required_education: 'Profesional universitario en áreas afines a la operación',
+        required_experience: '1 a 2 años en coordinación operativa',
+        required_skills: ['Gestión de proyectos', 'Liderazgo de equipos', 'Atención al cliente'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Visiometría'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Calzado cómodo / EPP según visita a cliente']
+      },
+      {
+        title: 'Coordinador de Seguridad y Salud en el Trabajo (SST)',
+        hierarchy_level: 'Profesional',
+        summary_objective: 'Diseñar, administrar y verificar la implementación del SG-SST conforme a la Resolución 0312 de 2019.',
+        required_education: 'Profesional o Especialista en SST con licencia vigente',
+        required_experience: '1 año en gestión del SG-SST',
+        required_skills: ['Matriz de peligros', 'Capacitación', 'Comité COPASST'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Visiometría'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Casco y calzado de seguridad para inspecciones']
+      },
+      {
+        title: 'Asesor Comercial / Atención al Cliente',
+        hierarchy_level: 'Asistencial',
+        summary_objective: 'Gestionar ventas, cotizaciones y atención a requerimientos de los clientes.',
+        required_education: 'Técnico, tecnólogo o profesional en mercadeo o áreas comerciales',
+        required_experience: '6 meses a 1 año en ventas o atención al cliente',
+        required_skills: ['Comunicación asertiva', 'Negociación', 'Manejo de CRM'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular', 'Visiometría'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['No aplica']
+      },
+      {
+        title: 'Auxiliar Administrativo y Contable',
+        hierarchy_level: 'Asistencial',
+        summary_objective: 'Apoyar los procesos de facturación, compras, archivo documental y correspondencia.',
+        required_education: 'Técnico o tecnólogo contable / administrativo',
+        required_experience: '6 meses a 1 año en labores de oficina',
+        required_skills: ['Digitación ágil', 'Ergonomía en oficina', 'Organización documental'],
+        medical_exams_profesiograma: { ingreso: ['Examen osteomuscular con énfasis de túnel carpiano', 'Visiometría'], periodico: ['Control anual'], egreso: ['Examen de egreso'] },
+        required_epp_list: ['Soporte ergonómico de teclado y ratón']
+      }
+    ];
+  }
+
+  const existingPositions = store.getJobPositions(empresaActiva.id);
+  const sectorNombre = esConstruccionOInstalaciones ? 'Construcción / Instalaciones / Mantenimiento' :
+                       esManufacturaMuebles ? 'Manufactura / Carpintería / Mobiliario' :
+                       esLadrillosOArcillas ? 'Industria Cerámica / Ladrillera' : 'Servicios / Comercial / General';
+
+  const confirmar = confirm(`¿Deseas cargar ${cargosSugeridos.length} cargos típicos recomendados para el sector "${sectorNombre}" en ${empresaActiva.razonSocial}?\n\nLos cargos existentes se conservarán y se agregarán las nuevas posiciones sugeridas.`);
+  if (!confirmar) return;
+
+  const nowIso = new Date().toISOString();
+  let agregados = 0;
+
+  cargosSugeridos.forEach((cs, idx) => {
+    const yaExiste = existingPositions.some(ep => ep.title.toLowerCase().trim() === cs.title.toLowerCase().trim());
+    if (!yaExiste) {
+      const nuevoCargo = {
+        id: `jp-${empresaActiva.id}-${Date.now()}-${idx}`,
+        tenant_id: empresaActiva.id,
+        code: `CARG-${String(existingPositions.length + agregados + 1).padStart(3, '0')}`,
+        title: cs.title,
+        hierarchy_level: cs.hierarchy_level,
+        summary_objective: cs.summary_objective,
+        required_education: cs.required_education,
+        required_experience: cs.required_experience,
+        required_skills: cs.required_skills,
+        medical_exams_profesiograma: cs.medical_exams_profesiograma,
+        required_epp_list: cs.required_epp_list,
+        is_active: true,
+        createdAt: nowIso,
+        updatedAt: nowIso
+      };
+      store.saveJobPosition(nuevoCargo);
+      agregados++;
+    }
+  });
+
+  store.saveToStorage();
+  renderProcessMap();
+
+  if (window.mostrarNotificacion) {
+    window.mostrarNotificacion(`✅ Se cargaron ${agregados} cargos recomendados para ${empresaActiva.razonSocial}.`, 'success');
+  } else {
+    alert(`✅ Se cargaron exitosamente ${agregados} cargos recomendados para el sector de ${empresaActiva.razonSocial}.`);
   }
 };

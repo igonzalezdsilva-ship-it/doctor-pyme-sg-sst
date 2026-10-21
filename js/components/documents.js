@@ -415,14 +415,6 @@ export async function renderDocumentation() {
             </button>
 
             <button 
-              onclick="window.abrirModalIA({ modoInicial: 'politica' })" 
-              class="px-3.5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2 cursor-pointer active:scale-95"
-              title="Redactar Políticas o Procedimientos con Google Gemini"
-            >
-              <span>✨</span>
-              <span>Redactar con IA</span>
-            </button>
-            <button 
               id="btn-exportar-listado-maestro" 
               onclick="window.docExportarListadoMaestro()" 
               class="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-2 cursor-pointer active:scale-95"

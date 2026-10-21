@@ -246,56 +246,94 @@ ${systemInstruction ? `\nINSTRUCCIÓN ADICIONAL DEL MÓDULO:\n${systemInstructio
 
     // Caso 1: Generación de Peligros GTC 45 (JSON)
     if (prompt.includes('GTC 45:2012') && prompt.includes('```json')) {
-      return '```json\n' + JSON.stringify([
+      const sectorLower = `${sector} ${razonSocial}`.toLowerCase();
+      const esConstruccionOInstalacion = sectorLower.includes('instal') || sectorLower.includes('electr') || sectorLower.includes('construc') || sectorLower.includes('mantenimiento');
+      
+      const peligrosSugeridos = esConstruccionOInstalacion ? [
         {
-          clasificacion: "FÍSICO",
-          descripcion: "Exposición a altas temperaturas radiantes y estrés térmico en área de hornos y descarga de vagonetas",
-          efectosPosibles: "Deshidratación, agotamiento por calor, golpe térmico, quemaduras de primer y segundo grado",
+          clasificacion: "CONDICIONES DE SEGURIDAD (ELÉCTRICO)",
+          descripcion: "Contacto directo o indirecto con circuitos energizados, arcos eléctricos en tableros y acometidas",
+          efectosPosibles: "Fibrilación ventricular, quemaduras de tercer grado, caídas al mismo o diferente nivel",
           nivelDeficiencia: 6,
           nivelExposicion: 3,
           nivelConsecuencia: 60,
           nivelRiesgo: "I - Crítico (1080)",
           medidasControl: {
-            eliminacion: "No aplica por naturaleza térmica del proceso de cocción cerámica",
-            sustitucion: "Automatización progresiva de apertura de compuertas y empuje mecánico de vagonetas",
-            controlesIngenieria: "Mamparas de aislamiento térmico, ventilación mecánica axial y extractores de calor",
-            controlesAdministrativos: "Rotación de turnos cada 45 minutos, puntos de hidratación isotónica y pausas en zona fresca",
-            epp: "Delantal aluminizado, guantes térmicos de kevlar, casco con pantalla facial y calzado de seguridad con suela aislante"
+            eliminacion: "Desenergización y corte visible antes de intervenir (Cinco Reglas de Oro RETIE)",
+            sustitucion: "Uso de herramientas dieléctricas certificadas a 1.000 V (norma IEC 60900)",
+            controlesIngenieria: "Bloqueo y etiquetado físico (LOTO), mantas y cobertores aislantes temporales",
+            controlesAdministrativos: "Procedimiento de trabajo eléctrico seguro, permiso de trabajo en tensión y certificación CONALTE / matricula profesional",
+            epp: "Guantes dieléctricos clase 0/1 con guantelete de protección, careta contra arco eléctrico (ATPV > 8 cal/cm²) y botas dieléctricas (ASTM F2413)"
           }
         },
         {
           clasificacion: "BIOMECÁNICO",
-          descripcion: "Manipulación manual de cargas pesadas, movimientos repetitivos y posturas prolongadas en cargue y apilado",
-          efectosPosibles: "Lumbalgias mecanoposturales, hernias discales, síndrome del túnel carpiano y fatiga muscular",
+          descripcion: "Posturas forzadas, movimientos repetitivos en cableado y ranurado, y levantamiento de materiales de obra",
+          efectosPosibles: "Espasmos lumbares, desgarros musculares, epicondilitis y síndrome del túnel carpiano",
           nivelDeficiencia: 6,
           nivelExposicion: 4,
           nivelConsecuencia: 25,
           nivelRiesgo: "I - Alto (600)",
           medidasControl: {
-            eliminacion: "Uso de estibadores hidráulicos y montacargas en patio de despacho",
-            sustitucion: "Reducción del peso unitario por carretilla y nivelación de plataformas de rodamiento",
-            controlesIngenieria: "Mesas elevadoras regulables y bandas transportadoras hacia zona de empaque",
-            controlesAdministrativos: "Programa de Vigilancia Epidemiológica Osteomuscular, pausas activas dirigidas y límite de 25 kg en hombres / 12.5 kg en mujeres",
-            epp: "Guantes antideslizantes de nitrilo/vaqueta y botas de seguridad con puntera certificada ANSI Z41"
+            eliminacion: "Uso de carretillas y medios mecánicos para transporte horizontal",
+            sustitucion: "Escaleras de plataforma ergonómicas y andamios certificados",
+            controlesIngenieria: "Soportes regulables para tableros y carretes desbobinadores de cable",
+            controlesAdministrativos: "Pausas activas ergonómicas cada 2 horas y rotación de labores de ranurado",
+            epp: "Guantes de nitrilo con soporte textil, faja lumbar de descanso y calzado de seguridad con plantilla ergonómica"
           }
         },
         {
-          clasificacion: "QUÍMICO",
-          descripcion: "Inhalación de material particulado y polvo inorgánico con contenido de sílice cristalina libre en molienda y zarandeo",
-          efectosPosibles: "Irritación de vías respiratorias superiores, bronquitis industrial y riesgo de silicosis a largo plazo",
+          clasificacion: "CONDICIONES DE SEGURIDAD (LOCATIVO / CAÍDAS)",
+          descripcion: "Trabajo en superficies irregulares, andamios, escaleras y desniveles en obras o instalaciones",
+          efectosPosibles: "Contusiones, fracturas, traumatismos craneoencefálicos",
           nivelDeficiencia: 6,
           nivelExposicion: 3,
           nivelConsecuencia: 60,
           nivelRiesgo: "I - Crítico (1080)",
           medidasControl: {
-            eliminacion: "No aplica en molienda de arcilla seca",
-            sustitucion: "Humectación controlada por nebulización de agua en tolvas de recibo y trituradoras",
-            controlesIngenieria: "Encerramiento acústico-neumático de molinos y sistema colector de polvos tipo ciclón",
-            controlesAdministrativos: "Mediciones higiénicas de material particulado, espirometrías anuales y radiografía de tórax OIT",
-            epp: "Respirador de media cara con filtros P100 (NIOSH) para partículas de sílice y monogafas herméticas"
+            eliminacion: "Instalación de plataformas de trabajo permanentes con barandas",
+            sustitucion: "Uso de plataformas elevadoras móviles de personal (PEMP)",
+            controlesIngenieria: "Líneas de vida provisionales certificadas y puntos de anclaje de 5.000 lbs",
+            controlesAdministrativos: "Permiso de trabajo en alturas (Res. 4272 de 2021), coordinador SST certificado",
+            epp: "Arnés de cuerpo entero de 4 argollas, eslinga con absorbedor de impacto y casco con barbuquejo de 3 puntos dieléctrico"
           }
         }
-      ], null, 2) + '\n```';
+      ] : [
+        {
+          clasificacion: "BIOMECÁNICO",
+          descripcion: "Manipulación de cargas, posturas sedentes o bípedas prolongadas y digitación continua",
+          efectosPosibles: "Lumbalgias mecánicas, fatiga muscular, tendinitis",
+          nivelDeficiencia: 2,
+          nivelExposicion: 3,
+          nivelConsecuencia: 10,
+          nivelRiesgo: "III - Mejorable (60)",
+          medidasControl: {
+            eliminacion: "Ayudas mecánicas para transporte de suministros",
+            sustitucion: "Mobiliario y puestos de trabajo ergonómicos",
+            controlesIngenieria: "Sillas ergonómicas graduables, soportes de monitor",
+            controlesAdministrativos: "Pausas activas dirigidas, exámenes osteomusculares periódicos",
+            epp: "Calzado cómodo y adecuado para la labor"
+          }
+        },
+        {
+          clasificacion: "PSICOSOCIAL",
+          descripcion: "Gestión de carga laboral, atención a clientes y cumplimiento de metas operativas",
+          efectosPosibles: "Estrés laboral, cefaleas tensionales, agotamiento",
+          nivelDeficiencia: 2,
+          nivelExposicion: 2,
+          nivelConsecuencia: 10,
+          nivelRiesgo: "III - Mejorable (40)",
+          medidasControl: {
+            eliminacion: "No aplica por naturaleza de la relación laboral",
+            sustitucion: "Optimización de flujos de trabajo y herramientas digitales",
+            controlesIngenieria: "Adecuación ambiental de puestos de trabajo",
+            controlesAdministrativos: "Batería de riesgo psicosocial (Res. 2764/2022) y Comité de Convivencia Laboral",
+            epp: "No aplica"
+          }
+        }
+      ];
+
+      return '```json\n' + JSON.stringify(peligrosSugeridos, null, 2) + '\n```';
     }
 
     // Caso 2: Generación de Cuestionario de Capacitación (JSON de 5 o 13 preguntas)
@@ -961,52 +999,54 @@ Responde con rigor técnico, citando los artículos y leyes colombianas aplicabl
     const claseRiesgo = empresa?.claseRiesgo || 'V';
     const numTrabajadores = empresa?.trabajadores || 45;
 
-    if (q.includes('maquinaria') || q.includes('amarilla') || q.includes('mantenimiento') || q.includes('retroexcavadora') || q.includes('montacargas') || q.includes('volqueta')) {
-      return `### 🚜 Plan de Trabajo y Mantenimiento de Maquinaria Amarilla y Equipos Pesados
+    if (q.includes('cargo') || q.includes('organigrama') || q.includes('perfil') || q.includes('funciones')) {
+      return `### 👥 Gestión y Parametrización de Cargos en DOCTOR PYME
+**Empresa:** ${razonSocial} | **Sector:** ${empresa?.sector || 'Servicios / Construcción'} | **Riesgo:** Clase ${claseRiesgo}
+
+---
+
+Para parametrizar los cargos de tu empresa según tu organigrama oficial, sigue estos pasos directos en el sistema:
+
+1. **Ingresa al Módulo:** En el menú lateral izquierdo, haz clic en **"Mapa de Procesos & Organigrama"** (\`#procesos\`).
+2. **Pestaña Cargos y Funciones:** Selecciona la pestaña **"Cargos y Funciones"**.
+3. **Crear Nuevo Cargo:** Haz clic en el botón azul **"+ Nuevo Cargo"** para agregar cada posición de tu organigrama.
+   - Ingresa el Nombre del Cargo (ej. *Gerente General, Director de Obra, Coordinador SST, Técnico Especialista, Auxiliar Operativo*).
+   - Asigna el Nivel Jerárquico (*Directivo, Profesional, Técnico, Asistencial u Operativo*).
+   - Asigna los EPP requeridos y los exámenes ocupacionales del profesiograma (ingreso, periódico y egreso).
+4. **Asignación a Procesos:** En la pestaña **"Procesos y SIPOC"**, asocia cada cargo como líder o ejecutor de las actividades PHVA correspondientes.
+5. **Generación Documental:** El sistema habilitará automáticamente para cada cargo el **Manual de Funciones, Perfil de Cargo, Matriz de EPP y Profesiograma Oficial** en PDF.`;
+    }
+
+    if (q.includes('maquinaria') || q.includes('amarilla') || q.includes('retroexcavadora') || q.includes('montacargas') || q.includes('volqueta')) {
+      return `### 🚜 Plan de Mantenimiento Preventivo y Correctivo de Equipos
 **Organización:** ${razonSocial} | **Nivel de Riesgo:** Clase ${claseRiesgo} | **Trabajadores:** ${numTrabajadores}
 
 ---
 
 #### 1. Marco Normativo Colombiano Obligatorio
-* **Decreto 1072 de 2015 (Art. 2.2.4.6.24):** Mantenimiento de instalaciones, equipos y máquinas con personal calificado y registro documentado.
-* **Resolución 0312 de 2019 (Estándares 4.1.3 y 4.1.4):** Mantenimiento preventivo, predictivo y correctivo periódico de maquinaria con fichas técnicas y hojas de vida.
-* **Resolución 2400 de 1979 (Título VIII):** Máquinas, equipos y aparatos en general, resguardos, alarmas y zonas de seguridad.
+* **Decreto 1072 de 2015 (Art. 2.2.4.6.24):** Mantenimiento preventivo y correctivo de instalaciones, equipos, herramientas y máquinas con personal calificado y registro documentado.
+* **Resolución 0312 de 2019 (Estándares 4.1.3 y 4.1.4):** Fichas técnicas, hojas de vida de maquinaria y equipos e inspecciones periódicas preoperacionales.
+
+#### 2. Requisitos Operativos
+1. **Hoja de Vida de cada Equipo o Herramienta:** Registro con marca, modelo, serial, fecha de adquisición y manual técnico del fabricante.
+2. **Inspecciones Preoperacionales:** Verificación diaria de sistemas de seguridad, fluidos, frenos y estado estructural antes de iniciar cada jornada.
+3. **Cronograma de Mantenimiento:** Programación periódica (horas de uso o calendario) realizada por personal competente y documentada con órdenes de servicio.`;
+    }
+
+    if (q.includes('mantenimiento') || q.includes('locativo') || q.includes('instalaciones')) {
+      return `### 🛠️ Programa de Mantenimiento Periódico de Instalaciones y Equipos
+**Organización:** ${razonSocial} | **Nivel de Riesgo:** Clase ${claseRiesgo} | **Trabajadores:** ${numTrabajadores}
 
 ---
 
-#### 2. Componentes Operativos del Plan de Mantenimiento
+#### 1. Marco Normativo Colombiano Obligatorio
+* **Decreto 1072 de 2015 (Art. 2.2.4.6.24):** El empleador debe garantizar el mantenimiento de instalaciones locativas, redes eléctricas, equipos y herramientas conforme a especificaciones técnicas y normas de seguridad.
+* **Resolución 0312 de 2019 (Estándar 4.1.3):** Mantenimiento de instalaciones, equipos y máquinas con cronograma y evidencias de ejecución.
 
-##### A. Fichas Técnicas y Hojas de Vida de Maquinaria
-Cada equipo (Montacargas, Cargador Frontal, Retroexcavadora, Volquetas y Hornos) debe contar con:
-1. Hoja de vida única con número de serie, horómetro actual y manual de fabricante.
-2. Bitácora de intervenciones mecánicas, eléctricas e hidráulicas.
-3. Registro de cambio de repuestos críticos certificados.
-
-##### B. Protocolo de Inspección Preoperacional Diaria (Checklist 8 Puntos)
-Antes de iniciar cada turno, el operador diligencia el preoperacional obligatorio en el Portal del Trabajador:
-1. **Sistema de Frenos:** Freno de servicio, estacionamiento y de emergencia.
-2. **Nivel de Fluidos:** Aceite de motor, líquido de frenos, refrigerante y aceite hidráulico.
-3. **Mangueras y Presión Hidráulica:** Ausencia de fugas, fisuras o goteos.
-4. **Sistema de Alarma y Luces:** Alarma sonora de retroceso (>90 dB) y baliza estroboscópica ámbar.
-5. **Llantas / Orugas:** Presión de inflado, desgaste de banda de rodadura y pernos de sujeción.
-6. **Mástil, Cuchara y Pasadores:** Estado estructural de soldaduras y horquillas.
-7. **Cabina y Visibilidad:** Espejos retrovisores, parabrisas limpio y cinturón de seguridad de 3 puntos.
-8. **Extintor Portátil:** Tipo ABC de 20 lbs con fecha de recarga vigente y presurizado.
-
-##### C. Cronograma Anual Preventivo y Predictivo
-* **Cada 250 Horas de Operación:** Cambio de aceite de motor y filtros primarios; engrase general de articulaciones y pasadores; revisión de zapatas y pastillas de freno.
-* **Cada 500 Horas:** Cambio de filtros de aire, combustible e hidráulico; verificación de holguras en terminales de dirección y cilindros de levante.
-* **Cada 1.000 Horas / Anual:** Análisis de laboratorio de lubricantes (partículas ferrosas y viscosidad); prueba de compresión de motor; recertificación de líneas de presión hidráulica.
-
-##### D. Procedimiento de Bloqueo y Etiquetado (LOTO)
-Toda intervención correctiva o de taller debe realizarse con el motor apagado, cuchara o vagoneta en el suelo, freno de mano activado, batería desconectada y candado/tarjeta de advertencia colocado por el técnico de mantenimiento.
-
----
-
-#### 3. Requisitos de Competencia y Salud del Operador
-* **Idoneidad:** Licencia de conducción vigente categoría C2/C3 y certificación de operador de maquinaria pesada bajo norma de competencia laboral.
-* **Medicina Preventiva:** Examen médico ocupacional periódico con énfasis osteomuscular, agudeza visual y audiometría tonal (Resolución 2346 de 2007).
-* **Dotación y EPP:** Casco dieléctrico con barbuquejo, botas de seguridad con puntera de acero, protección auditiva tipo copa (NRR >25 dB), chaleco reflectivo de alta visibilidad clase 3 y guantes de carnaza/vaqueta.`;
+#### 2. Componentes del Programa
+1. **Mantenimiento Locativo:** Inspección periódica de pisos, techos, escaleras, iluminación, ventilación y vías de evacuación.
+2. **Mantenimiento Eléctrico (RETIE):** Revisión de tableros de distribución, conductores, puestas a tierra e interruptores diferenciales.
+3. **Hojas de Vida y Cronograma:** Todo equipo de trabajo debe contar con su registro de intervenciones preventivas y correctivas.`;
     }
 
     if (q.includes('altura') || q.includes('alturas') || q.includes('4272') || q.includes('andamio') || q.includes('caida') || q.includes('arnes')) {
@@ -1070,7 +1110,7 @@ Conforme al **Decreto 1072 de 2015 (Art. 2.2.4.6.12)** y la **Resolución 0312 d
 
     if (q.includes('examen') || q.includes('medico') || q.includes('silice') || q.includes('salud') || q.includes('profesiograma')) {
       return `### 🩺 Protocolo de Evaluaciones Médicas Ocupacionales y Vigilancia Epidemiológica
-**Empresa:** ${razonSocial} | **Actividad:** ${empresa?.sector || 'Fabricación de Ladrillos'} | **Riesgo:** Clase ${claseRiesgo}
+**Empresa:** ${razonSocial} | **Actividad:** ${empresa?.sector || empresa?.actividadEconomica || 'Servicios / Construcción / Operación'} | **Riesgo:** Clase ${claseRiesgo}
 
 ---
 
@@ -1080,14 +1120,14 @@ Conforme al **Decreto 1072 de 2015 (Art. 2.2.4.6.12)** y la **Resolución 0312 d
 
 #### 2. Tipos de Evaluaciones Obligatorias
 1. **Evaluación de Ingreso (Preocupacional):** Determina la aptitud física y mental para el cargo sin incurrir en discriminación (prohibidas pruebas de embarazo o VIH).
-2. **Evaluaciones Periódicas Programadas (Anuales):** Monitoreo de trabajadores expuestos a factores de riesgo físico (ruido, estrés térmico) y químico (material particulado, sílice libre).
+2. **Evaluaciones Periódicas Programadas (Anuales):** Monitoreo de trabajadores expuestos a factores de riesgo osteomuscular, físico o químico según su profesiograma.
 3. **Evaluación Posincapacidad / Reintegro:** Obligatoria tras incapacidades superiores a 30 días o accidentes graves de trabajo para determinar readaptación de puesto.
 4. **Evaluación de Egreso (Retiro):** Ofrecida al trabajador al término del contrato laboral (con vigencia de 5 días hábiles para su realización).
 
-#### 3. Énfasis Clínico para Sector Ladrillero / Minero
-* **Exposición a Sílice y Polvo Mineral:** Radiografía de tórax con lectura OIT cada año, espirometría forzada y cuestionario respiratorio para prevención de silicosis.
-* **Exposición a Ruido (Extrusoras y Molinos):** Audiometría tonal bilateral de base y de control anual.
-* **Exposición a Cargas y Posturas:** Examen osteomuscular con énfasis en columna lumbosacra y extremidades superiores.`;
+#### 3. Énfasis Clínico según Profesiograma y Factores de Riesgo
+* **Exposición a Factores Biomecánicos y Cargas:** Examen osteomuscular con énfasis en columna lumbosacra, hombros y extremidades superiores.
+* **Exposición a Factores Físicos (Ruido / Iluminación):** Audiometría tonal bilateral y visiometría periódica de base y control.
+* **Exposición a Riesgos de Tareas Críticas:** Certificación médica de aptitud para trabajo en alturas (Res. 4272/2021) o riesgo eléctrico cuando aplique al cargo.`;
     }
 
     return `### 📘 Asesoría Técnica Especializada SG-SST
