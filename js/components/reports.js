@@ -237,15 +237,27 @@ function renderReporte0312(empresa, estandares, evaluacion, resultado, evidencia
                     </span>
                   </td>
                     <div>${resp.justificacion || 'Sin soporte textual registrado'}</div>
-                    ${resp.linkGuia ? `
-                      <div class="mt-1 pt-1 border-t border-slate-100 flex items-center gap-1.5 text-blue-700">
-                        <span class="font-bold text-[10px]">📘 Guía/Plantilla Base:</span>
-                        <a href="${resp.linkGuia}" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:text-blue-900 inline-flex items-center gap-0.5" title="${resp.linkGuia}">
-                          <span>${resp.linkGuia.includes('docs.google.com/document') ? 'Google Docs' : resp.linkGuia.includes('docs.google.com/spreadsheets') ? 'Google Sheets' : 'Documento en Línea'}</span>
-                          <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                        </a>
-                      </div>
-                    ` : ''}
+                    ${(() => {
+                      const allFuentes = [];
+                      if (Array.isArray(resp.fuentes)) {
+                        resp.fuentes.forEach(f => {
+                          if (f && f.url && f.url.trim()) allFuentes.push(f);
+                        });
+                      }
+                      if (allFuentes.length === 0 && resp.linkGuia && resp.linkGuia.trim()) {
+                        allFuentes.push({ url: resp.linkGuia.trim(), titulo: 'Documento Guía Principal' });
+                      }
+                      if (allFuentes.length === 0) return '';
+                      return allFuentes.map((f, idx) => `
+                        <div class="mt-1 pt-1 border-t border-slate-100 flex items-center gap-1.5 text-blue-700">
+                          <span class="font-bold text-[10px]">🔗 ${f.titulo || (allFuentes.length > 1 ? `Soporte #${idx + 1}` : 'Soporte Documental')}:</span>
+                          <a href="${f.url}" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:text-blue-900 inline-flex items-center gap-0.5" title="${f.url}">
+                            <span>${f.url.includes('docs.google.com/document') ? 'Google Docs' : f.url.includes('docs.google.com/spreadsheets') ? 'Google Sheets' : f.url.includes('drive.google.com') ? 'Google Drive' : 'Documento en Línea'}</span>
+                            <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                          </a>
+                        </div>
+                      `).join('');
+                    })()}
                     ${evs.length > 0 ? `
                       <div class="mt-1.5 pt-1.5 border-t border-slate-100 text-slate-700">
                         <div class="text-[10px] font-bold text-slate-700 mb-1 flex items-center gap-1">
