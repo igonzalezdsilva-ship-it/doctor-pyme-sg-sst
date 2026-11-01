@@ -23,6 +23,7 @@ import { renderMasterRepository } from './components/masterRepository.js';
 import { abrirModalIA } from './components/aiAssistant.js';
 import './components/diagramViewer.js';
 import './components/documentViewer.js';
+import './services/eppReports.js';
 
 const routes = {
   '#dashboard': renderDashboard,
@@ -90,6 +91,13 @@ function router() {
   } else if (auth.isAuditor() && (!window.location.hash || window.location.hash === '#dashboard')) {
     hash = '#auditoria-sst';
     window.location.hash = '#auditoria-sst';
+  }
+
+  // Conmutación automática de Modo App Móvil vs Escritorio
+  if (hash === '#portal-trabajador' || auth.isWorker()) {
+    document.body.classList.add('mobile-app-mode');
+  } else {
+    document.body.classList.remove('mobile-app-mode');
   }
 
   const renderFn = routes[hash] || renderDashboard;
@@ -711,6 +719,25 @@ window.restaurarCopiaSeguridad = async function(filename) {
     } else {
       alert("No se pudo restaurar la copia de seguridad seleccionada.");
     }
+  }
+};
+
+// Soporte PWA: Instalación de Aplicación Móvil
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  window.deferredInstallPrompt = e;
+  const btn = document.getElementById('btn-install-pwa');
+  if (btn) btn.classList.remove('hidden');
+});
+
+window.instalarPwaDoctorPyme = async function() {
+  if (window.deferredInstallPrompt) {
+    window.deferredInstallPrompt.prompt();
+    const { outcome } = await window.deferredInstallPrompt.userChoice;
+    console.log(`Respuesta de instalación PWA: ${outcome}`);
+    window.deferredInstallPrompt = null;
+  } else {
+    alert("Para instalar Doctor Pyme en tu celular:\n\n• En Android (Chrome): Toca el menú de 3 puntos (⋮) y selecciona 'Instalar aplicación' o 'Agregar a la pantalla principal'.\n• En iPhone (Safari): Toca el botón Compartir (cuadrado con flecha hacia arriba) y selecciona 'Agregar al inicio'.");
   }
 };
 

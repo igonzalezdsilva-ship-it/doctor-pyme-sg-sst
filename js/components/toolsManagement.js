@@ -167,6 +167,9 @@ export function renderToolsModule() {
     renderizarDashboardHerramientas(container);
   });
 }
+if (typeof window !== 'undefined') {
+  window.renderToolsModule = renderToolsModule;
+}
 
 function renderizarDashboardHerramientas(container) {
   const tenantId = store.getEmpresaActivaId();
@@ -240,6 +243,9 @@ function renderizarDashboardHerramientas(container) {
         </div>
 
         <div class="flex items-center gap-2 flex-wrap">
+          <button id="btn-carga-masiva-herramientas" onclick="window.abrirModalCargaMasivaHerramientas()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black transition flex items-center gap-2 cursor-pointer shadow-lg shadow-blue-900/30 active:scale-95" title="Importar base de datos masiva de herramientas y equipos en Excel / CSV">
+            <span>📥 Carga Masiva (Base de Datos)</span>
+          </button>
           <button id="btn-registrar-intervencion-global" class="px-3.5 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
             <span>🔧</span> Intervención / Taller
           </button>
@@ -372,7 +378,15 @@ function renderizarDashboardHerramientas(container) {
           <div class="col-span-full bg-white border border-slate-200 rounded-3xl p-12 text-center text-slate-400">
             <span class="text-4xl block mb-2">🔍</span>
             <p class="font-bold text-slate-700 text-sm">No se encontraron herramientas o equipos para este criterio</p>
-            <p class="text-xs text-slate-400 mt-1">Modifica los filtros o registra un nuevo activo con el botón superior.</p>
+            <p class="text-xs text-slate-400 mt-1">Modifica los filtros o incorpora nuevos activos mediante carga masiva o registro individual.</p>
+            <div class="mt-5 flex items-center justify-center gap-3 flex-wrap">
+              <button onclick="window.abrirModalCargaMasivaHerramientas()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-sm active:scale-95">
+                <span>📥 Cargar Inventario Masivo (.CSV / Excel)</span>
+              </button>
+              <button onclick="window.abrirModalCrearHerramienta()" class="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-sm active:scale-95">
+                <span>➕ Registrar Herramienta Individual</span>
+              </button>
+            </div>
           </div>
         ` : herramientasFiltradas.map(h => renderCardHerramienta(h, hoyStr, limiteStr)).join('')}
       </div>
@@ -493,7 +507,7 @@ function renderCardHerramienta(h, hoyStr, limiteStr) {
       </div>
 
       <!-- Botones de Acción de la Tarjeta -->
-      <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 border-t border-slate-100">
         <button 
           onclick="window.abrirModalDetalleHerramienta('${h.id}')"
           class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer"
@@ -507,6 +521,13 @@ function renderCardHerramienta(h, hoyStr, limiteStr) {
           title="${h.current_status === 'En Mantenimiento' ? 'Bloqueada por estar en mantenimiento' : 'Asignar activo a trabajador y proyecto'}"
         >
           <span>${h.current_status === 'En Funcionamiento' ? '🔄 Reasignar' : '📋 Asignar'}</span>
+        </button>
+        <button 
+          onclick="window.eliminarHerramientaModal('${h.id}')"
+          class="w-full py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer"
+          title="Eliminar este activo permanentemente"
+        >
+          <span>🗑️ Eliminar</span>
         </button>
       </div>
 
@@ -542,6 +563,11 @@ function vincularEventosDashboard() {
     };
   }
 
+  const btnCargaMasiva = document.getElementById('btn-carga-masiva-herramientas');
+  if (btnCargaMasiva) {
+    btnCargaMasiva.onclick = () => window.abrirModalCargaMasivaHerramientas();
+  }
+
   const btnNuevo = document.getElementById('btn-nueva-herramienta');
   if (btnNuevo) {
     btnNuevo.onclick = () => window.abrirModalCrearHerramienta();
@@ -568,6 +594,24 @@ function vincularEventosDashboard() {
     };
   }
 }
+
+// =============================================================================
+// FUNCIÓN PARA ELIMINAR UN ACTIVO DEL INVENTARIO
+// =============================================================================
+window.eliminarHerramientaModal = function(toolId) {
+  const tool = store.getToolById(toolId);
+  if (!tool) return;
+
+  const confirmar = confirm(`¿Estás seguro de que deseas eliminar permanentemente el activo:\n\n"${tool.exact_name}" (Código: ${tool.internal_code})?\n\nEsta acción eliminará su ficha técnica, historial de asignaciones y plan de mantenimiento.`);
+  if (!confirmar) return;
+
+  const modalDetalle = document.getElementById('modal-detalle-herramienta');
+  if (modalDetalle) modalDetalle.remove();
+
+  store.deleteTool(toolId);
+  alert(`✓ El activo "${tool.exact_name}" ha sido eliminado exitosamente del inventario.`);
+  renderToolsModule();
+};
 
 // =============================================================================
 // VISTA DETALLE DEL ACTIVO (MODAL MULTIPESTAÑAS + 3 EXPORTABLES PDF)
@@ -1878,3 +1922,8 @@ window.generarPdfPlanMantenimiento = function(toolId) {
   `);
   win.document.close();
 };
+
+
+
+// Importar funciones de Carga Masiva de Herramientas
+import "./tools_bulk_import.js";

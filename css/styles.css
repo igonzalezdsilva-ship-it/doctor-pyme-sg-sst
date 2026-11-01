@@ -133,3 +133,59 @@ input, textarea, select {
     page-break-inside: avoid;
   }
 }
+
+/* =============================================================================
+   MODO APP MÓVIL NATIVA (PORTAL OPERARIOS & TRABAJADORES PWA / TWA)
+   ============================================================================= */
+
+body.mobile-app-mode {
+  background-color: #0b1a2d !important;
+  overscroll-behavior-y: contain;
+}
+
+body.mobile-app-mode aside,
+body.mobile-app-mode header {
+  display: none !important;
+}
+
+body.mobile-app-mode #app-root {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+body.mobile-app-mode main {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  background-color: #f1f5f9;
+}
+
+body.mobile-app-mode #main-content {
+  max-width: 100% !important;
+  height: 100% !important;
+}
+
+/* Canvas de Firma Táctil Optimizado para Celular y Escritorio */
+.signature-pad-canvas {
+  display: block;
+  width: 100% !important;
+  height: 180px !important;
+  min-height: 180px !important;
+  touch-action: none;
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  border: 2px dashed #94a3b8;
+  cursor: crosshair;
+  box-sizing: border-box;
+}
+
+/* Safe area inset para barras de navegación en iOS / Android */
+.safe-bottom-nav {
+  padding-bottom: env(safe-area-inset-bottom, 1rem);
+}
+

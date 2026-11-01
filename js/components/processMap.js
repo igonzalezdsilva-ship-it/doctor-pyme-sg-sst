@@ -270,7 +270,7 @@ export async function renderProcessMap() {
           class="flex-1 py-3 px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${activeTabProcesos === 'cargos' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100 cursor-pointer'}"
         >
           <span>👥</span>
-          <span>2. Catálogo de Cargos & 6 Documentos PDF</span>
+          <span>2. Catálogo de Cargos y Documentos</span>
           <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${activeTabProcesos === 'cargos' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700'}">${cargos.length}</span>
         </button>
 
@@ -515,7 +515,7 @@ export async function renderProcessMap() {
       ` : ''}
 
       <!-- ============================================================== -->
-      <!-- PESTAÑA 2: CATÁLOGO DE CARGOS Y 6 DOCUMENTOS OFICIALES PDF -->
+      <!-- PESTAÑA 2: CATÁLOGO DE CARGOS Y DOCUMENTOS -->
       <!-- ============================================================== -->
       ${activeTabProcesos === 'cargos' ? `
         <div class="space-y-6">
@@ -549,7 +549,7 @@ export async function renderProcessMap() {
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
               <div>
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Blindaje Jurídico SST</p>
-                <p class="text-2xl font-black text-purple-600 mt-1">6 Docs PDF</p>
+                <p class="text-2xl font-black text-purple-600 mt-1">Docs PDF</p>
                 <p class="text-[10px] text-purple-600 font-semibold mt-0.5">Dec. 1072, Res. 0312, GTC 45</p>
               </div>
               <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl font-bold">
@@ -563,20 +563,11 @@ export async function renderProcessMap() {
             <div>
               <h3 class="text-sm font-black text-slate-800">Catálogo de Cargos y Matriz de Instrumentos</h3>
               <p class="text-xs text-slate-500">
-                Cada cargo extrae automáticamente sus funciones desde las actividades de procesos asignadas y habilita 6 documentos oficiales en PDF.
+                Cada cargo extrae automáticamente sus funciones desde las actividades de procesos asignadas y habilita documentos oficiales en PDF.
               </p>
             </div>
 
             <div class="flex items-center gap-2 flex-wrap">
-              <button 
-                type="button" 
-                onclick="window.cargarCargosSugeridosPorSector()" 
-                class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer whitespace-nowrap"
-                title="Carga una estructura recomendada de cargos típicos según el sector de la empresa activa"
-              >
-                <span>📋 Cargar Cargos Sugeridos por Sector</span>
-              </button>
-
               <button 
                 type="button" 
                 onclick="window.abrirModalCargo()" 
@@ -688,26 +679,75 @@ export async function renderProcessMap() {
                       const totalSoportesActivo = fuentesValidas.length + evidenciasDoc.length;
 
                       // Valores actuales de la estructura del documento seleccionado
-                      const funcionesOpList = (configCargo.manualFunciones?.funcionesOperativas && configCargo.manualFunciones.funcionesOperativas.length > 0)
-                        ? configCargo.manualFunciones.funcionesOperativas
-                        : funcData.operativas;
-                      const respSstList = (configCargo.manualFunciones?.responsabilidadesSST && configCargo.manualFunciones.responsabilidadesSST.length > 0)
-                        ? configCargo.manualFunciones.responsabilidadesSST
-                        : funcData.sst;
+                      const manualCfg = configCargo.manualFunciones || {};
+
+                      // I. PROPÓSITO GENERAL DEL CARGO
+                      const propositoGeneral = manualCfg.propositoGeneral 
+                        || cargo.summary_objective 
+                        || configCargo.perfil?.objetivo 
+                        || '';
+
+                      // II. OBJETIVOS ESPECÍFICOS DEL CARGO (METODOLOGÍA SMART)
+                      let objetivosSmart = '';
+                      if (manualCfg.objetivosSmart !== undefined && manualCfg.objetivosSmart !== null && String(manualCfg.objetivosSmart).trim() !== '') {
+                        objetivosSmart = Array.isArray(manualCfg.objetivosSmart) 
+                          ? manualCfg.objetivosSmart.join('\n') 
+                          : String(manualCfg.objetivosSmart);
+                      } else if (manualCfg.responsabilidadesSST && manualCfg.responsabilidadesSST.length > 0) {
+                        objetivosSmart = manualCfg.responsabilidadesSST.join('\n');
+                      } else if (funcData.sst && funcData.sst.length > 0) {
+                        objetivosSmart = funcData.sst.join('\n');
+                      }
+
+                      // III. FUNCIONES Y RESPONSABILIDADES DETALLADAS POR PROCESO
+                      let funcionesPorProceso = '';
+                      if (manualCfg.funcionesPorProceso !== undefined && manualCfg.funcionesPorProceso !== null && String(manualCfg.funcionesPorProceso).trim() !== '') {
+                        funcionesPorProceso = Array.isArray(manualCfg.funcionesPorProceso)
+                          ? manualCfg.funcionesPorProceso.join('\n')
+                          : String(manualCfg.funcionesPorProceso);
+                      } else if (manualCfg.funcionesOperativas && manualCfg.funcionesOperativas.length > 0) {
+                        funcionesPorProceso = manualCfg.funcionesOperativas.join('\n');
+                      } else if (funcData.operativas && funcData.operativas.length > 0) {
+                        funcionesPorProceso = funcData.operativas.join('\n');
+                      }
+
+                      // IV. PERFIL DEL CARGO Y COMPETENCIAS REQUERIDAS
+                      let perfilCompetencias = '';
+                      if (manualCfg.perfilCompetencias !== undefined && manualCfg.perfilCompetencias !== null && String(manualCfg.perfilCompetencias).trim() !== '') {
+                        perfilCompetencias = Array.isArray(manualCfg.perfilCompetencias)
+                          ? manualCfg.perfilCompetencias.join('\n')
+                          : String(manualCfg.perfilCompetencias);
+                      } else {
+                        const lineasP = [];
+                        const eduStr = cargo.required_education || configCargo.perfil?.educacion || '';
+                        if (eduStr) lineasP.push(`• Educación: ${eduStr}`);
+                        const expStr = cargo.required_experience || configCargo.perfil?.experiencia || '';
+                        if (expStr) lineasP.push(`• Experiencia: ${expStr}`);
+                        const compStr = Array.isArray(cargo.required_skills) && cargo.required_skills.length > 0 
+                          ? cargo.required_skills.join(', ') 
+                          : (configCargo.perfil?.competencias || '');
+                        if (compStr) lineasP.push(`• Competencias: ${compStr}`);
+                        const formSst = configCargo.perfil?.formacionSST || '';
+                        if (formSst) lineasP.push(`• Formación SST: ${formSst}`);
+                        perfilCompetencias = lineasP.join('\n');
+                      }
+
+                      const funcionesOpList = funcionesPorProceso.split('\n').map(s => s.trim()).filter(Boolean);
+                      const respSstList = objetivosSmart.split('\n').map(s => s.trim()).filter(Boolean);
 
                       return `
                         <div class="pt-4">
                           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                             <div>
                               <span class="text-[11px] font-black uppercase tracking-wider text-purple-900 flex items-center gap-1.5">
-                                <span>📜</span> Catálogo de los 6 Documentos Oficiales del Cargo & Repositorio Documental (Estructura Estándares Mínimos):
+                                <span>📜</span> Catálogo de Documentos Oficiales del Cargo & Repositorio Documental (Estructura Estándares Mínimos):
                               </span>
                               <p class="text-[11px] text-slate-500 mt-0.5">
-                                Selecciona cualquiera de los 6 documentos para gestionar su <strong>Estructura</strong>, su <strong>Documento Guía / Link de Google</strong> y almacenar sus <strong>Documentos Definidos en PDF</strong>.
+                                Selecciona cualquiera de los documentos para gestionar su <strong>Estructura</strong>, su <strong>Documento Guía / Link de Google</strong> y almacenar sus <strong>Documentos Definidos en PDF</strong>.
                               </p>
                             </div>
                             <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 whitespace-nowrap self-start sm:self-auto">
-                              6 Documentos Oficiales por Cargo
+                              Documentos Oficiales por Cargo
                             </span>
                           </div>
 
@@ -845,34 +885,84 @@ export async function renderProcessMap() {
                               </div>
 
                               ${docMeta.key === 'manual' ? `
-                                <div class="grid grid-cols-1 gap-3 text-xs">
-                                  <div>
-                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">I. Objetivo / Propósito Principal del Cargo:</label>
-                                    <input 
-                                      type="text" 
-                                      id="est-manual-obj-${cargo.id}"
-                                      value="${escapeHtmlCargo(cargo.summary_objective || configCargo.perfil?.objetivo || '')}"
-                                      class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                                    >
-                                  </div>
-                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
+                                  
+                                  <!-- BLOQUE I: PROPÓSITO GENERAL DEL CARGO -->
+                                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 flex flex-col justify-between">
                                     <div>
-                                      <label class="block text-[11px] font-bold text-slate-700 mb-1">II. Funciones Operativas y Procedimentales PHVA (1 por línea):</label>
-                                      <textarea 
-                                        id="est-manual-op-${cargo.id}" 
-                                        rows="5"
-                                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                                      >${escapeHtmlCargo(funcionesOpList.join('\n'))}</textarea>
+                                      <label class="block text-[11px] font-black text-slate-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
+                                        <span class="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-black">I</span>
+                                        <span>I. PROPÓSITO GENERAL DEL CARGO</span>
+                                      </label>
+                                      <p class="text-[10px] text-slate-500 mb-2">
+                                        Misión, razón de ser y objetivo central del puesto en la organización y el SG-SST:
+                                      </p>
                                     </div>
-                                    <div>
-                                      <label class="block text-[11px] font-bold text-slate-700 mb-1">III. Responsabilidades Obligatorias en SG-SST Dec. 1072 (1 por línea):</label>
-                                      <textarea 
-                                        id="est-manual-sst-${cargo.id}" 
-                                        rows="5"
-                                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                                      >${escapeHtmlCargo(respSstList.join('\n'))}</textarea>
-                                    </div>
+                                    <textarea 
+                                      id="est-manual-proposito-${cargo.id}"
+                                      rows="4"
+                                      class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-2xs leading-relaxed"
+                                      placeholder="Definir el propósito general y misión principal del cargo..."
+                                    >${escapeHtmlCargo(propositoGeneral)}</textarea>
                                   </div>
+
+                                  <!-- BLOQUE II: OBJETIVOS ESPECÍFICOS DEL CARGO (METODOLOGÍA SMART) -->
+                                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+                                    <div>
+                                      <label class="block text-[11px] font-black text-slate-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
+                                        <span class="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-black">II</span>
+                                        <span>II. OBJETIVOS ESPECÍFICOS DEL CARGO (METODOLOGÍA SMART)</span>
+                                      </label>
+                                      <p class="text-[10px] text-slate-500 mb-2">
+                                        Metas específicas, medibles, alcanzables, relevantes y con tiempo determinado (1 por línea):
+                                      </p>
+                                    </div>
+                                    <textarea 
+                                      id="est-manual-smart-${cargo.id}"
+                                      rows="4"
+                                      class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-2xs leading-relaxed"
+                                      placeholder="Definir metas cuantitativas y cualitativas SMART asociadas al cargo (1 por línea)..."
+                                    >${escapeHtmlCargo(objetivosSmart)}</textarea>
+                                  </div>
+
+                                  <!-- BLOQUE III: FUNCIONES Y RESPONSABILIDADES DETALLADAS POR PROCESO -->
+                                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+                                    <div>
+                                      <label class="block text-[11px] font-black text-slate-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
+                                        <span class="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-black">III</span>
+                                        <span>III. FUNCIONES Y RESPONSABILIDADES DETALLADAS POR PROCESO</span>
+                                      </label>
+                                      <p class="text-[10px] text-slate-500 mb-2">
+                                        Actividades operativas, procedimentales PHVA y responsabilidades por proceso (1 por línea):
+                                      </p>
+                                    </div>
+                                    <textarea 
+                                      id="est-manual-funciones-${cargo.id}"
+                                      rows="5"
+                                      class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-2xs leading-relaxed"
+                                      placeholder="Detallar las funciones y responsabilidades del cargo por proceso (1 por línea)..."
+                                    >${escapeHtmlCargo(funcionesPorProceso)}</textarea>
+                                  </div>
+
+                                  <!-- BLOQUE IV: PERFIL DEL CARGO Y COMPETENCIAS REQUERIDAS -->
+                                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+                                    <div>
+                                      <label class="block text-[11px] font-black text-slate-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
+                                        <span class="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-black">IV</span>
+                                        <span>IV. PERFIL DEL CARGO Y COMPETENCIAS REQUERIDAS</span>
+                                      </label>
+                                      <p class="text-[10px] text-slate-500 mb-2">
+                                        Educación, experiencia previa, formación en SST, habilidades técnicas y comportamentales:
+                                      </p>
+                                    </div>
+                                    <textarea 
+                                      id="est-manual-perfil-${cargo.id}"
+                                      rows="5"
+                                      class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-2xs leading-relaxed"
+                                      placeholder="Definir requisitos de perfil, experiencia y competencias (1 por línea o viñetas)..."
+                                    >${escapeHtmlCargo(perfilCompetencias)}</textarea>
+                                  </div>
+
                                 </div>
                               ` : ''}
 
@@ -1007,34 +1097,215 @@ export async function renderProcessMap() {
                                 </div>
                               ` : ''}
 
-                              ${docMeta.key === 'epp' ? `
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                                  <div>
-                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">I. EPP Obligatorios por Cargo (1 por línea):</label>
-                                    <textarea 
-                                      id="est-epp-lista-${cargo.id}" 
-                                      rows="4"
-                                      class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                                    >${escapeHtmlCargo(Array.isArray(configCargo.matrizEpp?.eppRequeridos) ? configCargo.matrizEpp.eppRequeridos.join('\n') : (configCargo.matrizEpp?.eppRequeridos || ''))}</textarea>
+                              ${docMeta.key === 'epp' ? (() => {
+                                const eppMatrix = store.getJobPositionEppMatrix(cargo.id);
+                                const totalItems = eppMatrix.length;
+
+                                return `
+                                  <div class="space-y-4">
+                                    <!-- BARRA SUPERIOR DE ACCIONES DE MATRIZ DE EPP Y DOTACIÓN -->
+                                    <div class="bg-gradient-to-r from-amber-950/10 via-slate-50 to-indigo-950/10 p-3 sm:p-4 rounded-2xl border border-amber-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-2xs">
+                                      <div>
+                                        <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                          <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-900 border border-amber-300">
+                                            Estándar 4.2.6 Res. 0312
+                                          </span>
+                                          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/15 text-indigo-900 border border-indigo-200">
+                                            Art. 230 CST &amp; Ley 9/1979
+                                          </span>
+                                          <span class="text-[11px] font-bold text-slate-600">
+                                            ${totalItems} ${totalItems === 1 ? 'elemento parametrizado' : 'elementos parametrizados'}
+                                          </span>
+                                        </div>
+                                        <h4 class="text-sm font-black text-slate-900 flex items-center gap-1.5">
+                                          <span>🛡️ Matriz Técnica de EPP &amp; Dotación para:</span>
+                                          <span class="text-amber-800">${escapeHtmlCargo(cargo.title)}</span>
+                                        </h4>
+                                        <p class="text-[11px] text-slate-500 mt-0.5">
+                                          Configura las prendas y elementos obligatorios bajo normas ANSI/NTC que deben suministrarse a los colaboradores de este cargo.
+                                        </p>
+                                      </div>
+
+                                      <!-- BOTONES DE ACCIÓN RÁPIDA -->
+                                      <div class="flex flex-wrap items-center gap-2 flex-shrink-0">
+                                        <button 
+                                          type="button" 
+                                          onclick="window.sugerirMatrizEppConIA('${cargo.id}', '${escapeHtmlCargo(cargo.title)}')"
+                                          class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-xs transition flex items-center gap-1.5 cursor-pointer active:scale-95"
+                                          title="Analiza automáticamente actividades, herramientas y peligros GTC 45 para sugerir la matriz con normas técnicas ANSI/NTC"
+                                        >
+                                          <span>✨ Sugerir Matriz de EPP por Cargo con IA</span>
+                                        </button>
+
+                                        <button 
+                                          type="button" 
+                                          onclick="window.abrirModalAgregarItemCatalogoAMatriz('${cargo.id}', '${escapeHtmlCargo(cargo.title)}')"
+                                          class="px-3 py-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 rounded-xl text-xs font-bold shadow-2xs transition flex items-center gap-1.5 cursor-pointer"
+                                          title="Seleccionar y agregar un elemento del catálogo maestro a este cargo"
+                                        >
+                                          <span>➕ Agregar Ítem del Catálogo</span>
+                                        </button>
+
+                                        <button 
+                                          type="button" 
+                                          onclick="window.abrirModalAdministrarCatalogoEPP('${cargo.id}', '${escapeHtmlCargo(cargo.title)}')"
+                                          class="px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 rounded-xl text-xs font-bold shadow-2xs transition flex items-center gap-1.5 cursor-pointer"
+                                          title="Parametrizar el Catálogo Maestro de EPP y Dotación de la empresa (crear, editar o eliminar ítems)"
+                                        >
+                                          <span>⚙️ Parametrizar Catálogo Maestro</span>
+                                        </button>
+
+                                        <button 
+                                          type="button" 
+                                          onclick="window.abrirModalAsignarEntregaEPP(null, '${cargo.id}')"
+                                          class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black shadow-xs transition flex items-center gap-1.5 cursor-pointer active:scale-95"
+                                          title="Asignar entrega a un trabajador activo que tenga este cargo"
+                                        >
+                                          <span>📦 Asignar Entrega a Trabajador</span>
+                                        </button>
+                                      </div>
+                                    </div>
+
+                                    <!-- TABLA DETALLADA DE LA MATRIZ DE EPP Y DOTACIÓN -->
+                                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
+                                      ${totalItems === 0 ? `
+                                        <div class="p-8 text-center space-y-3">
+                                          <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl shadow-inner">
+                                            🦺
+                                          </div>
+                                          <h5 class="text-sm font-black text-slate-800">Aún no se han configurado elementos de EPP o Dotación para este cargo</h5>
+                                          <p class="text-xs text-slate-500 max-w-lg mx-auto leading-relaxed">
+                                            Haz clic en <strong>"✨ Sugerir Matriz de EPP por Cargo con IA"</strong> para que el motor de inteligencia artificial analice las funciones, herramientas y peligros de este puesto y configure automáticamente los elementos homologados, o añade ítems manualmente del catálogo maestro.
+                                          </p>
+                                          <div class="pt-2 flex justify-center gap-2">
+                                            <button 
+                                              type="button" 
+                                              onclick="window.sugerirMatrizEppConIA('${cargo.id}', '${escapeHtmlCargo(cargo.title)}')"
+                                              class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black shadow-xs transition cursor-pointer"
+                                            >
+                                              ✨ Sugerir con IA Ahora
+                                            </button>
+                                            <button 
+                                              type="button" 
+                                              onclick="window.abrirModalAgregarItemCatalogoAMatriz('${cargo.id}', '${escapeHtmlCargo(cargo.title)}')"
+                                              class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer"
+                                            >
+                                              ➕ Agregar del Catálogo
+                                            </button>
+                                          </div>
+                                        </div>
+                                      ` : `
+                                        <div class="overflow-x-auto">
+                                          <table class="w-full text-left text-xs">
+                                            <thead class="bg-slate-50/80 text-slate-700 font-bold border-b border-slate-200 uppercase text-[10px] tracking-wider">
+                                              <tr>
+                                                <th class="py-2.5 px-3">Código &amp; Elemento</th>
+                                                <th class="py-2.5 px-3">Categoría</th>
+                                                <th class="py-2.5 px-3">Zona Protegida / Peligro GTC 45</th>
+                                                <th class="py-2.5 px-3">Norma Técnica</th>
+                                                <th class="py-2.5 px-3 text-center">Cant.</th>
+                                                <th class="py-2.5 px-3">Frecuencia / Reposición</th>
+                                                <th class="py-2.5 px-3 text-center">Talla</th>
+                                                <th class="py-2.5 px-3 text-right">Acción</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-slate-100">
+                                              ${eppMatrix.map(m => `
+                                                <tr class="hover:bg-slate-50/60 transition">
+                                                  <td class="py-2.5 px-3">
+                                                    <div class="font-bold text-slate-900">${escapeHtmlCargo(m.item_name)}</div>
+                                                    <span class="text-[10px] font-mono text-slate-500">${escapeHtmlCargo(m.item_code)}</span>
+                                                  </td>
+                                                  <td class="py-2.5 px-3 whitespace-nowrap">
+                                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+                                                      m.category === 'EPP' ? 'bg-blue-50 text-blue-800 border border-blue-200' :
+                                                      m.category === 'DOTACION_LEGAL' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+                                                      'bg-purple-50 text-purple-800 border border-purple-200'
+                                                    }">
+                                                      ${m.category === 'EPP' ? '🛡️ EPP' : m.category === 'DOTACION_LEGAL' ? '👔 Dotación Legal' : '🧥 Ropa Trabajo'}
+                                                    </span>
+                                                  </td>
+                                                  <td class="py-2.5 px-3">
+                                                    <div class="font-medium text-slate-800 text-[11px]">${escapeHtmlCargo(m.body_part_protected || 'Cuerpo')}</div>
+                                                    <div class="text-[10px] text-slate-500 truncate max-w-[180px]" title="${escapeHtmlCargo(m.associated_hazard || '')}">
+                                                      ⚠️ ${escapeHtmlCargo(m.associated_hazard || 'Riesgo operativo')}
+                                                    </div>
+                                                  </td>
+                                                  <td class="py-2.5 px-3">
+                                                    <span class="font-mono text-[11px] text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                                                      ${escapeHtmlCargo(m.technical_standard || 'NTC')}
+                                                    </span>
+                                                  </td>
+                                                  <td class="py-2.5 px-3 text-center font-bold text-slate-900">
+                                                    ${m.default_quantity || 1}
+                                                  </td>
+                                                  <td class="py-2.5 px-3 whitespace-nowrap text-[11px] text-slate-700">
+                                                    ${
+                                                      m.delivery_frequency === 'Cuatrimestral_CST' ? '📅 Cuatrimestral (Art. 230 CST)' :
+                                                      m.delivery_frequency === 'Ingreso_Unica_Vez' ? '🚪 Ingreso / Única Vez' :
+                                                      m.delivery_frequency === 'Mensual' ? '🗓️ Mensual' :
+                                                      m.delivery_frequency === 'Trimestral' ? '🗓️ Trimestral' :
+                                                      m.delivery_frequency === 'Semestral' ? '🗓️ Semestral' :
+                                                      m.delivery_frequency === 'Anual' ? '🗓️ Anual' :
+                                                      '🔄 Según Deterioro'
+                                                    }
+                                                  </td>
+                                                  <td class="py-2.5 px-3 text-center">
+                                                    <span class="px-1.5 py-0.5 rounded text-[9.5px] font-bold ${m.requires_size ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-slate-100 text-slate-500'}">
+                                                      ${m.requires_size ? 'Aplica' : 'Única'}
+                                                    </span>
+                                                  </td>
+                                                  <td class="py-2.5 px-3 text-right">
+                                                    <button 
+                                                      type="button" 
+                                                      onclick="window.eliminarItemMatrizEpp('${cargo.id}', '${m.catalog_item_id || m.id}')"
+                                                      class="p-1 text-slate-400 hover:text-red-600 rounded-md transition cursor-pointer"
+                                                      title="Quitar de la matriz de este cargo"
+                                                    >
+                                                      ✕
+                                                    </button>
+                                                  </td>
+                                                </tr>
+                                              `).join('')}
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      `}
+                                    </div>
+
+                                    <!-- CAMPOS RESUMEN PARA REGISTRO Y FORMATOS -->
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-1">
+                                      <div>
+                                        <label class="block text-[11px] font-bold text-slate-700 mb-1">I. EPP &amp; Dotación Obligatorios (Resumen):</label>
+                                        <textarea 
+                                          id="est-epp-lista-${cargo.id}" 
+                                          rows="3"
+                                          class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                                          placeholder="Lista de EPP requeridos..."
+                                        >${escapeHtmlCargo(Array.isArray(configCargo.matrizEpp?.eppRequeridos) ? configCargo.matrizEpp.eppRequeridos.join('\n') : (configCargo.matrizEpp?.eppRequeridos || ''))}</textarea>
+                                      </div>
+                                      <div>
+                                        <label class="block text-[11px] font-bold text-slate-700 mb-1">II. Normas Técnicas Aplicables (ANSI / NTC / NIOSH / ASTM):</label>
+                                        <textarea 
+                                          id="est-epp-normas-${cargo.id}" 
+                                          rows="3"
+                                          class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                                          placeholder="Normas aplicables..."
+                                        >${escapeHtmlCargo(configCargo.matrizEpp?.normasTecnicas || '')}</textarea>
+                                      </div>
+                                      <div>
+                                        <label class="block text-[11px] font-bold text-slate-700 mb-1">III. Cronograma de Dotación (Art. 230 CST) y Reposición:</label>
+                                        <textarea 
+                                          id="est-epp-repos-${cargo.id}" 
+                                          rows="3"
+                                          class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                                          placeholder="Frecuencia y cronograma..."
+                                        >${escapeHtmlCargo(configCargo.matrizEpp?.frecuenciaReposicion || '')}</textarea>
+                                      </div>
+                                    </div>
                                   </div>
-                                  <div>
-                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">II. Normas Técnicas Aplicables (ANSI / NTC / NIOSH):</label>
-                                    <textarea 
-                                      id="est-epp-normas-${cargo.id}" 
-                                      rows="4"
-                                      class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                                    >${escapeHtmlCargo(configCargo.matrizEpp?.normasTecnicas || '')}</textarea>
-                                  </div>
-                                  <div>
-                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">III. Cronograma de Dotación (Art. 230 CST) y Reposición:</label>
-                                    <textarea 
-                                      id="est-epp-repos-${cargo.id}" 
-                                      rows="4"
-                                      class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                                    >${escapeHtmlCargo(configCargo.matrizEpp?.frecuenciaReposicion || '')}</textarea>
-                                  </div>
-                                </div>
-                              ` : ''}
+                                `;
+                              })() : ''}
 
                               ${docMeta.key === 'anexo' ? `
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
@@ -1158,7 +1429,7 @@ export async function renderProcessMap() {
 
                                           <button 
                                             type="button" 
-                                            onclick="window.previsualizarFuenteDocCargo('${escapeHtmlCargo(f.url)}', '${escapeHtmlCargo(f.titulo || '')}', '${escapeHtmlCargo(cargo.title)}', '${docMeta.key}')"
+                                            onclick="window.previsualizarFuenteDocCargo('${escapeHtmlCargo(f.url)}', '${escapeHtmlCargo(f.titulo || '')}', '${escapeHtmlCargo(cargo.title)}', '${docMeta.key}', '${f.id}')"
                                             class="px-2.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-md text-xs font-medium flex items-center gap-1 transition cursor-pointer"
                                             title="Vista previa interactiva sin salir de la App"
                                           >
@@ -1433,7 +1704,7 @@ export async function renderProcessMap() {
                 <p class="text-xs text-slate-500 mt-0.5">Estructura jerárquica por niveles (Directivo, Profesional, Técnico y Operativo) extraída automáticamente del Catálogo de Cargos.</p>
               </div>
               <button onclick="window.cambiarTabProcesos('cargos')" class="px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-xl text-xs font-bold transition cursor-pointer">
-                Ver Catálogo y 6 Docs PDF →
+                Ver Catálogo y Documentos PDF →
               </button>
             </div>
 
@@ -2650,13 +2921,51 @@ window.imprimirManualDeCargo = function(cargoId) {
 
   const funcData = store.getJobPositionFunctions(cargoId);
   const configCargo = store.getPerfilCargo(cargo.title, empresa.id);
-  const funcionesOp = (configCargo?.manualFunciones?.funcionesOperativas && configCargo.manualFunciones.funcionesOperativas.length > 0)
-    ? configCargo.manualFunciones.funcionesOperativas
-    : funcData.operativas;
-  const respSST = (configCargo?.manualFunciones?.responsabilidadesSST && configCargo.manualFunciones.responsabilidadesSST.length > 0)
-    ? configCargo.manualFunciones.responsabilidadesSST
-    : funcData.sst;
-  const objetivoCargo = cargo.summary_objective || configCargo?.perfil?.objetivo || 'Ejecutar las labores asignadas conforme a los lineamientos operativos, asegurando el cumplimiento estricto del Sistema de Gestión de Seguridad y Salud en el Trabajo.';
+  const manualCfg = configCargo?.manualFunciones || {};
+
+  const propositoGeneral = manualCfg.propositoGeneral 
+    || cargo.summary_objective 
+    || configCargo?.perfil?.objetivo 
+    || 'Ejecutar las labores asignadas conforme a los lineamientos operativos, asegurando el cumplimiento estricto del Sistema de Gestión de Seguridad y Salud en el Trabajo.';
+
+  const objetivosSmartLines = (manualCfg.objetivosSmartList && manualCfg.objetivosSmartList.length > 0)
+    ? manualCfg.objetivosSmartList
+    : (typeof manualCfg.objetivosSmart === 'string' && manualCfg.objetivosSmart.trim()
+        ? manualCfg.objetivosSmart.split('\n').map(s => s.trim()).filter(Boolean)
+        : (manualCfg.responsabilidadesSST && manualCfg.responsabilidadesSST.length > 0
+            ? manualCfg.responsabilidadesSST
+            : funcData.sst));
+
+  const funcionesPorProcesoLines = (manualCfg.funcionesPorProcesoList && manualCfg.funcionesPorProcesoList.length > 0)
+    ? manualCfg.funcionesPorProcesoList
+    : (typeof manualCfg.funcionesPorProceso === 'string' && manualCfg.funcionesPorProceso.trim()
+        ? manualCfg.funcionesPorProceso.split('\n').map(s => s.trim()).filter(Boolean)
+        : (manualCfg.funcionesOperativas && manualCfg.funcionesOperativas.length > 0
+            ? manualCfg.funcionesOperativas
+            : funcData.operativas));
+
+  let perfilCompetenciasLines = [];
+  if (manualCfg.perfilCompetenciasList && manualCfg.perfilCompetenciasList.length > 0) {
+    perfilCompetenciasLines = manualCfg.perfilCompetenciasList;
+  } else if (typeof manualCfg.perfilCompetencias === 'string' && manualCfg.perfilCompetencias.trim()) {
+    perfilCompetenciasLines = manualCfg.perfilCompetencias.split('\n').map(s => s.trim()).filter(Boolean);
+  } else {
+    if (cargo.required_education || configCargo?.perfil?.educacion) {
+      perfilCompetenciasLines.push(`Educación Formal: ${cargo.required_education || configCargo.perfil.educacion}`);
+    }
+    if (cargo.required_experience || configCargo?.perfil?.experiencia) {
+      perfilCompetenciasLines.push(`Experiencia Mínima: ${cargo.required_experience || configCargo.perfil.experiencia}`);
+    }
+    const skills = Array.isArray(cargo.required_skills) && cargo.required_skills.length > 0 
+      ? cargo.required_skills.join(', ') 
+      : (configCargo?.perfil?.competencias || '');
+    if (skills) {
+      perfilCompetenciasLines.push(`Competencias & Habilidades: ${skills}`);
+    }
+    if (configCargo?.perfil?.formacionSST) {
+      perfilCompetenciasLines.push(`Formación SST Obligatoria: ${configCargo.perfil.formacionSST}`);
+    }
+  }
 
   const html = `
     <table class="header-table">
@@ -2678,7 +2987,7 @@ window.imprimirManualDeCargo = function(cargoId) {
     </table>
 
     <div class="section-box">
-      <div class="section-title">I. IDENTIFICACIÓN DEL CARGO</div>
+      <div class="section-title">I. PROPÓSITO GENERAL DEL CARGO</div>
       <div class="grid-2">
         <div><div class="field-label">Nombre del Cargo:</div><div class="field-value">${cargo.title}</div></div>
         <div><div class="field-label">Nivel Jerárquico:</div><div class="field-value">${cargo.hierarchy_level}</div></div>
@@ -2686,35 +2995,36 @@ window.imprimirManualDeCargo = function(cargoId) {
         <div><div class="field-label">Jefe Inmediato:</div><div class="field-value">${cargo.hierarchy_level === 'Directivo' ? 'Junta Directiva / Representante Legal' : 'Líder de Proceso / Gerencia'}</div></div>
       </div>
       <div style="margin-top: 8px;">
-        <div class="field-label">Propósito / Objetivo Principal:</div>
-        <div class="field-value">${objetivoCargo}</div>
+        <div class="field-label">Propósito / Misión General:</div>
+        <div class="field-value" style="text-align: justify; line-height: 1.5;">${propositoGeneral}</div>
       </div>
     </div>
 
     <div class="section-box">
-      <div class="section-title">II. PROCESOS EN LOS QUE PARTICIPA Y CONTRIBUYE</div>
-      <p style="font-size: 9pt; margin: 0 0 8px 0; color: #475569;">
-        Conforme a la Arquitectura Guiada por Procesos de la empresa, este cargo opera en las siguientes cadenas de valor:
-      </p>
-      <div>
-        ${funcData.procesos.map(pr => `<span class="badge" style="margin-right: 6px; margin-bottom: 4px;">${pr}</span>`).join('')}
-      </div>
-    </div>
-
-    <div class="section-box">
-      <div class="section-title">III. FUNCIONES OPERATIVAS Y PROCEDIMENTALES (CICLO PHVA)</div>
+      <div class="section-title">II. OBJETIVOS ESPECÍFICOS DEL CARGO (METODOLOGÍA SMART)</div>
       <p style="font-size: 8.5pt; color: #475569; margin: 0 0 6px 0;">
-        Funciones definidas en el repositorio y caracterizadas por proceso:
+        Metas y objetivos específicos, medibles, alcanzables, pertinentes y temporales definidos para el puesto:
+      </p>
+      <ul style="margin: 0; padding-left: 20px; font-size: 9pt; line-height: 1.6;">
+        ${objetivosSmartLines.map(s => `<li>${s}</li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="section-box">
+      <div class="section-title">III. FUNCIONES Y RESPONSABILIDADES DETALLADAS POR PROCESO</div>
+      <p style="font-size: 8.5pt; color: #475569; margin: 0 0 6px 0;">
+        Cadenas de valor y procesos donde participa: 
+        ${funcData.procesos.map(pr => `<span class="badge" style="margin-right: 4px;">${pr}</span>`).join('')}
       </p>
       <ol style="margin: 0; padding-left: 20px; font-size: 9pt; line-height: 1.6;">
-        ${funcionesOp.map(f => `<li>${f}</li>`).join('')}
+        ${funcionesPorProcesoLines.map(f => `<li>${f}</li>`).join('')}
       </ol>
     </div>
 
     <div class="section-box">
-      <div class="section-title">IV. RESPONSABILIDADES OBLIGATORIAS EN SG-SST (DEC. 1072 ART. 2.2.4.6.10)</div>
+      <div class="section-title">IV. PERFIL DEL CARGO Y COMPETENCIAS REQUERIDAS</div>
       <ul style="margin: 0; padding-left: 20px; font-size: 9pt; line-height: 1.6;">
-        ${respSST.map(s => `<li>${s}</li>`).join('')}
+        ${perfilCompetenciasLines.map(p => `<li>${p.replace(/^[•\-\*]\s*/, '')}</li>`).join('')}
       </ul>
     </div>
 
@@ -3278,20 +3588,43 @@ window.guardarEstructuraDocCargo = function(cargoId, docKey) {
   const configCargo = store.getPerfilCargo(cargo.title, empresa.id);
 
   if (docKey === 'manual') {
-    const objVal = document.getElementById(`est-manual-obj-${cargoId}`)?.value.trim() || '';
-    const opLines = (document.getElementById(`est-manual-op-${cargoId}`)?.value || '')
-      .split('\n').map(s => s.trim()).filter(Boolean);
-    const sstLines = (document.getElementById(`est-manual-sst-${cargoId}`)?.value || '')
-      .split('\n').map(s => s.trim()).filter(Boolean);
+    const propositoVal = (
+      document.getElementById(`est-manual-proposito-${cargoId}`) || 
+      document.getElementById(`est-manual-obj-${cargoId}`)
+    )?.value.trim() || '';
 
-    configCargo.perfil = { ...(configCargo.perfil || {}), objetivo: objVal };
+    const smartVal = (
+      document.getElementById(`est-manual-smart-${cargoId}`) || 
+      document.getElementById(`est-manual-sst-${cargoId}`)
+    )?.value.trim() || '';
+
+    const funcionesVal = (
+      document.getElementById(`est-manual-funciones-${cargoId}`) || 
+      document.getElementById(`est-manual-op-${cargoId}`)
+    )?.value.trim() || '';
+
+    const perfilVal = document.getElementById(`est-manual-perfil-${cargoId}`)?.value.trim() || '';
+
+    const smartLines = smartVal.split('\n').map(s => s.trim()).filter(Boolean);
+    const funcionesLines = funcionesVal.split('\n').map(s => s.trim()).filter(Boolean);
+    const perfilLines = perfilVal.split('\n').map(s => s.trim()).filter(Boolean);
+
+    configCargo.perfil = { ...(configCargo.perfil || {}), objetivo: propositoVal };
     configCargo.manualFunciones = {
       ...(configCargo.manualFunciones || {}),
-      funcionesOperativas: opLines,
-      responsabilidadesSST: sstLines
+      propositoGeneral: propositoVal,
+      objetivosSmart: smartVal,
+      objetivosSmartList: smartLines,
+      funcionesPorProceso: funcionesVal,
+      funcionesPorProcesoList: funcionesLines,
+      perfilCompetencias: perfilVal,
+      perfilCompetenciasList: perfilLines,
+      // Retrocompatibilidad
+      funcionesOperativas: funcionesLines,
+      responsabilidadesSST: smartLines
     };
 
-    store.saveJobPosition({ ...cargo, summary_objective: objVal }, empresa.id);
+    store.saveJobPosition({ ...cargo, summary_objective: propositoVal }, empresa.id);
   } else if (docKey === 'perfil') {
     const eduVal = document.getElementById(`est-perfil-edu-${cargoId}`)?.value.trim() || '';
     const expVal = document.getElementById(`est-perfil-exp-${cargoId}`)?.value.trim() || '';
@@ -3403,15 +3736,39 @@ window.eliminarFuenteDocCargo = function(cargoTitle, docKey, fuenteId) {
   renderProcessMap();
 };
 
-window.previsualizarFuenteDocCargo = function(url, titulo, cargoTitle, docKey) {
-  if (!url) return;
+window.previsualizarFuenteDocCargo = function(url, titulo, cargoTitle, docKey, fuenteId) {
+  let targetUrl = (url || '').trim();
+  let targetTitulo = (titulo || '').trim();
+  const empresaActiva = store.getEmpresaActiva();
+
+  if (!targetUrl && cargoTitle && docKey) {
+    const fuentes = store.getFuentesInstrumento(cargoTitle, docKey, empresaActiva?.id);
+    if (fuenteId) {
+      const encontrada = fuentes.find(f => f.id === fuenteId);
+      if (encontrada && encontrada.url) {
+        targetUrl = encontrada.url.trim();
+        targetTitulo = targetTitulo || encontrada.titulo || '';
+      }
+    }
+    if (!targetUrl && fuentes && fuentes.length > 0 && fuentes[0].url) {
+      targetUrl = (fuentes[0].url || '').trim();
+      targetTitulo = targetTitulo || fuentes[0].titulo || '';
+    }
+  }
+
+  if (!targetUrl) {
+    alert("Por favor ingresa primero el enlace o URL del documento de Google.");
+    return;
+  }
+
   const docMeta = CATALOGO_6_DOCS_CARGO.find(d => d.key === docKey) || CATALOGO_6_DOCS_CARGO[0];
-  abrirVisorEnlaceGuia(
-    url,
-    `${docMeta.codigo} (${cargoTitle})`,
-    titulo || `${docMeta.tituloCompleto} - ${cargoTitle}`,
-    docMeta.modoVerificacion
-  );
+  abrirVisorEnlaceGuia({
+    url: targetUrl,
+    numeral: `${docMeta ? docMeta.codigo : 'DOC'} • ${cargoTitle || ''}`,
+    criterio: `${docMeta ? docMeta.tituloCompleto : ''} • Modo: ${docMeta ? docMeta.modoVerificacion : ''}`,
+    titulo: targetTitulo || `${docMeta ? docMeta.tituloCompleto : 'Documento'} - ${cargoTitle || ''}`,
+    empresaNombre: empresaActiva?.razonSocial || ''
+  });
 };
 
 window.subirArchivoFuenteDocCargo = async function(cargoTitle, docKey, fuenteId, fileList) {
@@ -3423,7 +3780,7 @@ window.subirArchivoFuenteDocCargo = async function(cargoTitle, docKey, fuenteId,
   const numeralTag = `cargo_${cargoSlug}_${docKey}`;
 
   try {
-    await evidenceDB.guardarEvidencia(empresa.id, numeralTag, file);
+    await evidenceDB.guardarArchivo(empresa.id, numeralTag, file);
     const fuentes = store.getFuentesInstrumento(cargoTitle, docKey, empresa.id);
     const existente = fuentes.find(f => f.id === fuenteId);
     if (existente && !existente.titulo) {
@@ -3448,7 +3805,7 @@ window.adjuntarArchivoRepositorioCargo = async function(cargoTitle, docKey, file
 
   for (let i = 0; i < fileList.length; i++) {
     try {
-      await evidenceDB.guardarEvidencia(empresa.id, numeralTag, fileList[i]);
+      await evidenceDB.guardarArchivo(empresa.id, numeralTag, fileList[i]);
     } catch (err) {
       alert("Error al adjuntar archivo al repositorio: " + err.message);
     }
@@ -3793,4 +4150,550 @@ window.cargarCargosSugeridosPorSector = function() {
   } else {
     alert(`✅ Se cargaron exitosamente ${agregados} cargos recomendados para el sector de ${empresaActiva.razonSocial}.`);
   }
+};
+
+// =============================================================================
+// GESTIÓN TÉCNICA DE MATRIZ DE EPP Y DOTACIÓN POR CARGO (BLOQUE 2)
+// Normativa: Ley 9/1979, Res. 2400/1979, Dec. 1072/2015, Res. 0312/2019 Estándar 4.2.6
+// =============================================================================
+
+window.sugerirMatrizEppConIA = async function(cargoId, cargoTitle) {
+  try {
+    if (window.mostrarNotificacion) {
+      window.mostrarNotificacion(`Analizando actividades, herramientas y peligros de "${cargoTitle}" con IA...`, "info");
+    }
+
+    const suggestions = await store.suggestEppMatrixWithAI(cargoId, cargoTitle);
+    if (!suggestions || suggestions.length === 0) {
+      alert("No se pudieron obtener sugerencias automáticas. Puedes añadir elementos manualmente desde el catálogo maestro.");
+      return;
+    }
+
+    await store.saveJobPositionEppMatrix(cargoId, suggestions);
+
+    const configCargo = store.getPerfilCargo(cargoTitle) || { id: cargoId, cargo: cargoTitle };
+    configCargo.matrizEpp = {
+      ...(configCargo.matrizEpp || {}),
+      eppRequeridos: suggestions.map(s => s.item_name),
+      normasTecnicas: [...new Set(suggestions.map(s => s.technical_standard).filter(Boolean))].join(', '),
+      frecuenciaReposicion: 'Dotación legal cuatrimestral (30 de Abril, 31 de Agosto y 20 de Diciembre - Art. 230 CST) y reposición inmediata de EPP por deterioro (Ley 9/1979).'
+    };
+    store.guardarPerfilCargo(configCargo);
+
+    if (window.mostrarNotificacion) {
+      window.mostrarNotificacion(`✓ Matriz de EPP y Dotación para "${cargoTitle}" configurada con IA (${suggestions.length} elementos).`, "success");
+    }
+    renderProcessMap();
+  } catch (err) {
+    console.error("Error al sugerir matriz de EPP con IA:", err);
+    alert("Error al sugerir matriz de EPP: " + err.message);
+  }
+};
+
+window.abrirModalAgregarItemCatalogoAMatriz = async function(cargoId, cargoTitle) {
+  let catalog = store.getEppCatalog();
+  if (!catalog || catalog.length === 0) {
+    catalog = await store.fetchEppCatalog();
+  }
+
+  const modalId = 'modal-agregar-item-matriz-epp';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+
+  modalEl.innerHTML = `
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden my-auto">
+      <div class="bg-gradient-to-r from-amber-600 to-indigo-700 p-4 text-white flex items-center justify-between">
+        <div>
+          <span class="text-[9px] font-black uppercase tracking-wider bg-black/20 px-2 py-0.5 rounded block mb-0.5">Matriz Técnica de EPP</span>
+          <h3 class="font-black text-sm">Agregar Elemento a la Matriz de: ${escapeHtmlCargo(cargoTitle)}</h3>
+        </div>
+        <button onclick="document.getElementById('${modalId}').remove()" class="text-white text-lg font-bold p-1 cursor-pointer">✕</button>
+      </div>
+
+      <div class="p-5 space-y-4 text-xs">
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block font-bold text-slate-800">Seleccionar Elemento del Catálogo Maestro:</label>
+            <button 
+              type="button" 
+              onclick="window.abrirModalAdministrarCatalogoEPP('${cargoId}', '${escapeHtmlCargo(cargoTitle)}')" 
+              class="text-indigo-600 hover:text-indigo-800 font-bold underline text-[11px] flex items-center gap-1 cursor-pointer"
+              title="Personalizar, agregar o editar los elementos de este catálogo maestro"
+            >
+              <span>⚙️ Parametrizar Catálogo / + Nuevo</span>
+            </button>
+          </div>
+          <select id="modal-add-epp-select" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium text-slate-900 focus:ring-2 focus:ring-indigo-500">
+            ${catalog.map(c => `
+              <option value="${c.id}" data-name="${escapeHtmlCargo(c.item_name)}" data-standard="${escapeHtmlCargo(c.technical_standard || '')}" data-body="${escapeHtmlCargo(c.body_part_protected || '')}" data-cat="${escapeHtmlCargo(c.category || 'EPP')}" data-size="${c.requires_size ? 'true' : 'false'}">
+                [${c.item_code}] ${c.item_name} (${c.category === 'EPP' ? 'EPP' : 'Dotación'}) - ${c.technical_standard}
+              </option>
+            `).join('')}
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">Cantidad por Entrega:</label>
+            <input type="number" id="modal-add-epp-qty" min="1" max="100" value="1" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">Frecuencia de Reposición:</label>
+            <select id="modal-add-epp-freq" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium text-slate-900">
+              <option value="Cuatrimestral_CST" selected>Cuatrimestral (Art. 230 CST)</option>
+              <option value="Ingreso_Unica_Vez">Ingreso / Única Vez</option>
+              <option value="Mensual">Mensual</option>
+              <option value="Trimestral">Trimestral</option>
+              <option value="Semestral">Semestral</option>
+              <option value="Anual">Anual</option>
+              <option value="Segun_Deterioro">Según Desgaste / Deterioro</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-800 mb-1">Peligro Asociado que Mitiga (GTC 45):</label>
+          <input type="text" id="modal-add-epp-hazard" value="Riesgo mecánico y proyección de fragmentos" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium text-slate-900">
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" id="modal-add-epp-mandatory" checked class="w-4 h-4 text-indigo-600 rounded">
+          <label for="modal-add-epp-mandatory" class="font-bold text-slate-800">Uso estricto y obligatorio en la jornada laboral</label>
+        </div>
+      </div>
+
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+        <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl font-bold cursor-pointer">
+          Cancelar
+        </button>
+        <button type="button" id="btn-modal-confirm-add-epp" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black shadow-md cursor-pointer">
+          ✓ Agregar a la Matriz
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modalEl);
+
+  document.getElementById('btn-modal-confirm-add-epp')?.addEventListener('click', async () => {
+    const sel = document.getElementById('modal-add-epp-select');
+    if (!sel || !sel.value) return;
+
+    const opt = sel.options[sel.selectedIndex];
+    const catItemId = sel.value;
+    const catItem = catalog.find(c => c.id === catItemId) || {};
+
+    const currentMatrix = store.getJobPositionEppMatrix(cargoId);
+    // Verificar si ya existe en la matriz
+    if (currentMatrix.some(m => (m.catalog_item_id || m.id) === catItemId)) {
+      alert("Este elemento ya está registrado en la matriz de este cargo.");
+      return;
+    }
+
+    const newItem = {
+      catalog_item_id: catItemId,
+      item_name: opt.getAttribute('data-name') || catItem.item_name || 'EPP',
+      item_code: catItem.item_code || 'EPP-00',
+      category: opt.getAttribute('data-cat') || catItem.category || 'EPP',
+      body_part_protected: opt.getAttribute('data-body') || catItem.body_part_protected || 'Cuerpo',
+      technical_standard: opt.getAttribute('data-standard') || catItem.technical_standard || 'N/A',
+      default_quantity: parseInt(document.getElementById('modal-add-epp-qty')?.value || 1, 10),
+      delivery_frequency: document.getElementById('modal-add-epp-freq')?.value || 'Cuatrimestral_CST',
+      associated_hazard: document.getElementById('modal-add-epp-hazard')?.value || 'Riesgo operativo',
+      is_mandatory: document.getElementById('modal-add-epp-mandatory')?.checked !== false,
+      useful_life_days: catItem.useful_life_days || 120,
+      requires_size: opt.getAttribute('data-size') === 'true' || catItem.requires_size === true
+    };
+
+    const updatedMatrix = [...currentMatrix, newItem];
+    await store.saveJobPositionEppMatrix(cargoId, updatedMatrix);
+
+    const configCargo = store.getPerfilCargo(cargoTitle) || { id: cargoId, cargo: cargoTitle };
+    configCargo.matrizEpp = {
+      ...(configCargo.matrizEpp || {}),
+      eppRequeridos: updatedMatrix.map(it => it.item_name),
+      normasTecnicas: [...new Set(updatedMatrix.map(it => it.technical_standard).filter(Boolean))].join(', ')
+    };
+    store.guardarPerfilCargo(configCargo);
+
+    modalEl.remove();
+    if (window.mostrarNotificacion) {
+      window.mostrarNotificacion("✓ Elemento agregado a la matriz del cargo.", "success");
+    }
+    renderProcessMap();
+  });
+};
+
+window.eliminarItemMatrizEpp = async function(cargoId, catalogItemId) {
+  if (!confirm("¿Deseas retirar este elemento de la matriz de EPP de este cargo?")) return;
+  const currentMatrix = store.getJobPositionEppMatrix(cargoId);
+  const updated = currentMatrix.filter(m => (m.catalog_item_id || m.id) !== catalogItemId && m.id !== catalogItemId);
+  await store.saveJobPositionEppMatrix(cargoId, updated);
+
+  const cargo = store.getJobPositions ? (store.getJobPositions().find(c => c.id === cargoId)) : null;
+  const cargoTitle = cargo ? cargo.title : null;
+  if (cargoTitle) {
+    const configCargo = store.getPerfilCargo(cargoTitle) || { id: cargoId, cargo: cargoTitle };
+    configCargo.matrizEpp = {
+      ...(configCargo.matrizEpp || {}),
+      eppRequeridos: updated.map(it => it.item_name)
+    };
+    store.guardarPerfilCargo(configCargo);
+  }
+
+  if (window.mostrarNotificacion) {
+    window.mostrarNotificacion("Ítem retirado de la matriz de EPP del cargo.", "info");
+  }
+  renderProcessMap();
+};
+
+// =============================================================================
+// MODAL DE PARAMETRIZACIÓN DEL CATÁLOGO MAESTRO DE EPP Y DOTACIÓN
+// =============================================================================
+window.abrirModalAdministrarCatalogoEPP = async function(returnCargoId = null, returnCargoTitle = null) {
+  const empresaActiva = store.getEmpresaActiva() || {
+    id: 'emp-1790438946268',
+    razonSocial: 'LADRILLOS OCHOA LTDA',
+    nit: '830124631'
+  };
+
+  let catalog = store.getEppCatalog(empresaActiva.id);
+  if (!catalog || catalog.length === 0) {
+    catalog = await store.fetchEppCatalog(empresaActiva.id);
+  }
+
+  const modalId = 'modal-administrar-catalogo-epp';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  let itemEditandoId = null;
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+
+  function renderContenido() {
+    catalog = store.getEppCatalog(empresaActiva.id);
+
+    return `
+      <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-4xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
+        <!-- ENCABEZADO -->
+        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-4 sm:p-5 text-white flex items-center justify-between flex-shrink-0">
+          <div>
+            <div class="flex items-center gap-2 mb-1 flex-wrap">
+              <span class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                Catálogo Maestro de Ítems
+              </span>
+              <span class="px-2 py-0.5 rounded text-[9.5px] font-bold bg-white/10 text-slate-200">
+                ${empresaActiva.razonSocial}
+              </span>
+              <span class="text-[10px] text-indigo-300">
+                Art. 230 CST • Res. 0312 Estándar 4.2.6
+              </span>
+            </div>
+            <h3 class="font-black text-base sm:text-lg flex items-center gap-2">
+              <span>⚙️ Parametrización del Catálogo Maestro de EPP y Dotación</span>
+            </h3>
+            <p class="text-xs text-slate-300 mt-0.5">
+              Administra el inventario de elementos certificados y dotación legal que alimentan las matrices por cargo de la empresa.
+            </p>
+          </div>
+          <button id="btn-cerrar-modal-cat-epp" class="text-white text-xl font-bold p-1 cursor-pointer hover:opacity-80">✕</button>
+        </div>
+
+        <!-- CUERPO CON SCROLL -->
+        <div class="p-5 sm:p-6 overflow-y-auto flex-1 space-y-6 text-xs text-slate-800">
+          
+          <!-- SECCIÓN 1: FORMULARIO AGREGAR / EDITAR ÍTEM -->
+          <div class="bg-indigo-50/50 p-4 sm:p-5 rounded-2xl border border-indigo-100 space-y-3.5">
+            <div class="flex items-center justify-between">
+              <h4 id="cat-form-title" class="font-black text-indigo-950 text-xs sm:text-sm uppercase tracking-wide flex items-center gap-1.5">
+                <span>➕</span>
+                <span>Agregar Nuevo Elemento al Catálogo Maestro</span>
+              </h4>
+              <button type="button" id="btn-cancel-edit-cat" class="text-xs text-rose-600 font-bold hover:underline hidden cursor-pointer">
+                Cancelar Edición
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-bold text-slate-800 mb-1">Código del Ítem:</label>
+                <input type="text" id="cat-in-code" placeholder="Ej. EPP-CAS-02 o DOT-BOT-01" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-mono font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block font-bold text-slate-800 mb-1">Nombre Completo del Elemento: *</label>
+                <input type="text" id="cat-in-name" placeholder="Ej. Botas de Caucho Caña Alta Dieléctricas con Puntera" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-bold text-slate-800 mb-1">Categoría del Elemento: *</label>
+                <select id="cat-in-category" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-medium text-slate-900 focus:ring-2 focus:ring-indigo-500">
+                  <option value="EPP">🛡️ EPP (Elemento de Protección Personal)</option>
+                  <option value="DOTACION_LEGAL">👔 Dotación Legal (Vestuario y Calzado)</option>
+                  <option value="ROPA_TRABAJO_ESPECIAL">🧥 Ropa de Trabajo Especial / Térmica</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-800 mb-1">Parte del Cuerpo Protegida: *</label>
+                <select id="cat-in-body" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-medium text-slate-900 focus:ring-2 focus:ring-indigo-500">
+                  <option value="Cabeza">Cabeza</option>
+                  <option value="Ojos_Rostro">Ojos / Rostro</option>
+                  <option value="Auditiva">Auditiva</option>
+                  <option value="Respiratoria">Respiratoria</option>
+                  <option value="Manos_Brazos">Manos / Brazos</option>
+                  <option value="Pies_Piernas">Pies / Piernas</option>
+                  <option value="Tronco_Cuerpo">Tronco / Cuerpo</option>
+                  <option value="Alturas_Anticaidas">Alturas / Anticaídas</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-800 mb-1">Norma Técnica que Cumple: *</label>
+                <input type="text" id="cat-in-standard" placeholder="Ej. ANSI Z89.1 / NTC 1523 / ASTM F2413" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-mono text-slate-900 focus:ring-2 focus:ring-indigo-500">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+              <div>
+                <label class="block font-bold text-slate-800 mb-1">Frecuencia / Vida Útil Estimada (Días):</label>
+                <input type="number" id="cat-in-days" min="1" max="1000" value="120" placeholder="120" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500">
+                <span class="text-[9.5px] text-slate-500 block mt-0.5">Ej: 120 días (cuatrimestral), 180 (semestral), 365 (anual).</span>
+              </div>
+
+              <div class="sm:col-span-2 flex items-center justify-between pt-2">
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" id="cat-in-requires-size" checked class="w-4 h-4 text-indigo-600 rounded">
+                  <label for="cat-in-requires-size" class="font-bold text-slate-800 cursor-pointer">
+                    Requiere Talla en la Entrega (Ej. S, M, L, 38, 40, 42)
+                  </label>
+                </div>
+
+                <button type="button" id="btn-save-cat-item" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black shadow-md transition cursor-pointer flex items-center gap-1.5 active:scale-95">
+                  <span>✓ Guardar en Catálogo</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 2: LISTADO COMPLETO DEL CATÁLOGO MAESTRO -->
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="font-black text-slate-900 text-xs sm:text-sm uppercase tracking-wide flex items-center gap-1.5">
+                  <span>📋</span>
+                  <span>Elementos Registrados en el Catálogo Maestro (${catalog.length})</span>
+                </h4>
+                <span class="text-[10px] text-slate-500">Estos elementos están disponibles para asignarse a cualquier cargo y generar actas de entrega.</span>
+              </div>
+            </div>
+
+            <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-2xs">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-100/90 text-slate-700 font-bold border-b border-slate-200 uppercase text-[9.5px] tracking-wider">
+                    <tr>
+                      <th class="py-2.5 px-3">Código &amp; Nombre</th>
+                      <th class="py-2.5 px-3">Categoría</th>
+                      <th class="py-2.5 px-3">Zona Protegida</th>
+                      <th class="py-2.5 px-3">Norma Técnica</th>
+                      <th class="py-2.5 px-3 text-center">Vida Útil</th>
+                      <th class="py-2.5 px-3 text-center">Talla</th>
+                      <th class="py-2.5 px-3 text-right">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100">
+                    ${catalog.map(c => `
+                      <tr class="hover:bg-slate-50 transition group">
+                        <td class="py-2.5 px-3">
+                          <div class="font-bold text-slate-900">${escapeHtmlCargo(c.item_name)}</div>
+                          <span class="text-[10px] font-mono text-slate-500">${escapeHtmlCargo(c.item_code)}</span>
+                        </td>
+                        <td class="py-2.5 px-3 whitespace-nowrap">
+                          <span class="px-2 py-0.5 rounded text-[9.5px] font-bold ${
+                            c.category === 'EPP' ? 'bg-blue-50 text-blue-800 border border-blue-200' :
+                            c.category === 'DOTACION_LEGAL' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+                            'bg-purple-50 text-purple-800 border border-purple-200'
+                          }">
+                            ${c.category === 'EPP' ? '🛡️ EPP' : c.category === 'DOTACION_LEGAL' ? '👔 Dotación Legal' : '🧥 Ropa Trabajo'}
+                          </span>
+                        </td>
+                        <td class="py-2.5 px-3 text-slate-700 text-[11px]">
+                          ${escapeHtmlCargo(c.body_part_protected || 'Cuerpo')}
+                        </td>
+                        <td class="py-2.5 px-3">
+                          <span class="font-mono text-[10px] text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                            ${escapeHtmlCargo(c.technical_standard || 'NTC')}
+                          </span>
+                        </td>
+                        <td class="py-2.5 px-3 text-center font-bold text-slate-800">
+                          ${c.useful_life_days || 180} d
+                        </td>
+                        <td class="py-2.5 px-3 text-center">
+                          <span class="px-1.5 py-0.5 rounded text-[9px] font-bold ${c.requires_size ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-slate-100 text-slate-500'}">
+                            ${c.requires_size ? 'Aplica' : 'Única'}
+                          </span>
+                        </td>
+                        <td class="py-2.5 px-3 text-right whitespace-nowrap">
+                          <div class="flex items-center justify-end gap-1">
+                            <button 
+                              type="button" 
+                              onclick="window.editarItemCatalogoEPP('${c.id}')"
+                              class="p-1 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition cursor-pointer"
+                              title="Editar este elemento"
+                            >
+                              ✏️
+                            </button>
+                            <button 
+                              type="button" 
+                              onclick="window.eliminarItemCatalogoEPP('${c.id}')"
+                              class="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
+                              title="Eliminar del catálogo maestro"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PIE DE ACCIONES -->
+        <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between flex-shrink-0">
+          <span class="text-[11px] text-slate-500">
+            Aislamiento Multi-Tenant • Decreto 1072 de 2015 y Resolución 0312 de 2019
+          </span>
+          <button type="button" id="btn-cerrar-modal-cat-epp-pie" class="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl font-bold cursor-pointer">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  modalEl.innerHTML = renderContenido();
+  document.body.appendChild(modalEl);
+
+  function bindEvents() {
+    const btnCerrar = document.getElementById('btn-cerrar-modal-cat-epp');
+    const btnCerrarPie = document.getElementById('btn-cerrar-modal-cat-epp-pie');
+
+    const handleClose = () => {
+      modalEl.remove();
+      if (returnCargoId && typeof window.abrirModalAgregarItemCatalogoAMatriz === 'function') {
+        window.abrirModalAgregarItemCatalogoAMatriz(returnCargoId, returnCargoTitle);
+      }
+    };
+
+    btnCerrar?.addEventListener('click', handleClose);
+    btnCerrarPie?.addEventListener('click', handleClose);
+
+    const btnCancelEdit = document.getElementById('btn-cancel-edit-cat');
+    btnCancelEdit?.addEventListener('click', () => {
+      itemEditandoId = null;
+      document.getElementById('cat-form-title').innerHTML = '<span>➕</span><span>Agregar Nuevo Elemento al Catálogo Maestro</span>';
+      document.getElementById('cat-in-code').value = '';
+      document.getElementById('cat-in-name').value = '';
+      document.getElementById('cat-in-standard').value = '';
+      document.getElementById('cat-in-days').value = '120';
+      document.getElementById('cat-in-requires-size').checked = true;
+      btnCancelEdit.classList.add('hidden');
+    });
+
+    const btnSave = document.getElementById('btn-save-cat-item');
+    btnSave?.addEventListener('click', async () => {
+      const code = document.getElementById('cat-in-code')?.value.trim();
+      const name = document.getElementById('cat-in-name')?.value.trim();
+      const cat = document.getElementById('cat-in-category')?.value || 'EPP';
+      const body = document.getElementById('cat-in-body')?.value || 'Cabeza';
+      const standard = document.getElementById('cat-in-standard')?.value.trim() || 'N/A';
+      const days = parseInt(document.getElementById('cat-in-days')?.value || 120, 10);
+      const reqSize = document.getElementById('cat-in-requires-size')?.checked === true;
+
+      if (!name) {
+        alert("El nombre del elemento es obligatorio.");
+        return;
+      }
+
+      btnSave.disabled = true;
+      btnSave.innerText = "Guardando...";
+
+      try {
+        await store.saveEppCatalogItem({
+          id: itemEditandoId || undefined,
+          item_code: code || `EPP-${Math.floor(Math.random() * 900 + 100)}`,
+          item_name: name,
+          category: cat,
+          body_part_protected: body,
+          technical_standard: standard,
+          useful_life_days: days,
+          requires_size: reqSize
+        }, empresaActiva.id);
+
+        itemEditandoId = null;
+        modalEl.innerHTML = renderContenido();
+        bindEvents();
+
+        if (window.mostrarNotificacion) {
+          window.mostrarNotificacion("✓ Elemento guardado exitosamente en el Catálogo Maestro de EPP.", "success");
+        }
+      } catch (err) {
+        alert("Error al guardar en el catálogo: " + err.message);
+        btnSave.disabled = false;
+        btnSave.innerText = "✓ Guardar en Catálogo";
+      }
+    });
+
+    // Asignar funciones globales para edición y borrado
+    window.editarItemCatalogoEPP = function(itemId) {
+      const it = catalog.find(c => c.id === itemId);
+      if (!it) return;
+      itemEditandoId = it.id;
+
+      document.getElementById('cat-form-title').innerHTML = `<span>✏️</span><span>Editando: ${escapeHtmlCargo(it.item_name)}</span>`;
+      document.getElementById('cat-in-code').value = it.item_code || '';
+      document.getElementById('cat-in-name').value = it.item_name || '';
+      document.getElementById('cat-in-category').value = it.category || 'EPP';
+      document.getElementById('cat-in-body').value = it.body_part_protected || 'Cabeza';
+      document.getElementById('cat-in-standard').value = it.technical_standard || '';
+      document.getElementById('cat-in-days').value = it.useful_life_days || 120;
+      document.getElementById('cat-in-requires-size').checked = it.requires_size !== false;
+      document.getElementById('btn-cancel-edit-cat')?.classList.remove('hidden');
+
+      document.getElementById('cat-in-name')?.focus();
+    };
+
+    window.eliminarItemCatalogoEPP = async function(itemId) {
+      const it = catalog.find(c => c.id === itemId);
+      if (!it) return;
+      if (!confirm(`¿Estás seguro de eliminar "${it.item_name}" del Catálogo Maestro de la empresa?`)) return;
+
+      try {
+        await store.deleteEppCatalogItem(itemId, empresaActiva.id);
+        modalEl.innerHTML = renderContenido();
+        bindEvents();
+
+        if (window.mostrarNotificacion) {
+          window.mostrarNotificacion("✓ Elemento retirado del Catálogo Maestro.", "info");
+        }
+      } catch (err) {
+        alert("Error al eliminar elemento: " + err.message);
+      }
+    };
+  }
+
+  bindEvents();
 };

@@ -156,6 +156,11 @@ class EvidenceDB {
     });
   }
 
+  // Alias para retrocompatibilidad
+  async guardarEvidencia(companyId, numeral, file) {
+    return this.guardarArchivo(companyId, numeral, file);
+  }
+
   coincideEmpresa(regCompanyId, targetCompanyId) {
     if (!targetCompanyId || targetCompanyId === 'todas') return true;
     if (!regCompanyId) return false;

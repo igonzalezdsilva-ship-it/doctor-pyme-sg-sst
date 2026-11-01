@@ -919,6 +919,10 @@ class Store {
           if (!Array.isArray(this.data.job_positions)) this.data.job_positions = [];
           if (!Array.isArray(this.data.process_activity_positions)) this.data.process_activity_positions = [];
           if (!Array.isArray(this.data.job_position_documents)) this.data.job_position_documents = [];
+          if (!Array.isArray(this.data.epp_dotacion_catalog)) this.data.epp_dotacion_catalog = [];
+          if (!Array.isArray(this.data.job_position_epp_matrix)) this.data.job_position_epp_matrix = [];
+          if (!Array.isArray(this.data.epp_dotacion_deliveries)) this.data.epp_dotacion_deliveries = [];
+          if (!Array.isArray(this.data.epp_dotacion_delivery_items)) this.data.epp_dotacion_delivery_items = [];
           if (!Array.isArray(this.data.super_admins)) {
             this.data.super_admins = [
               {
@@ -1241,6 +1245,10 @@ class Store {
           if (!Array.isArray(this.data.job_positions)) this.data.job_positions = [];
           if (!Array.isArray(this.data.process_activity_positions)) this.data.process_activity_positions = [];
           if (!Array.isArray(this.data.job_position_documents)) this.data.job_position_documents = [];
+          if (!Array.isArray(this.data.epp_dotacion_catalog)) this.data.epp_dotacion_catalog = [];
+          if (!Array.isArray(this.data.job_position_epp_matrix)) this.data.job_position_epp_matrix = [];
+          if (!Array.isArray(this.data.epp_dotacion_deliveries)) this.data.epp_dotacion_deliveries = [];
+          if (!Array.isArray(this.data.epp_dotacion_delivery_items)) this.data.epp_dotacion_delivery_items = [];
           if (!Array.isArray(this.data.super_admins)) {
             this.data.super_admins = [
               {
@@ -3576,10 +3584,173 @@ class Store {
   deleteTool(toolId) {
     if (!Array.isArray(this.data.tools_inventory)) return false;
     this.data.tools_inventory = this.data.tools_inventory.filter(t => t.id !== toolId);
+    if (Array.isArray(this.data.tools_sst)) {
+      this.data.tools_sst = this.data.tools_sst.filter(s => s.tool_id !== toolId);
+    }
+    if (Array.isArray(this.data.tools_maintenance_plan)) {
+      this.data.tools_maintenance_plan = this.data.tools_maintenance_plan.filter(p => p.tool_id !== toolId);
+    }
+    if (Array.isArray(this.data.tools_assignments)) {
+      this.data.tools_assignments = this.data.tools_assignments.filter(a => a.tool_id !== toolId);
+    }
+    if (Array.isArray(this.data.tools_interventions_log)) {
+      this.data.tools_interventions_log = this.data.tools_interventions_log.filter(i => i.tool_id !== toolId);
+    }
     this.saveToStorage();
     this.enviarAlServidorFisico(true);
     this.notify();
     return true;
+  }
+
+  vaciarInventarioTenant(companyId = null) {
+    if (!Array.isArray(this.data.tools_inventory)) return 0;
+    const lockedId = this.getSessionTenantLock();
+    const targetTenantId = lockedId || companyId || (this.getEmpresaActivaId() !== 'todas' ? this.getEmpresaActivaId() : this.getEmpresas()[0]?.id);
+    if (!targetTenantId) return 0;
+
+    const idsToDelete = this.data.tools_inventory
+      .filter(t => t.tenant_id === targetTenantId || ((targetTenantId === 'emp-004' || targetTenantId === 'emp-1790438946268') && (t.tenant_id === 'emp-1790438946268' || t.tenant_id === 'emp-004')))
+      .map(t => t.id);
+
+    if (idsToDelete.length === 0) return 0;
+
+    this.data.tools_inventory = this.data.tools_inventory.filter(t => !idsToDelete.includes(t.id));
+    if (Array.isArray(this.data.tools_sst)) {
+      this.data.tools_sst = this.data.tools_sst.filter(s => !idsToDelete.includes(s.tool_id));
+    }
+    if (Array.isArray(this.data.tools_maintenance_plan)) {
+      this.data.tools_maintenance_plan = this.data.tools_maintenance_plan.filter(p => !idsToDelete.includes(p.tool_id));
+    }
+    if (Array.isArray(this.data.tools_assignments)) {
+      this.data.tools_assignments = this.data.tools_assignments.filter(a => !idsToDelete.includes(a.tool_id));
+    }
+    if (Array.isArray(this.data.tools_interventions_log)) {
+      this.data.tools_interventions_log = this.data.tools_interventions_log.filter(i => !idsToDelete.includes(i.tool_id));
+    }
+
+    this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
+    return idsToDelete.length;
+  }
+
+  importarHerramientasMasivas(listaHerramientas, companyId = null) {
+    if (!Array.isArray(listaHerramientas) || listaHerramientas.length === 0) {
+      return { importados: 0, actualizados: 0, total: 0 };
+    }
+    if (!Array.isArray(this.data.tools_inventory)) this.data.tools_inventory = [];
+    if (!Array.isArray(this.data.tools_sst)) this.data.tools_sst = [];
+    if (!Array.isArray(this.data.tools_maintenance_plan)) this.data.tools_maintenance_plan = [];
+
+    const lockedId = this.getSessionTenantLock();
+    const targetTenantId = lockedId || companyId || (this.getEmpresaActivaId() !== 'todas' ? this.getEmpresaActivaId() : (this.getEmpresas()[0]?.id || 'emp-1790438946268'));
+    
+    let importados = 0;
+    let actualizados = 0;
+    const nowIso = new Date().toISOString();
+
+    const fallbackFotos = {
+      'Industrial': 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=600&auto=format&fit=crop&q=80',
+      'Eléctrica': 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600&auto=format&fit=crop&q=80',
+      'Neumática': 'https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=600&auto=format&fit=crop&q=80',
+      'Medición': 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600&auto=format&fit=crop&q=80',
+      'Manual': 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=600&auto=format&fit=crop&q=80'
+    };
+
+    listaHerramientas.forEach((h, index) => {
+      const codeClean = (h.internal_code || '').toString().trim();
+      const nameClean = (h.exact_name || '').toString().trim();
+      if (!codeClean || !nameClean) return;
+
+      const idxExistente = this.data.tools_inventory.findIndex(t =>
+        (t.tenant_id === targetTenantId || ((targetTenantId === 'emp-004' || targetTenantId === 'emp-1790438946268') && (t.tenant_id === 'emp-1790438946268' || t.tenant_id === 'emp-004'))) &&
+        (t.internal_code || '').toString().trim().toLowerCase() === codeClean.toLowerCase()
+      );
+
+      const toolType = ['Industrial', 'Eléctrica', 'Neumática', 'Medición', 'Manual'].includes(h.tool_type) 
+        ? h.tool_type 
+        : 'Industrial';
+
+      const status = ['En Almacenamiento', 'En Funcionamiento', 'En Mantenimiento'].includes(h.current_status)
+        ? h.current_status
+        : 'En Almacenamiento';
+
+      const photo = h.photo_url || fallbackFotos[toolType] || fallbackFotos['Industrial'];
+
+      const toolRecord = {
+        tenant_id: targetTenantId,
+        internal_code: codeClean,
+        exact_name: nameClean,
+        tool_type: toolType,
+        brand: (h.brand || 'Genérica').toString().trim(),
+        model: (h.model || 'Estándar').toString().trim(),
+        serial_number: (h.serial_number || 'S/N-' + codeClean).toString().trim(),
+        commercial_value: Number(h.commercial_value) || 0,
+        acquisition_year: Number(h.acquisition_year) || new Date().getFullYear(),
+        useful_life_years: Number(h.useful_life_years) || 3,
+        current_status: status,
+        location: (h.location || 'Planta Principal').toString().trim(),
+        operative_vars: h.operative_vars || {},
+        photo_url: photo,
+        updatedAt: nowIso
+      };
+
+      let toolId = null;
+
+      if (idxExistente >= 0) {
+        toolId = this.data.tools_inventory[idxExistente].id;
+        this.data.tools_inventory[idxExistente] = {
+          ...this.data.tools_inventory[idxExistente],
+          ...toolRecord
+        };
+        actualizados++;
+      } else {
+        toolId = 'tool-' + Date.now() + '-' + index + '-' + Math.random().toString(36).substr(2, 4);
+        toolRecord.id = toolId;
+        toolRecord.createdAt = nowIso;
+        this.data.tools_inventory.unshift(toolRecord);
+        importados++;
+      }
+
+      // Proveer o actualizar Matriz SST (Estándar 2.4.1 Res. 0312)
+      const existingSstIdx = this.data.tools_sst.findIndex(s => s.tool_id === toolId);
+      const sstData = {
+        tool_id: toolId,
+        tenant_id: targetTenantId,
+        hazards: Array.isArray(h.hazards) && h.hazards.length > 0 
+          ? h.hazards 
+          : ['Atrapamiento o golpe en extremidades', 'Riesgo ergonómico y biomecánico', 'Ruido y vibraciones'],
+        preventive_measures: h.preventive_measures || 'Inspección preoperacional obligatoria y uso riguroso de EPP según labor.',
+        required_epp: Array.isArray(h.required_epp) && h.required_epp.length > 0 
+          ? h.required_epp 
+          : ['Gafas de seguridad', 'Guantes de protección', 'Botas con puntera de acero', 'Protección auditiva']
+      };
+
+      if (existingSstIdx >= 0) {
+        this.data.tools_sst[existingSstIdx] = { ...this.data.tools_sst[existingSstIdx], ...sstData };
+      } else {
+        this.data.tools_sst.push(sstData);
+      }
+
+      // Proveer o actualizar Plan de Mantenimiento Preventivo
+      const existingPlanIdx = this.data.tools_maintenance_plan.findIndex(p => p.tool_id === toolId);
+      if (existingPlanIdx < 0) {
+        const nextDate = new Date();
+        nextDate.setDate(nextDate.getDate() + 90);
+        this.data.tools_maintenance_plan.push({
+          tool_id: toolId,
+          type: 'Preventivo',
+          periodicity_days: 90,
+          last_date: new Date().toISOString().split('T')[0],
+          next_date: nextDate.toISOString().split('T')[0]
+        });
+      }
+    });
+
+    this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
+    return { importados, actualizados, total: importados + actualizados };
   }
 
   // 2. MATRIZ SST DEL ACTIVO (tools_sst)
@@ -4503,6 +4674,457 @@ class Store {
       total: porcentajeTotal,
       empresa: emp
     };
+  }
+
+  // =============================================================================
+  // 8. APP MÓVIL DEL TRABAJADOR: GESTIÓN DE FIRMAS, EPP, PREOPERACIONAL Y PELIGROS
+  // =============================================================================
+  getEmployeeDocumentSignatures(workerId) {
+    const list = Array.isArray(this.data?.employee_document_signatures) ? this.data.employee_document_signatures : [];
+    if (!workerId) return list;
+    return list.filter(s => s && (s.employee_id === workerId || s.trabajadorId === workerId));
+  }
+
+  getEppDeliveries(workerId) {
+    const list = Array.isArray(this.data?.epp_deliveries) ? this.data.epp_deliveries : [];
+    if (!workerId) return list;
+    return list.filter(d => d && (d.employee_id === workerId || d.trabajadorId === workerId));
+  }
+
+  getWorkerSstReports(workerId) {
+    const list = Array.isArray(this.data?.worker_sst_reports) ? this.data.worker_sst_reports : [];
+    if (!workerId) return list;
+    return list.filter(r => r && (r.employee_id === workerId || r.trabajadorId === workerId));
+  }
+
+  async submitWorkerOnboarding(payload) {
+    try {
+      const res = await fetch('/api/worker/sign-onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al firmar consentimiento onboarding');
+      if (data.record) {
+        if (!Array.isArray(this.data.employee_document_signatures)) this.data.employee_document_signatures = [];
+        this.data.employee_document_signatures.unshift(data.record);
+        this.saveToStorage();
+        this.notify();
+      }
+      return data;
+    } catch (err) {
+      console.error('Error submitWorkerOnboarding:', err);
+      throw err;
+    }
+  }
+
+  async submitWorkerDocumentSignature(payload) {
+    try {
+      const res = await fetch('/api/worker/sign-document', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al firmar documento');
+      if (data.signature) {
+        if (!Array.isArray(this.data.employee_document_signatures)) this.data.employee_document_signatures = [];
+        this.data.employee_document_signatures.unshift(data.signature);
+        if (!Array.isArray(this.data.firmas)) this.data.firmas = [];
+        this.data.firmas.unshift({
+          id: data.signature.id,
+          trabajadorId: data.signature.employee_id,
+          documentoId: data.signature.document_id,
+          documentoCodigo: data.signature.document_code,
+          tipoDocumento: data.signature.document_type,
+          titulo: data.signature.document_title,
+          fechaHoraISO: data.signature.signed_at,
+          hashDocumento: data.signature.signature_sha256,
+          firmaDataUrl: data.signature.signature_image_file,
+          companyId: data.signature.tenant_id
+        });
+        this.saveToStorage();
+        this.notify();
+      }
+      return data;
+    } catch (err) {
+      console.error('Error submitWorkerDocumentSignature:', err);
+      throw err;
+    }
+  }
+
+  async submitWorkerToolAssignment(payload) {
+    try {
+      const res = await fetch('/api/worker/sign-tool-assignment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al firmar custodia de herramienta');
+      if (data.assignment) {
+        if (!Array.isArray(this.data.tools_assignments)) this.data.tools_assignments = [];
+        const idx = this.data.tools_assignments.findIndex(a => a.id === data.assignment.id);
+        if (idx >= 0) {
+          this.data.tools_assignments[idx] = data.assignment;
+        } else {
+          this.data.tools_assignments.unshift(data.assignment);
+        }
+        this.saveToStorage();
+        this.notify();
+      }
+      return data;
+    } catch (err) {
+      console.error('Error submitWorkerToolAssignment:', err);
+      throw err;
+    }
+  }
+
+  async submitWorkerPreoperational(payload) {
+    try {
+      const res = await fetch('/api/worker/submit-preoperational', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al registrar preoperacional');
+      if (data.report) {
+        if (!Array.isArray(this.data.reportesPreoperacional)) this.data.reportesPreoperacional = [];
+        this.data.reportesPreoperacional.unshift(data.report);
+        if (!Array.isArray(this.data.tools_interventions_log)) this.data.tools_interventions_log = [];
+        this.data.tools_interventions_log.unshift(data.report);
+        this.saveToStorage();
+        this.notify();
+      }
+      return data;
+    } catch (err) {
+      console.error('Error submitWorkerPreoperational:', err);
+      throw err;
+    }
+  }
+
+  async submitWorkerEppDelivery(payload) {
+    try {
+      const res = await fetch('/api/worker/sign-epp-delivery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al firmar entrega de EPP');
+      if (data.delivery) {
+        if (!Array.isArray(this.data.epp_deliveries)) this.data.epp_deliveries = [];
+        this.data.epp_deliveries.unshift(data.delivery);
+        this.saveToStorage();
+        this.notify();
+      }
+      return data;
+    } catch (err) {
+      console.error('Error submitWorkerEppDelivery:', err);
+      throw err;
+    }
+  }
+
+  async submitWorkerHazardReport(payload) {
+    try {
+      const res = await fetch('/api/worker/report-hazard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al registrar reporte de peligro');
+      if (data.report) {
+        if (!Array.isArray(this.data.worker_sst_reports)) this.data.worker_sst_reports = [];
+        this.data.worker_sst_reports.unshift(data.report);
+        if (!Array.isArray(this.data.reportesPeligro)) this.data.reportesPeligro = [];
+        this.data.reportesPeligro.unshift(data.report);
+        this.saveToStorage();
+        this.notify();
+      }
+      return data;
+    } catch (err) {
+      console.error('Error submitWorkerHazardReport:', err);
+      throw err;
+    }
+  }
+
+  // =============================================================================
+  // MÓDULO MATRIZ Y REGISTRO DE ENTREGA DE EPP Y DOTACIÓN (BLOQUES 1, 2, 3, 4)
+  // Normativa: Ley 9/1979, Res. 2400/1979, Dec. 1072/2015, Res. 0312/2019 Estándar 4.2.6, CST Art. 230
+  // =============================================================================
+
+  getEppCatalog(companyId = null) {
+    const targetCid = companyId || this.getEmpresaActivaId();
+    if (!Array.isArray(this.data.epp_dotacion_catalog)) this.data.epp_dotacion_catalog = [];
+    return this.data.epp_dotacion_catalog.filter(it => this._matchTenant(it.tenant_id, targetCid));
+  }
+
+  async fetchEppCatalog(companyId = null) {
+    const targetCid = companyId || this.getEmpresaActivaId();
+    try {
+      const res = await fetch(`/api/epp/catalog?tenant_id=${encodeURIComponent(targetCid)}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json && Array.isArray(json.catalog)) {
+          this.data.epp_dotacion_catalog = (this.data.epp_dotacion_catalog || []).filter(c => !this._matchTenant(c.tenant_id, targetCid)).concat(json.catalog);
+          this.saveToStorage();
+          return json.catalog;
+        }
+      }
+    } catch (e) {
+      console.warn("Fetch EPP catalog falló, usando local:", e);
+    }
+    return this.getEppCatalog(targetCid);
+  }
+
+  async saveEppCatalogItem(itemData, companyId = null) {
+    const targetCid = companyId || this.getEmpresaActivaId();
+    try {
+      const res = await fetch('/api/epp/catalog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...itemData, tenant_id: targetCid })
+      });
+      const data = await res.json();
+      if (res.ok && data.item) {
+        if (!Array.isArray(this.data.epp_dotacion_catalog)) this.data.epp_dotacion_catalog = [];
+        const idx = this.data.epp_dotacion_catalog.findIndex(i => i.id === data.item.id);
+        if (idx >= 0) {
+          this.data.epp_dotacion_catalog[idx] = data.item;
+        } else {
+          this.data.epp_dotacion_catalog.push(data.item);
+        }
+        this.saveToStorage();
+        this.notify();
+        return data.item;
+      }
+    } catch (e) {
+      console.warn("saveEppCatalogItem server failed, saving local:", e);
+    }
+    // Local fallback
+    if (!Array.isArray(this.data.epp_dotacion_catalog)) this.data.epp_dotacion_catalog = [];
+    const item = {
+      id: itemData.id || `epp-cat-${Date.now()}`,
+      tenant_id: targetCid,
+      item_code: itemData.item_code || `EPP-${Date.now().toString().slice(-4)}`,
+      item_name: itemData.item_name || 'Nuevo Elemento',
+      category: itemData.category || 'EPP',
+      body_part_protected: itemData.body_part_protected || 'Cabeza',
+      technical_standard: itemData.technical_standard || 'N/A',
+      useful_life_days: parseInt(itemData.useful_life_days || 180, 10),
+      requires_size: itemData.requires_size === true,
+      is_active: itemData.is_active !== false,
+      updated_at: new Date().toISOString()
+    };
+    const idx = this.data.epp_dotacion_catalog.findIndex(i => i.id === item.id);
+    if (idx >= 0) {
+      this.data.epp_dotacion_catalog[idx] = item;
+    } else {
+      this.data.epp_dotacion_catalog.push(item);
+    }
+    this.saveToStorage();
+    this.notify();
+    return item;
+  }
+
+  async deleteEppCatalogItem(itemId, companyId = null) {
+    const targetCid = companyId || this.getEmpresaActivaId();
+    try {
+      await fetch('/api/epp/catalog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: itemId, tenant_id: targetCid, action: 'delete' })
+      });
+    } catch (e) {
+      console.warn("deleteEppCatalogItem server failed, using local:", e);
+    }
+    if (!Array.isArray(this.data.epp_dotacion_catalog)) this.data.epp_dotacion_catalog = [];
+    this.data.epp_dotacion_catalog = this.data.epp_dotacion_catalog.filter(i => i.id !== itemId);
+    this.saveToStorage();
+    this.notify();
+    return true;
+  }
+
+  getJobPositionEppMatrix(jobPositionId, companyId = null) {
+    const targetCid = companyId || this.getEmpresaActivaId();
+    if (!Array.isArray(this.data.job_position_epp_matrix)) this.data.job_position_epp_matrix = [];
+    const matrix = this.data.job_position_epp_matrix.filter(m => m.job_position_id === jobPositionId && this._matchTenant(m.tenant_id, targetCid));
+    const catalog = this.getEppCatalog(targetCid);
+    return matrix.map(m => {
+      const cat = catalog.find(c => c.id === m.catalog_item_id) || {};
+      return {
+        ...cat,
+        ...m,
+        item_name: m.item_name || cat.item_name || 'EPP',
+        item_code: m.item_code || cat.item_code || 'EPP-00',
+        category: m.category || cat.category || 'EPP',
+        body_part_protected: m.body_part_protected || cat.body_part_protected || 'Cabeza',
+        technical_standard: m.technical_standard || cat.technical_standard || 'N/A',
+        useful_life_days: m.useful_life_days || cat.useful_life_days || 180,
+        requires_size: m.requires_size !== undefined ? m.requires_size : (cat.requires_size || false)
+      };
+    });
+  }
+
+  async saveJobPositionEppMatrix(jobPositionId, items, companyId = null) {
+    const targetCid = companyId || this.getEmpresaActivaId();
+    try {
+      const res = await fetch('/api/epp/matrix', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          job_position_id: jobPositionId,
+          tenant_id: targetCid,
+          items: items
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.matrix) {
+        if (!Array.isArray(this.data.job_position_epp_matrix)) this.data.job_position_epp_matrix = [];
+        this.data.job_position_epp_matrix = this.data.job_position_epp_matrix.filter(m => m.job_position_id !== jobPositionId).concat(data.matrix);
+        this.saveToStorage();
+        this.notify();
+        return data.matrix;
+      }
+    } catch (e) {
+      console.warn("Save EPP matrix server failed, using local:", e);
+    }
+    // Fallback local
+    if (!Array.isArray(this.data.job_position_epp_matrix)) this.data.job_position_epp_matrix = [];
+    this.data.job_position_epp_matrix = this.data.job_position_epp_matrix.filter(m => m.job_position_id !== jobPositionId);
+    const timestamp = new Date().toISOString();
+    const newItems = items.map((it, idx) => ({
+      id: it.id || `mat-epp-${Date.now()}-${idx}`,
+      tenant_id: targetCid,
+      job_position_id: jobPositionId,
+      catalog_item_id: it.catalog_item_id || it.id,
+      default_quantity: parseInt(it.default_quantity || 1, 10),
+      delivery_frequency: it.delivery_frequency || 'Cuatrimestral_CST',
+      associated_hazard: it.associated_hazard || 'Riesgo operativo y ergonómico',
+      is_mandatory: it.is_mandatory !== false,
+      created_at: timestamp,
+      updated_at: timestamp
+    }));
+    this.data.job_position_epp_matrix.push(...newItems);
+    this.saveToStorage();
+    this.notify();
+    return newItems;
+  }
+
+  async suggestEppMatrixWithAI(jobPositionId, cargoTitle, companyId = null) {
+    const targetCid = companyId || this.getEmpresaActivaId();
+    try {
+      const res = await fetch('/api/epp/ai-suggest-matrix', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          job_position_id: jobPositionId,
+          cargo_title: cargoTitle,
+          tenant_id: targetCid
+        })
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json && Array.isArray(json.suggestions)) {
+          return json.suggestions;
+        }
+      }
+    } catch (e) {
+      console.warn("AI suggest EPP failed:", e);
+    }
+    return [];
+  }
+
+  getEppDeliveries(employeeId = null, companyId = null) {
+    const targetCid = companyId || this.getEmpresaActivaId();
+    if (!Array.isArray(this.data.epp_dotacion_deliveries)) this.data.epp_dotacion_deliveries = [];
+    return this.data.epp_dotacion_deliveries.filter(d => {
+      const matchEmp = !employeeId || d.employee_id === employeeId || d.trabajadorId === employeeId;
+      const matchTen = this._matchTenant(d.tenant_id, targetCid) || this._matchTenant(d.companyId, targetCid);
+      return matchEmp && matchTen;
+    }).sort((a, b) => new Date(b.assigned_at || b.createdAt || 0) - new Date(a.assigned_at || a.createdAt || 0));
+  }
+
+  getEppDeliveryById(deliveryId) {
+    if (!Array.isArray(this.data.epp_dotacion_deliveries)) this.data.epp_dotacion_deliveries = [];
+    const deliv = this.data.epp_dotacion_deliveries.find(d => d.id === deliveryId || d.delivery_consecutive === deliveryId);
+    if (!deliv) return null;
+    if (!Array.isArray(deliv.items) || deliv.items.length === 0) {
+      const allItems = this.data.epp_dotacion_delivery_items || [];
+      deliv.items = allItems.filter(it => it.delivery_id === deliv.id);
+    }
+    return deliv;
+  }
+
+  async assignEppDelivery(deliveryData) {
+    const targetCid = deliveryData.tenant_id || deliveryData.companyId || this.getEmpresaActivaId();
+    try {
+      const res = await fetch('/api/epp/assign-delivery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...deliveryData, tenant_id: targetCid })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al asignar entrega de EPP');
+      if (data.delivery) {
+        if (!Array.isArray(this.data.epp_dotacion_deliveries)) this.data.epp_dotacion_deliveries = [];
+        this.data.epp_dotacion_deliveries.unshift(data.delivery);
+        if (!Array.isArray(this.data.epp_dotacion_delivery_items)) this.data.epp_dotacion_delivery_items = [];
+        if (Array.isArray(data.delivery.items)) {
+          this.data.epp_dotacion_delivery_items.push(...data.delivery.items);
+        }
+        this.saveToStorage();
+        this.notify();
+        return data.delivery;
+      }
+    } catch (e) {
+      console.error("assignEppDelivery server call failed:", e);
+      throw e;
+    }
+  }
+
+  async signEppDelivery(deliveryId, workerId, signatureBase64) {
+    try {
+      const res = await fetch('/api/worker/sign-epp-delivery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          delivery_id: deliveryId,
+          worker_id: workerId,
+          signature_base64: signatureBase64
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al firmar entrega de EPP');
+      if (data.delivery) {
+        const idx = (this.data.epp_dotacion_deliveries || []).findIndex(d => d.id === deliveryId);
+        if (idx >= 0) {
+          this.data.epp_dotacion_deliveries[idx] = { ...this.data.epp_dotacion_deliveries[idx], ...data.delivery };
+        }
+        // Marcar estándar 4.2.6 en evaluación activa
+        const tenantId = data.delivery.tenant_id || data.delivery.companyId;
+        if (this.data.evaluaciones && this.data.evaluaciones[tenantId]) {
+          const evalList = Array.isArray(this.data.evaluaciones[tenantId]) ? this.data.evaluaciones[tenantId] : (this.data.evaluaciones[tenantId]["2026"] || []);
+          if (Array.isArray(evalList)) {
+            const item426 = evalList.find(it => it.numeral === '4.2.6');
+            if (item426) {
+              item426.cumple = true;
+              item426.no_aplica = false;
+              item426.justificacion = `Soportado con Acta Digital Firmada bajo Ley 527/1999 (${data.delivery.delivery_consecutive}).`;
+            }
+          }
+        }
+        this.saveToStorage();
+        this.notify();
+        return data;
+      }
+    } catch (e) {
+      console.error("signEppDelivery error:", e);
+      throw e;
+    }
   }
 
   resetearDatosDemo() {

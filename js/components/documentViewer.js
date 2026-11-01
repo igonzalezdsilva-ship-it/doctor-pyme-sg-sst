@@ -542,14 +542,26 @@ export function formatearUrlGooglePreview(url) {
   let cleanUrl = url.trim();
   if (cleanUrl.includes('docs.google.com/document/d/')) {
     if (cleanUrl.includes('/preview')) return cleanUrl;
+    const match = cleanUrl.match(/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      return `https://docs.google.com/document/d/${match[1]}/preview`;
+    }
     cleanUrl = cleanUrl.replace(/\/(edit|view)([\?#].*)?$/, '/preview');
     if (!cleanUrl.endsWith('/preview')) cleanUrl = cleanUrl.replace(/\/+$/, '') + '/preview';
   } else if (cleanUrl.includes('docs.google.com/spreadsheets/d/')) {
     if (cleanUrl.includes('/preview')) return cleanUrl;
+    const match = cleanUrl.match(/docs\.google\.com\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      return `https://docs.google.com/spreadsheets/d/${match[1]}/preview`;
+    }
     cleanUrl = cleanUrl.replace(/\/(edit|view)([\?#].*)?$/, '/preview');
     if (!cleanUrl.endsWith('/preview')) cleanUrl = cleanUrl.replace(/\/+$/, '') + '/preview';
   } else if (cleanUrl.includes('drive.google.com/file/d/')) {
     if (cleanUrl.includes('/preview')) return cleanUrl;
+    const match = cleanUrl.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      return `https://drive.google.com/file/d/${match[1]}/preview`;
+    }
     cleanUrl = cleanUrl.replace(/\/(edit|view)([\?#].*)?$/, '/preview');
     if (!cleanUrl.endsWith('/preview')) cleanUrl = cleanUrl.replace(/\/+$/, '') + '/preview';
   }
@@ -558,10 +570,25 @@ export function formatearUrlGooglePreview(url) {
 
 /**
  * Abre el visor de documentos para previsualizar una guía o documento base en la nube (Google Docs, Sheets, etc.)
- * @param {Object} guia - { url, numeral, criterio, empresaNombre }
+ * @param {Object|string} guia - { url, numeral, criterio, empresaNombre, titulo } o string URL
  */
-export function abrirVisorEnlaceGuia(guia) {
-  if (!guia || !guia.url) return;
+export function abrirVisorEnlaceGuia(guia, numeralArg, tituloArg, modoArg) {
+  // Soporte tanto para invocación con objeto { url, ... } como con argumentos posicionales (url, numeral, titulo, modo)
+  if (typeof guia === 'string') {
+    guia = {
+      url: guia,
+      numeral: numeralArg || '',
+      titulo: tituloArg || '',
+      criterio: modoArg || ''
+    };
+  }
+
+  if (!guia || !guia.url || !guia.url.trim()) {
+    if (typeof alert === 'function') {
+      alert("Por favor ingresa primero el enlace o URL del documento de Google.");
+    }
+    return;
+  }
 
   ensureModalExists();
 
@@ -609,22 +636,23 @@ export function abrirVisorEnlaceGuia(guia) {
     badgeTipoEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30';
   }
 
+  const tagNumeral = guia.numeral ? ` - ${guia.numeral.replace(/^Numeral\s+/i, '')}` : '';
   if (guia.titulo && guia.titulo.trim().length > 0) {
-    nombreEl.textContent = `${guia.titulo.trim()} - Numeral ${guia.numeral || ''}`;
+    nombreEl.textContent = `${guia.titulo.trim()}${tagNumeral}`;
   } else {
-    nombreEl.textContent = `Documento Guía / Plantilla Base - Numeral ${guia.numeral || ''}`;
+    nombreEl.textContent = `Documento Guía / Plantilla Base${tagNumeral}`;
   }
   nombreEl.title = urlOriginal;
 
   if (guia.numeral) {
-    badgeNumeralEl.textContent = `Numeral ${guia.numeral}`;
+    badgeNumeralEl.textContent = guia.numeral.startsWith('Numeral') ? guia.numeral : `Numeral ${guia.numeral}`;
     badgeNumeralEl.classList.remove('hidden');
   } else {
     badgeNumeralEl.classList.add('hidden');
   }
 
-  subtituloEl.textContent = `Plantilla Oficial SG-SST en Google Cloud`;
-  contextoEl.textContent = guia.criterio ? `Numeral ${guia.numeral}: ${guia.criterio}` : 'Documento base e instructivo SG-SST';
+  subtituloEl.textContent = guia.empresaNombre ? `${guia.empresaNombre} • Plantilla Oficial en la Nube` : `Plantilla Oficial SG-SST en Google Cloud`;
+  contextoEl.textContent = guia.criterio ? `${guia.numeral ? guia.numeral + ': ' : ''}${guia.criterio}` : 'Documento base e instructivo SG-SST';
   pesoEl.textContent = 'Nube / Cloud';
   fechaEl.textContent = 'Enlace Activo';
 

@@ -284,10 +284,22 @@ function renderConsolaGestionTrabajadores(container) {
               <span>+ Nuevo Trabajador</span>
             </button>
 
+            <!-- BOTÓN ASIGNAR ENTREGA DE EPP / DOTACIÓN (BLOQUE 2) -->
+            <button onclick="window.abrirModalAsignarEntregaEPP()" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-black transition flex items-center gap-2 cursor-pointer shadow-lg shadow-amber-900/30 active:scale-95" title="Asignar entrega formal de EPP y Dotación según Matriz del Cargo (Res. 0312 Estándar 4.2.6)">
+              <span>📦</span>
+              <span>Asignar Entrega de EPP / Dotación</span>
+            </button>
+
             <!-- BOTÓN CARGA MASIVA DE TRABAJADORES (BASE DE DATOS) -->
             <button onclick="window.abrirModalCargaMasivaTrabajadores()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black transition flex items-center gap-2 cursor-pointer shadow-lg shadow-blue-900/30 active:scale-95" title="Importar base de datos masiva de trabajadores en Excel / CSV">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
               <span>📥 Carga Masiva (Base de Datos)</span>
+            </button>
+
+            <!-- BOTÓN PARAMETRIZACIÓN DEL CATÁLOGO MAESTRO DE EPP -->
+            <button onclick="window.abrirModalAdministrarCatalogoEPP()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-black transition flex items-center gap-2 cursor-pointer shadow-lg shadow-indigo-900/30 active:scale-95" title="Parametrizar el Catálogo Maestro de EPP y Dotación de la empresa">
+              <span>⚙️</span>
+              <span>Catálogo Maestro EPP</span>
             </button>
 
             <button onclick="window.abrirModalInstrumentoCargo('contrato')" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-sm">
@@ -658,6 +670,11 @@ function renderConsolaGestionTrabajadores(container) {
                     <!-- Acciones -->
                     <td class="py-3 px-4 text-right whitespace-nowrap">
                       <div class="flex items-center justify-end gap-1.5">
+                        <button onclick="window.abrirModalAsignarEntregaEPP('${t.id}')" class="px-2 py-1 bg-amber-500/10 hover:bg-amber-500 hover:text-white text-amber-800 border border-amber-300 rounded-lg text-[10px] font-black transition cursor-pointer flex items-center gap-1 shadow-2xs" title="Asignar Dotación o EPP a ${escapeHtml(t.nombre)}">
+                          <span>📦</span>
+                          <span>Entregar EPP</span>
+                        </button>
+
                         <button onclick="window.verPortalComoTrabajador('${t.id}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] font-black transition cursor-pointer flex items-center gap-1 shadow-2xs" title="Abrir Interfaz Funcional de este Trabajador (Modo Pruebas)">
                           <span>👷</span>
                           <span>Interfaz</span>
@@ -806,7 +823,7 @@ window.abrirModalCrearTrabajador = function(trabajadorId = null) {
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label class="block text-[11px] font-bold text-slate-700 mb-1">Salario Mensual (COP) *</label>
-              <input type="number" id="modal-trab-salario" required min="0" step="10000" value="${trabExistente?.salario || 1600000}" placeholder="Ej. 1850000" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 font-mono">
+              <input type="number" id="modal-trab-salario" required min="0" step="any" value="${trabExistente?.salario || 1600000}" placeholder="Ej. 1850000" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 font-mono">
               <span class="text-[9px] text-slate-400 mt-0.5 block">Sin puntos ni comas</span>
             </div>
 
@@ -2571,34 +2588,435 @@ window.generarPdfPtsCargo = function(cargoName, companyId) {
 };
 
 // =============================================================================
-// VISTA DEL PORTAL DE AUTOGESTIÓN DEL TRABAJADOR (INTERFAZ FUNCIONAL Y SIMULADOR)
+// MÓDULO APP MÓVIL DEL TRABAJADOR (MOBILE-FIRST PWA & TWA GOOGLE PLAY STORE)
+// Conforme al Decreto 1072 de 2015, Resolución 0312 de 2019 y GTC 45:2012
+// Persistencia Atómica Inmutable de Firmas, Fotos, Preoperacionales y Peligros
 // =============================================================================
-window.cambiarTabInterfazTrabajador = function(tabName) {
-  tabAutogestionTrabajador = tabName || 'resumen';
+
+let activeMobileTab = 'inicio'; // 'inicio' | 'docs' | 'elearning' | 'tools' | 'reportar' | 'perfil'
+let cameraQrStream = null;
+
+window.cambiarTabMovil = function(tabName) {
+  activeMobileTab = tabName || 'inicio';
   renderWorkerPortal();
 };
 
+window.cambiarTabInterfazTrabajador = function(tabName) {
+  activeMobileTab = tabName || 'inicio';
+  renderWorkerPortal();
+};
+
+window.volverAGestionTrabajadores = function() {
+  document.body.classList.remove('mobile-app-mode');
+  modoVistaAutogestion = false;
+  trabajadorSeleccionadoId = null;
+  if (cameraQrStream) {
+    cameraQrStream.getTracks().forEach(t => t.stop());
+    cameraQrStream = null;
+  }
+  renderWorkerPortal();
+};
+
+// Helper de Canvas de Firma Táctil (Soporta dedo y ratón con alta resolución y mapeo 100% exacto en toda el área)
+function setupSignaturePad(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const ctx = canvas.getContext('2d');
+
+  let drawing = false;
+  let hasSigned = false;
+  let lastPos = null;
+
+  function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    // Dimensiones CSS reales renderizadas en pantalla
+    const cssWidth = Math.round(rect.width > 0 ? rect.width : (canvas.parentElement?.clientWidth || 340));
+    const cssHeight = Math.round(rect.height > 0 ? rect.height : (canvas.clientHeight || 180));
+
+    const targetWidth = Math.max(cssWidth * dpr, 300);
+    const targetHeight = Math.max(cssHeight * dpr, 150);
+
+    if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+      let temp = null;
+      if (hasSigned && canvas.width > 0 && canvas.height > 0) {
+        temp = document.createElement('canvas');
+        temp.width = canvas.width;
+        temp.height = canvas.height;
+        const tempCtx = temp.getContext('2d');
+        tempCtx.drawImage(canvas, 0, 0);
+      }
+
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+
+      if (temp) {
+        ctx.drawImage(temp, 0, 0, canvas.width, canvas.height);
+      }
+    }
+  }
+
+  // Inicializar dimensiones de inmediato y con retardos para sincronización con el DOM
+  resizeCanvas();
+  requestAnimationFrame(resizeCanvas);
+  setTimeout(resizeCanvas, 100);
+  setTimeout(resizeCanvas, 300);
+
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const touch = e.touches ? e.touches[0] : (e.changedTouches ? e.changedTouches[0] : null);
+    const clientX = touch ? touch.clientX : e.clientX;
+    const clientY = touch ? touch.clientY : e.clientY;
+
+    // Mapeo exacto 1:1 entre píxeles CSS de pantalla y buffer del canvas (cubre el 100% del área)
+    const rWidth = r.width > 0 ? r.width : 1;
+    const rHeight = r.height > 0 ? r.height : 1;
+    const scaleX = canvas.width / rWidth;
+    const scaleY = canvas.height / rHeight;
+
+    return {
+      x: (clientX - r.left) * scaleX,
+      y: (clientY - r.top) * scaleY
+    };
+  }
+
+  function start(e) {
+    e.preventDefault();
+    resizeCanvas();
+    drawing = true;
+    lastPos = getPos(e);
+
+    const dpr = window.devicePixelRatio || 1;
+    ctx.lineWidth = 2.8 * dpr;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#0f172a';
+
+    ctx.beginPath();
+    ctx.arc(lastPos.x, lastPos.y, (ctx.lineWidth || 3) / 2, 0, Math.PI * 2);
+    ctx.fillStyle = ctx.strokeStyle;
+    ctx.fill();
+    hasSigned = true;
+  }
+
+  function move(e) {
+    if (!drawing || !lastPos) return;
+    e.preventDefault();
+    const pos = getPos(e);
+
+    const dpr = window.devicePixelRatio || 1;
+    ctx.lineWidth = 2.8 * dpr;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#0f172a';
+
+    ctx.beginPath();
+    ctx.moveTo(lastPos.x, lastPos.y);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+
+    lastPos = pos;
+    hasSigned = true;
+  }
+
+  function stop(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    drawing = false;
+    lastPos = null;
+  }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', stop);
+
+  canvas.addEventListener('touchstart', start, { passive: false });
+  canvas.addEventListener('touchmove', move, { passive: false });
+  window.addEventListener('touchend', stop, { passive: false });
+
+  // Escuchar redimensionamiento de pantalla
+  window.addEventListener('resize', resizeCanvas);
+
+  return {
+    resize: resizeCanvas,
+    clear: () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hasSigned = false;
+      lastPos = null;
+    },
+    isEmpty: () => !hasSigned,
+    getDataUrl: () => {
+      const out = document.createElement('canvas');
+      out.width = canvas.width;
+      out.height = canvas.height;
+      const outCtx = out.getContext('2d');
+      outCtx.fillStyle = '#ffffff';
+      outCtx.fillRect(0, 0, out.width, out.height);
+      outCtx.drawImage(canvas, 0, 0);
+      return out.toDataURL('image/png');
+    }
+  };
+}
+
+// =============================================================================
+// BLOQUE 2: COMPLIANCE GATE OBLIGATORIO (ONBOARDING LEGAL LEY 1581 & GTC 45)
+// =============================================================================
+function verificarComplianceGateOnboarding(trabajador, empresa) {
+  const userSigs = store.getEmployeeDocumentSignatures ? store.getEmployeeDocumentSignatures(trabajador.id) : [];
+  const hasSigned = userSigs.some(s => s.document_type === 'HABEAS_DATA_ONBOARDING');
+  if (hasSigned) return;
+
+  // Si no ha firmado, levantar la compuerta legal obligatoria a pantalla completa
+  abrirModalOnboardingComplianceGate(trabajador, empresa);
+}
+
+function abrirModalOnboardingComplianceGate(trabajador, empresa) {
+  const modalId = 'modal-onboarding-compliance-gate';
+  if (document.getElementById(modalId)) return;
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950 flex flex-col overflow-hidden animate-fadeIn text-slate-100 select-none';
+
+  modalEl.innerHTML = `
+    <!-- Cabecera de Compliance Legal -->
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-4 border-b border-slate-800 flex items-center justify-between flex-shrink-0 shadow-lg">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-400/40 flex items-center justify-center text-xl flex-shrink-0">
+          ⚖️
+        </div>
+        <div>
+          <span class="text-[9px] font-black uppercase tracking-wider text-teal-300 block">
+            Requisito Legal Previo al Ingreso • DOCTOR PYME SG-SST
+          </span>
+          <h2 class="text-sm font-black text-white truncate max-w-[260px] sm:max-w-md">
+            Consentimiento Informado & Notificación de Riesgos
+          </h2>
+        </div>
+      </div>
+      <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-500/20 text-rose-300 border border-rose-500/30">
+        Obligatorio
+      </span>
+    </div>
+
+    <!-- Área de Lectura con Detección Estricta de Scroll -->
+    <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 text-xs leading-relaxed" id="legal-scroll-container">
+      <div class="p-3.5 bg-indigo-950/40 rounded-2xl border border-indigo-800/60 text-indigo-200">
+        <p class="font-bold text-[11px] mb-1">Colaborador: ${trabajador.nombre} (C.C. ${trabajador.identificacion || trabajador.cedula})</p>
+        <p class="text-[10px] text-slate-300">Empresa Contratante: <strong>${empresa.razonSocial}</strong> (NIT: ${empresa.nit}) · Cargo: <strong>${trabajador.cargo}</strong></p>
+      </div>
+
+      <div class="space-y-3 text-slate-300">
+        <div class="border-b border-slate-800 pb-1.5">
+          <h3 class="text-sm font-black text-teal-300">
+            1. Autorización para el Tratamiento de Datos Personales y Sensibles
+          </h3>
+          <span class="text-[10px] font-bold text-teal-400/90 block mt-0.5">
+            (Ley 1581 de 2012, Decreto 1074 de 2015 y Decreto 1072 de 2015)
+          </span>
+        </div>
+        <p class="text-justify leading-relaxed">
+          En cumplimiento de la Ley Estatutaria 1581 de 2012 y el Decreto Reglamentario 1074 de 2015, autorizo de manera libre, previa, expresa e informada a <strong>${empresa.razonSocial}</strong> (en calidad de Responsable del Tratamiento) y a su proveedor tecnológico <strong>DOCTOR PYME</strong> (en calidad de Encargado del Tratamiento) para recolectar, almacenar, custodiar, procesar y transmitir mis datos personales, médicos y laborales.
+        </p>
+        <p class="text-justify leading-relaxed">
+          <strong>Tratamiento de Datos Sensibles:</strong> Manifiesto que se me ha informado que, al tratarse de datos de naturaleza sensible (evaluaciones médicas ocupacionales, exámenes de aptitud laboral, registros de inspección, firmas biométricas/digitales y reportes de condiciones de salud), no me encuentro obligado(a) a autorizar su tratamiento, y que la entrega de dicha información es facultativa.
+        </p>
+        <p class="text-justify leading-relaxed">
+          No obstante, reconozco y acepto expresamente que el tratamiento de estos datos tiene como propósito exclusivo garantizar la vigilancia epidemiológica, la prevención de accidentes y enfermedades laborales, y el estricto cumplimiento del Sistema de Gestión de la Seguridad y Salud en el Trabajo (SG-SST) bajo el Decreto 1072 de 2015 y la Resolución 0312 de 2019.
+        </p>
+        <p class="text-justify leading-relaxed">
+          Como titular de la información, declaro que conozco mis derechos a conocer, actualizar, rectificar y revocar la presente autorización, los cuales podré ejercer conforme a la Política de Tratamiento de Datos Personales disponible para consulta ante la administración de la empresa.
+        </p>
+
+        <h3 class="text-sm font-black text-teal-300 border-b border-slate-800 pb-1 pt-2">
+          2. Notificación General de Riesgos y Peligros Laborales (GTC 45 & Dec. 1072)
+        </h3>
+        <p>
+          Declaro que el empleador me ha notificado e informado oportunamente sobre los factores de riesgo inherentes a mi labor como <strong>${trabajador.cargo}</strong>:
+        </p>
+        <ul class="list-disc pl-5 space-y-1 text-slate-300 text-[11px]">
+          <li><strong>Peligros Mecánicos:</strong> Operación de maquinaria, herramientas manuales y equipos industriales con riesgo de atrapamiento o golpes.</li>
+          <li><strong>Peligros Biomecánicos:</strong> Manipulación de cargas, posturas prolongadas y movimientos repetitivos.</li>
+          <li><strong>Peligros Físicos y Locativos:</strong> Exposición a ruido continuo, superficies húmedas o irregulares, caídas al mismo o diferente nivel.</li>
+          <li><strong>Peligros Químicos:</strong> Contacto con polvos, material particulado, humos y sustancias de proceso.</li>
+        </ul>
+
+        <h3 class="text-sm font-black text-teal-300 border-b border-slate-800 pb-1 pt-2">
+          3. Compromiso y Deberes Legales del Trabajador (Art. 2.2.4.6.10 Dec. 1072/2015)
+        </h3>
+        <p>
+          Me obligo a cumplir fielmente los siguientes mandatos legales:
+        </p>
+        <ol class="list-decimal pl-5 space-y-1 text-slate-300 text-[11px]">
+          <li>Procurar el cuidado integral de mi salud y suministrar información clara y veraz sobre mi estado físico y mental.</li>
+          <li>Cumplir las normas, reglamentos e instrucciones del SG-SST de la empresa.</li>
+          <li>Utilizar de manera permanente y adecuada los Elementos de Protección Personal (EPP) suministrados.</li>
+          <li>Reportar de inmediato a través de esta App cualquier condición o acto inseguro detectado en mi puesto.</li>
+          <li>Diligenciar diariamente la inspección preoperacional de los equipos o herramientas bajo mi custodia antes de iniciar la jornada.</li>
+        </ol>
+
+        <div id="scroll-prompt-badge" class="p-3 bg-amber-500/20 border border-amber-500/40 rounded-xl text-center text-amber-300 font-black text-xs animate-pulse">
+          📜 Desplázate hasta el final de este documento para habilitar la firma digital con el dedo
+        </div>
+      </div>
+
+      <!-- Zona de Firma Táctil (Bloqueada hasta completar el scroll) -->
+      <div id="onboarding-signature-section" class="opacity-40 pointer-events-none transition-all duration-300 space-y-3 pt-4 border-t border-slate-800">
+        <div class="space-y-2">
+          <label class="flex items-start gap-2.5 cursor-pointer">
+            <input type="checkbox" id="check-onboarding-habeas" class="w-4 h-4 mt-0.5 rounded text-teal-600 focus:ring-teal-500 bg-slate-900 border-slate-700">
+            <span class="text-[11px] text-slate-200 font-semibold">
+              Autorizo el tratamiento de mis datos personales y sensibles (Ley 1581 de 2012 y Dec. 1074 de 2015).
+            </span>
+          </label>
+          <label class="flex items-start gap-2.5 cursor-pointer">
+            <input type="checkbox" id="check-onboarding-gtc45" class="w-4 h-4 mt-0.5 rounded text-teal-600 focus:ring-teal-500 bg-slate-900 border-slate-700">
+            <span class="text-[11px] text-slate-200 font-semibold">
+              Declaro haber recibido, comprendido y aceptado la notificación de riesgos laborales y deberes SG-SST (Dec. 1072/2015).
+            </span>
+          </label>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-[11px] font-black uppercase text-teal-300">
+              ✍️ Firma Digital con el Dedo en Pantalla:
+            </label>
+            <button type="button" id="btn-clear-onboarding-sig" class="text-[10px] text-rose-400 hover:text-rose-300 underline font-bold cursor-pointer">
+              Limpiar Firma
+            </button>
+          </div>
+          <div class="bg-white rounded-xl overflow-hidden shadow-inner border-2 border-teal-500/50">
+            <canvas id="canvas-onboarding-sig" class="signature-pad-canvas w-full h-36"></canvas>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1 text-center">
+            Esta firma tiene plena validez probatoria conforme a la Ley 527 de 1999 y Decreto 2364 de 2012.
+          </p>
+        </div>
+
+        <button 
+          type="button" 
+          id="btn-confirm-onboarding-sig"
+          class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs sm:text-sm font-black shadow-lg shadow-emerald-900/40 transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+        >
+          <span>✓ Aceptar Términos y Firmar Digitalmente</span>
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modalEl);
+
+  const scrollContainer = document.getElementById('legal-scroll-container');
+  const sigSection = document.getElementById('onboarding-signature-section');
+  const scrollBadge = document.getElementById('scroll-prompt-badge');
+
+  scrollContainer.onscroll = () => {
+    const isAtBottom = scrollContainer.scrollHeight - scrollContainer.scrollTop <= scrollContainer.clientHeight + 40;
+    if (isAtBottom) {
+      sigSection.classList.remove('opacity-40', 'pointer-events-none');
+      if (scrollBadge) scrollBadge.classList.add('hidden');
+      if (pad && pad.resize) pad.resize();
+    }
+  };
+
+  // Inicializar Canvas táctil
+  const pad = setupSignaturePad('canvas-onboarding-sig');
+
+  document.getElementById('btn-clear-onboarding-sig')?.addEventListener('click', () => {
+    pad?.clear();
+  });
+
+  document.getElementById('btn-confirm-onboarding-sig')?.addEventListener('click', async () => {
+    const checkHabeas = document.getElementById('check-onboarding-habeas')?.checked;
+    const checkGtc45 = document.getElementById('check-onboarding-gtc45')?.checked;
+
+    if (!checkHabeas || !checkGtc45) {
+      alert("Debes marcar ambas casillas de autorización legal antes de continuar.");
+      return;
+    }
+
+    if (pad?.isEmpty()) {
+      alert("Por favor estampa tu firma con el dedo en el recuadro blanco.");
+      return;
+    }
+
+    const btn = document.getElementById('btn-confirm-onboarding-sig');
+    btn.disabled = true;
+    btn.innerHTML = `<span>⏳ Generando Sello Inmutable y Guardando en Disco...</span>`;
+
+    try {
+      const sigDataUrl = pad.getDataUrl();
+      const res = await store.submitWorkerOnboarding({
+        worker_id: trabajador.id,
+        tenant_id: empresa.id,
+        signature_base64: sigDataUrl,
+        accepted_habeas: true,
+        accepted_gtc45: true
+      });
+
+      modalEl.innerHTML = `
+        <div class="m-auto p-6 max-w-sm bg-slate-900 border border-emerald-500/50 rounded-3xl text-center space-y-4 animate-fadeIn shadow-2xl">
+          <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/40 flex items-center justify-center text-3xl mx-auto">
+            ✓
+          </div>
+          <div>
+            <h3 class="text-base font-black text-white">¡Consentimiento Registrado!</h3>
+            <p class="text-xs text-slate-300 mt-1">Firma legal estampada con éxito y archivada para retención de 20 años.</p>
+          </div>
+          <div class="p-3 bg-slate-950 rounded-xl text-[10px] font-mono text-emerald-300 text-left border border-slate-800 space-y-1">
+            <p><strong>SHA-256:</strong> ${res.record?.signature_sha256?.substring(0, 24)}...</p>
+            <p><strong>Fecha/Hora:</strong> ${res.record?.bogota_timestamp || 'Hora Bogotá'}</p>
+            <p><strong>IP:</strong> ${res.record?.client_ip || 'Registrada'}</p>
+          </div>
+          <p class="text-[11px] text-teal-400 font-bold">Cargando tu App Móvil Doctor Pyme...</p>
+        </div>
+      `;
+
+      setTimeout(() => {
+        modalEl.remove();
+        renderWorkerPortal();
+      }, 1400);
+
+    } catch (err) {
+      alert("Error al guardar consentimiento: " + err.message);
+      btn.disabled = false;
+      btn.innerHTML = `<span>✓ Aceptar Términos y Firmar Digitalmente</span>`;
+    }
+  });
+}
+
+// =============================================================================
+// VISTA PRINCIPAL DEL PORTAL / APP MÓVIL (MOBILE-FIRST NATIVE EXPERIENCE)
+// =============================================================================
 function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = false) {
+  // Activar modo app móvil nativa para ocultar menús laterales y cabecera de escritorio
+  document.body.classList.add('mobile-app-mode');
+
   const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva() || {
     id: 'emp-1790438946268',
     razonSocial: 'LADRILLOS OCHOA LTDA',
     nit: '830124631'
   };
 
+  // Verificar compuerta de Onboarding Legal obligatorio (Ley 1581 & GTC 45)
+  verificarComplianceGateOnboarding(trabajador, empresa);
+
   const todosTrabajadoresEmpresa = store.getTrabajadores(empresa.id);
   const capacitaciones = store.getCapacitaciones(empresa.id);
   const firmas = store.getFirmasPorTrabajador(trabajador.id);
+  const docSigs = store.getEmployeeDocumentSignatures ? store.getEmployeeDocumentSignatures(trabajador.id) : [];
   const reportesPeligro = store.getReportesPeligro(empresa.id).filter(r => r.trabajadorId === trabajador.id);
   const preoperacionales = store.getReportesPreoperacional(empresa.id).filter(p => p.trabajadorId === trabajador.id);
 
-  // Inventario de Herramientas y Asignaciones del Trabajador
+  // Inventario y Asignaciones
   const toolsInventory = store.getToolsInventory(empresa.id);
   const misHerramientasAsignadas = toolsInventory.filter(tool => {
     const activeAsg = store.getActiveToolAssignment(tool.id);
     return activeAsg && (activeAsg.employee_id === trabajador.id || (activeAsg.employee_name || '').toLowerCase() === (trabajador.nombre || '').toLowerCase());
   });
 
-  // Actividades PHVA y Funciones del Cargo desde el Mapa de Procesos
+  // Actividades PHVA y Funciones del Cargo
   const cargosFormales = store.getJobPositions(empresa.id);
   const cargoFormal = cargosFormales.find(cg => cg.id === trabajador.job_position_id || (cg.title || '').toLowerCase().trim() === (trabajador.cargo || '').toLowerCase().trim());
   const todasActividadesProcesos = store.getAllProcessActivities(empresa.id);
@@ -2607,7 +3025,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
     : [];
   const configCargo = store.getPerfilCargo(trabajador.cargo, empresa.id);
 
-  // EPP consolidados del cargo y herramientas
+  // EPP consolidados
   const eppConsolidados = Array.from(new Set([
     ...(configCargo?.pts?.eppRequeridos || []),
     ...misActividadesPHVA.flatMap(a => Array.isArray(a.required_epp) ? a.required_epp : []),
@@ -2617,275 +3035,622 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
     })
   ].filter(Boolean)));
 
-  const documentosSocializables = [
+  const eppListaFinal = eppConsolidados.length > 0 ? eppConsolidados : [
+    'Casco de seguridad dieléctrico con barbuquejo',
+    'Gafas de seguridad con filtro UV y antiempañante',
+    'Botas de seguridad con puntera de acero/composite',
+    'Guantes de protección mecánica (carnaza o nitrilo)',
+    'Protección auditiva tipo inserción / copa'
+  ];
+
+  // Documentos de Cargo Obligatorios
+  const instrumentosCargo = [
+    {
+      type: 'MANUAL_DE_CARGO',
+      id: 'DOC-MANUAL-CARGO',
+      title: 'Manual de Funciones y Responsabilidades SST',
+      norma: 'Decreto 1072 de 2015 Art. 2.2.4.6.10',
+      icono: '📖',
+      color: 'purple'
+    },
+    {
+      type: 'PERFIL_DE_CARGO',
+      id: 'DOC-PERFIL-CARGO',
+      title: 'Perfil de Cargo SST & Competencias',
+      norma: 'Estándar 1.1.2 Resolución 0312 de 2019',
+      icono: '📋',
+      color: 'amber'
+    },
+    {
+      type: 'PLAN_DE_TRABAJO_SEGURO',
+      id: 'DOC-PTS-CARGO',
+      title: 'Procedimiento de Trabajo Seguro (PTS)',
+      norma: 'Guía Técnica GTC 45 & Matriz de Peligros',
+      icono: '🛡️',
+      color: 'teal'
+    },
+    {
+      type: 'ANEXO_CONTRACTUAL_Y_NOTIFICACION_RIESGOS',
+      id: 'DOC-ANEXO-CONTRACTUAL',
+      title: 'Anexo Contractual y Notificación de Riesgos',
+      norma: 'Código Sustantivo del Trabajo & GTC 45',
+      icono: '📄',
+      color: 'blue'
+    }
+  ];
+
+  // Políticas normativas
+  const politicasInstitucionales = [
     {
       id: 'DOC-POL-SST-01',
-      titulo: 'Política Integral de Seguridad y Salud en el Trabajo',
-      categoria: 'Políticas Obligatorias',
+      title: 'Política Integral de Seguridad y Salud en el Trabajo',
+      categoria: 'Política Obligatoria',
       enlace: 'https://docs.google.com/document/d/1vfHlhlNkl3thBA5VrxDOoYrR_lb93BAMUjNfJ_L5x8A/edit?usp=sharing'
     },
     {
       id: 'DOC-POL-ALC-02',
-      titulo: 'Política de Prevención de Alcohol, Tabaco y Sustancias Psicoactivas',
-      categoria: 'Políticas Obligatorias',
+      title: 'Prevención de Alcohol, Tabaco y Sustancias Psicoactivas',
+      categoria: 'Política Obligatoria',
       enlace: 'https://docs.google.com/document/d/1vfHlhlNkl3thBA5VrxDOoYrR_lb93BAMUjNfJ_L5x8A/edit?usp=sharing'
     },
     {
       id: 'DOC-REG-HIG-03',
-      titulo: 'Reglamento de Higiene y Seguridad Industrial',
-      categoria: 'Reglamentos',
+      title: 'Reglamento de Higiene y Seguridad Industrial',
+      categoria: 'Reglamento',
       enlace: 'https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing'
     },
     {
       id: 'DOC-RES-COP-04',
-      titulo: 'Acta de Asignación de Responsabilidades en SST',
+      title: 'Acta de Asignación de Responsabilidades en SST',
       categoria: 'Responsabilidades',
       enlace: 'https://docs.google.com/document/d/1KwN9NqmkfD7RTZMilnMopH4AeTbdIftwNfaBRCQg9H8/edit?usp=sharing'
     }
   ];
 
+  // Verificación de firmas de instrumentos
+  const totalInstrumentos = instrumentosCargo.length;
+  const instrumentosFirmadosCount = instrumentosCargo.filter(inst => {
+    return docSigs.some(s => s.document_type === inst.type || s.document_code === inst.id) ||
+           firmas.some(f => f.documentoCodigo === inst.id || f.documentoId === inst.id);
+  }).length;
+
+  // Verificación de preoperacional hoy
+  const hoyStr = new Date().toISOString().split('T')[0];
+  const preopHoy = preoperacionales.find(p => (p.fechaCreacion || p.performed_at || '').startsWith(hoyStr));
+
+  // Entregas de EPP y Dotación (Bloques 1, 2, 3, 4 - Res. 0312 Estándar 4.2.6)
+  const misEntregasEpp = store.getEppDeliveries ? store.getEppDeliveries(trabajador.id, empresa.id) : [];
+  const entregasEppPendientes = misEntregasEpp.filter(d => d.status === 'ASIGNADO_PENDIENTE_FIRMA');
+  const entregasEppFirmadas = misEntregasEpp.filter(d => d.status === 'FIRMADO_ENTREGADO');
+  const actaEppFirmada = entregasEppFirmadas.length > 0 || firmas.some(f => f.documentoCodigo === 'ACTA_ENTREGA_EPP');
+
+  // Evaluaciones aprobadas
   const capsEvaluadasCount = capacitaciones.filter(cap =>
     (cap.evaluaciones || []).some(e => e.trabajadorId === trabajador.id || e.worker_id === trabajador.id)
   ).length;
 
-  const formatCOP = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
-
-  const mostrarElearning = tabAutogestionTrabajador === 'resumen' || tabAutogestionTrabajador === 'elearning';
-  const mostrarHerramientas = tabAutogestionTrabajador === 'resumen' || tabAutogestionTrabajador === 'herramientas';
-  const mostrarDocumentos = tabAutogestionTrabajador === 'resumen' || tabAutogestionTrabajador === 'documentos';
-  const mostrarReportes = tabAutogestionTrabajador === 'resumen' || tabAutogestionTrabajador === 'reportes';
-
   container.innerHTML = `
-    <div class="max-w-5xl mx-auto space-y-6 pb-12 animate-fadeIn">
-      
-      <!-- BARRA SUPERIOR DE SIMULACIÓN Y CONMUTACIÓN DE ROL (MODO PRUEBAS / ADMIN) -->
-      ${esModoAdmin ? `
-        <div class="bg-white border-2 border-emerald-500/40 rounded-2xl p-3.5 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          <div class="flex items-center gap-2 p-1 bg-slate-100 rounded-xl border border-slate-200 self-start lg:self-auto">
-            <button type="button" onclick="window.volverAGestionTrabajadores()" class="px-3.5 py-2 rounded-lg text-xs font-bold text-slate-700 hover:bg-indigo-600 hover:text-white transition flex items-center gap-1.5 cursor-pointer">
-              <span>🛠️</span>
-              <span>← Volver a Vista Administrador</span>
-            </button>
-            <button type="button" class="px-3.5 py-2 rounded-lg text-xs font-black bg-emerald-600 text-white shadow-sm flex items-center gap-1.5 cursor-default">
-              <span>👷</span>
-              <span>Interfaz Funcional del Trabajador (Modo Pruebas Activo)</span>
-            </button>
+    <div class="min-h-screen bg-slate-900 text-slate-100 flex flex-col justify-between antialiased selection:bg-teal-500 selection:text-white">
+
+      <!-- =================================================================== -->
+      <!-- ENCABEZADO SUPERIOR COMPACTO (MOBILE-FIRST HEADER)                   -->
+      <!-- =================================================================== -->
+      <header class="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800/80 px-4 py-3 sticky top-0 z-30 shadow-md">
+        <div class="max-w-lg mx-auto flex items-center justify-between gap-3">
+          
+          <!-- Identificación de la Empresa y Trabajador -->
+          <div class="flex items-center gap-3 overflow-hidden">
+            <div class="w-10 h-10 rounded-xl bg-white p-1 border border-slate-700 overflow-hidden flex items-center justify-center flex-shrink-0 shadow-sm">
+              <img 
+                src="${empresa.logoUrl || './assets/app-icon.png'}" 
+                alt="${empresa.razonSocial}" 
+                class="w-full h-full object-contain"
+                onerror="this.src='./assets/app-icon.png'"
+              >
+            </div>
+            <div class="overflow-hidden">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h1 class="text-xs font-black text-white truncate max-w-[170px] sm:max-w-xs">${trabajador.nombre}</h1>
+                <span class="px-2 py-0.2 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 truncate">
+                  ${trabajador.cargo}
+                </span>
+              </div>
+              <p class="text-[10px] text-slate-400 truncate">
+                ${empresa.razonSocial} · <span class="text-teal-400 font-mono">C.C. ${trabajador.identificacion || trabajador.cedula}</span>
+              </p>
+            </div>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2 text-xs">
-            <span class="font-bold text-slate-600">Simulando sesión como:</span>
-            <select onchange="if(this.value) window.verPortalComoTrabajador(this.value)" class="px-3 py-1.5 bg-emerald-50 border border-emerald-300 rounded-xl text-xs font-black text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+          <!-- Acciones de Cabecera (Instalar PWA, Simulación / Salir) -->
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button 
+              type="button" 
+              onclick="window.instalarPwaDoctorPyme()" 
+              class="p-2 rounded-xl bg-teal-500/10 text-teal-300 hover:bg-teal-500/20 border border-teal-500/30 text-xs font-bold transition flex items-center gap-1"
+              title="Instalar App en el Celular"
+            >
+              <span>📲</span>
+              <span class="hidden sm:inline text-[10px]">Instalar</span>
+            </button>
+
+            ${esModoAdmin ? `
+              <button 
+                type="button" 
+                onclick="window.volverAGestionTrabajadores()" 
+                class="px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-black transition flex items-center gap-1 cursor-pointer shadow-sm"
+                title="Volver a la consola de administración"
+              >
+                <span>🛠️</span>
+                <span class="hidden sm:inline">Admin</span>
+              </button>
+            ` : `
+              <button 
+                type="button" 
+                onclick="auth.logout()" 
+                class="p-2 rounded-xl bg-slate-800 hover:bg-rose-900/40 text-slate-400 hover:text-rose-300 transition text-xs font-bold"
+                title="Cerrar Sesión"
+              >
+                🚪
+              </button>
+            `}
+          </div>
+
+        </div>
+
+        <!-- Selector de trabajador si está en modo simulación administrativa -->
+        ${esModoAdmin ? `
+          <div class="max-w-lg mx-auto mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+            <span class="text-emerald-400 font-bold">Simulación Operaria:</span>
+            <select onchange="if(this.value) window.verPortalComoTrabajador(this.value)" class="px-2 py-1 bg-slate-800 border border-slate-700 rounded-lg text-[10px] font-bold text-white focus:outline-none">
               ${todosTrabajadoresEmpresa.map(t => `
                 <option value="${t.id}" ${t.id === trabajador.id ? 'selected' : ''}>
-                  👷 ${t.nombre} — ${t.cargo} (C.C. ${t.identificacion || t.cedula})
+                  ${t.nombre} (${t.cargo})
                 </option>
               `).join('')}
             </select>
           </div>
-        </div>
-      ` : ''}
-
-      <!-- TARJETA DE BIENVENIDA Y FICHA INTEGRAL DEL TRABAJADOR -->
-      <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white shadow-xl border border-slate-800 relative overflow-hidden">
-        <div class="absolute -right-8 -top-8 w-52 h-52 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div class="flex items-start sm:items-center gap-4">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center text-2xl font-black shadow-lg border-2 border-emerald-300/50 flex-shrink-0">
-              ${(trabajador.nombre || 'T').substring(0, 2).toUpperCase()}
-            </div>
-            <div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  👷 Portal de Autogestión & Formación SST
-                </span>
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/10 text-slate-200">
-                  🏢 ${empresa.razonSocial}
-                </span>
-              </div>
-              <h2 class="text-xl sm:text-2xl font-black text-white mt-1">${trabajador.nombre}</h2>
-              <div class="text-xs text-slate-300 flex flex-wrap gap-x-3 gap-y-1 mt-1 font-medium">
-                <span><strong>Cargo:</strong> ${trabajador.cargo}</span>
-                <span>•</span>
-                <span><strong>C.C.:</strong> ${trabajador.identificacion || trabajador.cedula}</span>
-                <span>•</span>
-                <span><strong>Área:</strong> ${trabajador.area || 'Planta Principal'}</span>
-                <span>•</span>
-                <span><strong>Seguridad Social:</strong> ${trabajador.eps || 'Sura EPS'} / ${trabajador.arl || 'Positiva ARL'}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="flex flex-col md:items-end gap-1.5 text-xs bg-white/5 p-3.5 rounded-2xl border border-white/10">
-            <div class="flex items-center gap-2">
-              <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-black text-[10px]">
-                ● ${trabajador.estado || 'Activo'}
-              </span>
-              <span class="text-[11px] text-indigo-200 font-bold">${trabajador.tipoContrato || 'Término Indefinido'}</span>
-            </div>
-            <span class="text-[11px] text-slate-300 font-mono">Ingreso: ${trabajador.fechaContrato || trabajador.fechaIngreso || 'Vigente'} • Salario: ${formatCOP(trabajador.salario || 1600000)}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- KPIs RÁPIDOS DEL PERFIL DEL TRABAJADOR -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div onclick="window.cambiarTabInterfazTrabajador('elearning')" class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs hover:border-indigo-400 transition cursor-pointer">
-          <div class="flex items-center justify-between">
-            <span class="text-[10px] text-slate-500 font-black uppercase">E-Learning SST</span>
-            <span class="text-base">🎓</span>
-          </div>
-          <span class="text-2xl font-black text-indigo-700 mt-1 block">${capsEvaluadasCount} / ${capacitaciones.length}</span>
-          <span class="text-[10px] text-emerald-700 font-bold block">Cursos Evaluados (DOC-10/16)</span>
-        </div>
-
-        <div onclick="window.cambiarTabInterfazTrabajador('documentos')" class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs hover:border-emerald-400 transition cursor-pointer">
-          <div class="flex items-center justify-between">
-            <span class="text-[10px] text-slate-500 font-black uppercase">Firmas Ley 527</span>
-            <span class="text-base">✍️</span>
-          </div>
-          <span class="text-2xl font-black text-emerald-600 mt-1 block">${firmas.length} / ${documentosSocializables.length}</span>
-          <span class="text-[10px] text-slate-500 font-bold block">Políticas con Sello Digital</span>
-        </div>
-
-        <div onclick="window.cambiarTabInterfazTrabajador('herramientas')" class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs hover:border-amber-400 transition cursor-pointer">
-          <div class="flex items-center justify-between">
-            <span class="text-[10px] text-slate-500 font-black uppercase">Equipos & EPP</span>
-            <span class="text-base">🛠️</span>
-          </div>
-          <span class="text-2xl font-black text-amber-600 mt-1 block">${misHerramientasAsignadas.length} Equipos</span>
-          <span class="text-[10px] text-slate-500 font-bold block">${eppConsolidados.length || 4} EPP • ${preoperacionales.length} Preoperacionales</span>
-        </div>
-
-        <div onclick="window.cambiarTabInterfazTrabajador('reportes')" class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs hover:border-rose-400 transition cursor-pointer">
-          <div class="flex items-center justify-between">
-            <span class="text-[10px] text-slate-500 font-black uppercase">Reporte Peligros</span>
-            <span class="text-base">⚠️</span>
-          </div>
-          <span class="text-2xl font-black text-rose-600 mt-1 block">${reportesPeligro.length}</span>
-          <span class="text-[10px] text-slate-500 font-bold block">Condiciones Reportadas</span>
-        </div>
-      </div>
-
-      <!-- PESTAÑAS DE NAVEGACIÓN DE LA INTERFAZ DEL TRABAJADOR -->
-      <div class="bg-white rounded-2xl p-2 border border-slate-200 shadow-xs flex flex-wrap gap-1.5">
-        <button onclick="window.cambiarTabInterfazTrabajador('resumen')" class="px-3.5 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${tabAutogestionTrabajador === 'resumen' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'}">
-          <span>🏠</span>
-          <span>Vista Completa (Todo)</span>
-        </button>
-        <button onclick="window.cambiarTabInterfazTrabajador('elearning')" class="px-3.5 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${tabAutogestionTrabajador === 'elearning' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'}">
-          <span>🎓</span>
-          <span>Módulo de Formación E-Learning (${capacitaciones.length})</span>
-        </button>
-        <button onclick="window.cambiarTabInterfazTrabajador('herramientas')" class="px-3.5 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${tabAutogestionTrabajador === 'herramientas' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'}">
-          <span>🛠️</span>
-          <span>Mis Equipos, EPP & Preoperacional</span>
-        </button>
-        <button onclick="window.cambiarTabInterfazTrabajador('documentos')" class="px-3.5 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${tabAutogestionTrabajador === 'documentos' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'}">
-          <span>📄</span>
-          <span>Mis Instrumentos, Funciones & Firmas</span>
-        </button>
-        <button onclick="window.cambiarTabInterfazTrabajador('reportes')" class="px-3.5 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${tabAutogestionTrabajador === 'reportes' ? 'bg-rose-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'}">
-          <span>⚠️</span>
-          <span>Reportar Condición Insegura (${reportesPeligro.length})</span>
-        </button>
-      </div>
+        ` : ''}
+      </header>
 
       <!-- =================================================================== -->
-      <!-- MÓDULO 1: FORMACIÓN Y CAPACITACIONES E-LEARNING (DOC-10 & DOC-16)   -->
+      <!-- CONTENIDO SCROLLABLE DE CADA PESTAÑA (PADDED PARA BOTTOM NAV)      -->
       <!-- =================================================================== -->
-      ${mostrarElearning ? `
-        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-indigo-200 shadow-xs space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-            <div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
-                  <span>🎓 Bandeja de Formación, Inducción y Evaluación E-Learning</span>
-                </h3>
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-indigo-100 text-indigo-800 border border-indigo-200">
-                  Calificación Automática & Formatos Legales DOC-10 / DOC-16
-                </span>
+      <main class="flex-1 overflow-y-auto px-4 py-4 sm:py-6 pb-28 max-w-lg mx-auto w-full space-y-4">
+
+        <!-- --------------------------------------------------------------- -->
+        <!-- PESTAÑA 1: INICIO (DASHBOARD PERSONAL OPERARIO)                 -->
+        <!-- --------------------------------------------------------------- -->
+        ${activeMobileTab === 'inicio' ? `
+          <div class="space-y-4 animate-fadeIn">
+            
+            <!-- Banner de Saludo y Turno -->
+            <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-teal-950 p-5 rounded-3xl border border-indigo-900/60 shadow-xl relative overflow-hidden">
+              <div class="absolute -right-8 -top-8 w-40 h-40 bg-teal-500/10 rounded-full blur-2xl pointer-events-none"></div>
+              
+              <div class="relative z-10 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Turno Operativo Activo
+                  </span>
+                  <span class="text-[10px] text-slate-400 font-mono">
+                    ${new Date().toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric', month: 'short' })}
+                  </span>
+                </div>
+
+                <h2 class="text-lg sm:text-xl font-black text-white">
+                  ¡Buen turno, ${trabajador.nombre.split(' ')[0]}!
+                </h2>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  Tu seguridad y la de tus compañeros es la prioridad #1. Consulta tus funciones, reporta condiciones inseguras e inspecciona tu maquinaria antes de operar.
+                </p>
               </div>
-              <p class="text-xs text-slate-500 mt-0.5">
-                Ingresa al Aula Virtual para visualizar las diapositivas y el video obligatorio, desbloquea la evaluación de <strong>13 preguntas</strong> y genera tus certificados oficiales con estampa de tiempo inmutable.
+            </div>
+
+            <!-- 6 Tarjetas de Estado Rápido (Mobile Grid 3x2) -->
+            <div class="grid grid-cols-2 gap-2.5">
+              
+              <div onclick="window.cambiarTabMovil('docs')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-indigo-500 transition cursor-pointer shadow-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-lg">📄</span>
+                  <span class="text-[9px] font-black px-1.5 py-0.5 rounded ${instrumentosFirmadosCount === totalInstrumentos ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">
+                    ${instrumentosFirmadosCount}/${totalInstrumentos}
+                  </span>
+                </div>
+                <span class="text-xs font-black text-white block mt-1.5">Mi Cargo & Docs</span>
+                <span class="text-[10px] text-slate-400 block">${instrumentosFirmadosCount === totalInstrumentos ? '✓ Al día con firmas' : 'Pendientes de firma'}</span>
+              </div>
+
+              <div onclick="window.cambiarTabMovil('elearning')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-indigo-500 transition cursor-pointer shadow-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-lg">🎓</span>
+                  <span class="text-[9px] font-black px-1.5 py-0.5 rounded ${capsEvaluadasCount === capacitaciones.length && capacitaciones.length > 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-indigo-500/20 text-indigo-300'}">
+                    ${capsEvaluadasCount}/${capacitaciones.length}
+                  </span>
+                </div>
+                <span class="text-xs font-black text-white block mt-1.5">E-Learning & Quiz</span>
+                <span class="text-[10px] text-slate-400 block">${capsEvaluadasCount === capacitaciones.length && capacitaciones.length > 0 ? '✓ Cursos al día' : 'Capacitaciones SST'}</span>
+              </div>
+
+              <div onclick="window.cambiarTabMovil('tools')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-teal-500 transition cursor-pointer shadow-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-lg">🛠️</span>
+                  <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300">
+                    ${misHerramientasAsignadas.length} Activos
+                  </span>
+                </div>
+                <span class="text-xs font-black text-white block mt-1.5">Mis Equipos</span>
+                <span class="text-[10px] text-slate-400 block">${actaEppFirmada ? '✓ EPP Entregado' : 'EPP Requerido'}</span>
+              </div>
+
+              <div onclick="window.abrirModalPreoperacionalTrabajador('${trabajador.id}')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-amber-500 transition cursor-pointer shadow-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-lg">📋</span>
+                  <span class="text-[9px] font-black px-1.5 py-0.5 rounded ${preopHoy ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300 animate-pulse'}">
+                    ${preopHoy ? 'Realizado' : 'Pendiente'}
+                  </span>
+                </div>
+                <span class="text-xs font-black text-white block mt-1.5">Preoperacional Hoy</span>
+                <span class="text-[10px] text-slate-400 block">${preopHoy ? '✓ Listo para operar' : 'Toca para registrar'}</span>
+              </div>
+
+              <div onclick="window.cambiarTabMovil('reportar')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-rose-500 transition cursor-pointer shadow-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-lg">⚠️</span>
+                  <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300">
+                    ${reportesPeligro.length}
+                  </span>
+                </div>
+                <span class="text-xs font-black text-white block mt-1.5">Reportar SST</span>
+                <span class="text-[10px] text-slate-400 block">Condición / Acto Inseguro</span>
+              </div>
+
+              <div onclick="window.cambiarTabMovil('perfil')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-teal-500 transition cursor-pointer shadow-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-lg">👤</span>
+                  <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">
+                    Apto
+                  </span>
+                </div>
+                <span class="text-xs font-black text-white block mt-1.5">Mi Perfil & Salud</span>
+                <span class="text-[10px] text-slate-400 block">Profesiograma y Actas</span>
+              </div>
+
+            </div>
+
+            <!-- Botones de Acción Rápida con Pulgar -->
+            <div class="space-y-2">
+              <h3 class="text-xs font-black uppercase tracking-wider text-slate-400">Acciones del Turno</h3>
+
+              <button 
+                type="button" 
+                onclick="window.cambiarTabMovil('elearning')"
+                class="w-full py-3 px-4 bg-gradient-to-r from-indigo-700 via-indigo-600 to-purple-700 hover:from-indigo-600 hover:to-purple-600 text-white rounded-2xl font-black text-xs shadow-lg shadow-indigo-950/40 flex items-center justify-between transition cursor-pointer active:scale-98"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="text-xl">🎓</span>
+                  <div class="text-left">
+                    <span class="block">Capacitaciones & E-Learning SST</span>
+                    <span class="text-[10px] font-normal text-indigo-200 block">Visor de diapositivas, videos y evaluación de 13 preguntas</span>
+                  </div>
+                </div>
+                <span class="text-sm font-bold text-indigo-200">➔</span>
+              </button>
+              
+              <button 
+                type="button" 
+                onclick="window.abrirModalEscanerQR('${trabajador.id}')"
+                class="w-full py-3 px-4 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white rounded-2xl font-black text-xs shadow-lg shadow-teal-900/30 flex items-center justify-between transition cursor-pointer active:scale-98"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="text-xl">📷</span>
+                  <div class="text-left">
+                    <span class="block">Escanear QR de Maquinaria / Herramienta</span>
+                    <span class="text-[10px] font-normal text-teal-100 block">Abre ficha técnica e inspección inmediata</span>
+                  </div>
+                </div>
+                <span class="text-sm font-bold">➔</span>
+              </button>
+
+              <button 
+                type="button" 
+                onclick="window.abrirModalPreoperacionalTrabajador('${trabajador.id}')"
+                class="w-full py-3 px-4 bg-slate-950 hover:bg-slate-800 text-slate-100 border border-slate-800 rounded-2xl font-bold text-xs flex items-center justify-between transition cursor-pointer active:scale-98"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="text-xl">📋</span>
+                  <div class="text-left">
+                    <span class="block font-black text-white">Inspección Preoperacional Diaria</span>
+                    <span class="text-[10px] text-slate-400 block">Checklist con foto de evidencia</span>
+                  </div>
+                </div>
+                <span class="text-slate-500">➔</span>
+              </button>
+
+              <button 
+                type="button" 
+                onclick="window.cambiarTabMovil('reportar')"
+                class="w-full py-3 px-4 bg-rose-950/40 hover:bg-rose-900/50 text-rose-200 border border-rose-800/60 rounded-2xl font-bold text-xs flex items-center justify-between transition cursor-pointer active:scale-98"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="text-xl">🚨</span>
+                  <div class="text-left">
+                    <span class="block font-black text-white">Reportar Condición o Peligro Inseguro</span>
+                    <span class="text-[10px] text-rose-300 block">Notifica al instante con foto desde tu cámara</span>
+                  </div>
+                </div>
+                <span class="text-rose-400">➔</span>
+              </button>
+            </div>
+
+            <!-- Regla de Oro SST del Día -->
+            <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-1.5">
+              <div class="flex items-center gap-2 text-amber-400 font-black text-xs">
+                <span>🛡️</span>
+                <span>Regla de Oro SST: Prevención en Operación</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                Antes de encender o accionar cualquier maquinaria pesada o herramienta eléctrica, verifica que las guardas mecánicas estén instaladas y que no haya compañeros en la zona de riesgo o punto ciego.
               </p>
             </div>
-            <span class="text-xs font-black text-indigo-900 bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-200 flex-shrink-0">
-              ${capsEvaluadasCount} de ${capacitaciones.length} Completadas
-            </span>
-          </div>
 
-          ${capacitaciones.length === 0 ? `
-            <div class="text-center py-8 text-slate-400 text-xs">
-              No tienes capacitaciones programadas en este momento.
+          </div>
+        ` : ''}
+
+        <!-- --------------------------------------------------------------- -->
+        <!-- PESTAÑA 2: MI CARGO Y DOCS (4 INSTRUMENTOS + FIRMA TÁCTIL)      -->
+        <!-- --------------------------------------------------------------- -->
+        ${activeMobileTab === 'docs' ? `
+          <div class="space-y-4 animate-fadeIn">
+            
+            <div class="bg-gradient-to-r from-indigo-950 to-slate-900 p-4 rounded-2xl border border-indigo-900/50 space-y-1">
+              <span class="text-[9px] font-black uppercase tracking-wider text-teal-300 block">
+                Cascada de Procesos & Gestión Documental
+              </span>
+              <h2 class="text-base font-black text-white">
+                Mis 4 Instrumentos Oficiales del Cargo
+              </h2>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                Documentos vinculantes generados automáticamente a partir del Mapa de Procesos de <strong>${empresa.razonSocial}</strong>. Puedes leerlos y firmarlos directamente con el dedo.
+              </p>
             </div>
-          ` : `
+
+            <!-- Listado de los 4 Instrumentos de Cargo Obligatorios -->
             <div class="space-y-3">
-              ${capacitaciones.map(cap => {
-                const miEvaluacion = (cap.evaluaciones || []).find(e => e.trabajadorId === trabajador.id || e.worker_id === trabajador.id);
-                const yaRealizada = !!miEvaluacion;
-                const esCap1 = (cap.order_number === 1 || cap.esInduccionObligatoria);
-                const passed = miEvaluacion?.passed !== undefined ? miEvaluacion.passed : (miEvaluacion?.aprobada !== undefined ? miEvaluacion.aprobada : true);
-                const nota = miEvaluacion?.nota || miEvaluacion?.score_obtained || 5.0;
-                const pct = miEvaluacion?.percentage !== undefined ? miEvaluacion.percentage : Math.round((nota / 5) * 100);
-                const totalPregs = (cap.preguntas || []).length || 13;
+              ${instrumentosCargo.map((inst, idx) => {
+                const sigFound = docSigs.find(s => s.document_type === inst.type || s.document_code === inst.id) ||
+                                 firmas.find(f => f.documentoCodigo === inst.id || f.documentoId === inst.id);
+                const firmado = !!sigFound;
 
                 return `
-                  <div class="p-4 sm:p-5 rounded-2xl border ${yaRealizada ? 'border-emerald-300 bg-emerald-50/20' : (esCap1 ? 'border-indigo-300 bg-indigo-50/25' : 'border-slate-200 bg-slate-50/50')} flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition hover:shadow-sm">
-                    <div class="space-y-1.5 flex-1">
-                      <div class="flex items-center gap-2 flex-wrap">
-                        ${esCap1 ? `
-                          <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black bg-indigo-600 text-white shadow-2xs">
-                            ★ Capacitación #1 Obligatoria: Inducción al SG-SST
-                          </span>
-                        ` : `
-                          <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-200 text-slate-700">
-                            Capacitación #${cap.order_number || 2}
-                          </span>
-                        `}
-                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black ${yaRealizada ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-300'}">
-                          ● ${yaRealizada ? 'Completada / Evaluada' : 'Pendiente por Realizar'}
-                        </span>
-                        <span class="text-[11px] text-slate-500 font-semibold">• Intensidad: ${cap.duracion || '2 Horas'} • ${totalPregs} Preguntas</span>
+                  <div class="bg-slate-950 p-4 rounded-2xl border ${firmado ? 'border-emerald-500/40' : 'border-slate-800'} space-y-3 shadow-sm transition">
+                    <div class="flex items-start justify-between gap-2">
+                      <div class="flex items-start gap-2.5">
+                        <span class="text-2xl flex-shrink-0">${inst.icono}</span>
+                        <div>
+                          <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-[10px] font-mono text-teal-400 font-bold">#${idx + 1}</span>
+                            <h3 class="text-xs font-black text-white leading-tight">${inst.title}</h3>
+                          </div>
+                          <span class="text-[10px] text-slate-400 block mt-0.5">${inst.norma}</span>
+                        </div>
                       </div>
 
-                      <h4 class="text-sm font-black text-slate-900">${cap.tema}</h4>
-                      <p class="text-xs text-slate-600 leading-relaxed">${cap.objetivo}</p>
-
-                      <div class="flex flex-wrap items-center gap-3 pt-1 text-[11px] text-slate-500">
-                        <span>👨‍🏫 Instructor: <strong class="text-slate-700">${cap.facilitador || 'Coordinador SG-SST'}</strong></span>
-                        ${cap.materialUrl ? `
-                          <a href="${cap.materialUrl}" target="_blank" class="text-indigo-600 hover:underline font-bold">🔗 Ver Material de Apoyo Externo ↗</a>
-                        ` : ''}
-                        ${yaRealizada && (miEvaluacion.accepted_at_bogota || miEvaluacion.timestamp) ? `
-                          <span class="font-mono text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                            ⏱️ Timestamp: ${miEvaluacion.accepted_at_bogota || miEvaluacion.timestamp}
-                          </span>
-                        ` : ''}
-                      </div>
+                      <span class="px-2 py-0.5 rounded-full text-[9px] font-black flex-shrink-0 ${firmado ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
+                        ${firmado ? '✓ Firmado' : '⚠️ Pendiente'}
+                      </span>
                     </div>
 
-                    <div class="flex-shrink-0 flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end justify-center gap-2">
-                      ${yaRealizada ? `
-                        <div class="flex items-center gap-2">
-                          <span class="px-3 py-1 rounded-xl text-xs font-black ${passed ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-rose-100 text-rose-800 border border-rose-300'}">
-                            ${passed ? '🏆 Aprobado' : '⚠️ No Aprobado'}: ${nota} / 5.0 (${pct}%)
-                          </span>
+                    ${firmado ? `
+                      <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 text-[10px] font-mono text-slate-300 space-y-0.5">
+                        <p class="text-emerald-400 font-bold">● Sello Legal Activo (Ley 527 / Retención 20 Años)</p>
+                        <p class="truncate">Hash: ${sigFound.signature_sha256 || sigFound.hashDocumento || 'SHA-256'}</p>
+                        <p class="text-slate-400">Firmado: ${sigFound.bogota_timestamp || new Date(sigFound.signed_at || sigFound.fechaHoraISO || Date.now()).toLocaleString()}</p>
+                      </div>
+                    ` : ''}
+
+                    <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800/80">
+                      <button 
+                        type="button" 
+                        onclick="window.abrirModalFirmarDocumentoCargo('${inst.type}', '${escapeHtml(inst.title)}', '${trabajador.id}')"
+                        class="py-2 px-3 ${firmado ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-teal-600 hover:bg-teal-500 text-white shadow-md'} rounded-xl text-xs font-black transition flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <span>${firmado ? '👁️ Ver Documento' : '✍️ Leer y Firmar'}</span>
+                      </button>
+
+                      <button 
+                        type="button" 
+                        onclick="window.imprimirInstrumentoActivoModal(null, '${inst.type === 'MANUAL_DE_CARGO' ? 'manual' : (inst.type === 'PERFIL_DE_CARGO' ? 'perfil' : (inst.type === 'PLAN_DE_TRABAJO_SEGURO' ? 'pts' : 'contrato'))}', '${trabajador.id}')"
+                        class="py-2 px-3 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <span>📥 PDF</span>
+                      </button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Políticas Institucionales SG-SST -->
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+              <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">
+                Políticas y Reglamentos de la Empresa (Ley 527 de 1999)
+              </h3>
+              
+              <div class="divide-y divide-slate-800 text-xs">
+                ${politicasInstitucionales.map(pol => {
+                  const firmada = firmas.some(f => f.documentoId === pol.id || f.documentoCodigo === pol.id);
+                  return `
+                    <div class="py-2.5 flex items-center justify-between gap-2">
+                      <div>
+                        <span class="font-bold text-white block text-[11px]">${pol.title}</span>
+                        <a href="${pol.enlace}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-teal-400 hover:underline">
+                          📖 Ver documento oficial en Google Docs ↗
+                        </a>
+                      </div>
+                      
+                      ${firmada ? `
+                        <span class="px-2 py-0.5 rounded text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex-shrink-0">
+                          ✓ Firmado
+                        </span>
+                      ` : `
+                        <button 
+                          type="button" 
+                          onclick="window.firmarPolitica('${pol.id}', '${escapeHtml(pol.title)}', '${trabajador.id}')"
+                          class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[10px] font-black flex-shrink-0 cursor-pointer"
+                        >
+                          ✍️ Firmar
+                        </button>
+                      `}
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+          </div>
+        ` : ''}
+
+        <!-- --------------------------------------------------------------- -->
+        <!-- PESTAÑA 3: E-LEARNING Y CAPACITACIONES SG-SST (AULA VIRTUAL)    -->
+        <!-- --------------------------------------------------------------- -->
+        ${activeMobileTab === 'elearning' ? `
+          <div class="space-y-4 animate-fadeIn">
+            
+            <!-- Banner Cabecera E-Learning -->
+            <div class="bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 p-4 rounded-2xl border border-indigo-900/60 space-y-2 shadow-lg">
+              <div class="flex items-center justify-between">
+                <span class="text-[9px] font-black uppercase tracking-wider text-indigo-300 block">
+                  Plan de Formación Obligatorio SG-SST (Dec. 1072 & Res. 0312)
+                </span>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black ${capsEvaluadasCount === capacitaciones.length && capacitaciones.length > 0 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
+                  ${capsEvaluadasCount}/${capacitaciones.length} Aprobados
+                </span>
+              </div>
+              <h2 class="text-base font-black text-white flex items-center gap-2">
+                <span>🎓</span>
+                <span>Aula Virtual & Evaluaciones E-Learning</span>
+              </h2>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                Cursos interactivos con diapositivas, videos técnicos y cuestionarios de 13 preguntas. Al aprobar, se expiden automáticamente tus formatos legales oficiales <strong>DOC-10</strong> (Asistencia) y <strong>DOC-16</strong> (Evaluación).
+              </p>
+              
+              <!-- Barra de Progreso del Plan de Formación -->
+              <div class="pt-1 space-y-1">
+                <div class="flex items-center justify-between text-[10px] font-bold">
+                  <span class="text-slate-400">Progreso de Formación del Trabajador</span>
+                  <span class="${capsEvaluadasCount === capacitaciones.length && capacitaciones.length > 0 ? 'text-emerald-400' : 'text-indigo-300'}">
+                    ${capacitaciones.length > 0 ? Math.round((capsEvaluadasCount / capacitaciones.length) * 100) : 100}% Completado
+                  </span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden border border-slate-700/60">
+                  <div 
+                    class="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 rounded-full transition-all duration-500" 
+                    style="width: ${capacitaciones.length > 0 ? Math.round((capsEvaluadasCount / capacitaciones.length) * 100) : 100}%"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Listado de Cursos del Plan de Capacitación -->
+            <div class="space-y-3">
+              ${capacitaciones.length === 0 ? `
+                <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 text-center space-y-2">
+                  <span class="text-3xl block">📚</span>
+                  <h3 class="text-xs font-bold text-white">No hay cursos programados</h3>
+                  <p class="text-[10px] text-slate-400">El responsable SST programará las capacitaciones de tu plan de formación.</p>
+                </div>
+              ` : capacitaciones.map((cap, idx) => {
+                const evals = cap.evaluaciones || [];
+                const evalCap = evals.find(e => e.trabajadorId === trabajador.id || e.worker_id === trabajador.id);
+                const aprobada = !!(evalCap && (evalCap.passed || evalCap.aprobada || (evalCap.nota || 0) >= 3.5));
+                const numPreguntas = (cap.preguntas || []).length || 13;
+                const certCode = evalCap?.certificate_code || (evalCap?.id ? `DP-EVAL-${String(evalCap.id).slice(-6).toUpperCase()}` : null);
+
+                return `
+                  <div class="bg-slate-950 p-4 rounded-2xl border ${aprobada ? 'border-emerald-500/40 shadow-emerald-950/20' : 'border-indigo-900/40 shadow-indigo-950/20'} space-y-3 shadow-md transition">
+                    <div class="flex items-start justify-between gap-2">
+                      <div class="flex items-start gap-2.5">
+                        <div class="w-9 h-9 rounded-xl ${aprobada ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'} flex items-center justify-center text-lg flex-shrink-0">
+                          ${aprobada ? '🏆' : '🎓'}
                         </div>
-                        <div class="flex flex-wrap items-center gap-1.5">
-                          <button onclick="window.imprimirRegistroCapacitacionDOC10('${miEvaluacion.id}')" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[11px] font-black transition flex items-center gap-1 cursor-pointer shadow-2xs" title="Imprimir Formato Oficial de Asistencia e Inducción DOC-10">
-                            <span>📄</span> Formato DOC-10
+                        <div>
+                          <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-[10px] font-mono ${aprobada ? 'text-emerald-400' : 'text-indigo-400'} font-bold">#${cap.order_number || idx + 1}</span>
+                            ${(cap.order_number === 1 || cap.esInduccionObligatoria) ? `
+                              <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                Obligatoria Inducción
+                              </span>
+                            ` : ''}
+                          </div>
+                          <h3 class="text-xs font-black text-white leading-snug mt-0.5">${cap.tema}</h3>
+                          <div class="flex items-center gap-2 mt-1 text-[10px] text-slate-400 flex-wrap">
+                            <span>⏱️ ${cap.duracion || '2 Horas'}</span>
+                            <span>•</span>
+                            <span>📝 ${numPreguntas} Preguntas</span>
+                            <span>•</span>
+                            <span>📊 Diapositivas + Video</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <span class="px-2 py-0.5 rounded-full text-[9px] font-black flex-shrink-0 ${aprobada ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
+                        ${aprobada ? '✓ Aprobado' : '⚠️ Pendiente'}
+                      </span>
+                    </div>
+
+                    ${aprobada ? `
+                      <div class="p-2.5 bg-slate-900/90 rounded-xl border border-slate-800 text-[10px] space-y-1 font-mono">
+                        <div class="flex items-center justify-between text-emerald-400 font-bold">
+                          <span>● Certificación DOC-10 & DOC-16 Activa</span>
+                          <span>Nota: ${evalCap.nota || 5.0} / 5.0</span>
+                        </div>
+                        <div class="text-slate-400 flex items-center justify-between">
+                          <span>Cert: ${certCode || 'DP-EVAL-SST'}</span>
+                          <span>${evalCap.accepted_at_bogota || evalCap.bogota_timestamp || (evalCap.fecha ? new Date(evalCap.fecha).toLocaleDateString() : 'Aprobado')}</span>
+                        </div>
+                      </div>
+                    ` : `
+                      <div class="p-2.5 bg-indigo-950/30 rounded-xl border border-indigo-900/30 text-[11px] text-slate-300">
+                        Revisa el material audiovisual interactivo y completa el cuestionario de selección múltiple con mínimo 70% de aciertos.
+                      </div>
+                    `}
+
+                    <div class="pt-1 border-t border-slate-800/80">
+                      ${aprobada ? `
+                        <div class="grid grid-cols-3 gap-2">
+                          <button 
+                            type="button" 
+                            onclick="window.abrirAulaVirtualTrabajador('${cap.id}', '${trabajador.id}')"
+                            class="py-2 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-[10px] font-black transition flex items-center justify-center gap-1 cursor-pointer"
+                            title="Repasar contenidos y video del curso"
+                          >
+                            <span>🎓 Repasar</span>
                           </button>
-                          <button onclick="window.imprimirEvaluacionCapacitacionDOC16('${miEvaluacion.id}')" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-[11px] font-black transition flex items-center gap-1 cursor-pointer shadow-2xs" title="Imprimir Evaluación Calificada de 13 Preguntas DOC-16">
-                            <span>📝</span> Formato DOC-16
+                          <button 
+                            type="button" 
+                            onclick="window.imprimirRegistroCapacitacionDOC10('${evalCap.id}')"
+                            class="py-2 px-2 bg-indigo-600/80 hover:bg-indigo-600 text-white rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 cursor-pointer"
+                            title="Imprimir planilla legal DOC-10 de asistencia"
+                          >
+                            <span>📄 DOC-10</span>
                           </button>
-                          <button onclick="window.abrirAulaVirtualTrabajador('${cap.id}', '${trabajador.id}')" class="px-2.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-xl text-[11px] font-bold transition flex items-center gap-1 cursor-pointer" title="Volver a abrir el Aula Virtual y presentar la evaluación en modo pruebas">
-                            <span>🔄</span> Repetir Aula / Examen
+                          <button 
+                            type="button" 
+                            onclick="window.imprimirEvaluacionCapacitacionDOC16('${evalCap.id}')"
+                            class="py-2 px-2 bg-purple-600/80 hover:bg-purple-600 text-white rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 cursor-pointer"
+                            title="Imprimir formato legal DOC-16 de evaluación"
+                          >
+                            <span>📝 DOC-16</span>
                           </button>
                         </div>
                       ` : `
-                        <button onclick="window.abrirAulaVirtualTrabajador('${cap.id}', '${trabajador.id}')" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-black transition shadow-md cursor-pointer flex items-center justify-center gap-2 active:scale-95">
-                          <span>🎓</span>
-                          <span>Ingresar al Aula Virtual y Evaluar (${totalPregs} Preguntas)</span>
+                        <button 
+                          type="button" 
+                          onclick="window.abrirAulaVirtualTrabajador('${cap.id}', '${trabajador.id}')"
+                          class="w-full py-2.5 px-4 bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-black text-xs shadow-md shadow-indigo-900/40 transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                        >
+                          <span>▶️ Ingresar al Curso y Responder Cuestionario ➔</span>
                         </button>
                       `}
                     </div>
@@ -2893,268 +3658,1032 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
                 `;
               }).join('')}
             </div>
-          `}
-        </div>
-      ` : ''}
 
-      <!-- =================================================================== -->
-      <!-- MÓDULO 2: MIS HERRAMIENTAS, EQUIPOS BAJO CUSTODIA, EPP & PREOPERACIONAL -->
-      <!-- =================================================================== -->
-      ${mostrarHerramientas ? `
-        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-amber-200 shadow-xs space-y-5">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-            <div>
-              <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
-                <span>🛠️ Mis Equipos bajo Custodia, Dotación EPP e Inspección Preoperacional</span>
-              </h3>
-              <p class="text-xs text-slate-500 mt-0.5">
-                Consulta las herramientas asignadas a tu cargo, verifica los Elementos de Protección Personal (EPP) obligatorios y registra la inspección preoperacional antes de iniciar turno.
-              </p>
-            </div>
-            <button onclick="window.abrirModalPreoperacionalTrabajador('${trabajador.id}')" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-sm flex-shrink-0">
-              <span>📋</span>
-              <span>+ Realizar Inspección Preoperacional</span>
-            </button>
           </div>
+        ` : ''}
 
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <!-- Sub-bloque A: Herramientas y Equipos Asignados -->
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+        <!-- --------------------------------------------------------------- -->
+        <!-- PESTAÑA 4: HERRAMIENTAS, ESCÁNER QR & EPP                      -->
+        <!-- --------------------------------------------------------------- -->
+        ${activeMobileTab === 'tools' ? `
+          <div class="space-y-4 animate-fadeIn">
+            
+            <!-- Botón Grande para Escanear QR en Planta -->
+            <div class="bg-gradient-to-r from-teal-950 via-slate-900 to-indigo-950 p-4 rounded-2xl border border-teal-800/60 shadow-lg text-center space-y-2">
+              <span class="text-3xl block">📷</span>
+              <h2 class="text-sm font-black text-white">Escaneo Rápido de Herramientas</h2>
+              <p class="text-[11px] text-slate-300">
+                Usa la cámara de tu celular para escanear el código QR fijado en la máquina o equipo en planta.
+              </p>
+              <button 
+                type="button" 
+                onclick="window.abrirModalEscanerQR('${trabajador.id}')"
+                class="w-full py-2.5 px-4 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-black text-xs shadow-md shadow-teal-900/40 transition cursor-pointer active:scale-98"
+              >
+                Abrir Escáner QR de Cámara
+              </button>
+            </div>
+
+            <!-- Sección A: Equipos Asignados bajo Custodia -->
+            <div class="space-y-2.5">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-black text-slate-800 uppercase tracking-wider">🔧 Equipos Asignados / En Planta</span>
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">${misHerramientasAsignadas.length > 0 ? `${misHerramientasAsignadas.length} Bajo mi custodia` : `${toolsInventory.length} En inventario planta`}</span>
+                <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">
+                  🔧 Mis Equipos Asignados (${misHerramientasAsignadas.length})
+                </h3>
+                <span class="text-[10px] text-teal-400 font-bold">Decreto 1072</span>
               </div>
 
               ${(misHerramientasAsignadas.length > 0 ? misHerramientasAsignadas : toolsInventory.slice(0, 3)).map(tool => {
-                const sst = store.getToolSST(tool.id);
                 const asg = store.getActiveToolAssignment(tool.id);
+                const sst = store.getToolSST(tool.id);
+                const custodiaFirmada = !!asg?.digital_signature_file || !!asg?.digital_signature_hash;
+
                 return `
-                  <div class="bg-white p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                      <div class="flex items-center gap-2">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-mono font-black bg-slate-100 text-slate-800">${tool.internal_code}</span>
-                        <span class="text-xs font-black text-slate-900">${tool.exact_name}</span>
+                  <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                    <div class="flex items-start justify-between gap-2">
+                      <div>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-black bg-slate-800 text-teal-300">${tool.internal_code}</span>
+                          <span class="text-xs font-black text-white">${tool.exact_name}</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 block mt-0.5">
+                          Marca: ${tool.brand || 'Industrial'} · Modelo: ${tool.model || 'N/A'} · Serie: ${tool.serial_number || 'N/A'}
+                        </span>
                       </div>
-                      <span class="text-[11px] text-slate-500 block mt-0.5">${tool.category} • Marca: ${tool.brand} • Estado: <strong>${tool.current_status}</strong></span>
-                      ${sst?.preventive_measures ? `<span class="text-[10px] text-amber-800 bg-amber-50 px-2 py-0.5 rounded block mt-1 border border-amber-100">🛡️ Control: ${sst.preventive_measures}</span>` : ''}
-                      ${asg ? `<span class="text-[10px] font-mono text-emerald-700 block mt-0.5">✓ Custodia Firmada: ${asg.digital_signature_hash}</span>` : ''}
+                      <span class="px-2 py-0.5 rounded text-[9px] font-black ${tool.current_status === 'Operativa' || tool.current_status === 'En Funcionamiento' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">
+                        ${tool.current_status}
+                      </span>
                     </div>
-                    <button onclick="window.abrirModalPreoperacionalTrabajador('${trabajador.id}', '${tool.id}')" class="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-lg text-[11px] font-bold transition cursor-pointer flex-shrink-0">
-                      📋 Preoperacional
-                    </button>
+
+                    ${custodiaFirmada ? `
+                      <div class="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
+                        <span>✓ Custodia Firmada Digitalmente:</span>
+                        <span class="truncate max-w-[140px] text-slate-400">${asg.digital_signature_hash || 'Acta en regla'}</span>
+                      </div>
+                    ` : `
+                      <button 
+                        type="button" 
+                        onclick="window.abrirModalFirmaCustodia('${tool.id}', '${escapeHtml(tool.exact_name)}', '${trabajador.id}')"
+                        class="w-full py-1.5 px-3 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-xl text-[10px] font-black transition cursor-pointer"
+                      >
+                        ✍️ Firmar Acta de Custodia / Recibido
+                      </button>
+                    `}
+
+                    <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800">
+                      <button 
+                        type="button" 
+                        onclick="window.abrirModalPreoperacionalTrabajador('${trabajador.id}', '${tool.id}')"
+                        class="py-2 px-3 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-black transition flex items-center justify-center gap-1 cursor-pointer"
+                      >
+                        <span>📋</span>
+                        <span>Preoperacional</span>
+                      </button>
+
+                      <button 
+                        type="button" 
+                        onclick="window.abrirModalFichaTecnicaSST('${tool.id}')"
+                        class="py-2 px-3 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer"
+                      >
+                        <span>🛡️</span>
+                        <span>Ficha SST</span>
+                      </button>
+                    </div>
                   </div>
                 `;
               }).join('')}
             </div>
 
-            <!-- Sub-bloque B: EPP Obligatorios del Cargo & Historial Preoperacional -->
+            <!-- Sección B: Bandeja de Mis Entregas de EPP y Dotación (Decreto 1072 & Res. 0312 Estándar 4.2.6) -->
             <div class="space-y-3">
-              <div class="p-4 rounded-2xl bg-teal-50/50 border border-teal-200 space-y-2.5">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-black text-teal-950 uppercase tracking-wider">🦺 Mis EPP Obligatorios (${trabajador.cargo})</span>
-                  <button onclick="window.firmarPolitica('DOC-EPP-${trabajador.id}', 'Constancia de Entrega y Uso Obligatorio de Dotación y EPP', '${trabajador.id}')" class="px-2.5 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-[10px] font-bold cursor-pointer">
-                    ✍️ Firmar Recibido EPP
-                  </button>
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+                    <span>🦺</span>
+                    <span>Mis Entregas de EPP &amp; Dotación Legal</span>
+                  </h3>
+                  <span class="text-[10px] text-teal-400 font-bold">Estándar 4.2.6 Res. 0312 • Art. 230 CST</span>
                 </div>
-                <div class="flex flex-wrap gap-1.5">
-                  ${(eppConsolidados.length > 0 ? eppConsolidados : ['Casco de seguridad dieléctrico', 'Botas de seguridad con puntera', 'Guantes de carnaza / nitrilo', 'Protección auditiva y visual']).map(epp => `
-                    <span class="px-2.5 py-1 rounded-lg bg-white border border-teal-200 text-teal-900 text-[11px] font-bold flex items-center gap-1 shadow-2xs">
-                      <span>✓</span> ${epp}
+                <span class="px-2 py-0.5 rounded text-[9px] font-black ${entregasEppPendientes.length > 0 ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse' : 'bg-emerald-500/20 text-emerald-300'}">
+                  ${entregasEppPendientes.length > 0 ? `⚠️ ${entregasEppPendientes.length} Pendiente(s)` : '✓ Al Día'}
+                </span>
+              </div>
+
+              <!-- SUBSECCIÓN 1: ENTREGAS PENDIENTES POR FIRMAR (ALERTA DESTACADA) -->
+              ${entregasEppPendientes.length > 0 ? `
+                <div class="space-y-2.5">
+                  <div class="bg-amber-500/15 border border-amber-500/50 rounded-2xl p-3.5 space-y-1.5 shadow-lg shadow-amber-950/40">
+                    <div class="flex items-center gap-2 text-amber-300 font-black text-xs">
+                      <span class="text-base">⚠️</span>
+                      <span>TIENES ${entregasEppPendientes.length} ACTA(S) PENDIENTE(S) POR FIRMAR</span>
+                    </div>
+                    <p class="text-[11px] text-slate-300 leading-snug">
+                      El área de SST ha registrado la entrega formal de tus prendas de dotación o EPP. Revisa los elementos y firma con tu dedo para legalizar el recibo conforme a la Ley 9/1979 y Decreto 1072.
+                    </p>
+                  </div>
+
+                  ${entregasEppPendientes.map(deliv => {
+                    const items = Array.isArray(deliv.items) ? deliv.items : [];
+                    const bogotaHora = deliv.bogota_assigned_at || new Date(deliv.assigned_at).toLocaleString('es-CO');
+
+                    return `
+                      <div class="bg-slate-950 border border-amber-500/50 rounded-2xl p-4 space-y-3 shadow-md">
+                        <div class="flex items-start justify-between gap-2 border-b border-slate-800 pb-2">
+                          <div>
+                            <div class="flex items-center gap-2">
+                              <span class="font-mono text-xs font-black text-amber-400">${deliv.delivery_consecutive}</span>
+                              <span class="px-2 py-0.5 rounded text-[9px] font-black bg-amber-500/20 text-amber-300">
+                                PENDIENTE FIRMA
+                              </span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
+                              <span>🕒 Asignado:</span>
+                              <span class="font-bold text-slate-300">${bogotaHora}</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400">
+                              <span>Motivo:</span>
+                              <span class="text-slate-200 font-bold">${
+                                deliv.delivery_reason === 'Periodica_Ley_Abril_Agosto_Diciembre' ? 'Dotación Periódica de Ley (Art. 230 CST)' :
+                                deliv.delivery_reason === 'Dotacion_Ingreso' ? 'Dotación de Ingreso' :
+                                deliv.delivery_reason === 'Reposicion_Por_Desgaste_Deterioro' ? 'Reposición por Desgaste de EPP' :
+                                'Cambio de Cargo'
+                              }</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Lista de Ítems Asignados -->
+                        <div class="space-y-1.5">
+                          <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Elementos Asignados en esta Entrega:</span>
+                          ${items.map(it => `
+                            <div class="p-2 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs">
+                              <div>
+                                <span class="font-bold text-white block">${escapeHtml(it.item_name_snapshot || it.item_name)}</span>
+                                <span class="text-[10px] text-slate-400">
+                                  Norma: ${it.technical_standard_snapshot || it.technical_standard || 'N/A'} · Talla: <strong class="text-teal-300">${it.size_delivered || 'Única'}</strong>
+                                </span>
+                              </div>
+                              <span class="px-2 py-1 rounded-lg bg-teal-500/20 text-teal-300 font-mono font-bold text-xs">
+                                Cant: ${it.quantity_delivered || 1}
+                              </span>
+                            </div>
+                          `).join('')}
+                        </div>
+
+                        <!-- Botón de Firma -->
+                        <button 
+                          type="button" 
+                          onclick="window.abrirModalFirmarActaEntregaEPP('${deliv.id}', '${trabajador.id}')"
+                          class="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl font-black text-xs shadow-lg shadow-emerald-950/50 transition cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+                        >
+                          <span>✍️</span>
+                          <span>Revisar y Firmar Acta de Entrega con el Dedo</span>
+                        </button>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              ` : ''}
+
+              <!-- SUBSECCIÓN 2: HISTORIAL DE ENTREGAS FIRMADAS (FIRMADO_ENTREGADO) -->
+              <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                    <span>📜</span>
+                    <span>Historial de Dotación &amp; EPP Recibidos (${entregasEppFirmadas.length})</span>
+                  </h4>
+                  <span class="text-[10px] font-mono text-emerald-400 font-bold">Ley 527/1999</span>
+                </div>
+
+                ${entregasEppFirmadas.length === 0 ? `
+                  <div class="text-center py-4 space-y-1">
+                    <p class="text-xs text-slate-400">No registras actas firmadas formalmente todavía.</p>
+                    <span class="text-[10px] text-slate-500 block">Tus entregas de dotación cuatrimestral y EPP homologados se archivarán aquí con retención legal de 20 años.</span>
+                  </div>
+                ` : `
+                  <div class="space-y-2 max-h-60 overflow-y-auto">
+                    ${entregasEppFirmadas.map(deliv => {
+                      const items = Array.isArray(deliv.items) ? deliv.items : [];
+                      const fechaFirma = deliv.bogota_signed_at || new Date(deliv.worker_signed_at || deliv.updated_at).toLocaleString('es-CO');
+
+                      return `
+                        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+                          <div class="flex items-center justify-between">
+                            <div>
+                              <span class="font-mono text-xs font-bold text-teal-300 block">${deliv.delivery_consecutive}</span>
+                              <span class="text-[10px] text-slate-400">Firmado el: ${fechaFirma}</span>
+                            </div>
+                            <span class="px-2 py-0.5 rounded text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                              ✓ Entregado y Firmado
+                            </span>
+                          </div>
+
+                          <div class="text-[11px] text-slate-300 line-clamp-2">
+                            ${items.map(it => `${it.quantity_delivered || 1}x ${it.item_name_snapshot || it.item_name} (Talla: ${it.size_delivered || 'Única'})`).join(', ')}
+                          </div>
+
+                          <div class="flex items-center justify-between pt-1 border-t border-slate-800/80">
+                            <span class="text-[9px] font-mono text-slate-500 truncate max-w-[150px]" title="${deliv.cryptographic_hash_sha256 || ''}">
+                              Hash: ${(deliv.cryptographic_hash_sha256 || 'SHA-256').substring(0, 16)}...
+                            </span>
+                            <button 
+                              type="button" 
+                              onclick="window.imprimirActaEntregaEPP_SST_FOR_01('${deliv.id}')"
+                              class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-teal-300 rounded-lg text-[10px] font-black transition flex items-center gap-1 cursor-pointer border border-slate-700"
+                              title="Descargar o imprimir formato oficial SST-FOR-EPP-01"
+                            >
+                              <span>📄</span>
+                              <span>Ver Formato PDF</span>
+                            </button>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                `}
+
+                <!-- Si no tiene ni pendientes ni firmadas, mostrar lista reglamentaria del cargo -->
+                ${misEntregasEpp.length === 0 ? `
+                  <div class="pt-2 border-t border-slate-800/80 space-y-2">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                      Elementos Requeridos por Cargo (${trabajador.cargo}):
                     </span>
+                    <div class="space-y-1.5">
+                      ${eppListaFinal.map(epp => `
+                        <div class="p-2 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs">
+                          <span class="font-bold text-slate-200">${epp}</span>
+                          <span class="text-[10px] text-teal-400 font-mono">Norma NTC / ANSI</span>
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- Sección C: Historial de Inspecciones Preoperacionales -->
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">
+                  📋 Mis Preoperacionales Recientes (${preoperacionales.length})
+                </h3>
+                <button 
+                  type="button" 
+                  onclick="window.abrirModalPreoperacionalTrabajador('${trabajador.id}')"
+                  class="text-[10px] text-teal-400 hover:underline font-bold"
+                >
+                  + Nuevo
+                </button>
+              </div>
+
+              ${preoperacionales.length === 0 ? `
+                <p class="text-[11px] text-slate-400 py-2">No has registrado inspecciones preoperacionales en este turno.</p>
+              ` : `
+                <div class="divide-y divide-slate-800/80 max-h-48 overflow-y-auto space-y-1 text-xs">
+                  ${preoperacionales.slice(0, 5).map(p => `
+                    <div class="py-2 flex items-center justify-between gap-2">
+                      <div>
+                        <span class="font-black text-white block text-[11px]">${p.equipoNombre}</span>
+                        <span class="text-[10px] text-slate-400 block">${new Date(p.performed_at || p.fechaCreacion || Date.now()).toLocaleDateString()} · ${p.observaciones || 'Verificación estándar'}</span>
+                      </div>
+                      <span class="px-2 py-0.5 rounded text-[9px] font-black ${p.aptoOperar === 'SI' || p.status_result === 'Aprobado' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+                        ${p.aptoOperar === 'SI' || p.status_result === 'Aprobado' ? '✓ Apto' : '🛑 No Apto'}
+                      </span>
+                    </div>
                   `).join('')}
+                </div>
+              `}
+            </div>
+
+          </div>
+        ` : ''}
+
+        <!-- --------------------------------------------------------------- -->
+        <!-- PESTAÑA 4: REPORTAR SST (WIZARD DE 3 PASOS CON CÁMARA)          -->
+        <!-- --------------------------------------------------------------- -->
+        ${activeMobileTab === 'reportar' ? `
+          <div class="space-y-4 animate-fadeIn">
+            
+            <div class="bg-gradient-to-r from-rose-950 to-slate-900 p-4 rounded-2xl border border-rose-900/50 space-y-1">
+              <span class="text-[9px] font-black uppercase tracking-wider text-rose-300 block">
+                Participación Preventiva • Dec. 1072 Art. 2.2.4.6.10
+              </span>
+              <h2 class="text-base font-black text-white">
+                Reporte Ágil de Peligros y Condiciones Inseguras
+              </h2>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                Notifica en 3 pasos cualquier daño en maquinaria, piso resbaloso, falta de iluminación o acto inseguro en planta.
+              </p>
+            </div>
+
+            <!-- Formulario Wizard de 3 Pasos -->
+            <form id="form-wizard-reporte-sst" class="bg-slate-950 p-4 rounded-3xl border border-slate-800 space-y-4">
+              
+              <!-- Paso 1: Tipo de Reporte -->
+              <div class="space-y-1.5">
+                <label class="text-[11px] font-black uppercase text-teal-300 block">
+                  1. ¿Qué deseas reportar? *
+                </label>
+                <div class="grid grid-cols-3 gap-1.5 text-center text-xs">
+                  <label class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-teal-500 cursor-pointer block has-checked:border-teal-400 has-checked:bg-teal-950/40">
+                    <input type="radio" name="wiz-tipo" value="Condicion_Insegura" checked class="hidden">
+                    <span class="text-base block mb-0.5">⚠️</span>
+                    <span class="font-bold text-[10px] text-white block">Condición Insegura</span>
+                  </label>
+                  <label class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-teal-500 cursor-pointer block has-checked:border-teal-400 has-checked:bg-teal-950/40">
+                    <input type="radio" name="wiz-tipo" value="Acto_Inseguro" class="hidden">
+                    <span class="text-base block mb-0.5">🛑</span>
+                    <span class="font-bold text-[10px] text-white block">Acto Inseguro</span>
+                  </label>
+                  <label class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-teal-500 cursor-pointer block has-checked:border-teal-400 has-checked:bg-teal-950/40">
+                    <input type="radio" name="wiz-tipo" value="Incidente_Trabajo" class="hidden">
+                    <span class="text-base block mb-0.5">🚨</span>
+                    <span class="font-bold text-[10px] text-white block">Incidente (Casi-Accidente)</span>
+                  </label>
                 </div>
               </div>
 
-              <!-- Últimos Preoperacionales Registrados -->
-              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <span class="text-xs font-black text-slate-800 uppercase tracking-wider block">📋 Mis Inspecciones Preoperacionales Recientes (${preoperacionales.length})</span>
-                ${preoperacionales.length === 0 ? `
-                  <p class="text-[11px] text-slate-400">Aún no has registrado inspecciones preoperacionales en este turno.</p>
-                ` : `
-                  <div class="divide-y divide-slate-200/70 max-h-36 overflow-y-auto">
-                    ${preoperacionales.slice(0, 4).map(p => `
-                      <div class="py-1.5 flex items-center justify-between text-xs">
-                        <div>
-                          <span class="font-bold text-slate-800">${p.equipoNombre}</span>
-                          <span class="text-[10px] text-slate-500 block">${new Date(p.fechaCreacion || Date.now()).toLocaleString()} • ${p.observaciones || 'Verificación estándar'}</span>
-                        </div>
-                        <span class="px-2 py-0.5 rounded text-[10px] font-black ${p.aptoOperar === 'SI' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
-                          ${p.aptoOperar === 'SI' ? '✓ Apto' : '🛑 No Apto'}
-                        </span>
-                      </div>
+              <!-- Paso 2: Ubicación y Descripción con Chips Rápidos -->
+              <div class="space-y-2">
+                <label class="text-[11px] font-black uppercase text-teal-300 block">
+                  2. Ubicación y Detalle del Peligro *
+                </label>
+                
+                <input 
+                  type="text" 
+                  id="wiz-ubicacion" 
+                  required 
+                  value="${escapeHtml(trabajador.area || 'Planta Operativa')}" 
+                  placeholder="Ubicación exacta (ej. Patio de hornos, Molino 2...)" 
+                  class="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                >
+
+                <!-- Chips de Descripción Rápida -->
+                <div class="space-y-1">
+                  <span class="text-[10px] text-slate-400 block">Opciones rápidas frecuentes:</span>
+                  <div class="flex flex-wrap gap-1.5">
+                    ${['Piso resbaloso / Grasa', 'Herramienta sin guarda', 'Falta de iluminación', 'Derrame de fluidos', 'No uso de EPP', 'Falla eléctrica', 'Andamio inestable'].map(chip => `
+                      <button 
+                        type="button" 
+                        onclick="document.getElementById('wiz-descripcion').value = '${chip} en ' + document.getElementById('wiz-ubicacion').value;"
+                        class="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-teal-500 text-[10px] font-bold text-slate-300 hover:text-white transition cursor-pointer"
+                      >
+                        + ${chip}
+                      </button>
                     `).join('')}
                   </div>
+                </div>
+
+                <textarea 
+                  id="wiz-descripcion" 
+                  required 
+                  rows="3" 
+                  placeholder="Describe brevemente la anomalía o riesgo observado..." 
+                  class="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                ></textarea>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="text-[10px] text-slate-400 block mb-0.5">Nivel de Severidad</label>
+                    <select id="wiz-severidad" class="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white font-bold">
+                      <option value="Media" selected>🟡 Media / Preventiva</option>
+                      <option value="Alta">🔴 Alta / Inminente</option>
+                      <option value="Baja">🟢 Baja / Oportunidad</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Paso 3: Foto con la Cámara del Celular -->
+              <div class="space-y-2">
+                <label class="text-[11px] font-black uppercase text-teal-300 block">
+                  3. Foto de Evidencia (Cámara del Celular)
+                </label>
+                
+                <div class="flex items-center gap-3">
+                  <label class="flex-1 py-3 px-4 bg-slate-900 hover:bg-slate-800 border-2 border-dashed border-slate-700 hover:border-teal-500 rounded-2xl text-center cursor-pointer transition">
+                    <span class="text-xl block mb-0.5">📸</span>
+                    <span class="text-xs font-black text-teal-300 block">Tomar Foto con Celular</span>
+                    <span class="text-[10px] text-slate-400 block">Compresión automática</span>
+                    <input type="file" id="wiz-foto-input" accept="image/*" capture="environment" class="hidden">
+                  </label>
+
+                  <div id="wiz-foto-preview-container" class="w-20 h-20 rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden hidden flex-shrink-0">
+                    <img id="wiz-foto-preview-img" src="" alt="Vista previa" class="w-full h-full object-cover">
+                  </div>
+                </div>
+              </div>
+
+              <button 
+                type="submit" 
+                id="btn-submit-wiz-reporte"
+                class="w-full py-3.5 px-4 bg-rose-600 hover:bg-rose-500 text-white rounded-2xl font-black text-xs sm:text-sm shadow-lg shadow-rose-950/50 transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              >
+                <span>🚀 Enviar Reporte Inmediato a SST</span>
+              </button>
+            </form>
+
+            <!-- Historial de Mis Reportes Realizados -->
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+              <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">
+                Historial de Mis Reportes (${reportesPeligro.length})
+              </h3>
+
+              ${reportesPeligro.length === 0 ? `
+                <p class="text-[11px] text-slate-400 py-2">No has reportado condiciones inseguras recientemente.</p>
+              ` : `
+                <div class="divide-y divide-slate-800/80 space-y-2 text-xs">
+                  ${reportesPeligro.map(r => `
+                    <div class="pt-2 space-y-1">
+                      <div class="flex items-center justify-between">
+                        <span class="px-2 py-0.5 rounded text-[9px] font-black bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                          ${r.prioridad || r.severity_level || 'Media'}
+                        </span>
+                        <span class="text-[10px] text-slate-400">
+                          ${new Date(r.fecha || r.fechaReporte || r.reported_at || Date.now()).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p class="font-bold text-white">${r.descripcion}</p>
+                      <p class="text-[10px] text-slate-400">📍 ${r.ubicacion || 'Planta'} · Estado: <strong class="text-teal-300">${r.estado || r.status || 'En Gestión SST'}</strong></p>
+                      ${r.photo_url || r.fotoUrl ? `
+                        <div class="mt-1">
+                          <img src="${r.photo_url || r.fotoUrl}" class="w-24 h-16 object-cover rounded-xl border border-slate-800" alt="Evidencia">
+                        </div>
+                      ` : ''}
+                    </div>
+                  `).join('')}
+                </div>
+              `}
+            </div>
+
+          </div>
+        ` : ''}
+
+        <!-- --------------------------------------------------------------- -->
+        <!-- PESTAÑA 5: MI PERFIL (SALUD, CAPACITACIONES & DESCARGA PDFS)    -->
+        <!-- --------------------------------------------------------------- -->
+        ${activeMobileTab === 'perfil' ? `
+          <div class="space-y-4 animate-fadeIn">
+            
+            <!-- Ficha Resumen del Trabajador -->
+            <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 p-5 rounded-3xl border border-slate-800 space-y-3">
+              <div class="flex items-center gap-3">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center text-xl font-black shadow-md border-2 border-emerald-400/30 flex-shrink-0">
+                  ${trabajador.nombre.substring(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <h2 class="text-base font-black text-white">${trabajador.nombre}</h2>
+                  <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    ${trabajador.cargo}
+                  </span>
+                  <p class="text-[10px] text-slate-400 mt-0.5">
+                    C.C. ${trabajador.identificacion || trabajador.cedula} · ${trabajador.tipoContrato || 'Término Indefinido'}
+                  </p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 text-[10px] bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+                <div><span class="text-slate-400">EPS:</span> <strong class="text-white">${trabajador.eps || 'Sura EPS'}</strong></div>
+                <div><span class="text-slate-400">ARL:</span> <strong class="text-white">${trabajador.arl || 'Positiva ARL'}</strong></div>
+                <div><span class="text-slate-400">AFP:</span> <strong class="text-white">${trabajador.afp || 'Protección'}</strong></div>
+                <div><span class="text-slate-400">Ingreso:</span> <strong class="text-white">${trabajador.fechaContrato || trabajador.fechaIngreso || 'Vigente'}</strong></div>
+              </div>
+            </div>
+
+            <!-- Salud Ocupacional (Profesiograma Médico) -->
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-black uppercase tracking-wider text-teal-300">
+                  🏥 Exámenes Médicos Ocupacionales (Profesiograma)
+                </h3>
+                <span class="text-[10px] font-bold text-emerald-400">Apto sin restricciones</span>
+              </div>
+
+              <div class="space-y-1.5 text-xs text-slate-300">
+                <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
+                  <span class="font-black text-white block text-[11px]">1. Examen de Ingreso / Periódico</span>
+                  <p class="text-[10px] text-slate-400 mt-0.5">
+                    Énfasis osteomuscular, audiometría tonal ocupacional, agudeza visual y valoración médica general.
+                  </p>
+                </div>
+                <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
+                  <span class="font-black text-white block text-[11px]">2. Vigencia de Concepto de Aptitud</span>
+                  <p class="text-[10px] text-slate-400 mt-0.5">
+                    Vigente conforme a la Res. 2346 de 2007. Próximo examen periódico programado dentro del ciclo anual.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Formación y Capacitaciones (DOC-10 y DOC-16) -->
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-black uppercase tracking-wider text-slate-200">
+                  🎓 Cursos y Aula Virtual (${capsEvaluadasCount}/${capacitaciones.length})
+                </h3>
+                <span class="text-[10px] text-indigo-400 font-bold">DOC-10 & DOC-16</span>
+              </div>
+
+              <div class="space-y-2">
+                ${capacitaciones.map(cap => {
+                  const evalCap = (cap.evaluaciones || []).find(e => e.trabajadorId === trabajador.id || e.worker_id === trabajador.id);
+                  const realizada = !!evalCap;
+                  return `
+                    <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-between gap-2 text-xs">
+                      <div>
+                        <span class="font-bold text-white block text-[11px]">${cap.tema}</span>
+                        <span class="text-[10px] text-slate-400">${cap.duracion || '2 Horas'} · ${evalCap ? `Nota: ${evalCap.nota || 5.0} / 5.0` : 'Pendiente de realizar'}</span>
+                      </div>
+                      <button 
+                        type="button" 
+                        onclick="window.abrirAulaVirtualTrabajador('${cap.id}', '${trabajador.id}')"
+                        class="px-2.5 py-1 ${realizada ? 'bg-emerald-600 text-white' : 'bg-indigo-600 text-white'} rounded-lg text-[10px] font-black flex-shrink-0 cursor-pointer"
+                      >
+                        ${realizada ? 'Ver Certificado' : 'Ir al Curso ➔'}
+                      </button>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- Bandeja de Descarga de Documentos Firmados (Retención 20 Años) -->
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-black uppercase tracking-wider text-slate-200">
+                  📁 Documentos y Actas Firmadas (Retención 20 Años)
+                </h3>
+                <span class="text-[9px] text-slate-400">Dec. 1072 Art. 2.2.4.6.13</span>
+              </div>
+
+              <div class="space-y-1.5 text-xs">
+                ${docSigs.length === 0 ? `
+                  <p class="text-[11px] text-slate-400 py-2">Aún no registras documentos firmados en tu bandeja.</p>
+                ` : `
+                  ${docSigs.map(sig => `
+                    <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-between gap-2">
+                      <div class="overflow-hidden">
+                        <span class="font-bold text-white block text-[11px] truncate">${sig.document_title || sig.document_type}</span>
+                        <span class="text-[10px] text-slate-400 block">${sig.bogota_timestamp || new Date(sig.signed_at).toLocaleString()}</span>
+                      </div>
+                      <button 
+                        type="button" 
+                        onclick="window.verSelloFirma('${sig.id}')"
+                        class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-teal-300 rounded-lg text-[10px] font-bold flex-shrink-0 cursor-pointer"
+                      >
+                        Sello Digital
+                      </button>
+                    </div>
+                  `).join('')}
                 `}
               </div>
             </div>
+
           </div>
-        </div>
-      ` : ''}
+        ` : ''}
+
+      </main>
 
       <!-- =================================================================== -->
-      <!-- MÓDULO 3: MIS INSTRUMENTOS LABORALES, FUNCIONES PHVA & FIRMAS LEY 527 -->
+      <!-- BARRA DE NAVEGACIÓN INFERIOR FIJA (BOTTOM TAB BAR - USO CON PULGAR) -->
       <!-- =================================================================== -->
-      ${mostrarDocumentos ? `
-        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-xs space-y-5">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
-            <div>
-              <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
-                <span>📄 Mis 4 Instrumentos Oficiales del Cargo & Funciones Asignadas</span>
-              </h3>
-              <p class="text-xs text-slate-500 mt-0.5">
-                Descarga tus documentos laborales en PDF y consulta tus funciones operativas conectadas al Mapa de Procesos PHVA.
-              </p>
-            </div>
-          </div>
+      <nav class="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-md border-t border-slate-800/90 px-2 py-2 flex items-center justify-around safe-bottom-nav shadow-2xl">
+        
+        <button 
+          type="button" 
+          onclick="window.cambiarTabMovil('inicio')" 
+          class="flex flex-col items-center justify-center flex-1 py-1 transition cursor-pointer ${activeMobileTab === 'inicio' ? 'text-teal-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
+        >
+          <span class="text-xl">🏠</span>
+          <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Inicio</span>
+        </button>
 
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <button onclick="window.generarPdfContratoTrabajador('${trabajador.id}')" class="p-3.5 bg-blue-50/70 hover:bg-blue-100 text-blue-900 rounded-2xl border border-blue-200 text-left transition cursor-pointer shadow-2xs">
-              <span class="text-xl block mb-1">📄</span>
-              <span class="font-black text-xs block">1. Mi Contrato</span>
-              <span class="text-[10px] text-blue-700 font-semibold block mt-0.5">Minuta Individual PDF</span>
-            </button>
+        <button 
+          type="button" 
+          onclick="window.cambiarTabMovil('docs')" 
+          class="flex flex-col items-center justify-center flex-1 py-1 transition cursor-pointer ${activeMobileTab === 'docs' ? 'text-teal-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
+        >
+          <span class="text-xl">📄</span>
+          <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Mi Cargo</span>
+        </button>
 
-            <button onclick="window.generarPdfPerfilCargo('${escapeHtml(trabajador.cargo)}', '${empresa.id}')" class="p-3.5 bg-amber-50/70 hover:bg-amber-100 text-amber-900 rounded-2xl border border-amber-200 text-left transition cursor-pointer shadow-2xs">
-              <span class="text-xl block mb-1">📋</span>
-              <span class="font-black text-xs block">2. Perfil de Cargo</span>
-              <span class="text-[10px] text-amber-700 font-semibold block mt-0.5">Requisitos & Profesiograma</span>
-            </button>
+        <button 
+          type="button" 
+          onclick="window.cambiarTabMovil('elearning')" 
+          class="flex flex-col items-center justify-center flex-1 py-1 transition cursor-pointer relative ${activeMobileTab === 'elearning' ? 'text-indigo-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
+        >
+          <span class="text-xl">🎓</span>
+          <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">E-Learning</span>
+          ${(capacitaciones.length - capsEvaluadasCount > 0) ? `
+            <span class="absolute top-0 right-2 sm:right-3 w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          ` : ''}
+        </button>
 
-            <button onclick="window.generarPdfManualFunciones('${escapeHtml(trabajador.cargo)}', '${empresa.id}')" class="p-3.5 bg-purple-50/70 hover:bg-purple-100 text-purple-900 rounded-2xl border border-purple-200 text-left transition cursor-pointer shadow-2xs">
-              <span class="text-xl block mb-1">📖</span>
-              <span class="font-black text-xs block">3. Manual Funciones</span>
-              <span class="text-[10px] text-purple-700 font-semibold block mt-0.5">Responsabilidades SST</span>
-            </button>
+        <button 
+          type="button" 
+          onclick="window.cambiarTabMovil('tools')" 
+          class="flex flex-col items-center justify-center flex-1 py-1 transition cursor-pointer ${activeMobileTab === 'tools' ? 'text-teal-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
+        >
+          <span class="text-xl">🛠️</span>
+          <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Equipos</span>
+        </button>
 
-            <button onclick="window.generarPdfPtsCargo('${escapeHtml(trabajador.cargo)}', '${empresa.id}')" class="p-3.5 bg-teal-50/70 hover:bg-teal-100 text-teal-900 rounded-2xl border border-teal-200 text-left transition cursor-pointer shadow-2xs">
-              <span class="text-xl block mb-1">🛡️</span>
-              <span class="font-black text-xs block">4. PTS Seguro</span>
-              <span class="text-[10px] text-teal-700 font-semibold block mt-0.5">Protocolo GTC 45 en PDF</span>
-            </button>
-          </div>
+        <button 
+          type="button" 
+          onclick="window.cambiarTabMovil('reportar')" 
+          class="flex flex-col items-center justify-center flex-1 py-1 transition cursor-pointer ${activeMobileTab === 'reportar' ? 'text-rose-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
+        >
+          <span class="text-xl">⚠️</span>
+          <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Reportar</span>
+        </button>
 
-          <!-- Resumen en vivo de Funciones Operativas y Actividades PHVA del Trabajador -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <span class="text-xs font-black text-slate-800 uppercase tracking-wider block">⚙️ Mis Actividades Operativas Asignadas (${trabajador.cargo})</span>
-              <ul class="space-y-1.5 text-xs text-slate-700 list-disc pl-4">
-                ${misActividadesPHVA.length > 0
-                  ? misActividadesPHVA.map(a => `<li><strong>[${a.phva_phase}] ${a.name}:</strong> ${a.description}</li>`).join('')
-                  : (configCargo.manualFunciones?.funcionesOperativas || []).map(f => `<li>${f}</li>`).join('')
-                }
-              </ul>
-            </div>
+        <button 
+          type="button" 
+          onclick="window.cambiarTabMovil('perfil')" 
+          class="flex flex-col items-center justify-center flex-1 py-1 transition cursor-pointer ${activeMobileTab === 'perfil' ? 'text-teal-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
+        >
+          <span class="text-xl">👤</span>
+          <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Mi Perfil</span>
+        </button>
 
-            <div class="p-4 rounded-2xl bg-indigo-50/40 border border-indigo-100 space-y-2">
-              <span class="text-xs font-black text-indigo-950 uppercase tracking-wider block">🛡️ Mis Responsabilidades Legales SG-SST (Dec. 1072 Art. 2.2.4.6.10)</span>
-              <ul class="space-y-1.5 text-xs text-indigo-950 list-disc pl-4">
-                ${(configCargo.manualFunciones?.responsabilidadesSST || []).slice(0, 5).map(r => `<li>${r}</li>`).join('')}
-              </ul>
-            </div>
-          </div>
-
-          <!-- Políticas & Reglamentos para Firma Electrónica Ley 527 -->
-          <div class="pt-4 border-t border-slate-200 space-y-3">
-            <div>
-              <h4 class="text-sm font-black text-slate-900 flex items-center gap-2">
-                <span>✍️ Socialización y Firma Electrónica de Políticas SG-SST (Ley 527 de 1999)</span>
-              </h4>
-              <p class="text-xs text-slate-500">Lee los documentos normativos de la empresa y registra tu firma electrónica personal.</p>
-            </div>
-
-            <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl px-4">
-              ${documentosSocializables.map(doc => {
-                const firmaExistente = firmas.find(f => f.documentoId === doc.id);
-                return `
-                  <div class="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="space-y-0.5">
-                      <div class="flex items-center gap-2 flex-wrap">
-                        <span class="text-xs font-bold text-slate-900">${doc.titulo}</span>
-                        <span class="text-[9px] px-2 py-0.5 rounded font-bold bg-slate-100 text-slate-600">${doc.categoria}</span>
-                      </div>
-                      <div class="flex items-center gap-3 text-[11px] text-slate-400">
-                        <a href="${doc.enlace}" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline font-semibold flex items-center gap-1">
-                          <span>📖 Abrir documento oficial para lectura</span>
-                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div class="flex-shrink-0">
-                      ${firmaExistente ? `
-                        <div class="flex items-center gap-2">
-                          <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span>Firmado (${new Date(firmaExistente.fecha || firmaExistente.timestamp).toLocaleDateString()})</span>
-                          </span>
-                          <button onclick="window.verSelloFirma('${firmaExistente.id}')" class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-[10px] font-bold cursor-pointer">
-                            Ver Sello Digital
-                          </button>
-                        </div>
-                      ` : `
-                        <button onclick="window.firmarPolitica('${doc.id}', '${escapeHtml(doc.titulo)}', '${trabajador.id}')" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs">
-                          <span>✍️ Firmar Electrónicamente</span>
-                        </button>
-                      `}
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-        </div>
-      ` : ''}
-
-      <!-- =================================================================== -->
-      <!-- MÓDULO 4: REPORTE DE CONDICIONES INSEGURAS E INCIDENTES (DEC. 1072) -->
-      <!-- =================================================================== -->
-      ${mostrarReportes ? `
-        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-rose-200 shadow-xs space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
-                <span>⚠️ Participación del Trabajador: Reporte de Peligros y Condiciones Inseguras</span>
-              </h3>
-              <p class="text-xs text-slate-500 mt-0.5">
-                Notifica al instante cualquier daño en maquinaria, riesgo locativo, acto inseguro o condición peligrosa en tu puesto de trabajo.
-              </p>
-            </div>
-            <button onclick="window.abrirModalReportePeligro('${trabajador.id}')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-sm flex-shrink-0">
-              <span>🚨</span>
-              <span>+ Reportar Condición Insegura</span>
-            </button>
-          </div>
-
-          ${reportesPeligro.length > 0 ? `
-            <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl px-4">
-              ${reportesPeligro.map(r => `
-                <div class="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                  <div>
-                    <div class="flex items-center gap-2">
-                      <span class="px-2 py-0.5 rounded text-[10px] font-black bg-rose-50 text-rose-700 border border-rose-200">${r.prioridad || 'Media'}</span>
-                      <span class="font-bold text-slate-900">${r.descripcion}</span>
-                    </div>
-                    <span class="text-[11px] text-slate-500 block mt-0.5">📍 Área/Ubicación: <strong>${r.ubicacion || 'Planta'}</strong> • Fecha: ${new Date(r.fecha || r.fechaReporte || Date.now()).toLocaleString()}</span>
-                  </div>
-                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${r.estado === 'Cerrado' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-800 border border-amber-200'}">
-                    ● ${r.estado || 'En Revisión SST'}
-                  </span>
-                </div>
-              `).join('')}
-            </div>
-          ` : `
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center text-xs text-slate-500">
-              No has registrado reportes de condiciones inseguras recientemente. Usa el botón <strong>"+ Reportar Condición Insegura"</strong> para realizar una prueba.
-            </div>
-          `}
-        </div>
-      ` : ''}
+      </nav>
 
     </div>
   `;
+
+  // Listener para captura y compresión de foto en Wizard de Reportar SST
+  const fotoInput = document.getElementById('wiz-foto-input');
+  if (fotoInput) {
+    fotoInput.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const previewContainer = document.getElementById('wiz-foto-preview-container');
+      const previewImg = document.getElementById('wiz-foto-preview-img');
+
+      try {
+        const fotoComprimida = await comprimirFoto(file, 800, 800, 0.7);
+        if (previewImg && previewContainer) {
+          previewImg.src = fotoComprimida;
+          previewContainer.classList.remove('hidden');
+          previewContainer.setAttribute('data-base64', fotoComprimida);
+        }
+      } catch (err) {
+        console.warn("Error comprimiendo foto:", err);
+      }
+    });
+  }
+
+  // Listener para el formulario Wizard de Reporte SST
+  const formReporte = document.getElementById('form-wizard-reporte-sst');
+  if (formReporte) {
+    formReporte.onsubmit = async (e) => {
+      e.preventDefault();
+      const tipo = document.querySelector('input[name="wiz-tipo"]:checked')?.value || 'Condicion_Insegura';
+      const ubicacion = document.getElementById('wiz-ubicacion')?.value || 'Planta Operativa';
+      const descripcion = document.getElementById('wiz-descripcion')?.value || '';
+      const severidad = document.getElementById('wiz-severidad')?.value || 'Media';
+      const fotoBase64 = document.getElementById('wiz-foto-preview-container')?.getAttribute('data-base64') || '';
+      const btn = document.getElementById('btn-submit-wiz-reporte');
+
+      if (btn) btn.disabled = true;
+
+      try {
+        await store.submitWorkerHazardReport({
+          worker_id: trabajador.id,
+          tenant_id: empresa.id,
+          report_type: tipo,
+          location: ubicacion,
+          description: descripcion,
+          severity_level: severidad,
+          photo_base64: fotoBase64
+        });
+
+        alert("✓ Reporte SST enviado exitosamente. Se ha registrado en la plataforma y notificado al coordinador.");
+        formReporte.reset();
+        const prev = document.getElementById('wiz-foto-preview-container');
+        if (prev) {
+          prev.classList.add('hidden');
+          prev.removeAttribute('data-base64');
+        }
+        renderWorkerPortal();
+      } catch (err) {
+        alert("Error al enviar reporte: " + err.message);
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    };
+  }
 }
 
-// Modal de Inspección Preoperacional desde la Interfaz del Trabajador
+// =============================================================================
+// MODAL DE FIRMA DIGITAL CON DEDO PARA LOS 4 INSTRUMENTOS DE CARGO
+// =============================================================================
+window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajadorId) {
+  const trabajador = store.getTrabajadorPorId(trabajadorId);
+  if (!trabajador) return;
+  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva();
+  const configCargo = store.getPerfilCargo(trabajador.cargo, empresa.id);
+  const cargosFormales = store.getJobPositions(empresa.id);
+  const cargoFormal = cargosFormales.find(cg => cg.id === trabajador.job_position_id || (cg.title || '').toLowerCase().trim() === (trabajador.cargo || '').toLowerCase().trim());
+  const todasActividadesProcesos = store.getAllProcessActivities(empresa.id);
+  const misActividadesPHVA = cargoFormal
+    ? todasActividadesProcesos.filter(a => a.responsible_position_id === cargoFormal.id)
+    : [];
+
+  const modalId = 'modal-firmar-documento-cargo';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  // Generar contenido oficial del documento según el tipo
+  let contenidoHtml = '';
+  let codigoDoc = '';
+
+  if (docType === 'MANUAL_DE_CARGO') {
+    codigoDoc = 'MN-CARG-001';
+    contenidoHtml = `
+      <div class="space-y-3 text-xs leading-relaxed text-slate-800">
+        <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl">
+          <span class="font-black text-indigo-950 block">Propósito Principal del Puesto:</span>
+          <p class="mt-0.5 text-indigo-900">${cargoFormal?.summary_objective || configCargo?.perfil?.objetivo || 'Ejecutar las labores operativas con estricto apego al SG-SST.'}</p>
+        </div>
+
+        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">I. Funciones Operativas Asignadas por Procesos</h4>
+        <ul class="list-disc pl-5 space-y-1 text-[11px] text-slate-700">
+          ${misActividadesPHVA.length > 0
+            ? misActividadesPHVA.map(a => `<li><strong>[${a.phva_phase}] ${a.name}:</strong> ${a.description}</li>`).join('')
+            : (configCargo?.manualFunciones?.funcionesOperativas || []).map(f => `<li>${f}</li>`).join('')
+          }
+        </ul>
+
+        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider pt-2">II. Responsabilidades Legales SG-SST (Dec. 1072 Art. 2.2.4.6.10)</h4>
+        <ul class="list-disc pl-5 space-y-1 text-[11px] text-slate-700">
+          ${(configCargo?.manualFunciones?.responsabilidadesSST || [
+            'Procurar el cuidado integral de su salud física y mental.',
+            'Suministrar información clara, veraz y completa sobre su estado de salud.',
+            'Cumplir las normas, reglamentos e instrucciones del SG-SST de la empresa.',
+            'Informar oportunamente sobre los peligros y riesgos latentes detectados en su sitio de trabajo.',
+            'Participar en las capacitaciones y simulacros programados.',
+            'Usar obligatoriamente los EPP y cuidar los equipos bajo su custodia.'
+          ]).map(r => `<li>${r}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  } else if (docType === 'PERFIL_DE_CARGO') {
+    codigoDoc = 'PF-CARG-002';
+    contenidoHtml = `
+      <div class="space-y-3 text-xs leading-relaxed text-slate-800">
+        <div class="grid grid-cols-2 gap-2 text-[11px]">
+          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>Educación Requerida:</strong><br>${cargoFormal?.required_education || configCargo?.perfil?.educacion || 'Bachiller o Técnico'}</div>
+          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>Experiencia Mínima:</strong><br>${cargoFormal?.required_experience || configCargo?.perfil?.experiencia || '1 año'}</div>
+        </div>
+
+        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">Exámenes Médicos Ocupacionales (Res. 2346/2007)</h4>
+        <div class="p-2.5 bg-teal-50 border border-teal-200 rounded-xl text-[11px] text-teal-950">
+          <p><strong>Ingreso y Periódico:</strong> Énfasis osteomuscular, agudeza visual, audiometría tonal y valoración general.</p>
+          <p class="mt-1"><strong>Egreso:</strong> Examen médico de retiro laboral para verificar condiciones de salud al terminar vínculo.</p>
+        </div>
+      </div>
+    `;
+  } else if (docType === 'PLAN_DE_TRABAJO_SEGURO') {
+    codigoDoc = 'PTS-SEG-003';
+    contenidoHtml = `
+      <div class="space-y-3 text-xs leading-relaxed text-slate-800">
+        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">Peligros Prioritarios (GTC 45) & Medidas de Control</h4>
+        <ul class="list-disc pl-5 space-y-1 text-[11px] text-slate-700">
+          ${(configCargo?.pts?.peligrosEvaluados || [
+            'Peligro Mecánico (atrapamiento, golpes por herramientas)',
+            'Peligro Biomecánico (posturas prolongadas, manipulación de cargas)',
+            'Peligro Físico y Locativo (superficies irregulares, ruido continuo)'
+          ]).map(p => `<li>${p}</li>`).join('')}
+        </ul>
+
+        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider pt-2">Fases Obligatorias de Operación</h4>
+        <div class="space-y-1.5 text-[11px] text-slate-700">
+          <p><strong>Antes:</strong> ${configCargo?.pts?.faseAntes || 'Inspección preoperacional diaria de área y herramientas. Verificar EPP.'}</p>
+          <p><strong>Durante:</strong> ${configCargo?.pts?.faseDurante || 'Atención exclusiva en la labor. Respetar guardas y paradas de emergencia.'}</p>
+          <p><strong>Después:</strong> ${configCargo?.pts?.faseDespues || 'Desenergizar equipos, ordenar puesto y reportar novedades al supervisor.'}</p>
+        </div>
+      </div>
+    `;
+  } else {
+    codigoDoc = 'ANX-CONT-004';
+    contenidoHtml = `
+      <div class="space-y-3 text-xs leading-relaxed text-slate-800">
+        <p>
+          El TRABAJADOR declara expresamente que ha sido notificado de los riesgos y peligros de su puesto, y se compromete a acatar estrictamente todas las medidas de prevención del SG-SST (Dec. 1072/2015).
+        </p>
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-950">
+          <strong>Régimen Disciplinario y Sancionatorio:</strong> El incumplimiento grave de las normas de seguridad constituirá justa causa de terminación del contrato de trabajo conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.
+        </div>
+      </div>
+    `;
+  }
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+
+  modalEl.innerHTML = `
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      
+      <!-- Cabecera del Visor Modal -->
+      <div class="bg-gradient-to-r from-slate-900 to-indigo-950 p-4 text-white flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl">📄</span>
+          <div>
+            <span class="text-[9px] font-black uppercase tracking-wider text-teal-300 block font-mono">${codigoDoc}</span>
+            <h3 class="font-black text-sm text-white">${cargoTitle}</h3>
+          </div>
+        </div>
+        <button onclick="document.getElementById('${modalId}').remove()" class="text-slate-400 hover:text-white text-lg font-bold p-1 cursor-pointer">✕</button>
+      </div>
+
+      <!-- Contenido del Documento -->
+      <div class="p-5 overflow-y-auto flex-1 space-y-4">
+        ${contenidoHtml}
+
+        <!-- Zona de Firma Táctil en Canvas -->
+        <div class="pt-4 border-t border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-black text-slate-900 uppercase">✍️ Firma con tu Dedo en Pantalla:</span>
+            <button type="button" id="btn-clear-doc-sig" class="text-[10px] text-rose-600 underline font-bold cursor-pointer">Limpiar</button>
+          </div>
+          <div class="border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-50">
+            <canvas id="canvas-doc-sig" class="signature-pad-canvas w-full h-36"></canvas>
+          </div>
+          <div class="p-2 bg-slate-50 rounded-xl text-[10px] text-slate-500 font-mono flex items-center justify-between">
+            <span>Validez: Ley 527 de 1999</span>
+            <span>Retención Legal: 20 Años</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones Inferiores -->
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2 flex-shrink-0">
+        <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer">
+          Cancelar
+        </button>
+        <button type="button" id="btn-confirm-doc-sig" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black transition cursor-pointer shadow-md">
+          ✓ Confirmar Firma Digital
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(modalEl);
+
+  const pad = setupSignaturePad('canvas-doc-sig');
+  document.getElementById('btn-clear-doc-sig')?.addEventListener('click', () => pad?.clear());
+
+  document.getElementById('btn-confirm-doc-sig')?.addEventListener('click', async () => {
+    if (pad?.isEmpty()) {
+      alert("Por favor firma en el recuadro antes de confirmar.");
+      return;
+    }
+
+    const btn = document.getElementById('btn-confirm-doc-sig');
+    btn.disabled = true;
+    btn.innerText = "Guardando...";
+
+    try {
+      const sigData = pad.getDataUrl();
+      await store.submitWorkerDocumentSignature({
+        worker_id: trabajador.id,
+        tenant_id: empresa.id,
+        document_type: docType,
+        document_id: codigoDoc,
+        document_title: cargoTitle,
+        signature_base64: sigData
+      });
+
+      modalEl.remove();
+      alert(`✓ El documento "${cargoTitle}" ha sido firmado digitalmente y archivado con retención de 20 años.`);
+      renderWorkerPortal();
+    } catch (err) {
+      alert("Error al firmar documento: " + err.message);
+      btn.disabled = false;
+      btn.innerText = "✓ Confirmar Firma Digital";
+    }
+  });
+};
+
+// =============================================================================
+// MODAL ESCÁNER QR DE CÁMARA PARA HERRAMIENTAS Y MAQUINARIA
+// =============================================================================
+window.abrirModalEscanerQR = function(trabajadorId) {
+  const trabajador = store.getTrabajadorPorId(trabajadorId);
+  if (!trabajador) return;
+  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva();
+  const tools = store.getToolsInventory(empresa.id);
+
+  const modalId = 'modal-escaner-qr';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950 flex flex-col justify-between p-4 animate-fadeIn text-white';
+
+  modalEl.innerHTML = `
+    <!-- Cabecera del Escáner -->
+    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">📷</span>
+        <div>
+          <h3 class="text-sm font-black text-white">Escáner QR de Maquinaria</h3>
+          <p class="text-[10px] text-teal-400">Apunta la cámara a la placa del equipo</p>
+        </div>
+      </div>
+      <button id="btn-cerrar-qr" class="text-slate-400 hover:text-white text-xl font-bold p-1 cursor-pointer">✕</button>
+    </div>
+
+    <!-- Visor de Cámara con Retícula -->
+    <div class="flex-1 flex flex-col items-center justify-center my-4 relative">
+      <div class="relative w-full max-w-sm aspect-square bg-slate-900 rounded-3xl overflow-hidden border-2 border-teal-500/50 shadow-2xl flex items-center justify-center">
+        <video id="video-qr-feed" autoplay playsinline class="w-full h-full object-cover"></video>
+        
+        <!-- Retícula de Escaneo animada -->
+        <div class="absolute inset-8 border-2 border-teal-400/80 rounded-2xl pointer-events-none flex flex-col justify-between p-2">
+          <div class="flex justify-between">
+            <span class="w-4 h-4 border-t-2 border-l-2 border-teal-400"></span>
+            <span class="w-4 h-4 border-t-2 border-r-2 border-teal-400"></span>
+          </div>
+          <div class="w-full h-0.5 bg-gradient-to-r from-transparent via-teal-400 to-transparent animate-pulse"></div>
+          <div class="flex justify-between">
+            <span class="w-4 h-4 border-b-2 border-l-2 border-teal-400"></span>
+            <span class="w-4 h-4 border-b-2 border-r-2 border-teal-400"></span>
+          </div>
+        </div>
+      </div>
+      <p class="text-[11px] text-slate-400 mt-3 text-center">
+        Centra el código QR en la retícula o selecciona manualmente el equipo abajo.
+      </p>
+    </div>
+
+    <!-- Selector Alternativo de Herramienta de Planta -->
+    <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
+      <label class="text-[10px] font-black uppercase text-slate-400 block">
+        O selecciona el equipo de la lista de planta:
+      </label>
+      <div class="flex gap-2">
+        <select id="select-tool-manual-qr" class="flex-1 px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs font-bold text-white">
+          <option value="">-- Seleccionar Equipo --</option>
+          ${tools.map(t => `
+            <option value="${t.id}">[${t.internal_code}] ${t.exact_name} (${t.brand})</option>
+          `).join('')}
+        </select>
+        <button 
+          type="button" 
+          id="btn-confirm-tool-manual"
+          class="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-black cursor-pointer"
+        >
+          Abrir
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modalEl);
+
+  // Iniciar cámara con facingMode: environment
+  const videoEl = document.getElementById('video-qr-feed');
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      .then(stream => {
+        cameraQrStream = stream;
+        if (videoEl) videoEl.srcObject = stream;
+      })
+      .catch(err => {
+        console.warn("Cámara no disponible o permiso denegado:", err);
+      });
+  }
+
+  function cerrarModal() {
+    if (cameraQrStream) {
+      cameraQrStream.getTracks().forEach(t => t.stop());
+      cameraQrStream = null;
+    }
+    modalEl.remove();
+  }
+
+  document.getElementById('btn-cerrar-qr')?.addEventListener('click', cerrarModal);
+
+  document.getElementById('btn-confirm-tool-manual')?.addEventListener('click', () => {
+    const selected = document.getElementById('select-tool-manual-qr')?.value;
+    if (!selected) {
+      alert("Por favor selecciona un equipo de la lista.");
+      return;
+    }
+    cerrarModal();
+    window.abrirModalPreoperacionalTrabajador(trabajador.id, selected);
+  });
+};
+
+// =============================================================================
+// MODAL DE INSPECCIÓN PREOPERACIONAL CON CHECKLIST Y FOTO
+// =============================================================================
 window.abrirModalPreoperacionalTrabajador = function(trabajadorId, toolIdPreseleccionado = '') {
   const trabajador = store.getTrabajadorPorId(trabajadorId);
   if (!trabajador) return;
@@ -3167,21 +4696,29 @@ window.abrirModalPreoperacionalTrabajador = function(trabajadorId, toolIdPresele
 
   const modalEl = document.createElement('div');
   modalEl.id = modalId;
-  modalEl.className = 'fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto';
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+
   modalEl.innerHTML = `
-    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden my-auto">
-      <div class="bg-amber-600 p-4 text-white flex justify-between items-center">
-        <div>
-          <span class="text-[10px] font-black uppercase tracking-wider bg-black/20 px-2 py-0.5 rounded block mb-0.5">Control Operacional SG-SST</span>
-          <h3 class="font-black text-sm">📋 Lista de Chequeo Preoperacional de Equipo / Herramienta</h3>
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      
+      <!-- Cabecera de la Inspección -->
+      <div class="bg-gradient-to-r from-amber-600 to-amber-700 p-4 text-white flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl">📋</span>
+          <div>
+            <span class="text-[9px] font-black uppercase tracking-wider bg-black/20 px-2 py-0.5 rounded block mb-0.5">Control Operacional SG-SST</span>
+            <h3 class="font-black text-sm text-white">Inspección Preoperacional de Equipo</h3>
+          </div>
         </div>
-        <button onclick="document.getElementById('${modalId}').remove()" class="text-white text-lg font-bold cursor-pointer">✕</button>
+        <button onclick="document.getElementById('${modalId}').remove()" class="text-white text-lg font-bold p-1 cursor-pointer">✕</button>
       </div>
 
-      <form id="form-preop-trabajador" class="p-5 space-y-3.5 text-xs">
+      <form id="form-preop-modal" class="p-5 overflow-y-auto flex-1 space-y-4 text-xs">
+        
+        <!-- Selección de Herramienta -->
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Seleccionar Equipo o Herramienta a Inspeccionar *</label>
-          <select id="preop-tool-id" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-800">
+          <label class="block font-black text-slate-800 mb-1">Equipo o Máquina a Inspeccionar *</label>
+          <select id="preop-select-tool" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500">
             ${tools.map(t => `
               <option value="${t.id}" data-name="${escapeHtml(t.exact_name)}" ${t.id === toolIdPreseleccionado ? 'selected' : ''}>
                 [${t.internal_code}] ${t.exact_name} (${t.brand})
@@ -3190,199 +4727,894 @@ window.abrirModalPreoperacionalTrabajador = function(trabajadorId, toolIdPresele
           </select>
         </div>
 
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-          <span class="font-black text-slate-800 block uppercase text-[10px]">Verificación de Seguridad antes de Iniciar Turno:</span>
-          <label class="flex items-center justify-between gap-2 py-1 border-b border-slate-200/60 cursor-pointer">
-            <span>1. Estado físico general, carcasa, mangos y acoples sin fisuras</span>
-            <input type="checkbox" checked required class="w-4 h-4 text-emerald-600 rounded">
-          </label>
-          <label class="flex items-center justify-between gap-2 py-1 border-b border-slate-200/60 cursor-pointer">
-            <span>2. Guardas de seguridad, frenos o parada de emergencia operativos</span>
-            <input type="checkbox" checked required class="w-4 h-4 text-emerald-600 rounded">
-          </label>
-          <label class="flex items-center justify-between gap-2 py-1 border-b border-slate-200/60 cursor-pointer">
-            <span>3. Cables eléctricos, mangueras o conexiones libres de fugas/empalmes</span>
-            <input type="checkbox" checked required class="w-4 h-4 text-emerald-600 rounded">
-          </label>
-          <label class="flex items-center justify-between gap-2 py-1 cursor-pointer">
-            <span>4. Cuento con todos los EPP requeridos para operar el equipo</span>
-            <input type="checkbox" checked required class="w-4 h-4 text-emerald-600 rounded">
-          </label>
+        <!-- 6 Puntos de Chequeo Obligatorios -->
+        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-2.5">
+          <span class="font-black text-slate-900 block uppercase text-[10px] tracking-wider">
+            Verificación Visual y Operativa antes del Turno:
+          </span>
+
+          ${[
+            '1. Sistema de frenos, mandos y parada de emergencia operativos',
+            '2. Guardas perimetrales y protecciones mecánicas instaladas',
+            '3. Conexiones eléctricas, cables o mangueras libres de fisuras',
+            '4. Nivel de fluidos (aceite/refrigerante) y ausencia de fugas',
+            '5. Estado estructural, pernos, pasadores y llantas/orugas',
+            '6. Limpieza del puesto, botiquín y extintor vigente cercano'
+          ].map((item, idx) => `
+            <div class="flex items-center justify-between gap-2 py-1.5 border-b border-slate-200/80 last:border-none">
+              <span class="text-slate-800 font-medium text-[11px]">${item}</span>
+              <div class="flex items-center gap-1">
+                <label class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-black text-[9px] cursor-pointer">
+                  <input type="radio" name="chk-item-${idx}" value="SI" checked class="hidden"> SI
+                </label>
+                <label class="px-2 py-0.5 rounded bg-rose-100 text-rose-800 font-black text-[9px] cursor-pointer">
+                  <input type="radio" name="chk-item-${idx}" value="NO" class="hidden"> NO
+                </label>
+                <label class="px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-black text-[9px] cursor-pointer">
+                  <input type="radio" name="chk-item-${idx}" value="NA" class="hidden"> N/A
+                </label>
+              </div>
+            </div>
+          `).join('')}
         </div>
 
+        <!-- Dictamen y Horómetro -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-bold text-slate-700 mb-1">¿El equipo es APTO para operar? *</label>
-            <select id="preop-apto" class="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold text-slate-900">
+            <label class="block font-black text-slate-800 mb-1">¿Apto para operar? *</label>
+            <select id="preop-dictamen" class="w-full px-3 py-2 border-2 border-slate-300 rounded-xl font-black text-slate-900">
               <option value="SI">✓ SÍ, APTO PARA OPERAR</option>
-              <option value="NO">🛑 NO APTO (Bloquear y Reportar)</option>
+              <option value="NO">🛑 NO APTO (Bloquear Equipo)</option>
             </select>
           </div>
           <div>
-            <label class="block font-bold text-slate-700 mb-1">Lectura Horómetro / Odómetro</label>
-            <input type="text" id="preop-horometro" placeholder="Ej. 1.245 Horas" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+            <label class="block font-black text-slate-800 mb-1">Horómetro Actual</label>
+            <input type="text" id="preop-horometro-input" placeholder="Ej. 1.840 h" class="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono">
+          </div>
+        </div>
+
+        <!-- Foto de Evidencia -->
+        <div class="space-y-1.5">
+          <label class="block font-black text-slate-800">Foto de Evidencia de Inspección (Cámara)</label>
+          <div class="flex items-center gap-2">
+            <label class="flex-1 py-2.5 px-3 bg-slate-50 border border-slate-300 hover:border-amber-500 rounded-xl text-center cursor-pointer font-bold text-slate-700">
+              <span>📷 Adjuntar Foto con Cámara</span>
+              <input type="file" id="preop-foto-input" accept="image/*" capture="environment" class="hidden">
+            </label>
+            <div id="preop-preview-container" class="w-14 h-14 rounded-xl border border-slate-300 overflow-hidden hidden flex-shrink-0">
+              <img id="preop-preview-img" src="" alt="Foto" class="w-full h-full object-cover">
+            </div>
           </div>
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Observaciones o Hallazgos:</label>
-          <textarea id="preop-obs" rows="2" placeholder="Condiciones encontradas antes de iniciar..." class="w-full px-3 py-2 border border-slate-300 rounded-xl">Equipo verificado en óptimas condiciones de seguridad antes de iniciar turno.</textarea>
+          <label class="block font-black text-slate-800 mb-1">Observaciones:</label>
+          <textarea id="preop-observaciones" rows="2" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs">Equipo verificado en óptimas condiciones de seguridad antes de iniciar turno.</textarea>
         </div>
 
-        <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
-          <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-3.5 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold cursor-pointer">Cancelar</button>
-          <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-black cursor-pointer shadow-sm">✓ Registrar Preoperacional</button>
+        <!-- Firma Digital Táctil del Operario -->
+        <div class="space-y-1.5 pt-2 border-t border-slate-200">
+          <div class="flex items-center justify-between">
+            <span class="font-black text-slate-900 text-xs">✍️ Firma del Operario Inspector:</span>
+            <button type="button" id="btn-clear-preop-sig" class="text-[10px] text-rose-600 underline font-bold cursor-pointer">Limpiar</button>
+          </div>
+          <div class="border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-50">
+            <canvas id="canvas-preop-sig" class="signature-pad-canvas w-full h-28"></canvas>
+          </div>
         </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+          <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl font-bold cursor-pointer">
+            Cancelar
+          </button>
+          <button type="submit" id="btn-submit-preop" class="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl font-black shadow-md cursor-pointer">
+            ✓ Guardar Inspección Preoperacional
+          </button>
+        </div>
+
       </form>
     </div>
   `;
+
   document.body.appendChild(modalEl);
 
-  document.getElementById('form-preop-trabajador').onsubmit = (e) => {
+  const pad = setupSignaturePad('canvas-preop-sig');
+  document.getElementById('btn-clear-preop-sig')?.addEventListener('click', () => pad?.clear());
+
+  // Foto preview
+  const fotoIn = document.getElementById('preop-foto-input');
+  if (fotoIn) {
+    fotoIn.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const comprimida = await comprimirFoto(file, 800, 800, 0.7);
+        const pCont = document.getElementById('preop-preview-container');
+        const pImg = document.getElementById('preop-preview-img');
+        if (pImg && pCont) {
+          pImg.src = comprimida;
+          pCont.classList.remove('hidden');
+          pCont.setAttribute('data-base64', comprimida);
+        }
+      } catch (err) {
+        console.warn("Error comprimiendo foto preop:", err);
+      }
+    });
+  }
+
+  // Submit preoperacional
+  document.getElementById('form-preop-modal').onsubmit = async (e) => {
     e.preventDefault();
-    const sel = document.getElementById('preop-tool-id');
+    const sel = document.getElementById('preop-select-tool');
     const toolId = sel.value;
     const toolName = sel.options[sel.selectedIndex]?.getAttribute('data-name') || 'Equipo';
-    const apto = document.getElementById('preop-apto').value;
-    const obs = document.getElementById('preop-obs').value;
+    const dictamen = document.getElementById('preop-dictamen').value;
+    const obs = document.getElementById('preop-observaciones').value;
+    const fotoB64 = document.getElementById('preop-preview-container')?.getAttribute('data-base64') || '';
+    const btn = document.getElementById('btn-submit-preop');
 
-    store.guardarReportePreoperacional({
-      companyId: empresa.id,
-      trabajadorId: trabajador.id,
-      trabajadorNombre: trabajador.nombre,
-      equipoId: toolId,
-      equipoNombre: toolName,
-      aptoOperar: apto,
-      horometro: document.getElementById('preop-horometro').value,
-      observaciones: obs
-    });
+    if (btn) btn.disabled = true;
 
-    if (apto === 'NO') {
-      store.registrarReportePeligro({
-        companyId: empresa.id,
-        trabajadorId: trabajador.id,
-        trabajadorNombre: trabajador.nombre,
-        ubicacion: trabajador.area || 'Planta',
-        prioridad: 'Alta',
-        descripcion: `[PREOPERACIONAL NO APTO - ${toolName}]: ${obs}`,
-        fecha: new Date().toISOString(),
-        estado: 'En Revisión SST'
+    try {
+      await store.submitWorkerPreoperational({
+        worker_id: trabajador.id,
+        tenant_id: empresa.id,
+        tool_id: toolId,
+        tool_name: toolName,
+        apto: dictamen,
+        notes: obs,
+        photo_base64: fotoB64
       });
-    }
 
-    modalEl.remove();
-    alert(`✓ Inspección Preoperacional de "${toolName}" registrada exitosamente.`);
-    renderWorkerPortal();
+      if (dictamen === 'NO') {
+        await store.submitWorkerHazardReport({
+          worker_id: trabajador.id,
+          tenant_id: empresa.id,
+          report_type: 'Condicion_Insegura',
+          location: trabajador.area || 'Planta',
+          description: `[PREOPERACIONAL RECHAZADO - ${toolName}]: ${obs}`,
+          severity_level: 'Alta',
+          photo_base64: fotoB64
+        });
+      }
+
+      modalEl.remove();
+      alert(`✓ Inspección Preoperacional de "${toolName}" guardada exitosamente con valor probatorio.`);
+      renderWorkerPortal();
+    } catch (err) {
+      alert("Error guardando inspección: " + err.message);
+      if (btn) btn.disabled = false;
+    }
   };
 };
 
-// Ventana de firmas electrónicas
-window.firmarPolitica = function(documentoId, tituloDoc, trabajadorId) {
-  const trabajador = store.getTrabajadorPorId(trabajadorId);
-  if (!trabajador) return;
+// =============================================================================
+// MÓDULO DE MATRIZ Y REGISTRO DE ENTREGA DE DOTACIÓN Y EPP (BLOQUES 2 & 3)
+// Normativa: Ley 9/1979, Res. 2400/1979, Dec. 1072/2015, Res. 0312/2019 Estándar 4.2.6, CST Art. 230
+// =============================================================================
 
-  abrirModalFirma({
-    documentoId: documentoId,
-    titulo: tituloDoc,
-    firmanteNombre: trabajador.nombre,
-    firmanteCedula: trabajador.identificacion || trabajador.cedula,
-    firmanteCargo: trabajador.cargo,
-    firmanteCorreo: trabajador.correo || '',
-    trabajadorId: trabajador.id,
-    onFirmado: (registroFirma) => {
-      store.registrarFirmaTrabajador(registroFirma);
-      renderWorkerPortal();
+window.abrirModalAsignarEntregaEPP = async function(preTrabajadorId = null, preCargoId = null) {
+  const empresaActiva = store.getEmpresaActiva() || {
+    id: 'emp-1790438946268',
+    razonSocial: 'LADRILLOS OCHOA LTDA',
+    nit: '830124631'
+  };
+
+  let trabajadores = store.getTrabajadores(empresaActiva.id).filter(t => (t.estado || 'Activo') === 'Activo');
+  if (trabajadores.length === 0) {
+    alert("No hay trabajadores activos registrados en la empresa para asignar entregas.");
+    return;
+  }
+
+  // Asegurar que el catálogo de EPP esté cargado
+  let catalog = store.getEppCatalog(empresaActiva.id);
+  if (!catalog || catalog.length === 0) {
+    catalog = await store.fetchEppCatalog(empresaActiva.id);
+  }
+
+  const modalId = 'modal-asignar-entrega-epp';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  // Seleccionar trabajador inicial
+  let selTrabajadorId = preTrabajadorId || (preCargoId ? (trabajadores.find(t => t.job_position_id === preCargoId || t.cargoId === preCargoId)?.id || trabajadores[0].id) : trabajadores[0].id);
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+
+  function renderModalBody(trabajadorId) {
+    const trabajador = trabajadores.find(t => t.id === trabajadorId) || trabajadores[0];
+    const cargos = store.getJobPositions ? store.getJobPositions(empresaActiva.id) : [];
+    const cargoObj = cargos.find(c => c.id === trabajador.job_position_id || (c.title || '').toLowerCase().trim() === (trabajador.cargo || '').toLowerCase().trim());
+    const cargoId = cargoObj ? cargoObj.id : (preCargoId || trabajador.job_position_id);
+
+    // Obtener la matriz configurada para el cargo
+    let matrixItems = store.getJobPositionEppMatrix(cargoId, empresaActiva.id);
+    if (matrixItems.length === 0) {
+      // Fallback a perfil del cargo o catálogo básico
+      const configCargo = store.getPerfilCargo(trabajador.cargo, empresaActiva.id);
+      const eppNames = configCargo?.matrizEpp?.eppRequeridos || configCargo?.pts?.eppRequeridos || [];
+      if (eppNames.length > 0) {
+        matrixItems = eppNames.map((name, i) => {
+          const matched = catalog.find(c => c.item_name.toLowerCase().includes(name.toLowerCase()));
+          return {
+            catalog_item_id: matched ? matched.id : `cat-item-gen-${i}`,
+            item_name: name,
+            item_code: matched ? matched.item_code : `EPP-${i+1}`,
+            category: matched ? matched.category : 'EPP',
+            technical_standard: matched ? matched.technical_standard : 'ANSI / NTC',
+            default_quantity: 1,
+            delivery_frequency: 'Cuatrimestral_CST',
+            associated_hazard: 'Riesgo operativo y ergonómico',
+            requires_size: matched ? matched.requires_size : (name.toLowerCase().includes('bota') || name.toLowerCase().includes('camisa') || name.toLowerCase().includes('pantalon') || name.toLowerCase().includes('guante'))
+          };
+        });
+      } else {
+        // Usar los primeros del catálogo
+        matrixItems = catalog.slice(0, 6).map(c => ({
+          ...c,
+          catalog_item_id: c.id,
+          default_quantity: 1,
+          delivery_frequency: 'Cuatrimestral_CST',
+          associated_hazard: 'Riesgo operativo general'
+        }));
+      }
     }
-  });
-};
 
-window.verSelloFirma = function(firmaId) {
-  const firma = store.getFirmaPorId(firmaId);
-  if (!firma) return;
+    const savedCamisa = trabajador.talla_camisa || 'M';
+    const savedPantalon = trabajador.talla_pantalon || '32';
+    const savedCalzado = trabajador.talla_calzado || '40';
+    const savedGuantes = trabajador.talla_guantes || '9';
 
-  const html = generarSelloFirmaHtml(firma);
-  const win = window.open('', '_blank', 'width=650,height=550');
-  win.document.write(`
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-      <meta charset="UTF-8">
-      <title>Sello de Firma Electrónica - Validez Ley 527 de 1999</title>
-      <script src="https://cdn.tailwindcss.com"></script>
-    </head>
-    <body class="bg-slate-100 p-6 flex items-center justify-center min-h-screen">
-      <div class="max-w-md w-full">
-        ${html}
-        <div class="text-center mt-4">
-          <button onclick="window.close()" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-xs font-bold">Cerrar Ventana</button>
+    const fechaBogota = new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' });
+
+    return `
+      <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-4xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
+        <!-- ENCABEZADO -->
+        <div class="bg-gradient-to-r from-amber-700 via-amber-800 to-slate-900 p-4 sm:p-5 text-white flex items-center justify-between flex-shrink-0">
+          <div>
+            <div class="flex items-center gap-2 mb-1 flex-wrap">
+              <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-black/25 text-amber-200 border border-amber-300/30">
+                Res. 0312 Estándar 4.2.6
+              </span>
+              <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-white/10 text-white border border-white/20">
+                Art. 230 CST • Dotación Cuatrimestral
+              </span>
+              <span class="text-[10px] text-amber-200">
+                🕒 Servidor: ${fechaBogota} (America/Bogota)
+              </span>
+            </div>
+            <h3 class="font-black text-base sm:text-lg">Asignar Entrega de EPP y Dotación Legal</h3>
+            <p class="text-xs text-amber-100/90 mt-0.5">
+              Empresa: <strong>${escapeHtml(empresaActiva.razonSocial)}</strong> • Generación de Acta Oficial Consecutiva
+            </p>
+          </div>
+          <button onclick="document.getElementById('${modalId}').remove()" class="text-white text-xl font-bold p-1 cursor-pointer hover:opacity-80">✕</button>
+        </div>
+
+        <!-- CUERPO CON SCROLL -->
+        <div class="p-5 sm:p-6 overflow-y-auto flex-1 space-y-5 text-xs text-slate-800">
+          
+          <!-- SECCIÓN 1: SELECCIÓN DEL TRABAJADOR Y DETECCIÓN DEL CARGO -->
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label class="block font-bold text-slate-900 mb-1">Trabajador Beneficiario:</label>
+                <select id="assign-trabajador-select" class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 cursor-pointer">
+                  ${trabajadores.map(t => `
+                    <option value="${t.id}" ${t.id === trabajador.id ? 'selected' : ''}>
+                      👷 ${t.nombre} (C.C. ${t.identificacion || t.cedula || 'N/A'}) - ${t.cargo}
+                    </option>
+                  `).join('')}
+                </select>
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-900 mb-1">Cargo Oficial Detectado:</label>
+                <div class="px-3 py-2.5 bg-amber-50/70 border border-amber-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <span class="font-black text-slate-900 block text-xs">${trabajador.cargo}</span>
+                    <span class="text-[10px] text-slate-500">Área: ${trabajador.area || 'Operaciones'}</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-[9.5px] font-bold bg-amber-200 text-amber-900">
+                    Matriz Activa
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- PARÁMETROS DE LA ENTREGA -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2 border-t border-slate-200">
+              <div>
+                <label class="block font-bold text-slate-900 mb-1">Motivo de la Entrega (Marco Legal):</label>
+                <select id="assign-motivo-select" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-medium text-slate-900 focus:ring-2 focus:ring-amber-500">
+                  <option value="Periodica_Ley_Abril_Agosto_Diciembre" selected>Periódica Obligatoria de Ley (Art. 230 CST: Abril / Agosto / Diciembre)</option>
+                  <option value="Dotacion_Ingreso">Dotación por Ingreso / Inicio de Labores</option>
+                  <option value="Reposicion_Por_Desgaste_Deterioro">Reposición por Desgaste o Deterioro de EPP (Ley 9/1979)</option>
+                  <option value="Cambio_De_Cargo">Dotación por Cambio de Cargo o Reubicación</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-900 mb-1">Tipo de Entrega:</label>
+                <select id="assign-tipo-select" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-medium text-slate-900 focus:ring-2 focus:ring-amber-500">
+                  <option value="MIXTA_EPP_Y_DOTACION" selected>Mixta: EPP Homologados + Dotación Legal de Ropa y Calzado</option>
+                  <option value="EPP_SOLO">Solo Elementos de Protección Personal (EPP)</option>
+                  <option value="DOTACION_SOLA">Solo Dotación Legal de Vestuario y Calzado (Art. 230 CST)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- TALLAS DEL TRABAJADOR -->
+            <div class="pt-2 border-t border-slate-200">
+              <span class="block font-bold text-slate-900 mb-1.5">Tallas Registradas del Trabajador:</span>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div>
+                  <span class="text-[10px] text-slate-500 font-bold block mb-0.5">Camisa / Blusa:</span>
+                  <input type="text" id="assign-size-camisa" value="${savedCamisa}" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-center">
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 font-bold block mb-0.5">Pantalón / Jean:</span>
+                  <input type="text" id="assign-size-pantalon" value="${savedPantalon}" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-center">
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 font-bold block mb-0.5">Calzado / Botas:</span>
+                  <input type="text" id="assign-size-calzado" value="${savedCalzado}" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-center">
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 font-bold block mb-0.5">Guantes:</span>
+                  <input type="text" id="assign-size-guantes" value="${savedGuantes}" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-center">
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5 mt-2">
+                <input type="checkbox" id="assign-save-sizes" checked class="w-3.5 h-3.5 text-amber-600 rounded">
+                <label for="assign-save-sizes" class="text-[11px] text-slate-600">Actualizar y recordar estas tallas en la ficha del trabajador para futuras entregas</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 2: TABLA DE ELEMENTOS A ENTREGAR -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="font-black text-slate-900 text-xs sm:text-sm uppercase tracking-wide">
+                  Elementos Parametrizados en la Matriz (${matrixItems.length})
+                </h4>
+                <span class="text-[10px] text-slate-500">Marca las casillas de los elementos físicos que estás entregando en este acto:</span>
+              </div>
+              <span class="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
+                Marcar / Desmarcar
+              </span>
+            </div>
+
+            <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-2xs">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-100/80 text-slate-700 font-bold border-b border-slate-200 uppercase text-[9.5px] tracking-wider">
+                    <tr>
+                      <th class="py-2.5 px-3 text-center w-10">Entregar</th>
+                      <th class="py-2.5 px-3">Elemento &amp; Categoría</th>
+                      <th class="py-2.5 px-3">Norma Técnica</th>
+                      <th class="py-2.5 px-3 text-center w-24">Talla</th>
+                      <th class="py-2.5 px-3 text-center w-20">Cant.</th>
+                      <th class="py-2.5 px-3 text-center w-24">¿Usado Recibido?</th>
+                      <th class="py-2.5 px-3">Observaciones</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100" id="assign-items-tbody">
+                    ${matrixItems.map((m, idx) => {
+                      const itemName = m.item_name || 'EPP';
+                      const itemLower = itemName.toLowerCase();
+                      let defaultSize = 'Única';
+                      if (itemLower.includes('camisa') || itemLower.includes('blusa') || itemLower.includes('chaleco')) defaultSize = savedCamisa;
+                      else if (itemLower.includes('pantalon') || itemLower.includes('jean') || itemLower.includes('overol')) defaultSize = savedPantalon;
+                      else if (itemLower.includes('bota') || itemLower.includes('calzado') || itemLower.includes('zapato')) defaultSize = savedCalzado;
+                      else if (itemLower.includes('guante')) defaultSize = savedGuantes;
+
+                      return `
+                        <tr class="hover:bg-slate-50/70 transition">
+                          <td class="py-2.5 px-3 text-center">
+                            <input type="checkbox" class="assign-item-check w-4 h-4 text-amber-600 rounded cursor-pointer" data-idx="${idx}" checked>
+                          </td>
+                          <td class="py-2.5 px-3">
+                            <div class="font-bold text-slate-900">${escapeHtml(itemName)}</div>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                              <span class="font-mono text-[9.5px] text-slate-500">${escapeHtml(m.item_code || 'EPP-00')}</span>
+                              <span class="px-1.5 py-0.2 rounded text-[9px] font-bold ${
+                                m.category === 'EPP' ? 'bg-blue-50 text-blue-700' : 'bg-emerald-50 text-emerald-700'
+                              }">
+                                ${m.category === 'EPP' ? 'EPP' : 'Dotación'}
+                              </span>
+                            </div>
+                          </td>
+                          <td class="py-2.5 px-3">
+                            <span class="font-mono text-[10px] text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                              ${escapeHtml(m.technical_standard || 'NTC')}
+                            </span>
+                          </td>
+                          <td class="py-2.5 px-3 text-center">
+                            <input type="text" class="assign-item-size w-full px-2 py-1 bg-slate-50 border border-slate-300 rounded text-center text-xs font-bold" value="${defaultSize}" data-idx="${idx}">
+                          </td>
+                          <td class="py-2.5 px-3 text-center">
+                            <input type="number" min="1" max="10" class="assign-item-qty w-full px-2 py-1 bg-slate-50 border border-slate-300 rounded text-center text-xs font-bold" value="${m.default_quantity || 1}" data-idx="${idx}">
+                          </td>
+                          <td class="py-2.5 px-3 text-center">
+                            <input type="checkbox" class="assign-item-returned w-4 h-4 text-slate-600 rounded cursor-pointer" title="Marcar si el trabajador devolvió el elemento anterior usado o deteriorado" data-idx="${idx}">
+                          </td>
+                          <td class="py-2.5 px-3">
+                            <input type="text" class="assign-item-obs w-full px-2 py-1 bg-slate-50 border border-slate-300 rounded text-xs" placeholder="Lote o condición..." value="Nuevo conforme a norma" data-idx="${idx}">
+                          </td>
+                        </tr>
+                      `;
+                    }).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- NOTA LEGAL -->
+          <div class="p-3 bg-amber-50/80 border border-amber-200 rounded-xl text-[11px] text-amber-950 flex items-start gap-2">
+            <span class="text-base flex-shrink-0">⚖️</span>
+            <div>
+              <strong>Validez Probatoria y Auditoría SG-SST (Decreto 1072 de 2015):</strong> Al hacer clic en <em>"Registrar y Enviar al Trabajador"</em>, el servidor captura la estampa de tiempo oficial de Colombia, genera el consecutivo inmutable y coloca el acta en estado <strong>ASIGNADO_PENDIENTE_FIRMA</strong> en la app móvil del trabajador.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PIE DE ACCIONES -->
+        <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2.5 flex-shrink-0">
+          <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-bold cursor-pointer">
+            Cancelar
+          </button>
+          <button type="button" id="btn-confirm-assign-delivery" class="px-5 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-xl font-black shadow-md cursor-pointer flex items-center gap-1.5 active:scale-95">
+            <span>📦</span>
+            <span>Registrar y Enviar al Trabajador</span>
+          </button>
         </div>
       </div>
-    </body>
-    </html>
-  `);
-  win.document.close();
+    `;
+  }
+
+  modalEl.innerHTML = renderModalBody(selTrabajadorId);
+  document.body.appendChild(modalEl);
+
+  function attachEvents(currentTrabajadorId) {
+    const trabajadorSelect = document.getElementById('assign-trabajador-select');
+    if (trabajadorSelect) {
+      trabajadorSelect.addEventListener('change', (e) => {
+        const newId = e.target.value;
+        modalEl.innerHTML = renderModalBody(newId);
+        attachEvents(newId);
+      });
+    }
+
+    const confirmBtn = document.getElementById('btn-confirm-assign-delivery');
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', async () => {
+        const trabajador = trabajadores.find(t => t.id === currentTrabajadorId) || trabajadores[0];
+        const cargos = store.getJobPositions ? store.getJobPositions(empresaActiva.id) : [];
+        const cargoObj = cargos.find(c => c.id === trabajador.job_position_id || (c.title || '').toLowerCase().trim() === (trabajador.cargo || '').toLowerCase().trim());
+        const cargoId = cargoObj ? cargoObj.id : (preCargoId || trabajador.job_position_id);
+        const matrixItems = store.getJobPositionEppMatrix(cargoId, empresaActiva.id);
+
+        const checkBoxes = document.querySelectorAll('.assign-item-check');
+        const selectedItems = [];
+
+        checkBoxes.forEach(chk => {
+          if (chk.checked) {
+            const idx = parseInt(chk.getAttribute('data-idx'), 10);
+            const m = matrixItems[idx] || catalog[idx] || {};
+            const sizeDelivered = document.querySelector(`.assign-item-size[data-idx="${idx}"]`)?.value || 'Única';
+            const qtyDelivered = parseInt(document.querySelector(`.assign-item-qty[data-idx="${idx}"]`)?.value || 1, 10);
+            const returned = document.querySelector(`.assign-item-returned[data-idx="${idx}"]`)?.checked || false;
+            const obs = document.querySelector(`.assign-item-obs[data-idx="${idx}"]`)?.value || 'Entrega estándar';
+
+            selectedItems.push({
+              catalog_item_id: m.catalog_item_id || m.id,
+              item_name: m.item_name || 'EPP',
+              category: m.category || 'EPP',
+              technical_standard: m.technical_standard || 'N/A',
+              size_delivered: sizeDelivered,
+              quantity_delivered: qtyDelivered,
+              brand_or_batch: 'Lote Homologado 2026',
+              previous_item_returned: returned,
+              useful_life_days: m.useful_life_days || 120,
+              observations: obs
+            });
+          }
+        });
+
+        if (selectedItems.length === 0) {
+          alert("Debes seleccionar al menos un elemento para registrar la entrega.");
+          return;
+        }
+
+        const deliveryReason = document.getElementById('assign-motivo-select')?.value || 'Periodica_Ley_Abril_Agosto_Diciembre';
+        const deliveryType = document.getElementById('assign-tipo-select')?.value || 'MIXTA_EPP_Y_DOTACION';
+
+        const workerSizes = {
+          camisa: document.getElementById('assign-size-camisa')?.value || 'M',
+          pantalon: document.getElementById('assign-size-pantalon')?.value || '32',
+          calzado: document.getElementById('assign-size-calzado')?.value || '40',
+          guantes: document.getElementById('assign-size-guantes')?.value || '9'
+        };
+
+        confirmBtn.disabled = true;
+        confirmBtn.innerText = "Registrando Entrega...";
+
+        try {
+          const res = await store.assignEppDelivery({
+            tenant_id: empresaActiva.id,
+            employee_id: trabajador.id,
+            job_position_id: cargoId,
+            delivery_type: deliveryType,
+            delivery_reason: deliveryReason,
+            assigned_by_user_id: 'Coordinador SST',
+            items: selectedItems,
+            worker_sizes: workerSizes
+          });
+
+          modalEl.remove();
+
+          if (window.mostrarNotificacion) {
+            window.mostrarNotificacion(`✓ Entrega asignada formalmente (${res.delivery_consecutive}). Pendiente de firma por el trabajador.`, "success");
+          } else {
+            alert(`✓ Entrega asignada formalmente con consecutivo ${res.delivery_consecutive}. Notificada al perfil del trabajador.`);
+          }
+
+          if (typeof renderConsolaGestionTrabajadores === 'function') {
+            const container = document.getElementById('app-main-content') || document.querySelector('.main-container');
+            if (container) renderConsolaGestionTrabajadores(container);
+          }
+          if (typeof renderWorkerPortal === 'function') {
+            renderWorkerPortal();
+          }
+        } catch (err) {
+          console.error("Error al registrar entrega de EPP:", err);
+          alert("Error al registrar entrega: " + err.message);
+          confirmBtn.disabled = false;
+          confirmBtn.innerText = "📦 Registrar y Enviar al Trabajador";
+        }
+      });
+    }
+  }
+
+  attachEvents(selTrabajadorId);
 };
 
-window.abrirModalReportePeligro = function(trabajadorId) {
-  const trabajador = store.getTrabajadorPorId(trabajadorId);
-  const modalId = 'modal-reporte-peligro';
+window.abrirModalFirmarActaEntregaEPP = function(deliveryId, trabajadorId) {
+  const delivery = store.getEppDeliveryById(deliveryId);
+  if (!delivery) {
+    alert("No se encontró el acta de entrega seleccionada.");
+    return;
+  }
+
+  const trabajador = store.getTrabajadorPorId(trabajadorId || delivery.employee_id);
+  if (!trabajador) {
+    alert("No se encontró el trabajador asociado a esta entrega.");
+    return;
+  }
+
+  const empresa = store.getEmpresa(delivery.tenant_id || trabajador.companyId) || store.getEmpresaActiva();
+  const items = Array.isArray(delivery.items) ? delivery.items : [];
+  const bogotaHora = delivery.bogota_assigned_at || new Date(delivery.assigned_at).toLocaleString('es-CO');
+
+  const modalId = 'modal-firmar-acta-entrega-epp';
   const existing = document.getElementById(modalId);
   if (existing) existing.remove();
 
   const modalEl = document.createElement('div');
   modalEl.id = modalId;
-  modalEl.className = 'fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-4';
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+
   modalEl.innerHTML = `
-    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md overflow-hidden">
-      <div class="bg-rose-600 p-4 text-white flex justify-between items-center">
-        <h3 class="font-bold text-sm">🚨 Reporte de Peligro / Condición Insegura</h3>
-        <button onclick="document.getElementById('${modalId}').remove()" class="text-white text-lg font-bold cursor-pointer">✕</button>
-      </div>
-      <form id="form-reporte-peligro" class="p-4 space-y-3 text-xs">
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Ubicación / Área *</label>
-            <input type="text" id="reporte-ubicacion" required value="${escapeHtml(trabajador.area || 'Planta Principal')}" placeholder="Ej. Zona de hornos..." class="w-full px-3 py-2 border border-slate-300 rounded-lg">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Nivel de Prioridad *</label>
-            <select id="reporte-prioridad" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-bold">
-              <option value="Alta">🔴 Alta / Urgente</option>
-              <option value="Media" selected>🟡 Media / Preventiva</option>
-              <option value="Baja">🟢 Baja / Mejora</option>
-            </select>
-          </div>
-        </div>
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      
+      <!-- ENCABEZADO -->
+      <div class="bg-gradient-to-r from-teal-800 to-emerald-800 p-4 text-white flex items-center justify-between flex-shrink-0">
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Descripción de la Condición o Acto Inseguro *</label>
-          <textarea id="reporte-desc" required rows="3" placeholder="Describe qué observaste y por qué consideras que puede causar un accidente..." class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+          <div class="flex items-center gap-1.5 mb-1">
+            <span class="text-[9px] font-black uppercase tracking-wider bg-black/25 px-2 py-0.5 rounded border border-white/20">
+              ${delivery.delivery_consecutive}
+            </span>
+            <span class="text-[9px] font-bold bg-white/20 px-2 py-0.5 rounded">
+              Estándar 4.2.6 Res. 0312
+            </span>
+          </div>
+          <h3 class="font-black text-sm sm:text-base">Recepción y Firma Digital de Dotación &amp; EPP</h3>
+          <span class="text-[10px] text-teal-200 block">Asignado: ${bogotaHora}</span>
         </div>
-        <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
-          <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg font-semibold cursor-pointer">Cancelar</button>
-          <button type="submit" class="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold cursor-pointer">Enviar Reporte SST</button>
+        <button onclick="document.getElementById('${modalId}').remove()" class="text-white text-lg font-bold p-1 cursor-pointer hover:opacity-80">✕</button>
+      </div>
+
+      <!-- CUERPO -->
+      <div class="p-5 overflow-y-auto flex-1 space-y-4 text-xs leading-relaxed text-slate-800">
+        
+        <!-- DATOS DEL TRABAJADOR Y EMPRESA -->
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+          <div><strong>Empresa:</strong> ${escapeHtml(empresa.razonSocial)} (NIT: ${empresa.nit})</div>
+          <div><strong>Trabajador:</strong> ${escapeHtml(trabajador.nombre)} (C.C. ${trabajador.identificacion || trabajador.cedula})</div>
+          <div><strong>Cargo:</strong> ${escapeHtml(delivery.cargoNombre || trabajador.cargo)}</div>
         </div>
-      </form>
+
+        <!-- LISTA DETALLADA DE ELEMENTOS ENTREGADOS -->
+        <div>
+          <span class="block font-bold text-slate-900 mb-1.5">Elementos de Protección &amp; Dotación Entregados (${items.length}):</span>
+          <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+            ${items.map(it => `
+              <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                <div>
+                  <span class="font-bold text-slate-900 block">${escapeHtml(it.item_name_snapshot || it.item_name)}</span>
+                  <span class="text-[10px] text-slate-500">
+                    Norma: <strong>${escapeHtml(it.technical_standard_snapshot || it.technical_standard || 'N/A')}</strong> · Talla: <strong class="text-teal-800">${escapeHtml(it.size_delivered || 'Única')}</strong>
+                  </span>
+                </div>
+                <span class="px-2 py-1 rounded-lg bg-teal-100 text-teal-900 font-mono font-bold text-xs">
+                  Cant: ${it.quantity_delivered || 1}
+                </span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- DECLARACIÓN DE COMPROMISO LEGAL -->
+        <div class="p-3.5 bg-amber-50 border-2 border-amber-200/90 rounded-2xl text-[11px] text-amber-950 space-y-1.5">
+          <div class="font-black text-amber-900 uppercase flex items-center gap-1.5">
+            <span>⚖️</span>
+            <span>Declaración de Recibido y Compromiso Legal (Ley 9/1979 y Art. 230 CST):</span>
+          </div>
+          <p class="leading-relaxed">
+            "Manifiesto que he recibido a entera satisfacción los Elementos de Protección Personal y Dotación de Ley descritos, en óptimo estado y certificados. Me comprometo a usarlos de manera obligatoria durante mi jornada laboral, darles el cuidado adecuado y solicitar su reposición inmediata en caso de deterioro."
+          </p>
+        </div>
+
+        <!-- CANVAS DE FIRMA DIGITAL CON EL DEDO (100% RESPONSIVE) -->
+        <div class="space-y-2 pt-1 border-t border-slate-200">
+          <div class="flex items-center justify-between">
+            <span class="font-black text-slate-900 text-xs">✍️ Estampa tu Firma con el Dedo en Pantalla:</span>
+            <button type="button" id="btn-clear-deliv-sig" class="text-[10px] text-rose-600 underline font-bold cursor-pointer">Limpiar Trazo</button>
+          </div>
+          <div class="border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-50">
+            <canvas id="canvas-deliv-sig" class="signature-pad-canvas w-full h-36"></canvas>
+          </div>
+          <span class="text-[9.5px] text-slate-400 block text-center">Firma digital con sello criptográfico SHA-256 (Ley 527 de 1999)</span>
+        </div>
+
+      </div>
+
+      <!-- BOTONES -->
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2 flex-shrink-0">
+        <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-bold cursor-pointer">
+          Cancelar
+        </button>
+        <button type="button" id="btn-confirm-deliv-sig" class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white rounded-xl font-black shadow-md cursor-pointer active:scale-95">
+          ✓ Confirmar y Firmar Recibido de EPP
+        </button>
+      </div>
+
     </div>
   `;
+
   document.body.appendChild(modalEl);
 
-  document.getElementById('form-reporte-peligro').onsubmit = (e) => {
-    e.preventDefault();
-    store.registrarReportePeligro({
-      companyId: trabajador.companyId,
-      trabajadorId: trabajador.id,
-      trabajadorNombre: trabajador.nombre,
-      ubicacion: document.getElementById('reporte-ubicacion').value,
-      prioridad: document.getElementById('reporte-prioridad').value,
-      descripcion: document.getElementById('reporte-desc').value,
-      fecha: new Date().toISOString(),
-      estado: 'En Revisión SST'
-    });
-    modalEl.remove();
-    alert("✓ Tu reporte de condición insegura fue enviado exitosamente al Coordinador SST.");
-    renderWorkerPortal();
-  };
+  const pad = setupSignaturePad('canvas-deliv-sig');
+  document.getElementById('btn-clear-deliv-sig')?.addEventListener('click', () => pad?.clear());
+
+  document.getElementById('btn-confirm-deliv-sig')?.addEventListener('click', async () => {
+    if (!pad || pad.isEmpty()) {
+      alert("Por favor estampa tu firma en el recuadro antes de confirmar.");
+      return;
+    }
+
+    const btn = document.getElementById('btn-confirm-deliv-sig');
+    btn.disabled = true;
+    btn.innerText = "Sellando con SHA-256...";
+
+    try {
+      const sigData = pad.getDataUrl();
+      const res = await store.signEppDelivery(delivery.id, trabajador.id, sigData);
+
+      modalEl.remove();
+
+      if (window.mostrarNotificacion) {
+        window.mostrarNotificacion("✓ Acta firmada y sellada con hash SHA-256 (Ley 527 de 1999).", "success");
+      }
+
+      if (confirm(`✓ ¡Acta de entrega ${delivery.delivery_consecutive} firmada y sellada con éxito!\n\n¿Deseas abrir e imprimir ahora el Formato Oficial PDF (SST-FOR-EPP-01)?`)) {
+        if (typeof window.imprimirActaEntregaEPP_SST_FOR_01 === 'function') {
+          window.imprimirActaEntregaEPP_SST_FOR_01(delivery.id);
+        }
+      }
+
+      renderWorkerPortal();
+    } catch (err) {
+      console.error("Error al firmar acta de EPP:", err);
+      alert("Error al firmar acta de entrega: " + err.message);
+      btn.disabled = false;
+      btn.innerText = "✓ Confirmar y Firmar Recibido de EPP";
+    }
+  });
 };
+
+// Compatibilidad con invocaciones previas
+window.abrirModalFirmaActaEPP = function(trabajadorId) {
+  const deliveries = store.getEppDeliveries ? store.getEppDeliveries(trabajadorId) : [];
+  const pending = deliveries.find(d => d.status === 'ASIGNADO_PENDIENTE_FIRMA');
+  if (pending) {
+    window.abrirModalFirmarActaEntregaEPP(pending.id, trabajadorId);
+  } else {
+    // Si no hay entrega pendiente, invitar a asignar una
+    if (confirm("No hay entregas pendientes de firma para este trabajador. ¿Deseas abrir la asignación de EPP y Dotación ahora?")) {
+      window.abrirModalAsignarEntregaEPP(trabajadorId);
+    }
+  }
+};
+
+// =============================================================================
+// MODAL DE CUSTODIA INDIVIDUAL DE HERRAMIENTA
+// =============================================================================
+window.abrirModalFirmaCustodia = function(toolId, toolName, trabajadorId) {
+  const trabajador = store.getTrabajadorPorId(trabajadorId);
+  if (!trabajador) return;
+  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva();
+
+  const modalId = 'modal-firma-custodia';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+
+  modalEl.innerHTML = `
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden my-auto flex flex-col">
+      <div class="bg-slate-900 p-4 text-white flex items-center justify-between">
+        <div>
+          <span class="text-[9px] font-black uppercase tracking-wider text-teal-300 block">Custodia y Asignación de Activo</span>
+          <h3 class="font-black text-sm text-white">Acta de Recibido de Equipo</h3>
+        </div>
+        <button onclick="document.getElementById('${modalId}').remove()" class="text-white text-lg font-bold p-1 cursor-pointer">✕</button>
+      </div>
+
+      <div class="p-5 space-y-3 text-xs leading-relaxed text-slate-800">
+        <p>
+          Yo, <strong>${trabajador.nombre}</strong>, recibo a satisfacción la herramienta / máquina <strong>${toolName}</strong> para el desempeño de mis funciones en <strong>${empresa.razonSocial}</strong>.
+        </p>
+        <p class="text-[11px] text-slate-600">
+          Me comprometo a operarla siguiendo su Procedimiento de Trabajo Seguro (PTS), realizar la inspección preoperacional diaria y reportar oportunamente cualquier anomalía mecánica.
+        </p>
+
+        <div class="space-y-1 pt-2">
+          <div class="flex items-center justify-between">
+            <span class="font-black text-slate-900 text-xs">✍️ Firma con el Dedo:</span>
+            <button type="button" id="btn-clear-cust-sig" class="text-[10px] text-rose-600 underline font-bold cursor-pointer">Limpiar</button>
+          </div>
+          <div class="border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-50">
+            <canvas id="canvas-cust-sig" class="signature-pad-canvas w-full h-32"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+        <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl font-bold cursor-pointer">Cancelar</button>
+        <button type="button" id="btn-confirm-cust-sig" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black shadow-md cursor-pointer">✓ Confirmar Custodia</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modalEl);
+
+  const pad = setupSignaturePad('canvas-cust-sig');
+  document.getElementById('btn-clear-cust-sig')?.addEventListener('click', () => pad?.clear());
+
+  document.getElementById('btn-confirm-cust-sig')?.addEventListener('click', async () => {
+    if (pad?.isEmpty()) {
+      alert("Por favor firma en el recuadro.");
+      return;
+    }
+
+    const btn = document.getElementById('btn-confirm-cust-sig');
+    btn.disabled = true;
+
+    try {
+      const sigData = pad.getDataUrl();
+      await store.submitWorkerToolAssignment({
+        worker_id: trabajador.id,
+        tenant_id: empresa.id,
+        tool_id: toolId,
+        signature_base64: sigData
+      });
+
+      modalEl.remove();
+      alert(`✓ Asignación y custodia de "${toolName}" registrada exitosamente.`);
+      renderWorkerPortal();
+    } catch (err) {
+      alert("Error registrando custodia: " + err.message);
+      btn.disabled = false;
+    }
+  });
+};
+
+// =============================================================================
+// MODAL DE FICHA TÉCNICA SST DEL ACTIVO
+// =============================================================================
+window.abrirModalFichaTecnicaSST = function(toolId) {
+  const tool = store.getToolById(toolId);
+  if (!tool) return;
+  const sst = store.getToolSST(toolId);
+
+  const modalId = 'modal-ficha-sst';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+
+  modalEl.innerHTML = `
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      <div class="bg-slate-900 p-4 text-white flex items-center justify-between">
+        <div>
+          <span class="text-[9px] font-mono text-teal-400 uppercase font-black">${tool.internal_code}</span>
+          <h3 class="font-black text-sm text-white">${tool.exact_name}</h3>
+        </div>
+        <button onclick="document.getElementById('${modalId}').remove()" class="text-white text-lg font-bold p-1 cursor-pointer">✕</button>
+      </div>
+
+      <div class="p-5 overflow-y-auto space-y-3.5 text-xs">
+        <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 p-3 rounded-2xl border">
+          <div><span class="text-slate-500">Marca:</span> <strong>${tool.brand || 'N/A'}</strong></div>
+          <div><span class="text-slate-500">Modelo:</span> <strong>${tool.model || 'N/A'}</strong></div>
+          <div><span class="text-slate-500">Serie:</span> <strong>${tool.serial_number || 'N/A'}</strong></div>
+          <div><span class="text-slate-500">Estado:</span> <strong class="text-emerald-700">${tool.current_status}</strong></div>
+        </div>
+
+        <div>
+          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider text-rose-700">⚠️ Peligros Asociados a la Operación:</h4>
+          <ul class="list-disc pl-5 space-y-1 text-[11px] text-slate-700 mt-1.5">
+            ${(sst?.hazards || [
+              'Atrapamiento por piezas en rotación o transmisión mecánica',
+              'Golpes o cortes por proyección de partículas o esquirlas',
+              'Exposición a ruido continuo > 85 dBA',
+              'Riesgo eléctrico por conexiones o motor trifásico'
+            ]).map(h => `<li>${h}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider text-teal-800">🛡️ Medidas de Control y Prevención:</h4>
+          <p class="text-[11px] text-slate-700 mt-1.5 leading-relaxed whitespace-pre-line">
+            ${sst?.preventive_measures || '1. Verificar guardas perimetrales y botones de parada de emergencia antes de encender.\n2. Mantener orden y limpieza alrededor del equipo.\n3. Prohibido usar prendas sueltas, joyas o cabello largo desatado.\n4. Desconectar y bloquear (LOTO) previo a limpieza o mantenimiento.'}
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">🦺 EPP Obligatorios para Operar:</h4>
+          <div class="flex flex-wrap gap-1 mt-1.5">
+            ${(sst?.required_epp || ['Casco con barbuquejo', 'Gafas de seguridad', 'Botas con puntera', 'Protección auditiva', 'Guantes mecánicos']).map(e => `
+              <span class="px-2 py-0.5 rounded-lg bg-teal-50 border border-teal-200 text-teal-900 text-[10px] font-bold">✓ ${e}</span>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 bg-slate-50 border-t flex justify-end">
+        <button onclick="document.getElementById('${modalId}').remove()" class="px-4 py-2 bg-slate-800 text-white rounded-xl font-bold text-xs cursor-pointer">Cerrar Ficha</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modalEl);
+};
+
+window.abrirModalReportePeligro = function(trabajadorId) {
+  activeMobileTab = 'reportar';
+  renderWorkerPortal();
+};
+
 
 // =============================================================================
 // MÓDULO E-LEARNING TRABAJADOR: AULA VIRTUAL Y EVALUACIÓN SECUENCIAL
