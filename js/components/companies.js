@@ -103,10 +103,10 @@ export function renderCompanies() {
                 ${onboarding.paso1 ? '✓' : '1'}
               </span>
               <div class="min-w-0">
-                <span class="text-xs font-bold block ${onboarding.paso1 ? 'text-emerald-300' : 'text-slate-200'}">Paso 1: Perfil & ADN</span>
-                <span class="text-[10px] text-slate-400 block mt-0.5">Contexto corporativo e IA</span>
+                <span class="text-xs font-bold block ${onboarding.paso1 ? 'text-emerald-300' : 'text-slate-200'}">Paso 1: Perfil & Caracterización</span>
+                <span class="text-[10px] text-slate-400 block mt-0.5">Contexto corporativo y operativo</span>
                 <button onclick="window.editarEmpresa('${empresaActiva.id}')" class="text-[10px] font-bold text-indigo-300 hover:text-white underline mt-1 block cursor-pointer">
-                  ${onboarding.paso1 ? 'Editar Perfil' : 'Completar con IA →'}
+                  ${onboarding.paso1 ? 'Editar Perfil' : 'Completar Perfil →'}
                 </button>
               </div>
             </div>
@@ -776,20 +776,15 @@ export function renderCompanies() {
             </div>
           </div>
 
-          <!-- SECCIÓN: ADN DE LA EMPRESA & CONTEXTO IA (PROCESS-DRIVEN ARCHITECTURE) -->
+          <!-- SECCIÓN: CARACTERIZACIÓN Y DESCRIPCIÓN DE LA EMPRESA -->
           <div class="pt-5 border-t border-slate-200 space-y-4">
-            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-              <div>
-                <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                  <span>🧬</span> ADN Empresarial & Contexto Maestro IA
-                </h4>
-                <p class="text-xs text-slate-500">
-                  Caracteriza la razón de ser, metodología operativa y antigüedad para alimentar el Mapa de Procesos y la Matriz GTC 45.
-                </p>
-              </div>
-              <button type="button" onclick="window.abrirModalAsistenteADN()" class="px-3.5 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer active:scale-95">
-                <span>✨ Asistente IA (3 Preguntas)</span>
-              </button>
+            <div>
+              <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                <span>🏢</span> Caracterización y Descripción de la Empresa
+              </h4>
+              <p class="text-xs text-slate-500">
+                Caracteriza la razón de ser, metodología operativa y antigüedad para alimentar el Mapa de Procesos y la Matriz GTC 45.
+              </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -797,15 +792,7 @@ export function renderCompanies() {
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Antigüedad en Años *</label>
                 <input type="number" id="emp-years-operating" min="1" max="150" value="5" placeholder="Ej. 10" class="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold">
               </div>
-              <div class="md:col-span-2">
-                <div id="badge-ai-summary-container" class="hidden p-2.5 bg-purple-50 border border-purple-200 rounded-xl flex items-center justify-between text-xs text-purple-900 mt-5">
-                  <span class="flex items-center gap-1.5 font-bold">
-                    <span>🤖 Perfil IA Generado:</span>
-                    <span id="texto-ai-maturity" class="font-normal text-purple-800"></span>
-                  </span>
-                  <button type="button" onclick="window.verContextoIASummary()" class="text-[11px] underline font-bold text-purple-700 hover:text-purple-900 cursor-pointer">Ver JSON</button>
-                </div>
-              </div>
+              <div id="badge-ai-summary-container" class="hidden"></div>
             </div>
 
             <div>
@@ -1440,15 +1427,7 @@ async function abrirModalEmpresa(empresa = null) {
     }
 
     const aiBadgeContainer = document.getElementById('badge-ai-summary-container');
-    const aiMaturityText = document.getElementById('texto-ai-maturity');
-    if (empresa.ai_context_summary) {
-      aiBadgeContainer?.classList.remove('hidden');
-      if (aiMaturityText) {
-        aiMaturityText.innerText = `${empresa.ai_context_summary.operational_maturity || 'Activo'} • ${empresa.ai_context_summary.inherent_risk_profile?.peligros_prioritarios?.length || 5} peligros prioritarios`;
-      }
-    } else {
-      aiBadgeContainer?.classList.add('hidden');
-    }
+    aiBadgeContainer?.classList.add('hidden');
 
     // Cargar Credenciales de Acceso
     const inputAccesoUser = document.getElementById('emp-acceso-usuario');
@@ -1985,7 +1964,7 @@ Salud, Seguridad y Ambiente • Colombia`;
     }
 
     if (!summary) {
-      alert("Aún no se ha generado un perfil estructurado con IA para esta empresa. Haz clic en '✨ Asistente IA (3 Preguntas)' para generarlo.");
+      alert("Aún no se ha registrado un perfil estructurado para esta empresa.");
       return;
     }
 

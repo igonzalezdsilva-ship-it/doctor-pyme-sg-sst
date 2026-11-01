@@ -394,3 +394,7 @@
 {"timestamp":"2026-10-31T09:56:24-05:00","action":"SAVE_DATABASE","bytes":3028403,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
 {"timestamp":"2026-10-31T09:57:40-05:00","action":"SAVE_DATABASE","bytes":3028403,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
 {"timestamp":"2026-10-31T10:17:16-05:00","action":"SAVE_DATABASE","bytes":3056979,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:18:11-05:00","action":"AI_TENANT_PROFILE_GENERATED","tenant_id":"emp-1792110509705","company_name":"WIWA SAS"}
+{"timestamp":"2026-11-01T01:19:05.698Z","action":"LEGAL_POLICY_CONSENT_SIGNED","certificate_code":"DP-LEGAL-20261101-D518","tenant_id":"emp-1792110509705","user_id":"i.gonzalez.dsilva@gmail.com","signer_id":"12344566","ip":"127.0.0.1","cryptographic_evidence_hash":"70a686700503f77ac4c8f44349e94fce0eba6ebf9f1f8cc5bdb8d9720ffa2c4e"}
+{"timestamp":"2026-10-31T20:19:06-05:00","action":"SAVE_DATABASE","bytes":3093713,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:19:48-05:00","action":"SAVE_DATABASE","bytes":3093715,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
