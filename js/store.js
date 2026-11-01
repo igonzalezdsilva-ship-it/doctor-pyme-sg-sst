@@ -1438,6 +1438,12 @@ class Store {
     const ejecutarEnvio = async () => {
       try {
         if (!this.data) return;
+        // Evitar que una sesión fresca en blanco sin sincronizar sobreescriba el servidor con datos demo reducidos
+        if (!this.serverSynced && Array.isArray(this.data.empresas) && this.data.empresas.length <= 1) {
+          console.warn("Postergando guardado al servidor físico: esperando sincronización autoritativa inicial...");
+          await this.sincronizarConServidorFisico();
+          return;
+        }
         if (!this.data.updatedAt) {
           this.data.updatedAt = new Date().toISOString();
         }

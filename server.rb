@@ -365,12 +365,14 @@ def merge_database_safely(existing_db, incoming_payload)
 
   merged = incoming_payload.dup
 
-  # 1. Empresas: fusionar campos enriquecidos sin resucitar empresas eliminadas
+  # 1. Empresas: fusionar campos enriquecidos preservando empresas preexistentes en disco
   if existing_db['empresas'].is_a?(Array) && (!merged['empresas'].is_a?(Array) || merged['empresas'].empty?)
     merged['empresas'] = existing_db['empresas']
   elsif existing_db['empresas'].is_a?(Array) && merged['empresas'].is_a?(Array)
     existing_map = existing_db['empresas'].each_with_object({}) { |e, h| h[e['id']] = e }
-    merged['empresas'] = merged['empresas'].map do |emp|
+    incoming_map = merged['empresas'].each_with_object({}) { |e, h| h[e['id']] = e }
+
+    final_empresas = merged['empresas'].map do |emp|
       next emp unless emp.is_a?(Hash)
       orig = existing_map[emp['id']]
       if orig
@@ -389,6 +391,17 @@ def merge_database_safely(existing_db, incoming_payload)
       end
       emp
     end
+
+    # Blindaje multi-empresa: conservar las empresas existentes en disco que no vinieron en el payload
+    # para evitar que clientes con caché parcial o modo demo eliminen las empresas de la organización
+    existing_db['empresas'].each do |orig_emp|
+      next unless orig_emp.is_a?(Hash) && orig_emp['id']
+      unless incoming_map.key?(orig_emp['id'])
+        final_empresas << orig_emp
+      end
+    end
+
+    merged['empresas'] = final_empresas
   end
 
   # 2. Evaluaciones: Si el cliente envió evaluaciones para una empresa y año, respetar su contenido (ej. año 2026 limpio)
@@ -463,10 +476,20 @@ def merge_database_safely(existing_db, incoming_payload)
     merged['super_admins'] = existing_db['super_admins']
   end
 
-  # 5. Proteger Matriz, Plan de Trabajo, Accidentes, Trabajadores, Cargos, Procesos si el cliente NO envió la clave (nil)
+  # 5. Proteger colecciones operativas: preservar registros existentes si el cliente no envió la clave o envió scope parcial
   ['matriz', 'planTrabajo', 'accidentes', 'trabajadores', 'perfiles_cargo', 'tools_inventory', 'tools_sst', 'tools_maintenance_plan', 'tools_assignments', 'tools_interventions_log', 'data_privacy_consents', 'legal_policy_versions', 'process_maps', 'processes', 'process_activities', 'job_positions', 'process_activity_positions', 'job_position_documents', 'capacitaciones', 'worker_evaluations', 'epp_dotacion_catalog', 'job_position_epp_matrix', 'epp_dotacion_deliveries', 'epp_dotacion_delivery_items'].each do |col|
     if existing_db[col].is_a?(Array) && merged[col].nil?
       merged[col] = existing_db[col]
+    elsif existing_db[col].is_a?(Array) && merged[col].is_a?(Array)
+      incoming_ids = merged[col].map { |r| r.is_a?(Hash) ? r['id'] : nil }.compact.to_set
+      incoming_tenants = merged[col].map { |r| r.is_a?(Hash) ? (r['companyId'] || r['tenant_id']) : nil }.compact.to_set
+      existing_db[col].each do |orig_rec|
+        next unless orig_rec.is_a?(Hash) && orig_rec['id']
+        rec_tenant = orig_rec['companyId'] || orig_rec['tenant_id']
+        if !incoming_ids.include?(orig_rec['id']) && (!incoming_tenants.include?(rec_tenant) || (merged['empresas'].is_a?(Array) && merged['empresas'].size == 1))
+          merged[col] << orig_rec
+        end
+      end
     end
   end
 

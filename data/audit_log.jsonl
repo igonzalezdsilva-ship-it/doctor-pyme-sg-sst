@@ -398,3 +398,30 @@
 {"timestamp":"2026-11-01T01:19:05.698Z","action":"LEGAL_POLICY_CONSENT_SIGNED","certificate_code":"DP-LEGAL-20261101-D518","tenant_id":"emp-1792110509705","user_id":"i.gonzalez.dsilva@gmail.com","signer_id":"12344566","ip":"127.0.0.1","cryptographic_evidence_hash":"70a686700503f77ac4c8f44349e94fce0eba6ebf9f1f8cc5bdb8d9720ffa2c4e"}
 {"timestamp":"2026-10-31T20:19:06-05:00","action":"SAVE_DATABASE","bytes":3093713,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
 {"timestamp":"2026-10-31T20:19:48-05:00","action":"SAVE_DATABASE","bytes":3093715,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:26:31-05:00","action":"AI_PROCESS_MAP_GENERATED","tenant_id":"emp-1792110509705","processes_count":7,"activities_count":28}
+{"timestamp":"2026-10-31T20:26:31-05:00","action":"SAVE_DATABASE","bytes":3137294,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:26:44-05:00","action":"SAVE_DATABASE","bytes":3188416,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:28:21-05:00","action":"SAVE_DATABASE","bytes":3189541,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:28:21-05:00","action":"SAVE_DATABASE","bytes":3198146,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:28:22-05:00","action":"SAVE_DATABASE","bytes":3197021,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:34:20-05:00","action":"SAVE_DATABASE","bytes":3197013,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:36:31-05:00","action":"SAVE_DATABASE","bytes":3197013,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:38:29-05:00","action":"SAVE_DATABASE","bytes":3197809,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:39:00-05:00","action":"SAVE_DATABASE","bytes":3197809,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:39:24-05:00","action":"SAVE_DATABASE","bytes":3197809,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:40:03-05:00","action":"SAVE_DATABASE","bytes":3198120,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:41:35-05:00","action":"SAVE_DATABASE","bytes":3205940,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:41:58-05:00","action":"SAVE_DATABASE","bytes":3210038,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:43:24-05:00","action":"WORKER_ONBOARDING_SIGNED","worker_id":"trab-1793497109434","tenant_id":"emp-1792110509705","sha256":"b4c195064b503f5ecaad3a2a1b63c04546436b975195fb41ff4690c673f83532","ip":"127.0.0.1"}
+{"timestamp":"2026-10-31T20:43:24-05:00","action":"SAVE_DATABASE","bytes":3211024,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:43:45-05:00","action":"EMPLOYEE_DOCUMENT_SIGNED","worker_id":"trab-1793497109434","document_type":"MANUAL_DE_CARGO","sha256":"e5f7838c512f1095d588e96d91f5b3a9db0e8e91e432118d694546f86ad43297","ip":"127.0.0.1"}
+{"timestamp":"2026-10-31T20:43:48-05:00","action":"SAVE_DATABASE","bytes":3212540,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:43:56-05:00","action":"EMPLOYEE_DOCUMENT_SIGNED","worker_id":"trab-1793497109434","document_type":"PERFIL_DE_CARGO","sha256":"a3fe68c6773f9d96df663ccdd23fb5c75a475f3467334e913e414bb32d72cdb7","ip":"127.0.0.1"}
+{"timestamp":"2026-10-31T20:44:00-05:00","action":"SAVE_DATABASE","bytes":3214038,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:44:07-05:00","action":"EMPLOYEE_DOCUMENT_SIGNED","worker_id":"trab-1793497109434","document_type":"PLAN_DE_TRABAJO_SEGURO","sha256":"534a1f4e6df31366b41b92b8998b66c99b507950c0c70f36ae80d40659be922f","ip":"127.0.0.1"}
+{"timestamp":"2026-10-31T20:44:09-05:00","action":"SAVE_DATABASE","bytes":3215570,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:44:17-05:00","action":"EMPLOYEE_DOCUMENT_SIGNED","worker_id":"trab-1793497109434","document_type":"ANEXO_CONTRACTUAL_Y_NOTIFICACION_RIESGOS","sha256":"684b7c4d266e63e43121b8a5389955f3b42a1a14541241423133e979fe0d8a23","ip":"127.0.0.1"}
+{"timestamp":"2026-10-31T20:44:21-05:00","action":"SAVE_DATABASE","bytes":3217192,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:46:01-05:00","action":"SAVE_DATABASE","bytes":3245694,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:46:51-05:00","action":"SAVE_DATABASE","bytes":3246036,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-10-31T20:50:11-05:00","action":"SAVE_DATABASE","bytes":3246347,"totalEmpresas":4,"totalEvaluaciones":282,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}

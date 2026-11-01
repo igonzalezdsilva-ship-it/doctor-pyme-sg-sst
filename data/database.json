@@ -226,7 +226,7 @@
       "operational_how_it_works": "La empresa opera bajo un modelo estructurado por procesos SIPOC y ciclo PHVA: Dropchiping. Cuenta con infraestructura física especializada, maquinaria y herramientas con plan de mantenimiento preventivo, personal técnico capacitado y protocolos rigurosos de Seguridad y Salud en el Trabajo bajo el Decreto 1072 de 2015 y la Resolución 0312 de 2019.",
       "acceso": {
         "usuario": "martinezmelissa154@gmail.com",
-        "password": "Mariana2026*",
+        "password": "1234",
         "estado": "ACTIVO",
         "rol": "Administrador Empresa"
       },
@@ -3075,6 +3075,32 @@
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-19-lr8a",
       "job_position_id": "jp-emp-1790438946268-1793387809361-vt3"
+    },
+    {
+      "id": "trab-1793497109434",
+      "companyId": "emp-1792110509705",
+      "job_position_id": "jp-emp-1792110509705-6e756b3f",
+      "nombre": "MELISSA MARIA MARTINE POLANCO",
+      "identificacion": "1002491239",
+      "cedula": "1002491239",
+      "cargo": "Asistente Administrativa",
+      "salario": 2000000,
+      "tipoContrato": "Término Fijo",
+      "fechaContrato": "2026-08-16",
+      "fechaIngreso": "2026-08-16",
+      "fechaFinContrato": "2026-12-16",
+      "estado": "Activo",
+      "area": "Operaciones",
+      "correo": "martinezmelissa154@gmail.com",
+      "telefono": "3144001787",
+      "eps": "Sura EPS",
+      "afp": "Protección",
+      "arl": "Positiva ARL",
+      "duracionMeses": null,
+      "prorrogas": [
+
+      ],
+      "estadoPreaviso": "Pendiente"
     }
   ],
   "capacitaciones": [
@@ -3251,7 +3277,257 @@
         }
       ],
       "evaluaciones": [
-
+        {
+          "id": "eval-1793497561-13dcc8",
+          "certificate_code": "DP-EVAL-20261031-48D4A4CC",
+          "training_id": "cap-ind-emp-1792110509705",
+          "training_title": "Capacitación #1: Inducción al SG-SST (Sistema de Gestión de Seguridad y Salud en el Trabajo)",
+          "company_id": "emp-1792110509705",
+          "company_name": "WIWA SAS",
+          "worker_id": "trab-1793497109434",
+          "trabajadorId": "trab-1793497109434",
+          "trabajadorNombre": "MELISSA MARIA MARTINE POLANCO",
+          "trabajadorCedula": "1002491239",
+          "trabajadorCargo": "Asistente Administrativa",
+          "answers_submitted": [
+            1,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0,
+            1,
+            1,
+            0,
+            1,
+            1,
+            1
+          ],
+          "detailed_answers": [
+            {
+              "question_number": 1,
+              "question_text": "¿Cuál es el objetivo principal del Sistema de Gestión de la Seguridad y Salud en el Trabajo (SG-SST) según el Decreto 1072 de 2015?",
+              "options": [
+                "A) Imponer sanciones económicas a los trabajadores que cometan faltas leves.",
+                "B) Anticipar, reconocer, evaluar y controlar los riesgos que puedan afectar la seguridad y salud en el trabajo.",
+                "C) Reducir los costos operativos de la empresa eliminando dotaciones de seguridad.",
+                "D) Delegar la responsabilidad de la seguridad únicamente en la ARL."
+              ],
+              "selected_option_index": 1,
+              "selected_option_letter": "B",
+              "correct_option_index": 1,
+              "correct_option_letter": "B",
+              "is_correct": true,
+              "justificacion": "El Decreto 1072 de 2015 define el SG-SST como el proceso lógico y por etapas para anticipar, reconocer, evaluar y controlar los riesgos laborales."
+            },
+            {
+              "question_number": 2,
+              "question_text": "¿Cuál de las siguientes es una responsabilidad obligatoria del trabajador en el SG-SST?",
+              "options": [
+                "A) Procurar el cuidado integral de su salud y suministrar información veraz sobre su estado de salud.",
+                "B) Comprar con su propio dinero los Elementos de Protección Personal (EPP).",
+                "C) Realizar el pago mensual de la afiliación a la ARL.",
+                "D) Diseñar la matriz de peligros y firmar los balances financieros."
+              ],
+              "selected_option_index": 1,
+              "selected_option_letter": "B",
+              "correct_option_index": 0,
+              "correct_option_letter": "A",
+              "is_correct": false,
+              "justificacion": "El Art. 2.2.4.6.10 del Decreto 1072 de 2015 estipula el autocuidado y reporte veraz del estado de salud como deber ineludible del trabajador."
+            },
+            {
+              "question_number": 3,
+              "question_text": "¿Qué se entiende legalmente por un \"Accidente de Trabajo\" según la Ley 1562 de 2012?",
+              "options": [
+                "A) Cualquier enfermedad común que se manifieste durante las vacaciones.",
+                "B) Todo suceso repentino que sobrevenga por causa o con ocasión del trabajo y produzca una lesión, perturbación funcional, invalidez o muerte.",
+                "C) Un altercado verbal entre compañeros fuera del horario laboral sin relación a la empresa.",
+                "D) Un resfriado común adquirido en la vivienda del empleado."
+              ],
+              "selected_option_index": 0,
+              "selected_option_letter": "A",
+              "correct_option_index": 1,
+              "correct_option_letter": "B",
+              "is_correct": false,
+              "justificacion": "La Ley 1562 de 2012 define el accidente de trabajo como todo suceso repentino por causa o con ocasión del trabajo con daño orgánico o funcional."
+            },
+            {
+              "question_number": 4,
+              "question_text": "¿Cuál es el plazo legal máximo que tiene el trabajador para reportar un presunto accidente de trabajo al empleador?",
+              "options": [
+                "A) 15 días calendario posteriores al suceso.",
+                "B) Inmediatamente o a más tardar dentro de las 48 horas siguientes al evento.",
+                "C) 1 mes después en la reunión mensual del COPASST.",
+                "D) No es necesario reportarlo si la lesión es leve."
+              ],
+              "selected_option_index": 1,
+              "selected_option_letter": "B",
+              "correct_option_index": 1,
+              "correct_option_letter": "B",
+              "is_correct": true,
+              "justificacion": "La normativa colombiana exige reporte inmediato para que el empleador notifique formalmente a la ARL y EPS dentro de 2 días hábiles (48 horas)."
+            },
+            {
+              "question_number": 5,
+              "question_text": "¿Cuál es la función principal del Comité Paritario de Seguridad y Salud en el Trabajo (COPASST)?",
+              "options": [
+                "A) Fijar los salarios y aumentos anuales de la empresa.",
+                "B) Actuar como organismo de promoción, vigilancia y apoyo a las normas y medidas del SG-SST en la empresa.",
+                "C) Tramitar despidos con justa causa por bajo rendimiento.",
+                "D) Administrar los recursos bancarios y presupuestos de la compañía."
+              ],
+              "selected_option_index": 1,
+              "selected_option_letter": "B",
+              "correct_option_index": 1,
+              "correct_option_letter": "B",
+              "is_correct": true,
+              "justificacion": "La Res. 2013 de 1986 y Decreto 1072 determinan que el COPASST vigila, propone y promueve la salud ocupacional en todos los niveles."
+            },
+            {
+              "question_number": 6,
+              "question_text": "¿Qué rol cumple el Comité de Convivencia Laboral (CCL) según la Resolución 652 de 2012?",
+              "options": [
+                "A) Imponer multas de tránsito a los vehículos de la empresa.",
+                "B) Prevenir el acoso laboral y tramitar confidencialmente quejas para proteger la dignidad de los trabajadores.",
+                "C) Organizar las fiestas de fin de año y actividades recreativas.",
+                "D) Asignar los turnos de horas extras nocturnas."
+              ],
+              "selected_option_index": 0,
+              "selected_option_letter": "A",
+              "correct_option_index": 1,
+              "correct_option_letter": "B",
+              "is_correct": false,
+              "justificacion": "El CCL es un mecanismo preventivo para proteger a los trabajadores contra los riesgos psicosociales y situaciones de acoso laboral (Ley 1010 de 2006)."
+            },
+            {
+              "question_number": 7,
+              "question_text": "Respecto al uso de los Elementos de Protección Personal (EPP), es correcto afirmar que:",
+              "options": [
+                "A) Son opcionales si el trabajador considera que tiene mucha experiencia en el oficio.",
+                "B) Son de uso obligatorio, deben inspeccionarse antes de la labor y cuidarse según las normas técnicas de seguridad.",
+                "C) Deben compartirse entre todos los compañeros del turno sin higiene previa.",
+                "D) Pueden modificarse o recortarse para mayor comodidad del operario."
+              ],
+              "selected_option_index": 0,
+              "selected_option_letter": "A",
+              "correct_option_index": 1,
+              "correct_option_letter": "B",
+              "is_correct": false,
+              "justificacion": "El uso de EPP certificados es una barrera obligatoria de protección individual establecida en los protocolos de SST de la empresa."
+            },
+            {
+              "question_number": 8,
+              "question_text": "¿Qué diferencia existe entre un \"Peligro\" y un \"Riesgo\" en el marco de la Guía GTC 45?",
+              "options": [
+                "A) El peligro es la probabilidad y el riesgo es la fuente o condición.",
+                "B) El peligro es la fuente, situación o acto con potencial de daño; el riesgo es la combinación de la probabilidad de que ocurra y su severidad.",
+                "C) Son términos exactamente idénticos y sinónimos en la legislación colombiana.",
+                "D) El peligro solo aplica a trabajos de oficina y el riesgo a fábricas."
+              ],
+              "selected_option_index": 1,
+              "selected_option_letter": "B",
+              "correct_option_index": 1,
+              "correct_option_letter": "B",
+              "is_correct": true,
+              "justificacion": "La GTC 45 define el Peligro como fuente o condición intrínseca y el Riesgo como la probabilidad y consecuencia de su materialización."
+            },
+            {
+              "question_number": 9,
+              "question_text": "En caso de activarse la alarma de evacuación por emergencia en la sede o planta, ¿cuál es la conducta esperada?",
+              "options": [
+                "A) Regresar al puesto de trabajo a recoger objetos personales y computadores.",
+                "B) Suspender actividades, desconectar equipos si es seguro, conservar la calma y dirigirse por la ruta de evacuación al Punto de Encuentro.",
+                "C) Correr gritando hacia la salida más cercana sin atender a los brigadistas.",
+                "D) Encerrarse en los baños o vestieres a esperar que pase la emergencia."
+              ],
+              "selected_option_index": 1,
+              "selected_option_letter": "B",
+              "correct_option_index": 1,
+              "correct_option_letter": "B",
+              "is_correct": true,
+              "justificacion": "Los protocolos del Plan de Emergencias exigen evacuación ordenada, rápida y sin devolverse hacia el Punto de Encuentro designado."
+            },
+            {
+              "question_number": 10,
+              "question_text": "¿Por qué son obligatorias las Pausas Activas durante la jornada laboral?",
+              "options": [
+                "A) Para extender el tiempo de descanso sin justificación laboral.",
+                "B) Para prevenir trastornos musculoesqueléticos, disminuir la fatiga física/mental y favorecer el cambio de posturas prolongadas.",
+                "C) Para retrasar la entrega de productos en la línea de producción.",
+                "D) Solo aplican para personas mayores de 60 años."
+              ],
+              "selected_option_index": 0,
+              "selected_option_letter": "A",
+              "correct_option_index": 1,
+              "correct_option_letter": "B",
+              "is_correct": false,
+              "justificacion": "La gimnasia laboral y pausas activas previenen enfermedades laborales ergonómicas y fatiga osteomuscular derivada de cargas estáticas."
+            },
+            {
+              "question_number": 11,
+              "question_text": "¿Qué es un \"Acto Inseguro o Subestándar\"?",
+              "options": [
+                "A) Una falla geológica imprevista de la naturaleza.",
+                "B) Una acción u omisión del trabajador que viola una norma de seguridad y facilita la ocurrencia de un accidente.",
+                "C) Un defecto en la pintura de una pared de la oficina.",
+                "D) Un día lluvioso en el trayecto hacia el trabajo."
+              ],
+              "selected_option_index": 1,
+              "selected_option_letter": "B",
+              "correct_option_index": 1,
+              "correct_option_letter": "B",
+              "is_correct": true,
+              "justificacion": "El acto subestándar es el comportamiento humano que incumple el procedimiento seguro (ej. omitir el uso de EPP o deshabilitar guardas)."
+            },
+            {
+              "question_number": 12,
+              "question_text": "¿Cuál es la política estricta de la empresa respecto al consumo de alcohol, tabaco y sustancias psicoactivas?",
+              "options": [
+                "A) Se permite el consumo moderado durante la hora de almuerzo.",
+                "B) Está terminantemente prohibido presentarse a laborar o consumir sustancias psicoactivas y bebidas alcohólicas en las instalaciones.",
+                "C) Solo se prohíbe los días lunes y viernes.",
+                "D) Depende de la autorización verbal del jefe de turno."
+              ],
+              "selected_option_index": 1,
+              "selected_option_letter": "B",
+              "correct_option_index": 1,
+              "correct_option_letter": "B",
+              "is_correct": true,
+              "justificacion": "La Política de Prevención de Alcohol y Drogas es de cero tolerancia por representar un peligro crítico para la vida y seguridad de todo el personal."
+            },
+            {
+              "question_number": 13,
+              "question_text": "¿A través de qué mecanismo deben reportarse las condiciones inseguras o sugerencias de mejora en SST en DOCTOR PYME?",
+              "options": [
+                "A) Únicamente enviando cartas físicas por correo postal tradicional.",
+                "B) Mediante el botón de Reporte de Peligros en el Portal del Trabajador y comunicándolo al Coordinador SST o COPASST.",
+                "C) Comentándolo de manera informal únicamente en redes sociales personales.",
+                "D) Guardando silencio para no generar llamados de atención a los compañeros."
+              ],
+              "selected_option_index": 1,
+              "selected_option_letter": "B",
+              "correct_option_index": 1,
+              "correct_option_letter": "B",
+              "is_correct": true,
+              "justificacion": "El Decreto 1072/2015 exige disponer de mecanismos de reporte ágil y oportuno de condiciones peligrosas, disponible en el Portal del Trabajador."
+            }
+          ],
+          "total_questions": 13,
+          "correct_count": 8,
+          "percentage": 61.5,
+          "nota": 3.5,
+          "score_obtained": 3.5,
+          "aprobada": false,
+          "passed": false,
+          "accepted_at_utc": "2026-11-01T01:46:01.004Z",
+          "accepted_at_bogota": "2026-10-31 20:46:01",
+          "timestamp": "2026-10-31 20:46:01",
+          "fecha": "2026-11-01T01:46:01Z",
+          "cryptographic_evidence_hash": "ec980da34f2ab1c6b0a93b9d69c4e4f8654793353dfe3c89a2eaef92724e967c",
+          "created_at": "2026-11-01T01:46:01Z"
+        }
       ]
     },
     {
@@ -4381,6 +4657,54 @@
     }
   ],
   "firmas": [
+    {
+      "id": "sig-doc-1793497457-7961",
+      "trabajadorId": "trab-1793497109434",
+      "documentoId": "ANX-CONT-004",
+      "documentoCodigo": "ANX-CONT-004",
+      "tipoDocumento": "ANEXO_CONTRACTUAL_Y_NOTIFICACION_RIESGOS",
+      "titulo": "Anexo Contractual y Notificación de Riesgos",
+      "fechaHoraISO": "2026-10-31T20:44:17-05:00",
+      "hashDocumento": "684b7c4d266e63e43121b8a5389955f3b42a1a14541241423133e979fe0d8a23",
+      "firmaDataUrl": "/uploads/sig_doc_ANEXO_CONTRACTUAL_Y_NOTIFICACION_RIESGOS_emp-1792110509705_trab-1793497109434_20261101_014417.png",
+      "companyId": "emp-1792110509705"
+    },
+    {
+      "id": "sig-doc-1793497447-9248",
+      "trabajadorId": "trab-1793497109434",
+      "documentoId": "PTS-SEG-003",
+      "documentoCodigo": "PTS-SEG-003",
+      "tipoDocumento": "PLAN_DE_TRABAJO_SEGURO",
+      "titulo": "Procedimiento de Trabajo Seguro (PTS)",
+      "fechaHoraISO": "2026-10-31T20:44:07-05:00",
+      "hashDocumento": "534a1f4e6df31366b41b92b8998b66c99b507950c0c70f36ae80d40659be922f",
+      "firmaDataUrl": "/uploads/sig_doc_PLAN_DE_TRABAJO_SEGURO_emp-1792110509705_trab-1793497109434_20261101_014407.png",
+      "companyId": "emp-1792110509705"
+    },
+    {
+      "id": "sig-doc-1793497436-4573",
+      "trabajadorId": "trab-1793497109434",
+      "documentoId": "PF-CARG-002",
+      "documentoCodigo": "PF-CARG-002",
+      "tipoDocumento": "PERFIL_DE_CARGO",
+      "titulo": "Perfil de Cargo SST & Competencias",
+      "fechaHoraISO": "2026-10-31T20:43:56-05:00",
+      "hashDocumento": "a3fe68c6773f9d96df663ccdd23fb5c75a475f3467334e913e414bb32d72cdb7",
+      "firmaDataUrl": "/uploads/sig_doc_PERFIL_DE_CARGO_emp-1792110509705_trab-1793497109434_20261101_014356.png",
+      "companyId": "emp-1792110509705"
+    },
+    {
+      "id": "sig-doc-1793497425-7201",
+      "trabajadorId": "trab-1793497109434",
+      "documentoId": "MN-CARG-001",
+      "documentoCodigo": "MN-CARG-001",
+      "tipoDocumento": "MANUAL_DE_CARGO",
+      "titulo": "Manual de Funciones y Responsabilidades SST",
+      "fechaHoraISO": "2026-10-31T20:43:45-05:00",
+      "hashDocumento": "e5f7838c512f1095d588e96d91f5b3a9db0e8e91e432118d694546f86ad43297",
+      "firmaDataUrl": "/uploads/sig_doc_MANUAL_DE_CARGO_emp-1792110509705_trab-1793497109434_20261101_014345.png",
+      "companyId": "emp-1792110509705"
+    },
     {
       "id": "sig-demo-001",
       "companyId": "emp-1790438946268",
@@ -8233,10 +8557,17 @@
             "titulo": "Anexo Contractual de Responsabilidades SST y Riesgos CST (Google Docs)",
             "url": "https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing"
           }
+        ],
+        "contrato": [
+          {
+            "id": "f-contrato-1793497811647",
+            "titulo": "Minuta Oficial Contrato Individual y Anexo SST CST (Google Docs)",
+            "url": "https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing"
+          }
         ]
       },
       "id": "cargo-cfg-1793388125656",
-      "updatedAt": "2026-10-30T19:22:05.977Z"
+      "updatedAt": "2026-11-01T01:50:11.647Z"
     },
     {
       "cargo": "OPERARIO DE PRODUCCIÓN",
@@ -8325,6 +8656,863 @@
       },
       "id": "cargo-cfg-1793449032471",
       "updatedAt": "2026-10-31T12:17:12.471Z"
+    },
+    {
+      "cargo": "Gerente General",
+      "companyId": "emp-1792110509705",
+      "perfil": {
+        "objetivo": "Desempeñar con excelencia y estricto apego a las normas de seguridad las funciones asociadas al cargo de Gerente General, asegurando la continuidad operacional y la prevención de accidentes laborales.",
+        "educacion": "Profesional Universitario en Administración, Ingeniería o áreas afines",
+        "experiencia": "3 años en cargos directivos y de toma de decisiones",
+        "formacionSST": "Inducción general en SG-SST, Curso 50h SST (si aplica), Protocolo de EPP, Plan de Emergencias y Reporte de Peligros.",
+        "competencias": "Compromiso con el autocuidado, disciplina operacional, trabajo en equipo, orientación a la calidad y comunicación efectiva.",
+        "examenesMedicos": "Énfasis osteomuscular, agudeza visual, audiometría tonal ocupacional y valoración médica general."
+      },
+      "manualFunciones": {
+        "funcionesOperativas": [
+          "Ejecutar las labores diarias asignadas al puesto de Gerente General cumpliendo con los estándares técnicos y de calidad establecidos.",
+          "Inspeccionar el estado de las herramientas, máquinas y equipos asignados antes de iniciar las operaciones.",
+          "Mantener el orden, la limpieza y la organización estricta en su área o puesto de trabajo.",
+          "Notificar de inmediato cualquier falla, avería o condición anómala en la maquinaria o procesos.",
+          "Participar en los inventarios, relevos de turno y diligenciamiento de planillas de control operativo."
+        ],
+        "responsabilidadesSST": [
+          "Procurar el cuidado integral de su salud física y mental en el desarrollo de sus actividades laborales.",
+          "Suministrar información clara, veraz y completa sobre su estado de salud al empleador o área de SST.",
+          "Cumplir a cabalidad las normas, reglamentos, instrucciones y procedimientos del SG-SST de la empresa.",
+          "Informar de manera oportuna sobre los peligros y riesgos latentes detectados en su sitio de trabajo.",
+          "Participar activamente en las actividades de capacitación, entrenamiento y simulacros de emergencia programados.",
+          "Participar y contribuir activamente al cumplimiento de los objetivos y metas del SG-SST (Dec. 1072/2015 Art. 2.2.4.6.10).",
+          "Usar permanentemente y cuidar los Elementos de Protección Personal (EPP) suministrados por la empresa."
+        ]
+      },
+      "pts": {
+        "titulo": "Procedimiento de Trabajo Seguro (PTS) para Gerente General",
+        "peligrosEvaluados": [
+          "Peligro Psicosocial (responsabilidad y toma de decisiones)",
+          "Peligro Biomecánico (trabajo de escritorio)"
+        ],
+        "eppRequeridos": [
+          "Dotación ejecutiva y EPP básico para visitas técnicas a planta (Casco, gafas y botas)"
+        ],
+        "faseAntes": "Realizar inspección preoperacional obligatoria del área y herramientas. Verificar que los EPP se encuentren limpios y en óptimo estado. Reportar cualquier síntoma de salud que impida la labor.",
+        "faseDurante": "Mantener la atención y concentración exclusiva en la labor. Prohibido el uso de celulares o distractores en áreas operativas. Aplicar posturas ergonómicas y pausas activas. Respetar las guardas de seguridad.",
+        "faseDespues": "Desenergizar y apagar los equipos siguiendo la secuencia del manual. Realizar limpieza y orden y aseo del puesto. Almacenar herramientas en su sitio designado. Reportar el estado final del turno.",
+        "emergencias": "En caso de incidente, accidente o conato de incendio: Detener de inmediato la labor, activar la alarma, evacuar por la ruta señalizada hacia el Punto de Encuentro y avisar de inmediato al Coordinador SST."
+      },
+      "profesiograma": {
+        "ingreso": "Examen médico ocupacional con énfasis osteomuscular, Visiometría ocupacional, Audiometría tonal y Espirometría (si hay exposición a material particulado).",
+        "periodico": "Control anual osteomuscular, audiometría de control y seguimiento en Programa de Vigilancia Epidemiológica (PVE).",
+        "egreso": "Valoración médica ocupacional general de retiro (vigencia 5 días hábiles tras terminación del contrato).",
+        "restricciones": "Vértigo no controlado (para trabajo en alturas), afecciones respiratorias severas no tratadas o hernias discales agudas sin rehabilitación."
+      },
+      "matrizEpp": {
+        "eppRequeridos": [
+          "Dotación ejecutiva y EPP básico para visitas técnicas a planta (Casco, gafas y botas)"
+        ],
+        "normasTecnicas": "Casco ANSI Z89.1, Gafas ANSI Z87.1, Botas ASTM F2413 / NTC 2396, Guantes EN 388, Protección Auditiva ANSI S3.19.",
+        "frecuenciaReposicion": "Dotación legal cada 4 meses (30 abril, 31 agosto, 20 diciembre - Art. 230 CST) y reposición inmediata de EPP por deterioro o desgaste."
+      },
+      "anexoContractual": {
+        "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
+        "notificacionRiesgos": "Peligro Psicosocial (responsabilidad y toma de decisiones) • Peligro Biomecánico (trabajo de escritorio)",
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+      },
+      "contratoModelo": {
+        "tipoSugerido": "Término Indefinido",
+        "jornada": "46 horas semanales ordinarias (Ley 2101 de 2021) conforme al horario establecido por el empleador.",
+        "lugarTrabajo": "Sedes e instalaciones operativas y administrativas de la empresa contratante.",
+        "obligacionesSST": "El trabajador se compromete expresamente a cumplir todas las directrices del SG-SST (Decreto 1072 de 2015). El incumplimiento reiterado de normas de seguridad constituirá justa causa de terminación del contrato."
+      },
+      "fuentes": {
+        "manual": [
+          {
+            "id": "f-manual-1793496403091",
+            "titulo": "Manual de Funciones y Responsabilidades SG-SST Dec. 1072 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1y2GNo3owQiyUmRa_WM9EwyQEjwGy9yOZtuHbCBXoTg0/edit?usp=sharing"
+          }
+        ],
+        "perfil": [
+          {
+            "id": "f-perfil-1793496403109",
+            "titulo": "Perfil del Cargo, Educación y Competencias Res. 0312 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "pts": [
+          {
+            "id": "f-pts-1793496403129",
+            "titulo": "Procedimiento y Plan de Trabajo Seguro PTS - GTC 45 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1JOwYHHi-ba1Jts79jWLNT8xqExg03bgIZxOMi0XAl0U/edit?usp=sharing"
+          }
+        ],
+        "profesiograma": [
+          {
+            "id": "f-profesiograma-1793496403144",
+            "titulo": "Matriz de Profesiograma y Exámenes Médicos Res. 2346/2007 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "epp": [
+          {
+            "id": "f-epp-1793496403162",
+            "titulo": "Matriz Técnica de EPP y Dotación Legal Res. 2400 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "anexo": [
+          {
+            "id": "f-anexo-1793496403177",
+            "titulo": "Anexo Contractual de Responsabilidades SST y Riesgos CST (Google Docs)",
+            "url": "https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing"
+          }
+        ]
+      },
+      "id": "cargo-cfg-1793496403091",
+      "updatedAt": "2026-11-01T01:26:43.177Z"
+    },
+    {
+      "cargo": "Coordinador SST",
+      "companyId": "emp-1792110509705",
+      "perfil": {
+        "objetivo": "Desempeñar con excelencia y estricto apego a las normas de seguridad las funciones asociadas al cargo de Coordinador SST, asegurando la continuidad operacional y la prevención de accidentes laborales.",
+        "educacion": "Profesional o Tecnólogo en Seguridad y Salud en el Trabajo con Licencia SST Vigente",
+        "experiencia": "2 años liderando la implementación del SG-SST (Res. 0312)",
+        "formacionSST": "Inducción general en SG-SST, Curso 50h SST (si aplica), Protocolo de EPP, Plan de Emergencias y Reporte de Peligros.",
+        "competencias": "Compromiso con el autocuidado, disciplina operacional, trabajo en equipo, orientación a la calidad y comunicación efectiva.",
+        "examenesMedicos": "Énfasis osteomuscular, agudeza visual, audiometría tonal ocupacional y valoración médica general."
+      },
+      "manualFunciones": {
+        "funcionesOperativas": [
+          "Ejecutar las labores diarias asignadas al puesto de Coordinador SST cumpliendo con los estándares técnicos y de calidad establecidos.",
+          "Inspeccionar el estado de las herramientas, máquinas y equipos asignados antes de iniciar las operaciones.",
+          "Mantener el orden, la limpieza y la organización estricta en su área o puesto de trabajo.",
+          "Notificar de inmediato cualquier falla, avería o condición anómala en la maquinaria o procesos.",
+          "Participar en los inventarios, relevos de turno y diligenciamiento de planillas de control operativo."
+        ],
+        "responsabilidadesSST": [
+          "Procurar el cuidado integral de su salud física y mental en el desarrollo de sus actividades laborales.",
+          "Suministrar información clara, veraz y completa sobre su estado de salud al empleador o área de SST.",
+          "Cumplir a cabalidad las normas, reglamentos, instrucciones y procedimientos del SG-SST de la empresa.",
+          "Informar de manera oportuna sobre los peligros y riesgos latentes detectados en su sitio de trabajo.",
+          "Participar activamente en las actividades de capacitación, entrenamiento y simulacros de emergencia programados.",
+          "Participar y contribuir activamente al cumplimiento de los objetivos y metas del SG-SST (Dec. 1072/2015 Art. 2.2.4.6.10).",
+          "Usar permanentemente y cuidar los Elementos de Protección Personal (EPP) suministrados por la empresa."
+        ]
+      },
+      "pts": {
+        "titulo": "Procedimiento de Trabajo Seguro (PTS) para Coordinador SST",
+        "peligrosEvaluados": [
+          "Peligro Psicosocial (gestión administrativa)",
+          "Peligro Biomecánico (pantallas de visualización)",
+          "Peligro Locativo en inspecciones de campo"
+        ],
+        "eppRequeridos": [
+          "Casco de seguridad industrial",
+          "Gafas de seguridad",
+          "Botas con puntera",
+          "Chaleco reflectivo con identificación SST"
+        ],
+        "faseAntes": "Realizar inspección preoperacional obligatoria del área y herramientas. Verificar que los EPP se encuentren limpios y en óptimo estado. Reportar cualquier síntoma de salud que impida la labor.",
+        "faseDurante": "Mantener la atención y concentración exclusiva en la labor. Prohibido el uso de celulares o distractores en áreas operativas. Aplicar posturas ergonómicas y pausas activas. Respetar las guardas de seguridad.",
+        "faseDespues": "Desenergizar y apagar los equipos siguiendo la secuencia del manual. Realizar limpieza y orden y aseo del puesto. Almacenar herramientas en su sitio designado. Reportar el estado final del turno.",
+        "emergencias": "En caso de incidente, accidente o conato de incendio: Detener de inmediato la labor, activar la alarma, evacuar por la ruta señalizada hacia el Punto de Encuentro y avisar de inmediato al Coordinador SST."
+      },
+      "profesiograma": {
+        "ingreso": "Examen médico ocupacional con énfasis osteomuscular, Visiometría ocupacional, Audiometría tonal y Espirometría (si hay exposición a material particulado).",
+        "periodico": "Control anual osteomuscular, audiometría de control y seguimiento en Programa de Vigilancia Epidemiológica (PVE).",
+        "egreso": "Valoración médica ocupacional general de retiro (vigencia 5 días hábiles tras terminación del contrato).",
+        "restricciones": "Vértigo no controlado (para trabajo en alturas), afecciones respiratorias severas no tratadas o hernias discales agudas sin rehabilitación."
+      },
+      "matrizEpp": {
+        "eppRequeridos": [
+          "Casco de seguridad industrial",
+          "Gafas de seguridad",
+          "Botas con puntera",
+          "Chaleco reflectivo con identificación SST"
+        ],
+        "normasTecnicas": "Casco ANSI Z89.1, Gafas ANSI Z87.1, Botas ASTM F2413 / NTC 2396, Guantes EN 388, Protección Auditiva ANSI S3.19.",
+        "frecuenciaReposicion": "Dotación legal cada 4 meses (30 abril, 31 agosto, 20 diciembre - Art. 230 CST) y reposición inmediata de EPP por deterioro o desgaste."
+      },
+      "anexoContractual": {
+        "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
+        "notificacionRiesgos": "Peligro Psicosocial (gestión administrativa) • Peligro Biomecánico (pantallas de visualización) • Peligro Locativo en inspecciones de campo",
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+      },
+      "contratoModelo": {
+        "tipoSugerido": "Término Indefinido",
+        "jornada": "46 horas semanales ordinarias (Ley 2101 de 2021) conforme al horario establecido por el empleador.",
+        "lugarTrabajo": "Sedes e instalaciones operativas y administrativas de la empresa contratante.",
+        "obligacionesSST": "El trabajador se compromete expresamente a cumplir todas las directrices del SG-SST (Decreto 1072 de 2015). El incumplimiento reiterado de normas de seguridad constituirá justa causa de terminación del contrato."
+      },
+      "fuentes": {
+        "manual": [
+          {
+            "id": "f-manual-1793496403193",
+            "titulo": "Manual de Funciones y Responsabilidades SG-SST Dec. 1072 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1y2GNo3owQiyUmRa_WM9EwyQEjwGy9yOZtuHbCBXoTg0/edit?usp=sharing"
+          }
+        ],
+        "perfil": [
+          {
+            "id": "f-perfil-1793496403215",
+            "titulo": "Perfil del Cargo, Educación y Competencias Res. 0312 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "pts": [
+          {
+            "id": "f-pts-1793496403230",
+            "titulo": "Procedimiento y Plan de Trabajo Seguro PTS - GTC 45 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1JOwYHHi-ba1Jts79jWLNT8xqExg03bgIZxOMi0XAl0U/edit?usp=sharing"
+          }
+        ],
+        "profesiograma": [
+          {
+            "id": "f-profesiograma-1793496403246",
+            "titulo": "Matriz de Profesiograma y Exámenes Médicos Res. 2346/2007 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "epp": [
+          {
+            "id": "f-epp-1793496403263",
+            "titulo": "Matriz Técnica de EPP y Dotación Legal Res. 2400 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "anexo": [
+          {
+            "id": "f-anexo-1793496403278",
+            "titulo": "Anexo Contractual de Responsabilidades SST y Riesgos CST (Google Docs)",
+            "url": "https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing"
+          }
+        ]
+      },
+      "id": "cargo-cfg-1793496403193",
+      "updatedAt": "2026-11-01T01:26:43.278Z"
+    },
+    {
+      "cargo": "Diseñador y Modelador de Mobiliario",
+      "companyId": "emp-1792110509705",
+      "perfil": {
+        "objetivo": "Desempeñar con excelencia y estricto apego a las normas de seguridad las funciones asociadas al cargo de Diseñador y Modelador de Mobiliario, asegurando la continuidad operacional y la prevención de accidentes laborales.",
+        "educacion": "Bachiller Académico o Técnico Laboral",
+        "experiencia": "1 año en labores afines a la operación o manufactura",
+        "formacionSST": "Inducción general en SG-SST, Curso 50h SST (si aplica), Protocolo de EPP, Plan de Emergencias y Reporte de Peligros.",
+        "competencias": "Compromiso con el autocuidado, disciplina operacional, trabajo en equipo, orientación a la calidad y comunicación efectiva.",
+        "examenesMedicos": "Énfasis osteomuscular, agudeza visual, audiometría tonal ocupacional y valoración médica general."
+      },
+      "manualFunciones": {
+        "funcionesOperativas": [
+          "Ejecutar las labores diarias asignadas al puesto de Diseñador y Modelador de Mobiliario cumpliendo con los estándares técnicos y de calidad establecidos.",
+          "Inspeccionar el estado de las herramientas, máquinas y equipos asignados antes de iniciar las operaciones.",
+          "Mantener el orden, la limpieza y la organización estricta en su área o puesto de trabajo.",
+          "Notificar de inmediato cualquier falla, avería o condición anómala en la maquinaria o procesos.",
+          "Participar en los inventarios, relevos de turno y diligenciamiento de planillas de control operativo."
+        ],
+        "responsabilidadesSST": [
+          "Procurar el cuidado integral de su salud física y mental en el desarrollo de sus actividades laborales.",
+          "Suministrar información clara, veraz y completa sobre su estado de salud al empleador o área de SST.",
+          "Cumplir a cabalidad las normas, reglamentos, instrucciones y procedimientos del SG-SST de la empresa.",
+          "Informar de manera oportuna sobre los peligros y riesgos latentes detectados en su sitio de trabajo.",
+          "Participar activamente en las actividades de capacitación, entrenamiento y simulacros de emergencia programados.",
+          "Participar y contribuir activamente al cumplimiento de los objetivos y metas del SG-SST (Dec. 1072/2015 Art. 2.2.4.6.10).",
+          "Usar permanentemente y cuidar los Elementos de Protección Personal (EPP) suministrados por la empresa."
+        ]
+      },
+      "pts": {
+        "titulo": "Procedimiento de Trabajo Seguro (PTS) para Diseñador y Modelador de Mobiliario",
+        "peligrosEvaluados": [
+          "Peligro Mecánico (atrapamiento, golpes por herramientas)",
+          "Peligro Biomecánico (posturas prolongadas, manipulación de cargas)",
+          "Peligro Locativo (superficies irregulares, caídas al mismo nivel)"
+        ],
+        "eppRequeridos": [
+          "Casco de seguridad con barbuquejo",
+          "Gafas de seguridad con protección UV",
+          "Botas de seguridad con puntera dieléctrica",
+          "Guantes de protección mecánica",
+          "Protección auditiva de inserción"
+        ],
+        "faseAntes": "Realizar inspección preoperacional obligatoria del área y herramientas. Verificar que los EPP se encuentren limpios y en óptimo estado. Reportar cualquier síntoma de salud que impida la labor.",
+        "faseDurante": "Mantener la atención y concentración exclusiva en la labor. Prohibido el uso de celulares o distractores en áreas operativas. Aplicar posturas ergonómicas y pausas activas. Respetar las guardas de seguridad.",
+        "faseDespues": "Desenergizar y apagar los equipos siguiendo la secuencia del manual. Realizar limpieza y orden y aseo del puesto. Almacenar herramientas en su sitio designado. Reportar el estado final del turno.",
+        "emergencias": "En caso de incidente, accidente o conato de incendio: Detener de inmediato la labor, activar la alarma, evacuar por la ruta señalizada hacia el Punto de Encuentro y avisar de inmediato al Coordinador SST."
+      },
+      "profesiograma": {
+        "ingreso": "Examen médico ocupacional con énfasis osteomuscular, Visiometría ocupacional, Audiometría tonal y Espirometría (si hay exposición a material particulado).",
+        "periodico": "Control anual osteomuscular, audiometría de control y seguimiento en Programa de Vigilancia Epidemiológica (PVE).",
+        "egreso": "Valoración médica ocupacional general de retiro (vigencia 5 días hábiles tras terminación del contrato).",
+        "restricciones": "Vértigo no controlado (para trabajo en alturas), afecciones respiratorias severas no tratadas o hernias discales agudas sin rehabilitación."
+      },
+      "matrizEpp": {
+        "eppRequeridos": [
+          "Casco de seguridad con barbuquejo",
+          "Gafas de seguridad con protección UV",
+          "Botas de seguridad con puntera dieléctrica",
+          "Guantes de protección mecánica",
+          "Protección auditiva de inserción"
+        ],
+        "normasTecnicas": "Casco ANSI Z89.1, Gafas ANSI Z87.1, Botas ASTM F2413 / NTC 2396, Guantes EN 388, Protección Auditiva ANSI S3.19.",
+        "frecuenciaReposicion": "Dotación legal cada 4 meses (30 abril, 31 agosto, 20 diciembre - Art. 230 CST) y reposición inmediata de EPP por deterioro o desgaste."
+      },
+      "anexoContractual": {
+        "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
+        "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+      },
+      "contratoModelo": {
+        "tipoSugerido": "Término Indefinido",
+        "jornada": "46 horas semanales ordinarias (Ley 2101 de 2021) conforme al horario establecido por el empleador.",
+        "lugarTrabajo": "Sedes e instalaciones operativas y administrativas de la empresa contratante.",
+        "obligacionesSST": "El trabajador se compromete expresamente a cumplir todas las directrices del SG-SST (Decreto 1072 de 2015). El incumplimiento reiterado de normas de seguridad constituirá justa causa de terminación del contrato."
+      },
+      "fuentes": {
+        "manual": [
+          {
+            "id": "f-manual-1793496403295",
+            "titulo": "Manual de Funciones y Responsabilidades SG-SST Dec. 1072 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1y2GNo3owQiyUmRa_WM9EwyQEjwGy9yOZtuHbCBXoTg0/edit?usp=sharing"
+          }
+        ],
+        "perfil": [
+          {
+            "id": "f-perfil-1793496403316",
+            "titulo": "Perfil del Cargo, Educación y Competencias Res. 0312 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "pts": [
+          {
+            "id": "f-pts-1793496403331",
+            "titulo": "Procedimiento y Plan de Trabajo Seguro PTS - GTC 45 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1JOwYHHi-ba1Jts79jWLNT8xqExg03bgIZxOMi0XAl0U/edit?usp=sharing"
+          }
+        ],
+        "profesiograma": [
+          {
+            "id": "f-profesiograma-1793496403353",
+            "titulo": "Matriz de Profesiograma y Exámenes Médicos Res. 2346/2007 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "epp": [
+          {
+            "id": "f-epp-1793496403370",
+            "titulo": "Matriz Técnica de EPP y Dotación Legal Res. 2400 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "anexo": [
+          {
+            "id": "f-anexo-1793496403387",
+            "titulo": "Anexo Contractual de Responsabilidades SST y Riesgos CST (Google Docs)",
+            "url": "https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing"
+          }
+        ]
+      },
+      "id": "cargo-cfg-1793496403295",
+      "updatedAt": "2026-11-01T01:26:43.387Z"
+    },
+    {
+      "cargo": "Ebanista y Operario de Corte CNC",
+      "companyId": "emp-1792110509705",
+      "perfil": {
+        "objetivo": "Desempeñar con excelencia y estricto apego a las normas de seguridad las funciones asociadas al cargo de Ebanista y Operario de Corte CNC, asegurando la continuidad operacional y la prevención de accidentes laborales.",
+        "educacion": "Bachiller Académico o Técnico Laboral",
+        "experiencia": "1 año en labores afines a la operación o manufactura",
+        "formacionSST": "Inducción general en SG-SST, Curso 50h SST (si aplica), Protocolo de EPP, Plan de Emergencias y Reporte de Peligros.",
+        "competencias": "Compromiso con el autocuidado, disciplina operacional, trabajo en equipo, orientación a la calidad y comunicación efectiva.",
+        "examenesMedicos": "Énfasis osteomuscular, agudeza visual, audiometría tonal ocupacional y valoración médica general."
+      },
+      "manualFunciones": {
+        "funcionesOperativas": [
+          "Ejecutar las labores diarias asignadas al puesto de Ebanista y Operario de Corte CNC cumpliendo con los estándares técnicos y de calidad establecidos.",
+          "Inspeccionar el estado de las herramientas, máquinas y equipos asignados antes de iniciar las operaciones.",
+          "Mantener el orden, la limpieza y la organización estricta en su área o puesto de trabajo.",
+          "Notificar de inmediato cualquier falla, avería o condición anómala en la maquinaria o procesos.",
+          "Participar en los inventarios, relevos de turno y diligenciamiento de planillas de control operativo."
+        ],
+        "responsabilidadesSST": [
+          "Procurar el cuidado integral de su salud física y mental en el desarrollo de sus actividades laborales.",
+          "Suministrar información clara, veraz y completa sobre su estado de salud al empleador o área de SST.",
+          "Cumplir a cabalidad las normas, reglamentos, instrucciones y procedimientos del SG-SST de la empresa.",
+          "Informar de manera oportuna sobre los peligros y riesgos latentes detectados en su sitio de trabajo.",
+          "Participar activamente en las actividades de capacitación, entrenamiento y simulacros de emergencia programados.",
+          "Participar y contribuir activamente al cumplimiento de los objetivos y metas del SG-SST (Dec. 1072/2015 Art. 2.2.4.6.10).",
+          "Usar permanentemente y cuidar los Elementos de Protección Personal (EPP) suministrados por la empresa."
+        ]
+      },
+      "pts": {
+        "titulo": "Procedimiento de Trabajo Seguro (PTS) para Ebanista y Operario de Corte CNC",
+        "peligrosEvaluados": [
+          "Peligro Mecánico (atrapamiento, golpes por herramientas)",
+          "Peligro Biomecánico (posturas prolongadas, manipulación de cargas)",
+          "Peligro Locativo (superficies irregulares, caídas al mismo nivel)"
+        ],
+        "eppRequeridos": [
+          "Casco de seguridad con barbuquejo",
+          "Gafas de seguridad con protección UV",
+          "Botas de seguridad con puntera dieléctrica",
+          "Guantes de protección mecánica",
+          "Protección auditiva de inserción"
+        ],
+        "faseAntes": "Realizar inspección preoperacional obligatoria del área y herramientas. Verificar que los EPP se encuentren limpios y en óptimo estado. Reportar cualquier síntoma de salud que impida la labor.",
+        "faseDurante": "Mantener la atención y concentración exclusiva en la labor. Prohibido el uso de celulares o distractores en áreas operativas. Aplicar posturas ergonómicas y pausas activas. Respetar las guardas de seguridad.",
+        "faseDespues": "Desenergizar y apagar los equipos siguiendo la secuencia del manual. Realizar limpieza y orden y aseo del puesto. Almacenar herramientas en su sitio designado. Reportar el estado final del turno.",
+        "emergencias": "En caso de incidente, accidente o conato de incendio: Detener de inmediato la labor, activar la alarma, evacuar por la ruta señalizada hacia el Punto de Encuentro y avisar de inmediato al Coordinador SST."
+      },
+      "profesiograma": {
+        "ingreso": "Examen médico ocupacional con énfasis osteomuscular, Visiometría ocupacional, Audiometría tonal y Espirometría (si hay exposición a material particulado).",
+        "periodico": "Control anual osteomuscular, audiometría de control y seguimiento en Programa de Vigilancia Epidemiológica (PVE).",
+        "egreso": "Valoración médica ocupacional general de retiro (vigencia 5 días hábiles tras terminación del contrato).",
+        "restricciones": "Vértigo no controlado (para trabajo en alturas), afecciones respiratorias severas no tratadas o hernias discales agudas sin rehabilitación."
+      },
+      "matrizEpp": {
+        "eppRequeridos": [
+          "Casco de seguridad con barbuquejo",
+          "Gafas de seguridad con protección UV",
+          "Botas de seguridad con puntera dieléctrica",
+          "Guantes de protección mecánica",
+          "Protección auditiva de inserción"
+        ],
+        "normasTecnicas": "Casco ANSI Z89.1, Gafas ANSI Z87.1, Botas ASTM F2413 / NTC 2396, Guantes EN 388, Protección Auditiva ANSI S3.19.",
+        "frecuenciaReposicion": "Dotación legal cada 4 meses (30 abril, 31 agosto, 20 diciembre - Art. 230 CST) y reposición inmediata de EPP por deterioro o desgaste."
+      },
+      "anexoContractual": {
+        "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
+        "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+      },
+      "contratoModelo": {
+        "tipoSugerido": "Término Indefinido",
+        "jornada": "46 horas semanales ordinarias (Ley 2101 de 2021) conforme al horario establecido por el empleador.",
+        "lugarTrabajo": "Sedes e instalaciones operativas y administrativas de la empresa contratante.",
+        "obligacionesSST": "El trabajador se compromete expresamente a cumplir todas las directrices del SG-SST (Decreto 1072 de 2015). El incumplimiento reiterado de normas de seguridad constituirá justa causa de terminación del contrato."
+      },
+      "fuentes": {
+        "manual": [
+          {
+            "id": "f-manual-1793496403403",
+            "titulo": "Manual de Funciones y Responsabilidades SG-SST Dec. 1072 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1y2GNo3owQiyUmRa_WM9EwyQEjwGy9yOZtuHbCBXoTg0/edit?usp=sharing"
+          }
+        ],
+        "perfil": [
+          {
+            "id": "f-perfil-1793496403420",
+            "titulo": "Perfil del Cargo, Educación y Competencias Res. 0312 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "pts": [
+          {
+            "id": "f-pts-1793496403437",
+            "titulo": "Procedimiento y Plan de Trabajo Seguro PTS - GTC 45 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1JOwYHHi-ba1Jts79jWLNT8xqExg03bgIZxOMi0XAl0U/edit?usp=sharing"
+          }
+        ],
+        "profesiograma": [
+          {
+            "id": "f-profesiograma-1793496403454",
+            "titulo": "Matriz de Profesiograma y Exámenes Médicos Res. 2346/2007 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "epp": [
+          {
+            "id": "f-epp-1793496403470",
+            "titulo": "Matriz Técnica de EPP y Dotación Legal Res. 2400 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "anexo": [
+          {
+            "id": "f-anexo-1793496403487",
+            "titulo": "Anexo Contractual de Responsabilidades SST y Riesgos CST (Google Docs)",
+            "url": "https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing"
+          }
+        ]
+      },
+      "id": "cargo-cfg-1793496403403",
+      "updatedAt": "2026-11-01T01:26:43.487Z"
+    },
+    {
+      "cargo": "Asistente Administrativa",
+      "companyId": "emp-1792110509705",
+      "perfil": {
+        "objetivo": "Desempeñar con excelencia y estricto apego a las normas de seguridad las funciones asociadas al cargo de Asistente Administrativa, asegurando la continuidad operacional y la prevención de accidentes laborales.",
+        "educacion": "Bachiller Académico o Técnico Laboral",
+        "experiencia": "1 año en labores afines a la operación o manufactura",
+        "formacionSST": "Inducción general en SG-SST, Curso 50h SST (si aplica), Protocolo de EPP, Plan de Emergencias y Reporte de Peligros.",
+        "competencias": "Compromiso con el autocuidado, disciplina operacional, trabajo en equipo, orientación a la calidad y comunicación efectiva.",
+        "examenesMedicos": "Énfasis osteomuscular, agudeza visual, audiometría tonal ocupacional y valoración médica general."
+      },
+      "manualFunciones": {
+        "funcionesOperativas": [
+          "Ejecutar las labores diarias asignadas al puesto de Asistente Administrativa cumpliendo con los estándares técnicos y de calidad establecidos.",
+          "Inspeccionar el estado de las herramientas, máquinas y equipos asignados antes de iniciar las operaciones.",
+          "Mantener el orden, la limpieza y la organización estricta en su área o puesto de trabajo.",
+          "Notificar de inmediato cualquier falla, avería o condición anómala en la maquinaria o procesos.",
+          "Participar en los inventarios, relevos de turno y diligenciamiento de planillas de control operativo."
+        ],
+        "responsabilidadesSST": [
+          "Procurar el cuidado integral de su salud física y mental en el desarrollo de sus actividades laborales.",
+          "Suministrar información clara, veraz y completa sobre su estado de salud al empleador o área de SST.",
+          "Cumplir a cabalidad las normas, reglamentos, instrucciones y procedimientos del SG-SST de la empresa.",
+          "Informar de manera oportuna sobre los peligros y riesgos latentes detectados en su sitio de trabajo.",
+          "Participar activamente en las actividades de capacitación, entrenamiento y simulacros de emergencia programados.",
+          "Participar y contribuir activamente al cumplimiento de los objetivos y metas del SG-SST (Dec. 1072/2015 Art. 2.2.4.6.10).",
+          "Usar permanentemente y cuidar los Elementos de Protección Personal (EPP) suministrados por la empresa."
+        ]
+      },
+      "pts": {
+        "titulo": "Procedimiento de Trabajo Seguro (PTS) para Asistente Administrativa",
+        "peligrosEvaluados": [
+          "Peligro Mecánico (atrapamiento, golpes por herramientas)",
+          "Peligro Biomecánico (posturas prolongadas, manipulación de cargas)",
+          "Peligro Locativo (superficies irregulares, caídas al mismo nivel)"
+        ],
+        "eppRequeridos": [
+          "Casco de seguridad con barbuquejo",
+          "Gafas de seguridad con protección UV",
+          "Botas de seguridad con puntera dieléctrica",
+          "Guantes de protección mecánica",
+          "Protección auditiva de inserción"
+        ],
+        "faseAntes": "Realizar inspección preoperacional obligatoria del área y herramientas. Verificar que los EPP se encuentren limpios y en óptimo estado. Reportar cualquier síntoma de salud que impida la labor.",
+        "faseDurante": "Mantener la atención y concentración exclusiva en la labor. Prohibido el uso de celulares o distractores en áreas operativas. Aplicar posturas ergonómicas y pausas activas. Respetar las guardas de seguridad.",
+        "faseDespues": "Desenergizar y apagar los equipos siguiendo la secuencia del manual. Realizar limpieza y orden y aseo del puesto. Almacenar herramientas en su sitio designado. Reportar el estado final del turno.",
+        "emergencias": "En caso de incidente, accidente o conato de incendio: Detener de inmediato la labor, activar la alarma, evacuar por la ruta señalizada hacia el Punto de Encuentro y avisar de inmediato al Coordinador SST."
+      },
+      "profesiograma": {
+        "ingreso": "Examen médico ocupacional con énfasis osteomuscular, Visiometría ocupacional, Audiometría tonal y Espirometría (si hay exposición a material particulado).",
+        "periodico": "Control anual osteomuscular, audiometría de control y seguimiento en Programa de Vigilancia Epidemiológica (PVE).",
+        "egreso": "Valoración médica ocupacional general de retiro (vigencia 5 días hábiles tras terminación del contrato).",
+        "restricciones": "Vértigo no controlado (para trabajo en alturas), afecciones respiratorias severas no tratadas o hernias discales agudas sin rehabilitación."
+      },
+      "matrizEpp": {
+        "eppRequeridos": [
+          "Casco de seguridad con barbuquejo",
+          "Gafas de seguridad con protección UV",
+          "Botas de seguridad con puntera dieléctrica",
+          "Guantes de protección mecánica",
+          "Protección auditiva de inserción"
+        ],
+        "normasTecnicas": "Casco ANSI Z89.1, Gafas ANSI Z87.1, Botas ASTM F2413 / NTC 2396, Guantes EN 388, Protección Auditiva ANSI S3.19.",
+        "frecuenciaReposicion": "Dotación legal cada 4 meses (30 abril, 31 agosto, 20 diciembre - Art. 230 CST) y reposición inmediata de EPP por deterioro o desgaste."
+      },
+      "anexoContractual": {
+        "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
+        "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+      },
+      "contratoModelo": {
+        "tipoSugerido": "Término Indefinido",
+        "jornada": "46 horas semanales ordinarias (Ley 2101 de 2021) conforme al horario establecido por el empleador.",
+        "lugarTrabajo": "Sedes e instalaciones operativas y administrativas de la empresa contratante.",
+        "obligacionesSST": "El trabajador se compromete expresamente a cumplir todas las directrices del SG-SST (Decreto 1072 de 2015). El incumplimiento reiterado de normas de seguridad constituirá justa causa de terminación del contrato."
+      },
+      "fuentes": {
+        "manual": [
+          {
+            "id": "f-manual-1793496403507",
+            "titulo": "Manual de Funciones y Responsabilidades SG-SST Dec. 1072 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1y2GNo3owQiyUmRa_WM9EwyQEjwGy9yOZtuHbCBXoTg0/edit?usp=sharing"
+          }
+        ],
+        "perfil": [
+          {
+            "id": "f-perfil-1793496403526",
+            "titulo": "Perfil del Cargo, Educación y Competencias Res. 0312 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "pts": [
+          {
+            "id": "f-pts-1793496403543",
+            "titulo": "Procedimiento y Plan de Trabajo Seguro PTS - GTC 45 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1JOwYHHi-ba1Jts79jWLNT8xqExg03bgIZxOMi0XAl0U/edit?usp=sharing"
+          }
+        ],
+        "profesiograma": [
+          {
+            "id": "f-profesiograma-1793496403560",
+            "titulo": "Matriz de Profesiograma y Exámenes Médicos Res. 2346/2007 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "epp": [
+          {
+            "id": "f-epp-1793496403578",
+            "titulo": "Matriz Técnica de EPP y Dotación Legal Res. 2400 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "anexo": [
+          {
+            "id": "f-anexo-1793496403595",
+            "titulo": "Anexo Contractual de Responsabilidades SST y Riesgos CST (Google Docs)",
+            "url": "https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing"
+          }
+        ],
+        "contrato": [
+          {
+            "id": "f-contrato-1793497202728",
+            "titulo": "Minuta Oficial Contrato Individual y Anexo SST CST (Google Docs)",
+            "url": "https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing"
+          }
+        ]
+      },
+      "id": "cargo-cfg-1793496403507",
+      "updatedAt": "2026-11-01T01:40:02.729Z"
+    },
+    {
+      "cargo": "Mecánico de Mantenimiento",
+      "companyId": "emp-1792110509705",
+      "perfil": {
+        "objetivo": "Desempeñar con excelencia y estricto apego a las normas de seguridad las funciones asociadas al cargo de Mecánico de Mantenimiento, asegurando la continuidad operacional y la prevención de accidentes laborales.",
+        "educacion": "Técnico o Tecnólogo en Mantenimiento Electromecánico o Industrial",
+        "experiencia": "2 años en mantenimiento preventivo y correctivo de maquinaria",
+        "formacionSST": "Inducción general en SG-SST, Curso 50h SST (si aplica), Protocolo de EPP, Plan de Emergencias y Reporte de Peligros.",
+        "competencias": "Compromiso con el autocuidado, disciplina operacional, trabajo en equipo, orientación a la calidad y comunicación efectiva.",
+        "examenesMedicos": "Énfasis osteomuscular, agudeza visual, audiometría tonal ocupacional y valoración médica general."
+      },
+      "manualFunciones": {
+        "funcionesOperativas": [
+          "Ejecutar las labores diarias asignadas al puesto de Mecánico de Mantenimiento cumpliendo con los estándares técnicos y de calidad establecidos.",
+          "Inspeccionar el estado de las herramientas, máquinas y equipos asignados antes de iniciar las operaciones.",
+          "Mantener el orden, la limpieza y la organización estricta en su área o puesto de trabajo.",
+          "Notificar de inmediato cualquier falla, avería o condición anómala en la maquinaria o procesos.",
+          "Participar en los inventarios, relevos de turno y diligenciamiento de planillas de control operativo."
+        ],
+        "responsabilidadesSST": [
+          "Procurar el cuidado integral de su salud física y mental en el desarrollo de sus actividades laborales.",
+          "Suministrar información clara, veraz y completa sobre su estado de salud al empleador o área de SST.",
+          "Cumplir a cabalidad las normas, reglamentos, instrucciones y procedimientos del SG-SST de la empresa.",
+          "Informar de manera oportuna sobre los peligros y riesgos latentes detectados en su sitio de trabajo.",
+          "Participar activamente en las actividades de capacitación, entrenamiento y simulacros de emergencia programados.",
+          "Participar y contribuir activamente al cumplimiento de los objetivos y metas del SG-SST (Dec. 1072/2015 Art. 2.2.4.6.10).",
+          "Usar permanentemente y cuidar los Elementos de Protección Personal (EPP) suministrados por la empresa."
+        ]
+      },
+      "pts": {
+        "titulo": "Procedimiento de Trabajo Seguro (PTS) para Mecánico de Mantenimiento",
+        "peligrosEvaluados": [
+          "Peligro Eléctrico (baja y media tensión)",
+          "Peligro Mecánico (órganos móviles)",
+          "Peligro Químico (lubricantes, solventes)"
+        ],
+        "eppRequeridos": [
+          "Casco dieléctrico",
+          "Gafas de seguridad",
+          "Botas dieléctricas con puntera",
+          "Guantes de nitrilo / carnaza",
+          "Careta facial para esmerilado"
+        ],
+        "faseAntes": "Realizar inspección preoperacional obligatoria del área y herramientas. Verificar que los EPP se encuentren limpios y en óptimo estado. Reportar cualquier síntoma de salud que impida la labor.",
+        "faseDurante": "Mantener la atención y concentración exclusiva en la labor. Prohibido el uso de celulares o distractores en áreas operativas. Aplicar posturas ergonómicas y pausas activas. Respetar las guardas de seguridad.",
+        "faseDespues": "Desenergizar y apagar los equipos siguiendo la secuencia del manual. Realizar limpieza y orden y aseo del puesto. Almacenar herramientas en su sitio designado. Reportar el estado final del turno.",
+        "emergencias": "En caso de incidente, accidente o conato de incendio: Detener de inmediato la labor, activar la alarma, evacuar por la ruta señalizada hacia el Punto de Encuentro y avisar de inmediato al Coordinador SST."
+      },
+      "profesiograma": {
+        "ingreso": "Examen médico ocupacional con énfasis osteomuscular, Visiometría ocupacional, Audiometría tonal y Espirometría (si hay exposición a material particulado).",
+        "periodico": "Control anual osteomuscular, audiometría de control y seguimiento en Programa de Vigilancia Epidemiológica (PVE).",
+        "egreso": "Valoración médica ocupacional general de retiro (vigencia 5 días hábiles tras terminación del contrato).",
+        "restricciones": "Vértigo no controlado (para trabajo en alturas), afecciones respiratorias severas no tratadas o hernias discales agudas sin rehabilitación."
+      },
+      "matrizEpp": {
+        "eppRequeridos": [
+          "Casco dieléctrico",
+          "Gafas de seguridad",
+          "Botas dieléctricas con puntera",
+          "Guantes de nitrilo / carnaza",
+          "Careta facial para esmerilado"
+        ],
+        "normasTecnicas": "Casco ANSI Z89.1, Gafas ANSI Z87.1, Botas ASTM F2413 / NTC 2396, Guantes EN 388, Protección Auditiva ANSI S3.19.",
+        "frecuenciaReposicion": "Dotación legal cada 4 meses (30 abril, 31 agosto, 20 diciembre - Art. 230 CST) y reposición inmediata de EPP por deterioro o desgaste."
+      },
+      "anexoContractual": {
+        "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
+        "notificacionRiesgos": "Peligro Eléctrico (baja y media tensión) • Peligro Mecánico (órganos móviles) • Peligro Químico (lubricantes, solventes)",
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+      },
+      "contratoModelo": {
+        "tipoSugerido": "Término Indefinido",
+        "jornada": "46 horas semanales ordinarias (Ley 2101 de 2021) conforme al horario establecido por el empleador.",
+        "lugarTrabajo": "Sedes e instalaciones operativas y administrativas de la empresa contratante.",
+        "obligacionesSST": "El trabajador se compromete expresamente a cumplir todas las directrices del SG-SST (Decreto 1072 de 2015). El incumplimiento reiterado de normas de seguridad constituirá justa causa de terminación del contrato."
+      },
+      "fuentes": {
+        "manual": [
+          {
+            "id": "f-manual-1793496403612",
+            "titulo": "Manual de Funciones y Responsabilidades SG-SST Dec. 1072 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1y2GNo3owQiyUmRa_WM9EwyQEjwGy9yOZtuHbCBXoTg0/edit?usp=sharing"
+          }
+        ],
+        "perfil": [
+          {
+            "id": "f-perfil-1793496403629",
+            "titulo": "Perfil del Cargo, Educación y Competencias Res. 0312 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "pts": [
+          {
+            "id": "f-pts-1793496403647",
+            "titulo": "Procedimiento y Plan de Trabajo Seguro PTS - GTC 45 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1JOwYHHi-ba1Jts79jWLNT8xqExg03bgIZxOMi0XAl0U/edit?usp=sharing"
+          }
+        ],
+        "profesiograma": [
+          {
+            "id": "f-profesiograma-1793496403663",
+            "titulo": "Matriz de Profesiograma y Exámenes Médicos Res. 2346/2007 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "epp": [
+          {
+            "id": "f-epp-1793496403680",
+            "titulo": "Matriz Técnica de EPP y Dotación Legal Res. 2400 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "anexo": [
+          {
+            "id": "f-anexo-1793496403697",
+            "titulo": "Anexo Contractual de Responsabilidades SST y Riesgos CST (Google Docs)",
+            "url": "https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing"
+          }
+        ]
+      },
+      "id": "cargo-cfg-1793496403612",
+      "updatedAt": "2026-11-01T01:26:43.697Z"
+    },
+    {
+      "cargo": "VENDEDOR",
+      "companyId": "emp-1792110509705",
+      "perfil": {
+        "objetivo": "Desempeñar con excelencia y estricto apego a las normas de seguridad las funciones asociadas al cargo de VENDEDOR, asegurando la continuidad operacional y la prevención de accidentes laborales.",
+        "educacion": "Bachiller Académico o Técnico Laboral",
+        "experiencia": "1 año en labores afines a la operación o manufactura",
+        "formacionSST": "Inducción general en SG-SST, Curso 50h SST (si aplica), Protocolo de EPP, Plan de Emergencias y Reporte de Peligros.",
+        "competencias": "Compromiso con el autocuidado, disciplina operacional, trabajo en equipo, orientación a la calidad y comunicación efectiva.",
+        "examenesMedicos": "Énfasis osteomuscular, agudeza visual, audiometría tonal ocupacional y valoración médica general."
+      },
+      "manualFunciones": {
+        "funcionesOperativas": [
+          "Ejecutar las labores diarias asignadas al puesto de VENDEDOR cumpliendo con los estándares técnicos y de calidad establecidos.",
+          "Inspeccionar el estado de las herramientas, máquinas y equipos asignados antes de iniciar las operaciones.",
+          "Mantener el orden, la limpieza y la organización estricta en su área o puesto de trabajo.",
+          "Notificar de inmediato cualquier falla, avería o condición anómala en la maquinaria o procesos.",
+          "Participar en los inventarios, relevos de turno y diligenciamiento de planillas de control operativo."
+        ],
+        "responsabilidadesSST": [
+          "Procurar el cuidado integral de su salud física y mental en el desarrollo de sus actividades laborales.",
+          "Suministrar información clara, veraz y completa sobre su estado de salud al empleador o área de SST.",
+          "Cumplir a cabalidad las normas, reglamentos, instrucciones y procedimientos del SG-SST de la empresa.",
+          "Informar de manera oportuna sobre los peligros y riesgos latentes detectados en su sitio de trabajo.",
+          "Participar activamente en las actividades de capacitación, entrenamiento y simulacros de emergencia programados.",
+          "Participar y contribuir activamente al cumplimiento de los objetivos y metas del SG-SST (Dec. 1072/2015 Art. 2.2.4.6.10).",
+          "Usar permanentemente y cuidar los Elementos de Protección Personal (EPP) suministrados por la empresa."
+        ]
+      },
+      "pts": {
+        "titulo": "Procedimiento de Trabajo Seguro (PTS) para VENDEDOR",
+        "peligrosEvaluados": [
+          "Peligro Mecánico (atrapamiento, golpes por herramientas)",
+          "Peligro Biomecánico (posturas prolongadas, manipulación de cargas)",
+          "Peligro Locativo (superficies irregulares, caídas al mismo nivel)"
+        ],
+        "eppRequeridos": [
+          "Casco de seguridad con barbuquejo",
+          "Gafas de seguridad con protección UV",
+          "Botas de seguridad con puntera dieléctrica",
+          "Guantes de protección mecánica",
+          "Protección auditiva de inserción"
+        ],
+        "faseAntes": "Realizar inspección preoperacional obligatoria del área y herramientas. Verificar que los EPP se encuentren limpios y en óptimo estado. Reportar cualquier síntoma de salud que impida la labor.",
+        "faseDurante": "Mantener la atención y concentración exclusiva en la labor. Prohibido el uso de celulares o distractores en áreas operativas. Aplicar posturas ergonómicas y pausas activas. Respetar las guardas de seguridad.",
+        "faseDespues": "Desenergizar y apagar los equipos siguiendo la secuencia del manual. Realizar limpieza y orden y aseo del puesto. Almacenar herramientas en su sitio designado. Reportar el estado final del turno.",
+        "emergencias": "En caso de incidente, accidente o conato de incendio: Detener de inmediato la labor, activar la alarma, evacuar por la ruta señalizada hacia el Punto de Encuentro y avisar de inmediato al Coordinador SST."
+      },
+      "profesiograma": {
+        "ingreso": "Examen médico ocupacional con énfasis osteomuscular, Visiometría ocupacional, Audiometría tonal y Espirometría (si hay exposición a material particulado).",
+        "periodico": "Control anual osteomuscular, audiometría de control y seguimiento en Programa de Vigilancia Epidemiológica (PVE).",
+        "egreso": "Valoración médica ocupacional general de retiro (vigencia 5 días hábiles tras terminación del contrato).",
+        "restricciones": "Vértigo no controlado (para trabajo en alturas), afecciones respiratorias severas no tratadas o hernias discales agudas sin rehabilitación."
+      },
+      "matrizEpp": {
+        "eppRequeridos": [
+          "Casco de seguridad con barbuquejo",
+          "Gafas de seguridad con protección UV",
+          "Botas de seguridad con puntera dieléctrica",
+          "Guantes de protección mecánica",
+          "Protección auditiva de inserción"
+        ],
+        "normasTecnicas": "Casco ANSI Z89.1, Gafas ANSI Z87.1, Botas ASTM F2413 / NTC 2396, Guantes EN 388, Protección Auditiva ANSI S3.19.",
+        "frecuenciaReposicion": "Dotación legal cada 4 meses (30 abril, 31 agosto, 20 diciembre - Art. 230 CST) y reposición inmediata de EPP por deterioro o desgaste."
+      },
+      "anexoContractual": {
+        "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
+        "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+      },
+      "contratoModelo": {
+        "tipoSugerido": "Término Indefinido",
+        "jornada": "46 horas semanales ordinarias (Ley 2101 de 2021) conforme al horario establecido por el empleador.",
+        "lugarTrabajo": "Sedes e instalaciones operativas y administrativas de la empresa contratante.",
+        "obligacionesSST": "El trabajador se compromete expresamente a cumplir todas las directrices del SG-SST (Decreto 1072 de 2015). El incumplimiento reiterado de normas de seguridad constituirá justa causa de terminación del contrato."
+      },
+      "fuentes": {
+        "manual": [
+          {
+            "id": "f-manual-1793496501739",
+            "titulo": "Manual de Funciones y Responsabilidades SG-SST Dec. 1072 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1y2GNo3owQiyUmRa_WM9EwyQEjwGy9yOZtuHbCBXoTg0/edit?usp=sharing"
+          }
+        ],
+        "perfil": [
+          {
+            "id": "f-perfil-1793496501758",
+            "titulo": "Perfil del Cargo, Educación y Competencias Res. 0312 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "pts": [
+          {
+            "id": "f-pts-1793496501776",
+            "titulo": "Procedimiento y Plan de Trabajo Seguro PTS - GTC 45 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1JOwYHHi-ba1Jts79jWLNT8xqExg03bgIZxOMi0XAl0U/edit?usp=sharing"
+          }
+        ],
+        "profesiograma": [
+          {
+            "id": "f-profesiograma-1793496501794",
+            "titulo": "Matriz de Profesiograma y Exámenes Médicos Res. 2346/2007 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "epp": [
+          {
+            "id": "f-epp-1793496501812",
+            "titulo": "Matriz Técnica de EPP y Dotación Legal Res. 2400 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "anexo": [
+          {
+            "id": "f-anexo-1793496501830",
+            "titulo": "Anexo Contractual de Responsabilidades SST y Riesgos CST (Google Docs)",
+            "url": "https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing"
+          }
+        ]
+      },
+      "id": "cargo-cfg-1793496501739",
+      "updatedAt": "2026-11-01T01:28:21.830Z"
     }
   ],
   "process_maps": [
@@ -8357,6 +9545,16 @@
       "approved_at": "2026-10-28T07:33:02-05:00",
       "createdAt": "2026-10-28T07:33:02-05:00",
       "updatedAt": "2026-10-28T07:33:02-05:00"
+    },
+    {
+      "id": "pmap-emp-1792110509705-1793496391",
+      "tenant_id": "emp-1792110509705",
+      "version": "v1.0",
+      "status": "Vigente",
+      "approved_by": "MARIANA GONZALEZ",
+      "approved_at": "2026-10-31T20:26:31-05:00",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
     }
   ],
   "processes": [
@@ -8471,6 +9669,104 @@
       "leader_title": "",
       "updatedAt": "2026-10-28T12:50:31.029Z",
       "createdAt": "2026-10-28T12:50:31.029Z"
+    },
+    {
+      "id": "proc-emp-1792110509705-01",
+      "tenant_id": "emp-1792110509705",
+      "process_map_id": "pmap-emp-1792110509705-1793496391",
+      "code": "DE-01",
+      "name": "Direccionamiento Estratégico y Gobierno Corporativo",
+      "process_type": "Estrategico",
+      "objective": "Establecer la planeación estratégica, políticas organizacionales, asignación presupuestal y directrices gerenciales para garantizar la rentabilidad, sostenibilidad y continuidad del negocio.",
+      "scope": "Aplica a todas las sedes, proyectos y unidades de negocio de la organización desde la planificación anual hasta la rendición gerencial.",
+      "leader_job_position_id": "jp-emp-1792110509705-9b3cf9f9",
+      "leader_title": "Gerente General",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "proc-emp-1792110509705-02",
+      "tenant_id": "emp-1792110509705",
+      "process_map_id": "pmap-emp-1792110509705-1793496391",
+      "code": "SG-02",
+      "name": "Gestión Integral del SG-SST y Sostenibilidad Ambiental",
+      "process_type": "Estrategico",
+      "objective": "Prevenir incidentes, accidentes y enfermedades de origen laboral mediante la identificación oportuna de peligros, valoración de riesgos (GTC 45) y ejecución del plan de trabajo anual bajo la Resolución 0312 de 2019.",
+      "scope": "Cubre el 100% de los trabajadores directos, contratistas, proveedores y visitantes en todas las instalaciones y frentes de trabajo de la empresa.",
+      "leader_job_position_id": "jp-emp-1792110509705-a1c2c134",
+      "leader_title": "Coordinador SST",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "proc-emp-1792110509705-03",
+      "tenant_id": "emp-1792110509705",
+      "process_map_id": "pmap-emp-1792110509705-1793496391",
+      "code": "OP-01",
+      "name": "Planificación, Diseño y Aprovisionamiento Operativo",
+      "process_type": "Misional",
+      "objective": "Planear los recursos técnicos, insumos y especificaciones para cumplir con los pedidos y contratos comerciales.",
+      "scope": "Desde la orden de trabajo hasta la disposición de insumos en puesto de trabajo.",
+      "leader_job_position_id": "jp-emp-1792110509705-076f96bc",
+      "leader_title": "Diseñador y Modelador de Mobiliario",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "proc-emp-1792110509705-04",
+      "tenant_id": "emp-1792110509705",
+      "process_map_id": "pmap-emp-1792110509705-1793496391",
+      "code": "OP-02",
+      "name": "Manufactura, Transformación y Ensamble de Producto",
+      "process_type": "Misional",
+      "objective": "Ejecutar las operaciones de corte, mecanizado, unión y acabado garantizando precisión y seguridad laboral.",
+      "scope": "Nave de producción, bancos de trabajo y zona de acabados.",
+      "leader_job_position_id": "jp-emp-1792110509705-56695a8e",
+      "leader_title": "Ebanista y Operario de Corte CNC",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "proc-emp-1792110509705-05",
+      "tenant_id": "emp-1792110509705",
+      "process_map_id": "pmap-emp-1792110509705-1793496391",
+      "code": "AP-01",
+      "name": "Gestión del Talento Humano y Contratación Laboral (CST)",
+      "process_type": "Apoyo",
+      "objective": "Administrar el ciclo integral del colaborador (selección, vinculación formal, afiliación a seguridad social, preavisos y bienestar laboral) conforme al Código Sustantivo del Trabajo de Colombia.",
+      "scope": "Aplica a todos los aspirantes, trabajadores directos y personal retirado de la organización.",
+      "leader_job_position_id": "jp-emp-1792110509705-6e756b3f",
+      "leader_title": "Asistente Administrativa",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "proc-emp-1792110509705-06",
+      "tenant_id": "emp-1792110509705",
+      "process_map_id": "pmap-emp-1792110509705-1793496391",
+      "code": "AP-02",
+      "name": "Mantenimiento Preventivo y Correctivo de Maquinaria y Equipos",
+      "process_type": "Apoyo",
+      "objective": "Asegurar la máxima disponibilidad, confiabilidad y seguridad intrínseca de los equipos productivos mediante lubricación, calibración y planes de mantenimiento preventivo.",
+      "scope": "Toda la maquinaria industrial, herramientas manuales, eléctricas, neumáticas e instalaciones locativas.",
+      "leader_job_position_id": "jp-emp-1792110509705-f6d6be1a",
+      "leader_title": "Mecánico de Mantenimiento",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "proc-emp-1792110509705-07",
+      "tenant_id": "emp-1792110509705",
+      "process_map_id": "pmap-emp-1792110509705-1793496391",
+      "code": "EV-01",
+      "name": "Auditoría Interna, Rendición de Cuentas y Mejora Continua",
+      "process_type": "Evaluacion",
+      "objective": "Evaluar sistemáticamente la conformidad del SG-SST y los procesos corporativos frente a la Resolución 0312 de 2019, generando acciones preventivas y de mejora.",
+      "scope": "Todos los procesos estratégicos, misionales y de apoyo de la organización.",
+      "leader_job_position_id": "jp-emp-1792110509705-a1c2c134",
+      "leader_title": "Coordinador SST",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
     }
   ],
   "process_activities": [
@@ -8969,6 +10265,484 @@
       ],
       "updatedAt": "2026-10-28T12:52:39.460Z",
       "createdAt": "2026-10-28T12:52:39.460Z"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-01-1",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-01",
+      "phva_phase": "Planear",
+      "activity_order": 1,
+      "activity_name": "Definición de Objetivos y Plan de Inversión",
+      "description": "Formular las metas estratégicas anuales, presupuestos y recursos para la operación y el SG-SST.",
+      "inputs": "Balance financiero, análisis DOFA, marco regulatorio",
+      "outputs": "Plan Estratégico y Presupuesto Oficial Aprobado",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-01-2",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-01",
+      "phva_phase": "Hacer",
+      "activity_order": 2,
+      "activity_name": "Despliegue y Comunicación Directiva",
+      "description": "Socializar directrices gerenciales y metas organizacionales con líderes de proceso y partes interesadas.",
+      "inputs": "Plan Estratégico",
+      "outputs": "Actas de alineación directiva y compromisos",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-01-3",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-01",
+      "phva_phase": "Verificar",
+      "activity_order": 3,
+      "activity_name": "Revisión por la Dirección (Decreto 1072 Art. 2.2.4.6.31)",
+      "description": "Evaluar el desempeño del sistema integral, cumplimiento de metas y eficacia de los controles.",
+      "inputs": "Informes de gestión, auditorías, estados financieros",
+      "outputs": "Acta formal de Revisión Gerencial",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-01-4",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-01",
+      "phva_phase": "Actuar",
+      "activity_order": 4,
+      "activity_name": "Toma de Decisiones y Asignación de Recursos de Mejora",
+      "description": "Ajustar planes estratégicos y aprobar recursos para proyectos de modernización y mitigación de riesgos.",
+      "inputs": "Hallazgos de revisión gerencial",
+      "outputs": "Planes de mejora y reasignación de partidas",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-02-1",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-02",
+      "phva_phase": "Planear",
+      "activity_order": 1,
+      "activity_name": "Elaboración del Plan Anual de Trabajo y Presupuesto SST",
+      "description": "Diseñar el cronograma normativo anual, programas de vigilancia y capacitaciones reglamentarias.",
+      "inputs": "Autoevaluación Res. 0312, matriz de peligros previa",
+      "outputs": "Plan Anual de Trabajo SST firmado por Gerencia",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-02-2",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-02",
+      "phva_phase": "Hacer",
+      "activity_order": 2,
+      "activity_name": "Ejecución de Inducciones, Inspecciones Preoperacionales y Entrega de EPP",
+      "description": "Verificar condiciones de seguridad en campo, dotar de EPPs certificados e impartir capacitaciones operacionales.",
+      "inputs": "Fichas de seguridad, matrices de EPP, inventario",
+      "outputs": "Registros de entrega de EPP, actas de inducción y planillas",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+        "tool-och-004"
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-02-3",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-02",
+      "phva_phase": "Verificar",
+      "activity_order": 3,
+      "activity_name": "Medición de Indicadores de SST y Auditoría Interna",
+      "description": "Monitorear indicadores de estructura, proceso y resultado (frecuencia, severidad y ausentismo laboral).",
+      "inputs": "Reportes de incidentes, estadísticas de nómina",
+      "outputs": "Tablero de Control de Indicadores SST",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-02-4",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-02",
+      "phva_phase": "Actuar",
+      "activity_order": 4,
+      "activity_name": "Implementación de Acciones Correctivas y Preventivas",
+      "description": "Gestionar no conformidades derivadas de inspecciones, accidentes o auditorías para evitar recurrencias.",
+      "inputs": "Informes de investigación de accidentes (FURAT)",
+      "outputs": "Plan de Acciones Correctivas cerrado y verificado",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-03-1",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-03",
+      "phva_phase": "Planear",
+      "activity_order": 1,
+      "activity_name": "Diseño Técnico y Lista de Despiece de Materiales",
+      "description": "Modelar planos de fabricación y optimizar cortes de tableros e insumos.",
+      "inputs": "Requerimientos de cliente",
+      "outputs": "Orden de producción y planos de ensamble",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-03-2",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-03",
+      "phva_phase": "Hacer",
+      "activity_order": 2,
+      "activity_name": "Preparación de Materiales y Calibración de Máquinas",
+      "description": "Alistar insumos, herramientas y revisar guardas de seguridad antes del mecanizado.",
+      "inputs": "Materia prima certificada",
+      "outputs": "Puestos de trabajo dotados y listos",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+        "tool-mat-001"
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-03-3",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-03",
+      "phva_phase": "Verificar",
+      "activity_order": 3,
+      "activity_name": "Inspección de Calidad de Insumos Recibidos",
+      "description": "Validar acabados, dimensiones y ausencia de defectos estructurales.",
+      "inputs": "Materia prima",
+      "outputs": "Reporte de aceptación de insumos",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-03-4",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-03",
+      "phva_phase": "Actuar",
+      "activity_order": 4,
+      "activity_name": "Ajuste de Parámetros de Corte y Reordenamiento de Insumos",
+      "description": "Calibrar cuchillas y reponer materias primas deficientes.",
+      "inputs": "Desviaciones dimensionales",
+      "outputs": "Estándar de corte optimizado",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+        "tool-mat-001"
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-04-1",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-04",
+      "phva_phase": "Planear",
+      "activity_order": 1,
+      "activity_name": "Inspección Preoperacional de Maquinaria y EPP",
+      "description": "Verificar discos de corte, extractores de viruta y EPP de protección auditiva y respiratoria.",
+      "inputs": "Hoja de vida de maquinaria",
+      "outputs": "Lista preoperacional firmada",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+        "tool-mat-001"
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-04-2",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-04",
+      "phva_phase": "Hacer",
+      "activity_order": 2,
+      "activity_name": "Corte de Precisión, Enrutado y Ensamble Estructural",
+      "description": "Operar sierras escuadradoras y herramientas neumáticas para conformar el producto final.",
+      "inputs": "Tableros, herrajes, adhesivos",
+      "outputs": "Piezas ensambladas con acabado fino",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+        "tool-mat-001"
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-04-3",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-04",
+      "phva_phase": "Verificar",
+      "activity_order": 3,
+      "activity_name": "Control Dimensional y Resistencia de Uniones",
+      "description": "Verificar escuadras, tolerancias milimétricas y estabilidad de estructuras.",
+      "inputs": "Mueble/producto ensamblado",
+      "outputs": "Checklist de control de calidad final",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-04-4",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-04",
+      "phva_phase": "Actuar",
+      "activity_order": 4,
+      "activity_name": "Retoque de Acabados y Embalaje de Protección",
+      "description": "Aplicar selladores y proteger esquinas con cartón y plástico burbuja para transporte.",
+      "inputs": "Producto aprobado",
+      "outputs": "Producto empacado listo para despacho",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-05-1",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-05",
+      "phva_phase": "Planear",
+      "activity_order": 1,
+      "activity_name": "Definición de Perfiles de Cargo y Profesiogramas de Ingreso",
+      "description": "Estructurar requisitos académicos, competencias y exámenes médicos ocupacionales obligatorios (Res. 2346/2007).",
+      "inputs": "Catálogo de cargos, manual de funciones",
+      "outputs": "Profesiograma oficial actualizado",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-05-2",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-05",
+      "phva_phase": "Hacer",
+      "activity_order": 2,
+      "activity_name": "Contratación, Afiliación a Seguridad Social e Inducción",
+      "description": "Suscribir contrato individual de trabajo, afiliar a EPS, AFP, ARL y Caja de Compensación antes del inicio de labores.",
+      "inputs": "Documentos del aspirante, examen de ingreso",
+      "outputs": "Contrato firmado, anexos SST y afiliaciones activas",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-05-3",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-05",
+      "phva_phase": "Verificar",
+      "activity_order": 3,
+      "activity_name": "Control de Vencimientos Contractuales y Alertas CST (Art. 46)",
+      "description": "Monitorear fechas de culminación de contratos a término fijo y emitir preavisos legales con 30 días de anticipación.",
+      "inputs": "Base de datos de contratos",
+      "outputs": "Cartas de preaviso o actas de prórroga emitidas",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-05-4",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-05",
+      "phva_phase": "Actuar",
+      "activity_order": 4,
+      "activity_name": "Liquidación Final y Práctica de Examen Médico de Egreso",
+      "description": "Expedir orden de examen ocupacional de retiro y cancelar liquidación definitiva de prestaciones sociales.",
+      "inputs": "Paz y salvo laboral, entrega de puesto",
+      "outputs": "Liquidación salarial pagada y certificado de examen",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-06-1",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-06",
+      "phva_phase": "Planear",
+      "activity_order": 1,
+      "activity_name": "Formulación del Plan Maestro de Mantenimiento y Calibraciones",
+      "description": "Definir periodicidad, fichas técnicas y repuestos críticos para cada equipo del inventario.",
+      "inputs": "Manuales de fabricante, inventario tools_inventory",
+      "outputs": "Cronograma anual de mantenimiento preventivo",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+        "tool-och-005"
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-06-2",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-06",
+      "phva_phase": "Hacer",
+      "activity_order": 2,
+      "activity_name": "Ejecución de Rutinas de Lubricación, Engrase y Ajustes Mecánicos",
+      "description": "Aplicar procedimientos de bloqueo/tarjeteo LOTO y realizar intervenciones técnicas preventivas.",
+      "inputs": "Órdenes de trabajo, lubricantes, repuestos",
+      "outputs": "Bitácora técnica de mantenimiento diligenciada",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+        "tool-och-002",
+        "tool-och-003",
+        "tool-och-005"
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-06-3",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-06",
+      "phva_phase": "Verificar",
+      "activity_order": 3,
+      "activity_name": "Pruebas de Arranque en Vacío e Inspección Térmica",
+      "description": "Medir vibración, consumo eléctrico y temperatura en rodamientos para certificar operatividad.",
+      "inputs": "Equipos intervenidos",
+      "outputs": "Acta de entrega conforme al área operativa",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+        "tool-och-004"
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-06-4",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-06",
+      "phva_phase": "Actuar",
+      "activity_order": 4,
+      "activity_name": "Actualización de Hoja de Vida y Reprogramación de Próxima Fecha",
+      "description": "Registrar la intervención en tools_interventions_log y actualizar next_date en tools_maintenance_plan.",
+      "inputs": "Reporte de trabajo finalizado",
+      "outputs": "Hoja de vida de la herramienta actualizada",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-07-1",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-07",
+      "phva_phase": "Planear",
+      "activity_order": 1,
+      "activity_name": "Programa y Plan de Auditorías Internas Anuales",
+      "description": "Establecer alcance, criterios de auditoría y equipo auditor competente e independiente.",
+      "inputs": "Procedimiento de auditoría, estándares mínimos",
+      "outputs": "Plan de auditoría formalizado y comunicado",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-07-2",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-07",
+      "phva_phase": "Hacer",
+      "activity_order": 2,
+      "activity_name": "Ejecución de Auditoría en Campo y Revisión Documental",
+      "description": "Verificar evidencias físicas y digitales en plataforma, entrevistar personal y registrar hallazgos.",
+      "inputs": "Listas de verificación Res. 0312, evidencias",
+      "outputs": "Libro de notas de auditoría y registros fotográficos",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-07-3",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-07",
+      "phva_phase": "Verificar",
+      "activity_order": 3,
+      "activity_name": "Informe Oficial de Auditoría y Clasificación de Hallazgos",
+      "description": "Emitir dictamen con conformidades, no conformidades mayores, menores y oportunidades de mejora.",
+      "inputs": "Hallazgos consolidados",
+      "outputs": "Informe de Auditoría Interna entregado a Gerencia",
+      "routine_type": "No_Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "act-proc-emp-1792110509705-07-4",
+      "tenant_id": "emp-1792110509705",
+      "process_id": "proc-emp-1792110509705-07",
+      "phva_phase": "Actuar",
+      "activity_order": 4,
+      "activity_name": "Formulación y Cierre de Planes de Acción",
+      "description": "Hacer seguimiento al cierre de causas raíz y validar la eficacia de las soluciones adoptadas.",
+      "inputs": "Planes de acción propuestos",
+      "outputs": "Certificado de cierre de no conformidades",
+      "routine_type": "Rutinaria",
+      "associated_tools_ids": [
+
+      ],
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
     }
   ],
   "job_positions": [
@@ -9455,6 +11229,216 @@
       "is_active": true,
       "updatedAt": "2026-10-30T19:22:05.516Z",
       "createdAt": "2026-10-30T19:22:05.516Z"
+    },
+    {
+      "id": "jp-emp-1792110509705-9b3cf9f9",
+      "tenant_id": "emp-1792110509705",
+      "code": "CARG-001",
+      "title": "Gerente General",
+      "hierarchy_level": "Directivo",
+      "summary_objective": "Liderar y responder por la adecuada gestión y continuidad de los procesos asignados al puesto de Gerente General.",
+      "required_education": "Educación técnica o profesional acorde al nivel jerárquico",
+      "required_experience": "1 a 2 años en cargos equivalentes",
+      "required_skills": [
+        "Liderazgo",
+        "Comunicación asertiva",
+        "Gestión de riesgos"
+      ],
+      "medical_exams_profesiograma": {
+        "ingreso": [
+          "Médico general",
+          "Visiometría"
+        ],
+        "periodico": [
+          "Control anual"
+        ],
+        "egreso": [
+          "Examen egreso"
+        ]
+      },
+      "required_epp_list": [
+        "Casco",
+        "Botas de seguridad",
+        "Gafas"
+      ],
+      "is_active": true,
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "jp-emp-1792110509705-a1c2c134",
+      "tenant_id": "emp-1792110509705",
+      "code": "CARG-002",
+      "title": "Coordinador SST",
+      "hierarchy_level": "Profesional",
+      "summary_objective": "Liderar y responder por la adecuada gestión y continuidad de los procesos asignados al puesto de Coordinador SST.",
+      "required_education": "Educación técnica o profesional acorde al nivel jerárquico",
+      "required_experience": "1 a 2 años en cargos equivalentes",
+      "required_skills": [
+        "Liderazgo",
+        "Comunicación asertiva",
+        "Gestión de riesgos"
+      ],
+      "medical_exams_profesiograma": {
+        "ingreso": [
+          "Médico general",
+          "Visiometría"
+        ],
+        "periodico": [
+          "Control anual"
+        ],
+        "egreso": [
+          "Examen egreso"
+        ]
+      },
+      "required_epp_list": [
+        "Casco",
+        "Botas de seguridad",
+        "Gafas"
+      ],
+      "is_active": true,
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "jp-emp-1792110509705-076f96bc",
+      "tenant_id": "emp-1792110509705",
+      "code": "CARG-003",
+      "title": "Diseñador y Modelador de Mobiliario",
+      "hierarchy_level": "Operativo",
+      "summary_objective": "Liderar y responder por la adecuada gestión y continuidad de los procesos asignados al puesto de Diseñador y Modelador de Mobiliario.",
+      "required_education": "Educación técnica o profesional acorde al nivel jerárquico",
+      "required_experience": "1 a 2 años en cargos equivalentes",
+      "required_skills": [
+        "Liderazgo",
+        "Comunicación asertiva",
+        "Gestión de riesgos"
+      ],
+      "medical_exams_profesiograma": {
+        "ingreso": [
+          "Médico general",
+          "Visiometría"
+        ],
+        "periodico": [
+          "Control anual"
+        ],
+        "egreso": [
+          "Examen egreso"
+        ]
+      },
+      "required_epp_list": [
+        "Casco",
+        "Botas de seguridad",
+        "Gafas"
+      ],
+      "is_active": true,
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "jp-emp-1792110509705-56695a8e",
+      "tenant_id": "emp-1792110509705",
+      "code": "CARG-004",
+      "title": "Ebanista y Operario de Corte CNC",
+      "hierarchy_level": "Operativo",
+      "summary_objective": "Liderar y responder por la adecuada gestión y continuidad de los procesos asignados al puesto de Ebanista y Operario de Corte CNC.",
+      "required_education": "Educación técnica o profesional acorde al nivel jerárquico",
+      "required_experience": "1 a 2 años en cargos equivalentes",
+      "required_skills": [
+        "Liderazgo",
+        "Comunicación asertiva",
+        "Gestión de riesgos"
+      ],
+      "medical_exams_profesiograma": {
+        "ingreso": [
+          "Médico general",
+          "Visiometría"
+        ],
+        "periodico": [
+          "Control anual"
+        ],
+        "egreso": [
+          "Examen egreso"
+        ]
+      },
+      "required_epp_list": [
+        "Casco",
+        "Botas de seguridad",
+        "Gafas"
+      ],
+      "is_active": true,
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "jp-emp-1792110509705-6e756b3f",
+      "tenant_id": "emp-1792110509705",
+      "code": "CARG-005",
+      "title": "Asistente Administrativa",
+      "hierarchy_level": "Operativo",
+      "summary_objective": "Liderar y responder por la adecuada gestión y continuidad de los procesos asignados al puesto de Asistente Administrativa.",
+      "required_education": "Educación técnica o profesional acorde al nivel jerárquico",
+      "required_experience": "1 a 2 años en cargos equivalentes",
+      "required_skills": [
+        "Liderazgo",
+        "Comunicación asertiva",
+        "Gestión de riesgos"
+      ],
+      "medical_exams_profesiograma": {
+        "ingreso": [
+          "Médico general",
+          "Visiometría"
+        ],
+        "periodico": [
+          "Control anual"
+        ],
+        "egreso": [
+          "Examen egreso"
+        ]
+      },
+      "required_epp_list": [
+        "Casco",
+        "Botas de seguridad",
+        "Gafas"
+      ],
+      "is_active": true,
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "jp-emp-1792110509705-f6d6be1a",
+      "tenant_id": "emp-1792110509705",
+      "code": "CARG-006",
+      "title": "Mecánico de Mantenimiento",
+      "hierarchy_level": "Operativo",
+      "summary_objective": "Liderar y responder por la adecuada gestión y continuidad de los procesos asignados al puesto de Mecánico de Mantenimiento.",
+      "required_education": "Educación técnica o profesional acorde al nivel jerárquico",
+      "required_experience": "1 a 2 años en cargos equivalentes",
+      "required_skills": [
+        "Liderazgo",
+        "Comunicación asertiva",
+        "Gestión de riesgos"
+      ],
+      "medical_exams_profesiograma": {
+        "ingreso": [
+          "Médico general",
+          "Visiometría"
+        ],
+        "periodico": [
+          "Control anual"
+        ],
+        "egreso": [
+          "Examen egreso"
+        ]
+      },
+      "required_epp_list": [
+        "Casco",
+        "Botas de seguridad",
+        "Gafas"
+      ],
+      "is_active": true,
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
     }
   ],
   "process_activity_positions": [
@@ -9709,6 +11693,258 @@
       "role_in_activity": "Responsable_Ejecutor",
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-01-1-jp-emp-1792110509705-9b3cf9f9",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-01-1",
+      "job_position_id": "jp-emp-1792110509705-9b3cf9f9",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-01-2-jp-emp-1792110509705-9b3cf9f9",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-01-2",
+      "job_position_id": "jp-emp-1792110509705-9b3cf9f9",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-01-3-jp-emp-1792110509705-9b3cf9f9",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-01-3",
+      "job_position_id": "jp-emp-1792110509705-9b3cf9f9",
+      "role_in_activity": "Supervisor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-01-4-jp-emp-1792110509705-9b3cf9f9",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-01-4",
+      "job_position_id": "jp-emp-1792110509705-9b3cf9f9",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-02-1-jp-emp-1792110509705-a1c2c134",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-02-1",
+      "job_position_id": "jp-emp-1792110509705-a1c2c134",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-02-2-jp-emp-1792110509705-a1c2c134",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-02-2",
+      "job_position_id": "jp-emp-1792110509705-a1c2c134",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-02-3-jp-emp-1792110509705-a1c2c134",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-02-3",
+      "job_position_id": "jp-emp-1792110509705-a1c2c134",
+      "role_in_activity": "Supervisor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-02-4-jp-emp-1792110509705-a1c2c134",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-02-4",
+      "job_position_id": "jp-emp-1792110509705-a1c2c134",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-03-1-jp-emp-1792110509705-076f96bc",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-03-1",
+      "job_position_id": "jp-emp-1792110509705-076f96bc",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-03-2-jp-emp-1792110509705-076f96bc",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-03-2",
+      "job_position_id": "jp-emp-1792110509705-076f96bc",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-03-3-jp-emp-1792110509705-076f96bc",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-03-3",
+      "job_position_id": "jp-emp-1792110509705-076f96bc",
+      "role_in_activity": "Supervisor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-03-4-jp-emp-1792110509705-076f96bc",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-03-4",
+      "job_position_id": "jp-emp-1792110509705-076f96bc",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-04-1-jp-emp-1792110509705-56695a8e",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-04-1",
+      "job_position_id": "jp-emp-1792110509705-56695a8e",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-04-2-jp-emp-1792110509705-56695a8e",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-04-2",
+      "job_position_id": "jp-emp-1792110509705-56695a8e",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-04-3-jp-emp-1792110509705-56695a8e",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-04-3",
+      "job_position_id": "jp-emp-1792110509705-56695a8e",
+      "role_in_activity": "Supervisor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-04-4-jp-emp-1792110509705-56695a8e",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-04-4",
+      "job_position_id": "jp-emp-1792110509705-56695a8e",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-05-1-jp-emp-1792110509705-6e756b3f",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-05-1",
+      "job_position_id": "jp-emp-1792110509705-6e756b3f",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-05-2-jp-emp-1792110509705-6e756b3f",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-05-2",
+      "job_position_id": "jp-emp-1792110509705-6e756b3f",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-05-3-jp-emp-1792110509705-6e756b3f",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-05-3",
+      "job_position_id": "jp-emp-1792110509705-6e756b3f",
+      "role_in_activity": "Supervisor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-05-4-jp-emp-1792110509705-6e756b3f",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-05-4",
+      "job_position_id": "jp-emp-1792110509705-6e756b3f",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-06-1-jp-emp-1792110509705-f6d6be1a",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-06-1",
+      "job_position_id": "jp-emp-1792110509705-f6d6be1a",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-06-2-jp-emp-1792110509705-f6d6be1a",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-06-2",
+      "job_position_id": "jp-emp-1792110509705-f6d6be1a",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-06-3-jp-emp-1792110509705-f6d6be1a",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-06-3",
+      "job_position_id": "jp-emp-1792110509705-f6d6be1a",
+      "role_in_activity": "Supervisor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-06-4-jp-emp-1792110509705-f6d6be1a",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-06-4",
+      "job_position_id": "jp-emp-1792110509705-f6d6be1a",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-07-1-jp-emp-1792110509705-a1c2c134",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-07-1",
+      "job_position_id": "jp-emp-1792110509705-a1c2c134",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-07-2-jp-emp-1792110509705-a1c2c134",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-07-2",
+      "job_position_id": "jp-emp-1792110509705-a1c2c134",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-07-3-jp-emp-1792110509705-a1c2c134",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-07-3",
+      "job_position_id": "jp-emp-1792110509705-a1c2c134",
+      "role_in_activity": "Supervisor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "pap-act-proc-emp-1792110509705-07-4-jp-emp-1792110509705-a1c2c134",
+      "tenant_id": "emp-1792110509705",
+      "process_activity_id": "act-proc-emp-1792110509705-07-4",
+      "job_position_id": "jp-emp-1792110509705-a1c2c134",
+      "role_in_activity": "Responsable_Ejecutor",
+      "createdAt": "2026-10-31T20:26:31-05:00",
+      "updatedAt": "2026-10-31T20:26:31-05:00"
     }
   ],
   "job_position_documents": [
@@ -9728,7 +11964,7 @@
       "ultimoIngreso": "2026-10-20T19:50:00.000Z"
     }
   ],
-  "updatedAt": "2026-10-31T20:19:48-05:00",
+  "updatedAt": "2026-10-31T20:50:11-05:00",
   "master_standard_templates": [
     {
       "id": "tpl-1-1-1-1",
@@ -11025,6 +13261,97 @@
   ],
   "employee_document_signatures": [
     {
+      "id": "sig-doc-1793497457-7961",
+      "tenant_id": "emp-1792110509705",
+      "companyId": "emp-1792110509705",
+      "employee_id": "trab-1793497109434",
+      "trabajadorId": "trab-1793497109434",
+      "document_type": "ANEXO_CONTRACTUAL_Y_NOTIFICACION_RIESGOS",
+      "document_id": "ANX-CONT-004",
+      "document_code": "ANX-CONT-004",
+      "document_title": "Anexo Contractual y Notificación de Riesgos",
+      "signature_image_file": "/uploads/sig_doc_ANEXO_CONTRACTUAL_Y_NOTIFICACION_RIESGOS_emp-1792110509705_trab-1793497109434_20261101_014417.png",
+      "signature_sha256": "684b7c4d266e63e43121b8a5389955f3b42a1a14541241423133e979fe0d8a23",
+      "signed_at": "2026-10-31T20:44:17-05:00",
+      "bogota_timestamp": "2026-10-31 20:44:17 UTC-5 (Bogotá)",
+      "client_ip": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "legal_retention_years": 20
+    },
+    {
+      "id": "sig-doc-1793497447-9248",
+      "tenant_id": "emp-1792110509705",
+      "companyId": "emp-1792110509705",
+      "employee_id": "trab-1793497109434",
+      "trabajadorId": "trab-1793497109434",
+      "document_type": "PLAN_DE_TRABAJO_SEGURO",
+      "document_id": "PTS-SEG-003",
+      "document_code": "PTS-SEG-003",
+      "document_title": "Procedimiento de Trabajo Seguro (PTS)",
+      "signature_image_file": "/uploads/sig_doc_PLAN_DE_TRABAJO_SEGURO_emp-1792110509705_trab-1793497109434_20261101_014407.png",
+      "signature_sha256": "534a1f4e6df31366b41b92b8998b66c99b507950c0c70f36ae80d40659be922f",
+      "signed_at": "2026-10-31T20:44:07-05:00",
+      "bogota_timestamp": "2026-10-31 20:44:07 UTC-5 (Bogotá)",
+      "client_ip": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "legal_retention_years": 20
+    },
+    {
+      "id": "sig-doc-1793497436-4573",
+      "tenant_id": "emp-1792110509705",
+      "companyId": "emp-1792110509705",
+      "employee_id": "trab-1793497109434",
+      "trabajadorId": "trab-1793497109434",
+      "document_type": "PERFIL_DE_CARGO",
+      "document_id": "PF-CARG-002",
+      "document_code": "PF-CARG-002",
+      "document_title": "Perfil de Cargo SST & Competencias",
+      "signature_image_file": "/uploads/sig_doc_PERFIL_DE_CARGO_emp-1792110509705_trab-1793497109434_20261101_014356.png",
+      "signature_sha256": "a3fe68c6773f9d96df663ccdd23fb5c75a475f3467334e913e414bb32d72cdb7",
+      "signed_at": "2026-10-31T20:43:56-05:00",
+      "bogota_timestamp": "2026-10-31 20:43:56 UTC-5 (Bogotá)",
+      "client_ip": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "legal_retention_years": 20
+    },
+    {
+      "id": "sig-doc-1793497425-7201",
+      "tenant_id": "emp-1792110509705",
+      "companyId": "emp-1792110509705",
+      "employee_id": "trab-1793497109434",
+      "trabajadorId": "trab-1793497109434",
+      "document_type": "MANUAL_DE_CARGO",
+      "document_id": "MN-CARG-001",
+      "document_code": "MN-CARG-001",
+      "document_title": "Manual de Funciones y Responsabilidades SST",
+      "signature_image_file": "/uploads/sig_doc_MANUAL_DE_CARGO_emp-1792110509705_trab-1793497109434_20261101_014345.png",
+      "signature_sha256": "e5f7838c512f1095d588e96d91f5b3a9db0e8e91e432118d694546f86ad43297",
+      "signed_at": "2026-10-31T20:43:45-05:00",
+      "bogota_timestamp": "2026-10-31 20:43:45 UTC-5 (Bogotá)",
+      "client_ip": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "legal_retention_years": 20
+    },
+    {
+      "id": "sig-onb-1793497404-9543",
+      "tenant_id": "emp-1792110509705",
+      "companyId": "emp-1792110509705",
+      "employee_id": "trab-1793497109434",
+      "trabajadorId": "trab-1793497109434",
+      "document_type": "HABEAS_DATA_ONBOARDING",
+      "document_title": "Consentimiento Informado Ley 1581 de 2012 & Notificación de Riesgos GTC 45",
+      "signature_image_file": "/uploads/sig_onboarding_emp-1792110509705_trab-1793497109434_20261101_014324.png",
+      "signature_sha256": "b4c195064b503f5ecaad3a2a1b63c04546436b975195fb41ff4690c673f83532",
+      "signed_at": "2026-10-31T20:43:24-05:00",
+      "bogota_timestamp": "2026-10-31 20:43:24 UTC-5 (Bogotá)",
+      "accepted_habeas": true,
+      "accepted_gtc45": true,
+      "client_ip": "127.0.0.1",
+      "forwarded_ip": "",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "legal_retention_years": 20
+    },
+    {
       "id": "sig-onb-1793457895-5921",
       "tenant_id": "emp-1790438946268",
       "companyId": "emp-1790438946268",
@@ -11552,6 +13879,257 @@
       "fecha": "2026-10-31T15:17:16Z",
       "cryptographic_evidence_hash": "45456a62d91a7883b9a76249c11f4c2bbe5205149b58b921cf5a2a56153246c5",
       "created_at": "2026-10-31T15:17:16Z"
+    },
+    {
+      "id": "eval-1793497561-13dcc8",
+      "certificate_code": "DP-EVAL-20261031-48D4A4CC",
+      "training_id": "cap-ind-emp-1792110509705",
+      "training_title": "Capacitación #1: Inducción al SG-SST (Sistema de Gestión de Seguridad y Salud en el Trabajo)",
+      "company_id": "emp-1792110509705",
+      "company_name": "WIWA SAS",
+      "worker_id": "trab-1793497109434",
+      "trabajadorId": "trab-1793497109434",
+      "trabajadorNombre": "MELISSA MARIA MARTINE POLANCO",
+      "trabajadorCedula": "1002491239",
+      "trabajadorCargo": "Asistente Administrativa",
+      "answers_submitted": [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1
+      ],
+      "detailed_answers": [
+        {
+          "question_number": 1,
+          "question_text": "¿Cuál es el objetivo principal del Sistema de Gestión de la Seguridad y Salud en el Trabajo (SG-SST) según el Decreto 1072 de 2015?",
+          "options": [
+            "A) Imponer sanciones económicas a los trabajadores que cometan faltas leves.",
+            "B) Anticipar, reconocer, evaluar y controlar los riesgos que puedan afectar la seguridad y salud en el trabajo.",
+            "C) Reducir los costos operativos de la empresa eliminando dotaciones de seguridad.",
+            "D) Delegar la responsabilidad de la seguridad únicamente en la ARL."
+          ],
+          "selected_option_index": 1,
+          "selected_option_letter": "B",
+          "correct_option_index": 1,
+          "correct_option_letter": "B",
+          "is_correct": true,
+          "justificacion": "El Decreto 1072 de 2015 define el SG-SST como el proceso lógico y por etapas para anticipar, reconocer, evaluar y controlar los riesgos laborales."
+        },
+        {
+          "question_number": 2,
+          "question_text": "¿Cuál de las siguientes es una responsabilidad obligatoria del trabajador en el SG-SST?",
+          "options": [
+            "A) Procurar el cuidado integral de su salud y suministrar información veraz sobre su estado de salud.",
+            "B) Comprar con su propio dinero los Elementos de Protección Personal (EPP).",
+            "C) Realizar el pago mensual de la afiliación a la ARL.",
+            "D) Diseñar la matriz de peligros y firmar los balances financieros."
+          ],
+          "selected_option_index": 1,
+          "selected_option_letter": "B",
+          "correct_option_index": 0,
+          "correct_option_letter": "A",
+          "is_correct": false,
+          "justificacion": "El Art. 2.2.4.6.10 del Decreto 1072 de 2015 estipula el autocuidado y reporte veraz del estado de salud como deber ineludible del trabajador."
+        },
+        {
+          "question_number": 3,
+          "question_text": "¿Qué se entiende legalmente por un \"Accidente de Trabajo\" según la Ley 1562 de 2012?",
+          "options": [
+            "A) Cualquier enfermedad común que se manifieste durante las vacaciones.",
+            "B) Todo suceso repentino que sobrevenga por causa o con ocasión del trabajo y produzca una lesión, perturbación funcional, invalidez o muerte.",
+            "C) Un altercado verbal entre compañeros fuera del horario laboral sin relación a la empresa.",
+            "D) Un resfriado común adquirido en la vivienda del empleado."
+          ],
+          "selected_option_index": 0,
+          "selected_option_letter": "A",
+          "correct_option_index": 1,
+          "correct_option_letter": "B",
+          "is_correct": false,
+          "justificacion": "La Ley 1562 de 2012 define el accidente de trabajo como todo suceso repentino por causa o con ocasión del trabajo con daño orgánico o funcional."
+        },
+        {
+          "question_number": 4,
+          "question_text": "¿Cuál es el plazo legal máximo que tiene el trabajador para reportar un presunto accidente de trabajo al empleador?",
+          "options": [
+            "A) 15 días calendario posteriores al suceso.",
+            "B) Inmediatamente o a más tardar dentro de las 48 horas siguientes al evento.",
+            "C) 1 mes después en la reunión mensual del COPASST.",
+            "D) No es necesario reportarlo si la lesión es leve."
+          ],
+          "selected_option_index": 1,
+          "selected_option_letter": "B",
+          "correct_option_index": 1,
+          "correct_option_letter": "B",
+          "is_correct": true,
+          "justificacion": "La normativa colombiana exige reporte inmediato para que el empleador notifique formalmente a la ARL y EPS dentro de 2 días hábiles (48 horas)."
+        },
+        {
+          "question_number": 5,
+          "question_text": "¿Cuál es la función principal del Comité Paritario de Seguridad y Salud en el Trabajo (COPASST)?",
+          "options": [
+            "A) Fijar los salarios y aumentos anuales de la empresa.",
+            "B) Actuar como organismo de promoción, vigilancia y apoyo a las normas y medidas del SG-SST en la empresa.",
+            "C) Tramitar despidos con justa causa por bajo rendimiento.",
+            "D) Administrar los recursos bancarios y presupuestos de la compañía."
+          ],
+          "selected_option_index": 1,
+          "selected_option_letter": "B",
+          "correct_option_index": 1,
+          "correct_option_letter": "B",
+          "is_correct": true,
+          "justificacion": "La Res. 2013 de 1986 y Decreto 1072 determinan que el COPASST vigila, propone y promueve la salud ocupacional en todos los niveles."
+        },
+        {
+          "question_number": 6,
+          "question_text": "¿Qué rol cumple el Comité de Convivencia Laboral (CCL) según la Resolución 652 de 2012?",
+          "options": [
+            "A) Imponer multas de tránsito a los vehículos de la empresa.",
+            "B) Prevenir el acoso laboral y tramitar confidencialmente quejas para proteger la dignidad de los trabajadores.",
+            "C) Organizar las fiestas de fin de año y actividades recreativas.",
+            "D) Asignar los turnos de horas extras nocturnas."
+          ],
+          "selected_option_index": 0,
+          "selected_option_letter": "A",
+          "correct_option_index": 1,
+          "correct_option_letter": "B",
+          "is_correct": false,
+          "justificacion": "El CCL es un mecanismo preventivo para proteger a los trabajadores contra los riesgos psicosociales y situaciones de acoso laboral (Ley 1010 de 2006)."
+        },
+        {
+          "question_number": 7,
+          "question_text": "Respecto al uso de los Elementos de Protección Personal (EPP), es correcto afirmar que:",
+          "options": [
+            "A) Son opcionales si el trabajador considera que tiene mucha experiencia en el oficio.",
+            "B) Son de uso obligatorio, deben inspeccionarse antes de la labor y cuidarse según las normas técnicas de seguridad.",
+            "C) Deben compartirse entre todos los compañeros del turno sin higiene previa.",
+            "D) Pueden modificarse o recortarse para mayor comodidad del operario."
+          ],
+          "selected_option_index": 0,
+          "selected_option_letter": "A",
+          "correct_option_index": 1,
+          "correct_option_letter": "B",
+          "is_correct": false,
+          "justificacion": "El uso de EPP certificados es una barrera obligatoria de protección individual establecida en los protocolos de SST de la empresa."
+        },
+        {
+          "question_number": 8,
+          "question_text": "¿Qué diferencia existe entre un \"Peligro\" y un \"Riesgo\" en el marco de la Guía GTC 45?",
+          "options": [
+            "A) El peligro es la probabilidad y el riesgo es la fuente o condición.",
+            "B) El peligro es la fuente, situación o acto con potencial de daño; el riesgo es la combinación de la probabilidad de que ocurra y su severidad.",
+            "C) Son términos exactamente idénticos y sinónimos en la legislación colombiana.",
+            "D) El peligro solo aplica a trabajos de oficina y el riesgo a fábricas."
+          ],
+          "selected_option_index": 1,
+          "selected_option_letter": "B",
+          "correct_option_index": 1,
+          "correct_option_letter": "B",
+          "is_correct": true,
+          "justificacion": "La GTC 45 define el Peligro como fuente o condición intrínseca y el Riesgo como la probabilidad y consecuencia de su materialización."
+        },
+        {
+          "question_number": 9,
+          "question_text": "En caso de activarse la alarma de evacuación por emergencia en la sede o planta, ¿cuál es la conducta esperada?",
+          "options": [
+            "A) Regresar al puesto de trabajo a recoger objetos personales y computadores.",
+            "B) Suspender actividades, desconectar equipos si es seguro, conservar la calma y dirigirse por la ruta de evacuación al Punto de Encuentro.",
+            "C) Correr gritando hacia la salida más cercana sin atender a los brigadistas.",
+            "D) Encerrarse en los baños o vestieres a esperar que pase la emergencia."
+          ],
+          "selected_option_index": 1,
+          "selected_option_letter": "B",
+          "correct_option_index": 1,
+          "correct_option_letter": "B",
+          "is_correct": true,
+          "justificacion": "Los protocolos del Plan de Emergencias exigen evacuación ordenada, rápida y sin devolverse hacia el Punto de Encuentro designado."
+        },
+        {
+          "question_number": 10,
+          "question_text": "¿Por qué son obligatorias las Pausas Activas durante la jornada laboral?",
+          "options": [
+            "A) Para extender el tiempo de descanso sin justificación laboral.",
+            "B) Para prevenir trastornos musculoesqueléticos, disminuir la fatiga física/mental y favorecer el cambio de posturas prolongadas.",
+            "C) Para retrasar la entrega de productos en la línea de producción.",
+            "D) Solo aplican para personas mayores de 60 años."
+          ],
+          "selected_option_index": 0,
+          "selected_option_letter": "A",
+          "correct_option_index": 1,
+          "correct_option_letter": "B",
+          "is_correct": false,
+          "justificacion": "La gimnasia laboral y pausas activas previenen enfermedades laborales ergonómicas y fatiga osteomuscular derivada de cargas estáticas."
+        },
+        {
+          "question_number": 11,
+          "question_text": "¿Qué es un \"Acto Inseguro o Subestándar\"?",
+          "options": [
+            "A) Una falla geológica imprevista de la naturaleza.",
+            "B) Una acción u omisión del trabajador que viola una norma de seguridad y facilita la ocurrencia de un accidente.",
+            "C) Un defecto en la pintura de una pared de la oficina.",
+            "D) Un día lluvioso en el trayecto hacia el trabajo."
+          ],
+          "selected_option_index": 1,
+          "selected_option_letter": "B",
+          "correct_option_index": 1,
+          "correct_option_letter": "B",
+          "is_correct": true,
+          "justificacion": "El acto subestándar es el comportamiento humano que incumple el procedimiento seguro (ej. omitir el uso de EPP o deshabilitar guardas)."
+        },
+        {
+          "question_number": 12,
+          "question_text": "¿Cuál es la política estricta de la empresa respecto al consumo de alcohol, tabaco y sustancias psicoactivas?",
+          "options": [
+            "A) Se permite el consumo moderado durante la hora de almuerzo.",
+            "B) Está terminantemente prohibido presentarse a laborar o consumir sustancias psicoactivas y bebidas alcohólicas en las instalaciones.",
+            "C) Solo se prohíbe los días lunes y viernes.",
+            "D) Depende de la autorización verbal del jefe de turno."
+          ],
+          "selected_option_index": 1,
+          "selected_option_letter": "B",
+          "correct_option_index": 1,
+          "correct_option_letter": "B",
+          "is_correct": true,
+          "justificacion": "La Política de Prevención de Alcohol y Drogas es de cero tolerancia por representar un peligro crítico para la vida y seguridad de todo el personal."
+        },
+        {
+          "question_number": 13,
+          "question_text": "¿A través de qué mecanismo deben reportarse las condiciones inseguras o sugerencias de mejora en SST en DOCTOR PYME?",
+          "options": [
+            "A) Únicamente enviando cartas físicas por correo postal tradicional.",
+            "B) Mediante el botón de Reporte de Peligros en el Portal del Trabajador y comunicándolo al Coordinador SST o COPASST.",
+            "C) Comentándolo de manera informal únicamente en redes sociales personales.",
+            "D) Guardando silencio para no generar llamados de atención a los compañeros."
+          ],
+          "selected_option_index": 1,
+          "selected_option_letter": "B",
+          "correct_option_index": 1,
+          "correct_option_letter": "B",
+          "is_correct": true,
+          "justificacion": "El Decreto 1072/2015 exige disponer de mecanismos de reporte ágil y oportuno de condiciones peligrosas, disponible en el Portal del Trabajador."
+        }
+      ],
+      "total_questions": 13,
+      "correct_count": 8,
+      "percentage": 61.5,
+      "nota": 3.5,
+      "score_obtained": 3.5,
+      "aprobada": false,
+      "passed": false,
+      "accepted_at_utc": "2026-11-01T01:46:01.004Z",
+      "accepted_at_bogota": "2026-10-31 20:46:01",
+      "timestamp": "2026-10-31 20:46:01",
+      "fecha": "2026-11-01T01:46:01Z",
+      "cryptographic_evidence_hash": "ec980da34f2ab1c6b0a93b9d69c4e4f8654793353dfe3c89a2eaef92724e967c",
+      "created_at": "2026-11-01T01:46:01Z"
     }
   ],
   "epp_dotacion_catalog": [
@@ -11764,6 +14342,216 @@
       "is_active": true,
       "created_at": "2026-10-31T11:04:24-05:00",
       "updated_at": "2026-10-31T11:04:24-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-1",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "EPP-CAS-01",
+      "item_name": "Casco de Seguridad Industrial Tipo I Clase E (4 puntos de apoyo)",
+      "category": "EPP",
+      "body_part_protected": "Cabeza",
+      "technical_standard": "ANSI Z89.1 / NTC 1523",
+      "useful_life_days": 365,
+      "requires_size": false,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-2",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "EPP-GAF-01",
+      "item_name": "Gafas de Seguridad con Protección Lateral y Filtro Antiempañante",
+      "category": "EPP",
+      "body_part_protected": "Ojos_Rostro",
+      "technical_standard": "ANSI Z87.1 / NTC 1825",
+      "useful_life_days": 90,
+      "requires_size": false,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-3",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "EPP-AUD-01",
+      "item_name": "Protector Auditivo de Inserción Siliconado Reutilizable NRR 27dB",
+      "category": "EPP",
+      "body_part_protected": "Auditiva",
+      "technical_standard": "ANSI S3.19 / NTC 2272",
+      "useful_life_days": 60,
+      "requires_size": false,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-4",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "EPP-AUD-02",
+      "item_name": "Protector Auditivo Tipo Copa para Ensamble a Casco NRR 25dB",
+      "category": "EPP",
+      "body_part_protected": "Auditiva",
+      "technical_standard": "ANSI S3.19",
+      "useful_life_days": 180,
+      "requires_size": false,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-5",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "EPP-RES-01",
+      "item_name": "Respirador N95 Libre de Mantenimiento contra Material Particulado",
+      "category": "EPP",
+      "body_part_protected": "Respiratoria",
+      "technical_standard": "NIOSH 42 CFR 84 / NTC 3852",
+      "useful_life_days": 30,
+      "requires_size": false,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-6",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "EPP-RES-02",
+      "item_name": "Respirador Media Cara Reutilizable con Filtros Mixtos Químicos/Polvo",
+      "category": "EPP",
+      "body_part_protected": "Respiratoria",
+      "technical_standard": "NIOSH 42 CFR 84 / NTC 1728",
+      "useful_life_days": 180,
+      "requires_size": false,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-7",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "EPP-GUA-01",
+      "item_name": "Guantes de Vaqueta de Cuero Reforzado para Riesgo Mecánico",
+      "category": "EPP",
+      "body_part_protected": "Manos_Brazos",
+      "technical_standard": "EN 388:2016 / NTC 2190",
+      "useful_life_days": 60,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-8",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "EPP-GUA-02",
+      "item_name": "Guantes de Nitrilo Industrial Alta Resistencia Química y Grasas",
+      "category": "EPP",
+      "body_part_protected": "Manos_Brazos",
+      "technical_standard": "EN 374 / NTC 2219",
+      "useful_life_days": 45,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-9",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "EPP-CAL-01",
+      "item_name": "Botas de Seguridad Cuero Hidrofugado con Puntera de Acero",
+      "category": "EPP",
+      "body_part_protected": "Pies_Piernas",
+      "technical_standard": "ASTM F2413 / NTC 2396",
+      "useful_life_days": 120,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-10",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "EPP-CAL-02",
+      "item_name": "Botas Dieléctricas con Puntera Composite 18kV Suela PU/TPU",
+      "category": "EPP",
+      "body_part_protected": "Pies_Piernas",
+      "technical_standard": "ASTM F2413 Dieléctrica",
+      "useful_life_days": 180,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-11",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "EPP-ALT-01",
+      "item_name": "Arnés de Seguridad Cuerpo Entero Multipropósito 4 Argollas",
+      "category": "EPP",
+      "body_part_protected": "Alturas_Anticaidas",
+      "technical_standard": "ANSI Z359.11 / Res. 4272:2021",
+      "useful_life_days": 365,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-12",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "DOT-CAM-01",
+      "item_name": "Camisa de Dotación Manga Larga Jean 14 oz Trabajo Pesado",
+      "category": "DOTACION_LEGAL",
+      "body_part_protected": "Tronco_Cuerpo",
+      "technical_standard": "CST Art. 230 / NTC 2261",
+      "useful_life_days": 120,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-13",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "DOT-PAN-01",
+      "item_name": "Pantalón de Dotación Jean Minero / Operativo 14 oz Doble Costura",
+      "category": "DOTACION_LEGAL",
+      "body_part_protected": "Pies_Piernas",
+      "technical_standard": "CST Art. 230",
+      "useful_life_days": 120,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-14",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "DOT-CHA-01",
+      "item_name": "Chaqueta Impermeable de Alta Visibilidad con Cintas Reflectivas 3M",
+      "category": "DOTACION_LEGAL",
+      "body_part_protected": "Tronco_Cuerpo",
+      "technical_standard": "ANSI/ISEA 107",
+      "useful_life_days": 180,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792110509705-15",
+      "tenant_id": "emp-1792110509705",
+      "item_code": "DOT-PET-01",
+      "item_name": "Peto de Carnaza Resistente a Chispas y Radiación Térmica",
+      "category": "ROPA_TRABAJO_ESPECIAL",
+      "body_part_protected": "Tronco_Cuerpo",
+      "technical_standard": "NTC 3252",
+      "useful_life_days": 180,
+      "requires_size": false,
+      "is_active": true,
+      "created_at": "2026-10-31T20:41:35-05:00",
+      "updated_at": "2026-10-31T20:41:35-05:00"
     }
   ],
   "job_position_epp_matrix": [
@@ -11865,6 +14653,67 @@
     }
   ],
   "epp_dotacion_deliveries": [
+    {
+      "id": "deliv-epp-1793497318-7484",
+      "tenant_id": "emp-1792110509705",
+      "companyId": "emp-1792110509705",
+      "delivery_consecutive": "ACTA-EPP-2026-0001",
+      "employee_id": "trab-1793497109434",
+      "trabajadorId": "trab-1793497109434",
+      "trabajadorNombre": "MELISSA MARIA MARTINE POLANCO",
+      "trabajadorCedula": "1002491239",
+      "job_position_id": "jp-emp-1792110509705-6e756b3f",
+      "cargoNombre": "Asistente Administrativa",
+      "delivery_type": "MIXTA_EPP_Y_DOTACION",
+      "delivery_reason": "Periodica_Ley_Abril_Agosto_Diciembre",
+      "assigned_by_user_id": "Coordinador SST",
+      "assigned_at": "2026-10-31T20:41:58-05:00",
+      "bogota_assigned_at": "2026-10-31 20:41:58 UTC-5 (Bogotá)",
+      "status": "FIRMADO_ENTREGADO",
+      "worker_signed_at": "2026-10-31T20:46:49-05:00",
+      "worker_signature_base64_or_s3": "/uploads/sig_epp_acta_ACTA-EPP-2026-0001_trab-1793497109434_20261101_014649.png",
+      "worker_ip_address": "127.0.0.1",
+      "worker_user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "cryptographic_hash_sha256": "65dcb1cea97d01cbfa0a0989e001f62ed211a69fd5c8bba2edaff1a7005060cb",
+      "pdf_s3_key": "doctorpyme-storage/tenants/emp-1792110509705/epp-deliveries/ACTA-EPP-2026-0001.pdf",
+      "created_at": "2026-10-31T20:41:58-05:00",
+      "updated_at": "2026-10-31T20:46:49-05:00",
+      "items": [
+        {
+          "id": "deliv-item-deliv-epp-1793497318-7484-1",
+          "tenant_id": "emp-1792110509705",
+          "delivery_id": "deliv-epp-1793497318-7484",
+          "catalog_item_id": "epp-cat-emp-1792110509705-4",
+          "item_name_snapshot": "Protector Auditivo Tipo Copa para Ensamble a Casco NRR 25dB",
+          "category_snapshot": "EPP",
+          "technical_standard_snapshot": "ANSI S3.19",
+          "size_delivered": "9",
+          "quantity_delivered": 1,
+          "brand_or_batch": "Lote Homologado 2026",
+          "previous_item_returned": true,
+          "next_replacement_date": "2027-04-29",
+          "observations": "Nuevo conforme a norma",
+          "created_at": "2026-10-31T20:41:58-05:00"
+        },
+        {
+          "id": "deliv-item-deliv-epp-1793497318-7484-2",
+          "tenant_id": "emp-1792110509705",
+          "delivery_id": "deliv-epp-1793497318-7484",
+          "catalog_item_id": "epp-cat-emp-1792110509705-5",
+          "item_name_snapshot": "Respirador N95 Libre de Mantenimiento contra Material Particulado",
+          "category_snapshot": "EPP",
+          "technical_standard_snapshot": "NIOSH 42 CFR 84 / NTC 3852",
+          "size_delivered": "Única",
+          "quantity_delivered": 1,
+          "brand_or_batch": "Lote Homologado 2026",
+          "previous_item_returned": true,
+          "next_replacement_date": "2026-11-30",
+          "observations": "Nuevo conforme a norma",
+          "created_at": "2026-10-31T20:41:58-05:00"
+        }
+      ],
+      "bogota_signed_at": "2026-10-31 20:46:49 UTC-5 (Bogotá)"
+    },
     {
       "id": "deliv-epp-1793463835-6885",
       "tenant_id": "emp-1790438946268",
@@ -12244,6 +15093,38 @@
       "next_replacement_date": "2027-02-28",
       "observations": "Art. 230 CST",
       "created_at": "2026-10-31T11:24:45-05:00"
+    },
+    {
+      "id": "deliv-item-deliv-epp-1793497318-7484-1",
+      "tenant_id": "emp-1792110509705",
+      "delivery_id": "deliv-epp-1793497318-7484",
+      "catalog_item_id": "epp-cat-emp-1792110509705-4",
+      "item_name_snapshot": "Protector Auditivo Tipo Copa para Ensamble a Casco NRR 25dB",
+      "category_snapshot": "EPP",
+      "technical_standard_snapshot": "ANSI S3.19",
+      "size_delivered": "9",
+      "quantity_delivered": 1,
+      "brand_or_batch": "Lote Homologado 2026",
+      "previous_item_returned": true,
+      "next_replacement_date": "2027-04-29",
+      "observations": "Nuevo conforme a norma",
+      "created_at": "2026-10-31T20:41:58-05:00"
+    },
+    {
+      "id": "deliv-item-deliv-epp-1793497318-7484-2",
+      "tenant_id": "emp-1792110509705",
+      "delivery_id": "deliv-epp-1793497318-7484",
+      "catalog_item_id": "epp-cat-emp-1792110509705-5",
+      "item_name_snapshot": "Respirador N95 Libre de Mantenimiento contra Material Particulado",
+      "category_snapshot": "EPP",
+      "technical_standard_snapshot": "NIOSH 42 CFR 84 / NTC 3852",
+      "size_delivered": "Única",
+      "quantity_delivered": 1,
+      "brand_or_batch": "Lote Homologado 2026",
+      "previous_item_returned": true,
+      "next_replacement_date": "2026-11-30",
+      "observations": "Nuevo conforme a norma",
+      "created_at": "2026-10-31T20:41:58-05:00"
     }
   ]
 }
