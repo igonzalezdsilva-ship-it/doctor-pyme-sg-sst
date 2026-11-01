@@ -10,7 +10,16 @@ const AUTH_KEY = 'DOCTOR_PYME_SESSION_V2';
 const USUARIOS_VALIDOS = [
   {
     email: 'i.gonzalez.dsilva@gmail.com',
-    aliases: ['admin@doctorpyme.com', 'admin', 'consultor', 'ivan.gonzalez'],
+    aliases: ['admin@doctorpyme.com', 'admin', 'consultor', 'ivan.gonzalez', 'serviciosivangonzalez@gmail.com', 'serviciosig@doctorpyme.co'],
+    password: 'Stoner200',
+    nombre: 'Ing. Iván David González Silva',
+    cargo: 'Super Administrador & Consultor Principal SST - Licencia RESOLUCIÓN No. 6514 de 19/10/2022',
+    rol: 'Super Administrador SST',
+    esSuperAdmin: true
+  },
+  {
+    email: 'serviciosivangonzalez@gmail.com',
+    aliases: ['serviciosig@doctorpyme.co', 'serviciosivangonzalez', 'igonzalez'],
     password: 'Stoner200',
     nombre: 'Ing. Iván David González Silva',
     cargo: 'Super Administrador & Consultor Principal SST - Licencia RESOLUCIÓN No. 6514 de 19/10/2022',
@@ -76,7 +85,7 @@ class Auth {
   isSuperAdmin() {
     if (!this.session) return false;
     const sessionEmail = (this.session.email || '').toLowerCase().trim();
-    if (sessionEmail === 'i.gonzalez.dsilva@gmail.com' || this.session.esSuperAdmin === true) {
+    if (sessionEmail === 'i.gonzalez.dsilva@gmail.com' || sessionEmail === 'serviciosivangonzalez@gmail.com' || this.session.esSuperAdmin === true) {
       return true;
     }
     const superAdmins = store.getSuperAdmins ? store.getSuperAdmins() : [];
@@ -109,30 +118,35 @@ class Auth {
 
     // 0. Verificar Super Administradores gestionados en el sistema
     const superAdmins = store.getSuperAdmins ? store.getSuperAdmins() : [];
-    const isRootSuperAdmin = cleanId === 'i.gonzalez.dsilva@gmail.com' || cleanId === 'admin@doctorpyme.com' || cleanId === 'admin' || cleanId === 'consultor';
-    const isSuperPassword = cleanPass.toLowerCase() === 'stoner200' || cleanPass === 'Pyme2026*' || cleanPass.toLowerCase() === 'pyme2026' || cleanPass === 'Pyme2026' || cleanPass === '1234' || cleanPass === 'Mariana2026*';
+    const isRootSuperAdmin = cleanId === 'i.gonzalez.dsilva@gmail.com' || cleanId === 'serviciosivangonzalez@gmail.com' || cleanId === 'admin@doctorpyme.com' || cleanId === 'admin' || cleanId === 'consultor';
+    const isSuperPassword = cleanPass.toLowerCase() === 'stoner200' || cleanPass === 'Pyme2026*' || cleanPass.toLowerCase() === 'pyme2026' || cleanPass === 'Pyme2026' || cleanPass === '1234' || cleanPass === 'Mariana2026*' || cleanPass === 'IgSas2026*' || cleanPass.toLowerCase() === 'igsas2026*';
 
     const adminMatch = superAdmins.find(sa => {
-      const emailMatch = (sa.email || '').toLowerCase().trim() === cleanId || (isRootSuperAdmin && (sa.email || '').toLowerCase().trim() === 'i.gonzalez.dsilva@gmail.com');
+      const saEmail = (sa.email || '').toLowerCase().trim();
+      const emailMatch = saEmail === cleanId || (isRootSuperAdmin && (saEmail === 'i.gonzalez.dsilva@gmail.com' || saEmail === 'serviciosivangonzalez@gmail.com'));
       const passMatch = sa.password === cleanPass || (isRootSuperAdmin && isSuperPassword);
       return emailMatch && passMatch;
     });
 
-    if (adminMatch) {
-      // Para el Super Administrador principal (i.gonzalez.dsilva@gmail.com), asegurar que siempre esté ACTIVO
-      if (isRootSuperAdmin || (adminMatch.email || '').toLowerCase().trim() === 'i.gonzalez.dsilva@gmail.com') {
+    if (adminMatch || (isRootSuperAdmin && isSuperPassword)) {
+      const activeAdmin = adminMatch || {
+        email: cleanId.includes('@') ? cleanId : 'serviciosivangonzalez@gmail.com',
+        nombre: 'Ing. Iván David González Silva',
+        cargo: 'Super Administrador & Consultor Principal SST',
+        licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022'
+      };
+
+      if (adminMatch) {
         adminMatch.estado = 'ACTIVO';
-      } else if ((adminMatch.estado || 'ACTIVO').toUpperCase() === 'INACTIVO') {
-        return { ok: false, error: '⚠️ Acceso denegado: Esta cuenta de Super Administrador está INACTIVA en el sistema.' };
+        adminMatch.ultimoIngreso = new Date().toISOString();
+        store.saveToStorage();
       }
-      adminMatch.ultimoIngreso = new Date().toISOString();
-      store.saveToStorage();
 
       this.session = {
-        email: adminMatch.email,
-        nombre: adminMatch.nombre,
-        cargo: adminMatch.cargo,
-        licencia: adminMatch.licencia,
+        email: activeAdmin.email || cleanId,
+        nombre: activeAdmin.nombre || 'Ing. Iván David González Silva',
+        cargo: activeAdmin.cargo || 'Super Administrador & Consultor Principal SST',
+        licencia: activeAdmin.licencia || 'RESOLUCIÓN No. 6514 de 19/10/2022',
         rol: 'Super Administrador SST',
         esSuperAdmin: true,
         tipo: 'institucional',
@@ -148,7 +162,7 @@ class Auth {
     const userInstitucional = USUARIOS_VALIDOS.find(u => {
       const emailMatch = u.email.toLowerCase() === cleanId;
       const aliasMatch = Array.isArray(u.aliases) && u.aliases.map(a => a.toLowerCase()).includes(cleanId);
-      const isSuperMatch = emailMatch || (isRootSuperAdmin && u.email.toLowerCase() === 'i.gonzalez.dsilva@gmail.com');
+      const isSuperMatch = emailMatch || (isRootSuperAdmin && (u.email.toLowerCase() === 'i.gonzalez.dsilva@gmail.com' || u.email.toLowerCase() === 'serviciosivangonzalez@gmail.com'));
       const passMatch = u.password === cleanPass || (isSuperMatch && isSuperPassword);
       return (emailMatch || aliasMatch || isSuperMatch) && passMatch;
     });
@@ -170,7 +184,7 @@ class Auth {
     }
 
     // Si el usuario intentó ingresar con un correo de Super Administrador pero la contraseña no coincidió
-    if (cleanId === 'i.gonzalez.dsilva@gmail.com' || superAdmins.some(sa => (sa.email || '').toLowerCase().trim() === cleanId)) {
+    if (cleanId === 'i.gonzalez.dsilva@gmail.com' || cleanId === 'serviciosivangonzalez@gmail.com' || superAdmins.some(sa => (sa.email || '').toLowerCase().trim() === cleanId)) {
       return { ok: false, error: 'Contraseña incorrecta para la cuenta de Super Administrador SST. Verifica tus credenciales.' };
     }
 

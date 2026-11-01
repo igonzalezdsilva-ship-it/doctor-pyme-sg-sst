@@ -936,6 +936,18 @@ class Store {
                 estado: 'ACTIVO',
                 creadoEn: '2026-10-10T00:00:00.000Z',
                 ultimoIngreso: new Date().toISOString()
+              },
+              {
+                id: 'sa-002',
+                email: 'serviciosivangonzalez@gmail.com',
+                nombre: 'Ing. Iván David González Silva',
+                cargo: 'Super Administrador & Consultor Principal SST',
+                licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
+                telefono: '3144001787',
+                password: 'Stoner200',
+                estado: 'ACTIVO',
+                creadoEn: '2026-10-10T00:00:00.000Z',
+                ultimoIngreso: new Date().toISOString()
               }
             ];
           }
@@ -944,6 +956,18 @@ class Store {
               {
                 id: 'sa-001',
                 email: 'i.gonzalez.dsilva@gmail.com',
+                nombre: 'Ing. Iván David González Silva',
+                cargo: 'Super Administrador & Consultor Principal SST',
+                licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
+                telefono: '3144001787',
+                password: 'Stoner200',
+                estado: 'ACTIVO',
+                creadoEn: '2026-10-10T00:00:00.000Z',
+                ultimoIngreso: new Date().toISOString()
+              },
+              {
+                id: 'sa-002',
+                email: 'serviciosivangonzalez@gmail.com',
                 nombre: 'Ing. Iván David González Silva',
                 cargo: 'Super Administrador & Consultor Principal SST',
                 licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
@@ -1254,6 +1278,18 @@ class Store {
               {
                 id: 'sa-001',
                 email: 'i.gonzalez.dsilva@gmail.com',
+                nombre: 'Ing. Iván David González Silva',
+                cargo: 'Super Administrador & Consultor Principal SST',
+                licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
+                telefono: '3144001787',
+                password: 'Stoner200',
+                estado: 'ACTIVO',
+                creadoEn: '2026-10-10T00:00:00.000Z',
+                ultimoIngreso: new Date().toISOString()
+              },
+              {
+                id: 'sa-002',
+                email: 'serviciosivangonzalez@gmail.com',
                 nombre: 'Ing. Iván David González Silva',
                 cargo: 'Super Administrador & Consultor Principal SST',
                 licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
@@ -1639,7 +1675,7 @@ class Store {
       const session = JSON.parse(raw);
       if (!session) return false;
       const email = (session.email || '').toLowerCase().trim();
-      if (session.esSuperAdmin === true || email === 'i.gonzalez.dsilva@gmail.com') {
+      if (session.esSuperAdmin === true || email === 'i.gonzalez.dsilva@gmail.com' || email === 'serviciosivangonzalez@gmail.com') {
         return true;
       }
       const superAdmins = this.getSuperAdmins();
@@ -1677,6 +1713,18 @@ class Store {
         {
           id: 'sa-001',
           email: 'i.gonzalez.dsilva@gmail.com',
+          nombre: 'Ing. Iván David González Silva',
+          cargo: 'Super Administrador & Consultor Principal SST',
+          licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
+          telefono: '3144001787',
+          password: 'Stoner200',
+          estado: 'ACTIVO',
+          creadoEn: '2026-10-10T00:00:00.000Z',
+          ultimoIngreso: new Date().toISOString()
+        },
+        {
+          id: 'sa-002',
+          email: 'serviciosivangonzalez@gmail.com',
           nombre: 'Ing. Iván David González Silva',
           cargo: 'Super Administrador & Consultor Principal SST',
           licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',

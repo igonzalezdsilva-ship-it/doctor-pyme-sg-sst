@@ -2236,8 +2236,7 @@
       }
     },
     "emp-1792009016839": {
-      "2026": {
-      }
+      "2026": {}
     },
     "emp-1792010387578": {
       "2026": {
@@ -2552,9 +2551,7 @@
       "afp": "Protección",
       "arl": "Positiva ARL",
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "empresaId": "emp-1792009016839",
       "pin": "4889"
@@ -2570,9 +2567,7 @@
       "fechaIngreso": "2026-08-21",
       "fechaFinContrato": "2027-02-21",
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2597,9 +2592,7 @@
       "fechaIngreso": "2026-08-18",
       "fechaFinContrato": "2027-08-18",
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2628,9 +2621,7 @@
       "fechaIngreso": "2026-07-24",
       "fechaFinContrato": "2027-01-24",
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2655,9 +2646,7 @@
       "fechaIngreso": "2026-07-16",
       "fechaFinContrato": "2027-01-16",
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2682,9 +2671,7 @@
       "fechaIngreso": "2026-07-10",
       "fechaFinContrato": "2027-01-10",
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2709,9 +2696,7 @@
       "fechaIngreso": "2026-07-03",
       "fechaFinContrato": "2027-01-03",
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2736,9 +2721,7 @@
       "fechaIngreso": "2026-07-03",
       "fechaFinContrato": "2027-01-03",
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2763,9 +2746,7 @@
       "fechaIngreso": "2026-06-23",
       "fechaFinContrato": "2026-12-23",
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2790,9 +2771,7 @@
       "fechaIngreso": "2024-07-23",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2817,9 +2796,7 @@
       "fechaIngreso": "2024-07-23",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2844,9 +2821,7 @@
       "fechaIngreso": "2026-04-16",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2871,9 +2846,7 @@
       "fechaIngreso": "2023-02-09",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2898,9 +2871,7 @@
       "fechaIngreso": "2021-07-07",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2925,9 +2896,7 @@
       "fechaIngreso": "2021-04-06",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2952,9 +2921,7 @@
       "fechaIngreso": "2019-08-30",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2979,9 +2946,7 @@
       "fechaIngreso": "2016-08-27",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -3006,9 +2971,7 @@
       "fechaIngreso": "2014-08-01",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -3033,9 +2996,7 @@
       "fechaIngreso": "2012-04-10",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -3060,9 +3021,7 @@
       "fechaIngreso": "2007-07-04",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -3097,9 +3056,7 @@
       "afp": "Protección",
       "arl": "Positiva ARL",
       "duracionMeses": null,
-      "prorrogas": [
-
-      ],
+      "prorrogas": [],
       "estadoPreaviso": "Pendiente"
     }
   ],
@@ -4200,9 +4157,7 @@
           "justificacion": "El Decreto 1072/2015 exige disponer de mecanismos de reporte ágil y oportuno de condiciones peligrosas, disponible en el Portal del Trabajador."
         }
       ],
-      "evaluaciones": [
-
-      ]
+      "evaluaciones": []
     },
     {
       "id": "cap-ind-emp-1792010387578",
@@ -4376,9 +4331,7 @@
           "justificacion": "El Decreto 1072/2015 exige disponer de mecanismos de reporte ágil y oportuno de condiciones peligrosas, disponible en el Portal del Trabajador."
         }
       ],
-      "evaluaciones": [
-
-      ]
+      "evaluaciones": []
     }
   ],
   "equipos": [
@@ -4974,8 +4927,7 @@
       "intervention_type": "Preoperacional",
       "status_result": "Aprobado",
       "aptoOperar": "SI",
-      "checklist_answers": {
-      },
+      "checklist_answers": {},
       "evidence_photo_url": "",
       "observaciones": "Montacargas en óptimas condiciones de frenos e hidráulica.",
       "notes": "Montacargas en óptimas condiciones de frenos e hidráulica.",
@@ -5114,8 +5066,7 @@
       "intervention_type": "Preoperacional",
       "status_result": "Aprobado",
       "aptoOperar": "SI",
-      "checklist_answers": {
-      },
+      "checklist_answers": {},
       "evidence_photo_url": "",
       "observaciones": "Montacargas en óptimas condiciones de frenos e hidráulica.",
       "notes": "Montacargas en óptimas condiciones de frenos e hidráulica.",
@@ -9781,9 +9732,7 @@
       "inputs": "Balance financiero, análisis DOFA, marco regulatorio",
       "outputs": "Plan Estratégico y Presupuesto Oficial Aprobado",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9798,9 +9747,7 @@
       "inputs": "Plan Estratégico",
       "outputs": "Actas de alineación directiva y compromisos",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9815,9 +9762,7 @@
       "inputs": "Informes de gestión, auditorías, estados financieros",
       "outputs": "Acta formal de Revisión Gerencial",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9832,9 +9777,7 @@
       "inputs": "Hallazgos de revisión gerencial",
       "outputs": "Planes de mejora y reasignación de partidas",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9849,9 +9792,7 @@
       "inputs": "Autoevaluación Res. 0312, matriz de peligros previa",
       "outputs": "Plan Anual de Trabajo SST firmado por Gerencia",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9883,9 +9824,7 @@
       "inputs": "Reportes de incidentes, estadísticas de nómina",
       "outputs": "Tablero de Control de Indicadores SST",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9900,9 +9839,7 @@
       "inputs": "Informes de investigación de accidentes (FURAT)",
       "outputs": "Plan de Acciones Correctivas cerrado y verificado",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9917,9 +9854,7 @@
       "inputs": "Requerimientos de cliente",
       "outputs": "Orden de producción y planos de ensamble",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9951,9 +9886,7 @@
       "inputs": "Materia prima",
       "outputs": "Reporte de aceptación de insumos",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10019,9 +9952,7 @@
       "inputs": "Mueble/producto ensamblado",
       "outputs": "Checklist de control de calidad final",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10036,9 +9967,7 @@
       "inputs": "Producto aprobado",
       "outputs": "Producto empacado listo para despacho",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10053,9 +9982,7 @@
       "inputs": "Catálogo de cargos, manual de funciones",
       "outputs": "Profesiograma oficial actualizado",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10070,9 +9997,7 @@
       "inputs": "Documentos del aspirante, examen de ingreso",
       "outputs": "Contrato firmado, anexos SST y afiliaciones activas",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10087,9 +10012,7 @@
       "inputs": "Base de datos de contratos",
       "outputs": "Cartas de preaviso o actas de prórroga emitidas",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10104,9 +10027,7 @@
       "inputs": "Paz y salvo laboral, entrega de puesto",
       "outputs": "Liquidación salarial pagada y certificado de examen",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10174,9 +10095,7 @@
       "inputs": "Reporte de trabajo finalizado",
       "outputs": "Hoja de vida de la herramienta actualizada",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10191,9 +10110,7 @@
       "inputs": "Procedimiento de auditoría, estándares mínimos",
       "outputs": "Plan de auditoría formalizado y comunicado",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10208,9 +10125,7 @@
       "inputs": "Listas de verificación Res. 0312, evidencias",
       "outputs": "Libro de notas de auditoría y registros fotográficos",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10225,9 +10140,7 @@
       "inputs": "Hallazgos consolidados",
       "outputs": "Informe de Auditoría Interna entregado a Gerencia",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10242,9 +10155,7 @@
       "inputs": "Planes de acción propuestos",
       "outputs": "Certificado de cierre de no conformidades",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10277,9 +10188,7 @@
       "inputs": "Balance financiero, análisis DOFA, marco regulatorio",
       "outputs": "Plan Estratégico y Presupuesto Oficial Aprobado",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10294,9 +10203,7 @@
       "inputs": "Plan Estratégico",
       "outputs": "Actas de alineación directiva y compromisos",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10311,9 +10218,7 @@
       "inputs": "Informes de gestión, auditorías, estados financieros",
       "outputs": "Acta formal de Revisión Gerencial",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10328,9 +10233,7 @@
       "inputs": "Hallazgos de revisión gerencial",
       "outputs": "Planes de mejora y reasignación de partidas",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10345,9 +10248,7 @@
       "inputs": "Autoevaluación Res. 0312, matriz de peligros previa",
       "outputs": "Plan Anual de Trabajo SST firmado por Gerencia",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10379,9 +10280,7 @@
       "inputs": "Reportes de incidentes, estadísticas de nómina",
       "outputs": "Tablero de Control de Indicadores SST",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10396,9 +10295,7 @@
       "inputs": "Informes de investigación de accidentes (FURAT)",
       "outputs": "Plan de Acciones Correctivas cerrado y verificado",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10413,9 +10310,7 @@
       "inputs": "Requerimientos de cliente",
       "outputs": "Orden de producción y planos de ensamble",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10447,9 +10342,7 @@
       "inputs": "Materia prima",
       "outputs": "Reporte de aceptación de insumos",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10515,9 +10408,7 @@
       "inputs": "Mueble/producto ensamblado",
       "outputs": "Checklist de control de calidad final",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10532,9 +10423,7 @@
       "inputs": "Producto aprobado",
       "outputs": "Producto empacado listo para despacho",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10549,9 +10438,7 @@
       "inputs": "Catálogo de cargos, manual de funciones",
       "outputs": "Profesiograma oficial actualizado",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10566,9 +10453,7 @@
       "inputs": "Documentos del aspirante, examen de ingreso",
       "outputs": "Contrato firmado, anexos SST y afiliaciones activas",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10583,9 +10468,7 @@
       "inputs": "Base de datos de contratos",
       "outputs": "Cartas de preaviso o actas de prórroga emitidas",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10600,9 +10483,7 @@
       "inputs": "Paz y salvo laboral, entrega de puesto",
       "outputs": "Liquidación salarial pagada y certificado de examen",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10670,9 +10551,7 @@
       "inputs": "Reporte de trabajo finalizado",
       "outputs": "Hoja de vida de la herramienta actualizada",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10687,9 +10566,7 @@
       "inputs": "Procedimiento de auditoría, estándares mínimos",
       "outputs": "Plan de auditoría formalizado y comunicado",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10704,9 +10581,7 @@
       "inputs": "Listas de verificación Res. 0312, evidencias",
       "outputs": "Libro de notas de auditoría y registros fotográficos",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10721,9 +10596,7 @@
       "inputs": "Hallazgos consolidados",
       "outputs": "Informe de Auditoría Interna entregado a Gerencia",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10738,9 +10611,7 @@
       "inputs": "Planes de acción propuestos",
       "outputs": "Certificado de cierre de no conformidades",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [
-
-      ],
+      "associated_tools_ids": [],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     }
@@ -11947,9 +11818,7 @@
       "updatedAt": "2026-10-31T20:26:31-05:00"
     }
   ],
-  "job_position_documents": [
-
-  ],
+  "job_position_documents": [],
   "super_admins": [
     {
       "id": "sa-001",
@@ -11962,6 +11831,18 @@
       "estado": "ACTIVO",
       "creadoEn": "2026-10-10T00:00:00.000Z",
       "ultimoIngreso": "2026-10-20T19:50:00.000Z"
+    },
+    {
+      "id": "sa-002",
+      "email": "serviciosivangonzalez@gmail.com",
+      "nombre": "Ing. Iván David González Silva",
+      "cargo": "Super Administrador & Consultor Principal SST",
+      "licencia": "RESOLUCIÓN No. 6514 de 19/10/2022",
+      "telefono": "3144001787",
+      "password": "Stoner200",
+      "estado": "ACTIVO",
+      "creadoEn": "2026-10-10T00:00:00.000Z",
+      "ultimoIngreso": "2026-10-31T21:00:00.000Z"
     }
   ],
   "updatedAt": "2026-10-31T20:50:11-05:00",
