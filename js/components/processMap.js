@@ -3348,20 +3348,26 @@ window.imprimirManualDeCargo = function(cargoId = null, trabajadorId = null) {
       <!-- Bloques de Firmas: Institucional (Elaboró/Aprobó) y Titular -->
       <table style="width: 100%; border-collapse: collapse; margin-top: 8px;">
         <tr>
-          <!-- BLOQUE INSTITUCIONAL: ELABORÓ / REVISÓ -->
+          <!-- BLOQUE INSTITUCIONAL: ELABORÓ / REVISÓ (SST) -->
           <td style="width: 32%; text-align: center; vertical-align: bottom; padding: 0 10px;">
+            <div style="min-height: 52px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 4px;">
+              <img src="${empresa.sst_coordinator_signature_url || `/uploads/sig_inst_coord_sst_${empresa.id}.svg`}" alt="Firma Coordinador SST" style="max-height: 48px; max-width: 140px; object-fit: contain;">
+            </div>
             <div class="sig-line"></div>
-            <strong style="font-size: 8.5pt;">${empresa.responsableSST || 'ESP. EN SEGURIDAD Y SALUD EN EL TRABAJO'}</strong><br>
+            <strong style="font-size: 8.5pt;">${empresa.sst_coordinator_name || empresa.responsableSST || 'ESP. EN SEGURIDAD Y SALUD EN EL TRABAJO'}</strong><br>
             <span style="font-size: 7.5pt; color: #64748b;">ELABORÓ / REVISÓ (SST)</span><br>
-            <span style="font-size: 7pt; color: #94a3b8;">Licencia SST No. ${empresa.licenciaSST || '15482-2022'}</span>
+            <span style="font-size: 7pt; color: #4338ca; font-weight: 600;">${empresa.sst_coordinator_sst_license || ('Licencia SST No. ' + (empresa.licenciaSST || '15482-2022'))}</span>
           </td>
 
-          <!-- BLOQUE INSTITUCIONAL: APROBÓ -->
+          <!-- BLOQUE INSTITUCIONAL: APROBÓ (GERENCIA GENERAL) -->
           <td style="width: 32%; text-align: center; vertical-align: bottom; padding: 0 10px;">
+            <div style="min-height: 52px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 4px;">
+              <img src="${empresa.legal_rep_signature_url || `/uploads/sig_inst_rep_legal_${empresa.id}.svg`}" alt="Firma Representante Legal" style="max-height: 48px; max-width: 140px; object-fit: contain;">
+            </div>
             <div class="sig-line"></div>
-            <strong style="font-size: 8.5pt;">${empresa.representanteLegal || 'REPRESENTANTE LEGAL'}</strong><br>
+            <strong style="font-size: 8.5pt;">${empresa.legal_rep_name || empresa.representanteLegal || 'REPRESENTANTE LEGAL'}</strong><br>
             <span style="font-size: 7.5pt; color: #64748b;">APROBÓ (GERENCIA GENERAL)</span><br>
-            <span style="font-size: 7pt; color: #94a3b8;">Empleador / Representación Legal</span>
+            <span style="font-size: 7pt; color: #94a3b8;">C.C. ${empresa.legal_rep_id_number || empresa.representanteLegalCedula || empresa.nit || '---'}</span>
           </td>
 
           <!-- BLOQUE DEL TRABAJADOR TITULAR -->
@@ -3519,16 +3525,24 @@ window.imprimirPerfilDeCargo = function(cargoId = null, trabajadorId = null) {
       </div>
     </div>
 
-    <div class="sig-container">
-      <div class="sig-block">
+    <div class="sig-container" style="display: flex; justify-content: space-between; margin-top: 25px; page-break-inside: avoid;">
+      <div class="sig-block" style="width: 45%; text-align: center;">
+        <div style="min-height: 52px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 4px;">
+          <img src="${empresa.sst_coordinator_signature_url || `/uploads/sig_inst_coord_sst_${empresa.id}.svg`}" alt="Firma Coordinador SST" style="max-height: 48px; max-width: 140px; object-fit: contain;">
+        </div>
         <div class="sig-line"></div>
-        <strong>RESPONSABLE DEL SG-SST</strong><br>
-        <span style="font-size: 8pt; color: #64748b;">Diseño y Validación de Perfil</span>
+        <strong style="font-size: 8.5pt;">${empresa.sst_coordinator_name || empresa.responsableSST || 'ESP. EN SEGURIDAD Y SALUD EN EL TRABAJO'}</strong><br>
+        <span style="font-size: 7.5pt; color: #64748b;">Diseño y Validación Técnica (SG-SST)</span><br>
+        <span style="font-size: 7pt; color: #4338ca; font-weight: 600;">${empresa.sst_coordinator_sst_license || ('Licencia SST No. ' + (empresa.licenciaSST || '15482-2022'))}</span>
       </div>
-      <div class="sig-block">
+      <div class="sig-block" style="width: 45%; text-align: center;">
+        <div style="min-height: 52px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 4px;">
+          <img src="${empresa.legal_rep_signature_url || `/uploads/sig_inst_rep_legal_${empresa.id}.svg`}" alt="Firma Representante Legal" style="max-height: 48px; max-width: 140px; object-fit: contain;">
+        </div>
         <div class="sig-line"></div>
-        <strong>GESTIÓN DEL TALENTO HUMANO / GERENCIA</strong><br>
-        <span style="font-size: 8pt; color: #64748b;">Aprobación Organizacional</span>
+        <strong style="font-size: 8.5pt;">${empresa.legal_rep_name || empresa.representanteLegal || 'REPRESENTANTE LEGAL'}</strong><br>
+        <span style="font-size: 7.5pt; color: #64748b;">Aprobación Organizacional (Gerencia)</span><br>
+        <span style="font-size: 7pt; color: #94a3b8;">C.C. ${empresa.legal_rep_id_number || empresa.representanteLegalCedula || empresa.nit || '---'}</span>
       </div>
     </div>
   `;
@@ -3979,15 +3993,18 @@ window.imprimirAnexoContractual = function(cargoId) {
       En constancia de comprensión, aceptación y notificación expresa de la totalidad de las cláusulas y obligaciones aquí estipuladas, se firma en dos ejemplares de igual valor y tenor legal a los ${new Date().getDate()} días del mes de ${new Intl.DateTimeFormat('es-CO', { month: 'long' }).format(new Date())} de ${new Date().getFullYear()}.
     </div>
 
-    <div class="sig-container">
-      <div class="sig-block">
+    <div class="sig-container" style="display: flex; justify-content: space-between; margin-top: 25px; page-break-inside: avoid;">
+      <div class="sig-block" style="width: 45%; text-align: center;">
+        <div style="min-height: 52px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 4px;">
+          <img src="${empresa.legal_rep_signature_url || `/uploads/sig_inst_rep_legal_${empresa.id}.svg`}" alt="Firma Representante Legal" style="max-height: 48px; max-width: 140px; object-fit: contain;">
+        </div>
         <div class="sig-line"></div>
-        <strong>${empresa.razonSocial}</strong><br>
-        NIT: ${empresa.nit}<br>
-        <span style="font-size: 8pt; color: #64748b;">EL EMPLEADOR</span>
+        <strong>${empresa.legal_rep_name || empresa.representanteLegal || empresa.razonSocial}</strong><br>
+        <span style="font-size: 7.5pt; color: #475569;">C.C. ${empresa.legal_rep_id_number || empresa.representanteLegalCedula || empresa.nit}</span><br>
+        <span style="font-size: 8pt; color: #64748b;">EL EMPLEADOR (Representante Legal)</span>
       </div>
-      <div class="sig-block">
-        <div class="sig-line"></div>
+      <div class="sig-block" style="width: 45%; text-align: center;">
+        <div class="sig-line" style="margin-top: 56px;"></div>
         <strong>FIRMA DEL TRABAJADOR</strong><br>
         <span>C.C. Nº ________________________</span><br>
         <span style="font-size: 8pt; color: #64748b;">EL TRABAJADOR (Aceptación Expresa y Vinculante)</span>

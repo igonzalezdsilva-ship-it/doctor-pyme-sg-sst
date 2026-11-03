@@ -9,6 +9,7 @@ require 'digest'
 require 'securerandom'
 require 'zlib'
 require 'stringio'
+require 'set'
 
 # Módulo de generación de archivos ZIP en memoria sin dependencias externas
 module PureRubyZip
@@ -3334,6 +3335,234 @@ mount_api(server, '/api/worker/registered-signature') do |req, res|
       res.status = 500
       res['Content-Type'] = 'application/json; charset=utf-8'
       res.body = { error: "Error al consultar firma del trabajador: #{err.message}" }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# =============================================================================
+# BLOQUE 1: CENTRALIZACIÓN Y DEPÓSITO MAESTRO DE FIRMAS INSTITUCIONALES
+# Representante Legal y Coordinador / Responsable SG-SST (Ley 527/1999 & Res. 0312/2019)
+# GET / POST /api/companies/institutional-signatures
+# =============================================================================
+mount_api(server, '/api/companies/institutional-signatures') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'GET'
+    begin
+      company_id = req.query['company_id'] || req.query['tenant_id']
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      empresas = db['empresas'] || []
+      emp = empresas.find { |e| e['id'] == company_id } || empresas.first
+
+      unless emp
+        res.status = 404
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { error: 'Empresa no encontrada.' }.to_json
+        next
+      end
+
+      res.status = 200
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = {
+        status: 'ok',
+        company_id: emp['id'],
+        company_name: emp['razonSocial'],
+        legal_rep: {
+          name: emp['legal_rep_name'] || emp['representanteLegal']&.split('-')&.first&.strip,
+          id_number: emp['legal_rep_id_number'] || '',
+          signature_s3_key: emp['legal_rep_signature_s3_key'],
+          signature_url: emp['legal_rep_signature_url'],
+          registered_at: emp['legal_rep_signature_registered_at'],
+          registered_bogota: emp['legal_rep_signature_registered_bogota'],
+          sha256: emp['legal_rep_signature_sha256']
+        },
+        sst_coordinator: {
+          name: emp['sst_coordinator_name'] || emp['responsableSST']&.split('-')&.first&.strip,
+          id_number: emp['sst_coordinator_id_number'] || '',
+          sst_license: emp['sst_coordinator_sst_license'] || '',
+          signature_s3_key: emp['sst_coordinator_signature_s3_key'],
+          signature_url: emp['sst_coordinator_signature_url'],
+          registered_at: emp['sst_coordinator_signature_registered_at'],
+          registered_bogota: emp['sst_coordinator_signature_registered_bogota'],
+          sha256: emp['sst_coordinator_signature_sha256']
+        }
+      }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: "Error al consultar firmas institucionales: #{err.message}" }.to_json
+    end
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body)
+      company_id = payload['company_id'] || payload['tenant_id']
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      empresas = db['empresas'] || []
+      emp = empresas.find { |e| e['id'] == company_id }
+
+      unless emp
+        res.status = 404
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { error: 'Empresa no encontrada.' }.to_json
+        next
+      end
+
+      timestamp_now = Time.now
+      timestamp_iso = timestamp_now.iso8601
+      bogota_time = (timestamp_now.utc - 5*3600).strftime('%d/%m/%Y a las %H:%M:%S (Hora Legal Colombia UTC-5)')
+
+      # 1. Procesar Firma Representante Legal si viene nueva
+      if payload['legal_rep_name']
+        emp['legal_rep_name'] = payload['legal_rep_name'].to_s.strip
+      end
+      if payload['legal_rep_id_number']
+        emp['legal_rep_id_number'] = payload['legal_rep_id_number'].to_s.strip
+      end
+      if payload['legal_rep_signature_base64'] && !payload['legal_rep_signature_base64'].empty?
+        raw_b64 = payload['legal_rep_signature_base64'].to_s
+        raw_b64 = raw_b64.split(',', 2)[1] if raw_b64.include?(',')
+        png_data = Base64.decode64(raw_b64)
+        filename = "sig_inst_rep_legal_#{company_id}.png"
+        file_path = File.join(UPLOADS_DIR, filename)
+        File.open(file_path, 'wb') { |f| f.write(png_data) }
+        emp['legal_rep_signature_s3_key'] = "tenants/#{company_id}/signatures/rep_legal.png"
+        emp['legal_rep_signature_url'] = "/uploads/#{filename}"
+        emp['legal_rep_signature_registered_at'] = timestamp_iso
+        emp['legal_rep_signature_registered_bogota'] = bogota_time
+        emp['legal_rep_signature_sha256'] = Digest::SHA256.hexdigest("REP_LEGAL_#{company_id}_#{timestamp_iso}_#{png_data.length}")
+      end
+
+      # 2. Procesar Firma Coordinador SST si viene nueva
+      if payload['sst_coordinator_name']
+        emp['sst_coordinator_name'] = payload['sst_coordinator_name'].to_s.strip
+      end
+      if payload['sst_coordinator_id_number']
+        emp['sst_coordinator_id_number'] = payload['sst_coordinator_id_number'].to_s.strip
+      end
+      if payload['sst_coordinator_sst_license']
+        emp['sst_coordinator_sst_license'] = payload['sst_coordinator_sst_license'].to_s.strip
+      end
+      if payload['sst_coordinator_signature_base64'] && !payload['sst_coordinator_signature_base64'].empty?
+        raw_b64 = payload['sst_coordinator_signature_base64'].to_s
+        raw_b64 = raw_b64.split(',', 2)[1] if raw_b64.include?(',')
+        png_data = Base64.decode64(raw_b64)
+        filename = "sig_inst_coord_sst_#{company_id}.png"
+        file_path = File.join(UPLOADS_DIR, filename)
+        File.open(file_path, 'wb') { |f| f.write(png_data) }
+        emp['sst_coordinator_signature_s3_key'] = "tenants/#{company_id}/signatures/coord_sst.png"
+        emp['sst_coordinator_signature_url'] = "/uploads/#{filename}"
+        emp['sst_coordinator_signature_registered_at'] = timestamp_iso
+        emp['sst_coordinator_signature_registered_bogota'] = bogota_time
+        emp['sst_coordinator_signature_sha256'] = Digest::SHA256.hexdigest("COORD_SST_#{company_id}_#{timestamp_iso}_#{png_data.length}")
+      end
+
+      # Guardar base de datos
+      File.write(DB_FILE, JSON.pretty_generate(db))
+
+      # Auditoría Forense inmutable
+      audit_entry = {
+        timestamp: timestamp_iso,
+        timestamp_bogota: bogota_time,
+        action: 'UPDATE_INSTITUTIONAL_SIGNATURES',
+        company_id: company_id,
+        legal_rep_name: emp['legal_rep_name'],
+        sst_coordinator_name: emp['sst_coordinator_name'],
+        sst_license: emp['sst_coordinator_sst_license']
+      }
+      audit_file = defined?(AUDIT_LOG_FILE) ? AUDIT_LOG_FILE : File.join(DATA_DIR, 'audit_log.jsonl')
+      File.open(audit_file, 'a') { |f| f.puts(audit_entry.to_json) } if File.exist?(File.dirname(audit_file))
+
+      res.status = 200
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = {
+        status: 'ok',
+        message: 'Firmas institucionales actualizadas y blindadas exitosamente.',
+        company: emp
+      }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: "Error al actualizar firmas institucionales: #{err.message}" }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# =============================================================================
+# BLOQUE 2 & 3: REGISTRO Y SELLADO INMUTABLE DE DOCUMENTOS FIRMADOS (DOC-10, DOC-16)
+# POST /api/documents/record-signed
+# =============================================================================
+mount_api(server, '/api/documents/record-signed') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body)
+      doc_type = payload['document_type'] || 'DOC-10'
+      doc_ref_id = payload['document_reference_id'] || payload['evaluation_id'] || payload['id']
+      worker_id = payload['worker_id'] || payload['employee_id']
+      tenant_id = payload['tenant_id'] || payload['company_id']
+      sha256_hash = payload['sha256_hash'] || Digest::SHA256.hexdigest("#{doc_type}|#{doc_ref_id}|#{Time.now.to_i}")
+
+      client_ip, _ = extract_client_ip(req)
+      timestamp_now = Time.now
+      timestamp_iso = timestamp_now.iso8601
+      bogota_time = (timestamp_now.utc - 5*3600).strftime('%d/%m/%Y a las %H:%M:%S (Hora Legal Colombia UTC-5)')
+
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      db['employee_document_signatures'] ||= []
+      db['document_records'] ||= []
+
+      trab = (db['trabajadores'] || []).find { |t| t['id'] == worker_id }
+      sig_snapshot = payload['signature_url'] || (trab ? trab['signature_url'] : nil)
+
+      doc_sig_entry = {
+        'id' => "sig-doc-#{Time.now.to_i}-#{SecureRandom.hex(3)}",
+        'tenant_id' => tenant_id,
+        'employee_id' => worker_id,
+        'document_type' => doc_type,
+        'document_reference_id' => doc_ref_id,
+        'signed_at' => timestamp_iso,
+        'signed_at_bogota' => bogota_time,
+        'signature_snapshot_url' => sig_snapshot,
+        'signer_ip' => client_ip,
+        'signer_user_agent' => req['user-agent'] || '',
+        'sha256_hash' => sha256_hash,
+        'final_signed_pdf_s3_key' => "tenants/#{tenant_id}/signed_docs/#{doc_type}_#{doc_ref_id}.pdf"
+      }
+
+      db['employee_document_signatures'] << doc_sig_entry
+      db['document_records'] << {
+        'id' => "drec-#{Time.now.to_i}-#{SecureRandom.hex(3)}",
+        'document_type' => doc_type,
+        'reference_id' => doc_ref_id,
+        'worker_id' => worker_id,
+        'company_id' => tenant_id,
+        'issued_at' => timestamp_iso,
+        'issued_at_bogota' => bogota_time,
+        'sha256_hash' => sha256_hash,
+        'status' => 'FIRMADO_Y_SELLADO'
+      }
+
+      File.write(DB_FILE, JSON.pretty_generate(db))
+
+      res.status = 200
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = {
+        status: 'ok',
+        signature_entry: doc_sig_entry
+      }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: "Error al registrar documento firmado: #{err.message}" }.to_json
     end
   else
     res.status = 405

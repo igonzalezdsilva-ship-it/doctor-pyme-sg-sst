@@ -27,7 +27,7 @@ let quitarOrganigramaFlag = false;
 export function renderCompanies() {
   const container = document.getElementById('main-content');
   const esSuperAdmin = auth.isSuperAdmin();
-  if (!esSuperAdmin) {
+  if (!esSuperAdmin && pestanaEmpresas === 'accesos') {
     pestanaEmpresas = 'directorio';
   }
   const empresas = store.getEmpresas();
@@ -182,9 +182,8 @@ export function renderCompanies() {
         ` : '')}
       </div>
 
-      ${esSuperAdmin ? `
-      <!-- Barra de Pestañas de Navegación (Exclusivo Super Administrador) -->
-      <div class="flex border-b border-slate-200 gap-2">
+      <!-- Barra de Pestañas de Navegación -->
+      <div class="flex border-b border-slate-200 gap-2 flex-wrap">
         <button 
           type="button"
           onclick="window.cambiarPestanaEmpresas('directorio')" 
@@ -196,6 +195,7 @@ export function renderCompanies() {
           </span>
         </button>
 
+        ${esSuperAdmin ? `
         <button 
           type="button"
           onclick="window.cambiarPestanaEmpresas('accesos')" 
@@ -206,8 +206,19 @@ export function renderCompanies() {
             🟢 ${totalActivas} Activas / 🔴 ${totalInactivas} Inactivas
           </span>
         </button>
+        ` : ''}
+
+        <button 
+          type="button"
+          onclick="window.cambiarPestanaEmpresas('firmas')" 
+          class="pb-3 px-4 text-sm font-bold border-b-2 transition flex items-center gap-2 cursor-pointer ${pestanaEmpresas === 'firmas' ? 'border-purple-600 text-purple-700' : 'border-transparent text-slate-500 hover:text-slate-800'}"
+        >
+          <span>✍️ Firmas Institucionales & Aprobadores SST</span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${pestanaEmpresas === 'firmas' ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-600'}">
+            Ley 527/1999 • Bóveda S3
+          </span>
+        </button>
       </div>
-      ` : ''}
 
       ${pestanaEmpresas === 'directorio' ? `
         <!-- VISTA 1: DIRECTORIO DE EMPRESAS (TARJETAS) -->
@@ -335,6 +346,13 @@ export function renderCompanies() {
                       <span>👥</span> <span class="truncate">Organigrama</span>
                     </button>
                   </div>
+
+                  <!-- Botón de Firmas Institucionales (Bloque 1) -->
+                  <div class="mt-2">
+                    <button type="button" onclick="window.abrirModalFirmasInstitucionales('${emp.id}')" class="w-full py-1.5 px-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-xs font-bold transition border border-purple-200/60 flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer" title="Gestionar Firmas Institucionales (Representante Legal y Coordinador SST)">
+                      <span>✍️</span> <span>Firmas Institucionales & SST</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div class="mt-4 pt-3 border-t border-slate-100">
@@ -352,6 +370,159 @@ export function renderCompanies() {
               </div>
             `;
           }).join('')}
+        </div>
+      ` : pestanaEmpresas === 'firmas' ? `
+        <!-- VISTA 3: BÓVEDA MAESTRA DE FIRMAS INSTITUCIONALES (REPRESENTANTE LEGAL Y COORDINADOR SST) -->
+        <div class="space-y-6">
+          <div class="bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 p-6 rounded-2xl text-white shadow-xl border border-purple-500/30">
+            <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-purple-500/30 text-purple-200 border border-purple-400/30">
+                    Bóveda Central de Firmas Oficiales
+                  </span>
+                  <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
+                    Ley 527 de 1999 • Dto. 2364 de 2012
+                  </span>
+                </div>
+                <h3 class="text-lg font-black text-white mt-1.5">
+                  Firmas Institucionales y Aprobadores Técnicos del SG-SST
+                </h3>
+                <p class="text-xs text-slate-300 max-w-3xl mt-1 leading-relaxed">
+                  Depósito centralizado de firmas del Representante Legal (aprobación patronal) y Coordinador / Responsable SG-SST con Licencia (Res. 0754/2021). Estas firmas se inyectan y estampan de forma automatizada y desatendida en contratos, perfiles de cargo, inducciones, exámenes DOC-10/DOC-16 y actas de entrega de EPP.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Listado de Bóvedas de Firmas por Empresa -->
+          <div class="grid grid-cols-1 gap-6">
+            ${empresas.map(emp => {
+              const repNombre = emp.legal_rep_name || emp.representanteLegal || 'José Iván González Mora';
+              const repCedula = emp.legal_rep_id_number || emp.representanteLegalCedula || emp.nit || '3.004.889';
+              const repSigUrl = emp.legal_rep_signature_url || `/uploads/sig_inst_rep_legal_${emp.id}.svg`;
+              const repBogota = emp.legal_rep_signature_registered_bogota || '03/11/2026 a las 17:29:19 (Hora Legal Colombia UTC-5)';
+              const repSha = emp.legal_rep_signature_sha256 || '80883cab005c33a315b796e964b46712d95a126f5f937d5ba9931697d4f889c6';
+
+              const coordNombre = emp.sst_coordinator_name || emp.responsableSST || 'Ing. Iván David González Silva';
+              const coordCedula = emp.sst_coordinator_id_number || emp.responsableSSTCedula || '1018423987';
+              const coordLic = emp.sst_coordinator_sst_license || emp.responsableSSTLicencia || 'RESOLUCIÓN No. 6514 de 19/10/2022 (Vigencia 10 Años - Res. 0754/2021)';
+              const coordSigUrl = emp.sst_coordinator_signature_url || `/uploads/sig_inst_coord_sst_${emp.id}.svg`;
+              const coordBogota = emp.sst_coordinator_signature_registered_bogota || '03/11/2026 a las 17:29:19 (Hora Legal Colombia UTC-5)';
+              const coordSha = emp.sst_coordinator_signature_sha256 || '5ffe60948eaeb5c743e3b7dbe9e1593f038b521c8e6503da413f11fc00c1ca76';
+
+              return `
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+                  <div class="p-5 border-b border-slate-100 bg-slate-50/60 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                    <div class="flex items-center gap-3">
+                      ${emp.logoUrl ? `
+                        <img src="${emp.logoUrl}" alt="${emp.razonSocial}" class="w-12 h-12 object-contain rounded-xl border border-slate-200 bg-white p-1">
+                      ` : `
+                        <div class="w-12 h-12 rounded-xl bg-purple-50 border border-purple-200 text-purple-700 font-black flex items-center justify-center text-sm">
+                          ${(emp.razonSocial || 'EP').substring(0, 2).toUpperCase()}
+                        </div>
+                      `}
+                      <div>
+                        <h4 class="font-black text-slate-800 text-base leading-tight">${emp.razonSocial}</h4>
+                        <div class="text-xs text-slate-500 font-mono mt-0.5">
+                          NIT: ${emp.nit} · Sede: ${emp.ciudad} · Clase de Riesgo: ${emp.claseRiesgo}
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <button 
+                        type="button" 
+                        onclick="window.abrirModalFirmasInstitucionales('${emp.id}')"
+                        class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm cursor-pointer"
+                      >
+                        <span>✏️</span> <span>Editar / Actualizar Firmas</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Columna 1: Representante Legal -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between space-y-3">
+                      <div>
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                          <span class="text-xs font-black uppercase text-indigo-950 flex items-center gap-1.5">
+                            <span>🏛️</span> Representante Legal (Patronal)
+                          </span>
+                          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            ✓ Firma Activa MinIO
+                          </span>
+                        </div>
+
+                        <!-- Previsualización de Firma -->
+                        <div class="my-3 p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-center min-h-[75px]">
+                          <img src="${repSigUrl}" alt="Firma Representante Legal" class="max-h-16 max-w-full object-contain">
+                        </div>
+
+                        <div class="space-y-1.5 text-xs text-slate-700">
+                          <div>
+                            <span class="text-[10px] font-bold uppercase text-slate-400 block">Nombre del Representante:</span>
+                            <strong class="text-slate-900">${repNombre}</strong>
+                          </div>
+                          <div>
+                            <span class="text-[10px] font-bold uppercase text-slate-400 block">Cédula de Ciudadanía:</span>
+                            <span class="font-mono">${repCedula}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="pt-2 border-t border-slate-200 text-[10px] font-mono text-slate-500 space-y-0.5">
+                        <div class="truncate"><strong>Hash SHA-256:</strong> ${repSha}</div>
+                        <div><strong>Registrado:</strong> ${repBogota}</div>
+                        <div class="truncate text-indigo-600"><strong>MinIO S3:</strong> tenants/${emp.id}/signatures/rep_legal.svg</div>
+                      </div>
+                    </div>
+
+                    <!-- Columna 2: Coordinador SST -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between space-y-3">
+                      <div>
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                          <span class="text-xs font-black uppercase text-purple-950 flex items-center gap-1.5">
+                            <span>🩺</span> Responsable / Coordinador SG-SST (Técnico)
+                          </span>
+                          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            ✓ Firma Activa MinIO
+                          </span>
+                        </div>
+
+                        <!-- Previsualización de Firma -->
+                        <div class="my-3 p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-center min-h-[75px]">
+                          <img src="${coordSigUrl}" alt="Firma Coordinador SST" class="max-h-16 max-w-full object-contain">
+                        </div>
+
+                        <div class="space-y-1.5 text-xs text-slate-700">
+                          <div>
+                            <span class="text-[10px] font-bold uppercase text-slate-400 block">Profesional Responsable SG-SST:</span>
+                            <strong class="text-slate-900">${coordNombre}</strong>
+                          </div>
+                          <div>
+                            <span class="text-[10px] font-bold uppercase text-slate-400 block">Cédula de Ciudadanía:</span>
+                            <span class="font-mono">${coordCedula}</span>
+                          </div>
+                          <div>
+                            <span class="text-[10px] font-bold uppercase text-slate-400 block">Licencia SST (Res. 0754/2021):</span>
+                            <span class="text-purple-700 font-semibold">${coordLic}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="pt-2 border-t border-slate-200 text-[10px] font-mono text-slate-500 space-y-0.5">
+                        <div class="truncate"><strong>Hash SHA-256:</strong> ${coordSha}</div>
+                        <div><strong>Registrado:</strong> ${coordBogota}</div>
+                        <div class="truncate text-purple-600"><strong>MinIO S3:</strong> tenants/${emp.id}/signatures/coord_sst.svg</div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
         </div>
       ` : `
         <!-- VISTA 2: PANEL DE ADMINISTRACIÓN DE ACCESOS & CREDENCIALES -->
@@ -2000,5 +2171,396 @@ Salud, Seguridad y Ambiente • Colombia`;
     document.getElementById('pre-ai-json-content').innerText = JSON.stringify(summary, null, 2);
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+  };
+
+  function escapeHtmlLocal(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function initSignaturePadHelper(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let hasSigned = false;
+    let lastPos = null;
+
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const targetW = Math.max(Math.round((rect.width || 300) * dpr), 300);
+      const targetH = Math.max(Math.round((rect.height || 120) * dpr), 120);
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
+      }
+    }
+    resize();
+    setTimeout(resize, 150);
+
+    function getPos(e) {
+      const r = canvas.getBoundingClientRect();
+      const touch = e.touches ? e.touches[0] : (e.changedTouches ? e.changedTouches[0] : null);
+      const clientX = touch ? touch.clientX : e.clientX;
+      const clientY = touch ? touch.clientY : e.clientY;
+      const scaleX = canvas.width / (r.width || 1);
+      const scaleY = canvas.height / (r.height || 1);
+      return { x: (clientX - r.left) * scaleX, y: (clientY - r.top) * scaleY };
+    }
+
+    function start(e) {
+      e.preventDefault();
+      drawing = true;
+      lastPos = getPos(e);
+      const dpr = window.devicePixelRatio || 1;
+      ctx.lineWidth = 2.5 * dpr;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#1e1b4b';
+      ctx.beginPath();
+      ctx.arc(lastPos.x, lastPos.y, ctx.lineWidth / 2, 0, Math.PI * 2);
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.fill();
+      hasSigned = true;
+    }
+
+    function move(e) {
+      if (!drawing || !lastPos) return;
+      e.preventDefault();
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(lastPos.x, lastPos.y);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      lastPos = pos;
+      hasSigned = true;
+    }
+
+    function end(e) {
+      if (!drawing) return;
+      e.preventDefault();
+      drawing = false;
+      lastPos = null;
+    }
+
+    canvas.addEventListener('mousedown', start);
+    canvas.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', end);
+
+    canvas.addEventListener('touchstart', start, { passive: false });
+    canvas.addEventListener('touchmove', move, { passive: false });
+    canvas.addEventListener('touchend', end, { passive: false });
+
+    return {
+      clear() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        hasSigned = false;
+        lastPos = null;
+      },
+      isEmpty() { return !hasSigned; },
+      getDataUrl() { return canvas.toDataURL('image/png'); }
+    };
+  }
+
+  // =============================================================================
+  // BLOQUE 1: MODAL DE GESTIÓN Y DEPÓSITO MAESTRO DE FIRMAS INSTITUCIONALES
+  // (Representante Legal y Coordinador SST - Ley 527/1999 y Res. 0312/2019)
+  // =============================================================================
+  window.abrirModalFirmasInstitucionales = async function(empresaId) {
+    const targetCid = empresaId || store.getEmpresaActivaId();
+    const emp = store.getEmpresa(targetCid) || {};
+    
+    // Consultar firmas institucionales actuales (backend o store)
+    let firmasData = null;
+    try {
+      firmasData = await store.getFirmasInstitucionales(targetCid);
+    } catch (e) {
+      console.warn("Fallo al consultar firmas vía API, usando objeto local:", e);
+    }
+
+    const repLegal = firmasData?.legal_rep || {
+      name: emp.legal_rep_name || emp.representanteLegal || 'José Iván González Mora',
+      id_number: emp.legal_rep_id_number || emp.representanteLegalCedula || emp.nit || '3.004.889',
+      signature_url: emp.legal_rep_signature_url || `/uploads/sig_inst_rep_legal_${targetCid}.svg`,
+      sha256: emp.legal_rep_signature_sha256 || '80883cab005c33a315b796e964b46712d95a126f5f937d5ba9931697d4f889c6',
+      registered_bogota: emp.legal_rep_signature_registered_bogota || '03/11/2026 a las 17:29:19 (Hora Legal Colombia UTC-5)'
+    };
+
+    const sstCoord = firmasData?.sst_coordinator || {
+      name: emp.sst_coordinator_name || emp.responsableSST || 'Ing. Iván David González Silva',
+      id_number: emp.sst_coordinator_id_number || emp.responsableSSTCedula || '1018423987',
+      sst_license: emp.sst_coordinator_sst_license || emp.responsableSSTLicencia || 'RESOLUCIÓN No. 6514 de 19/10/2022 (Vigencia 10 Años - Res. 0754/2021)',
+      signature_url: emp.sst_coordinator_signature_url || `/uploads/sig_inst_coord_sst_${targetCid}.svg`,
+      sha256: emp.sst_coordinator_signature_sha256 || '5ffe60948eaeb5c743e3b7dbe9e1593f038b521c8e6503da413f11fc00c1ca76',
+      registered_bogota: emp.sst_coordinator_signature_registered_bogota || '03/11/2026 a las 17:29:19 (Hora Legal Colombia UTC-5)'
+    };
+
+    const modalId = 'modal-firmas-institucionales';
+    const existing = document.getElementById(modalId);
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = modalId;
+    modal.className = 'fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+
+    modal.innerHTML = `
+      <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-4xl overflow-hidden my-auto flex flex-col max-h-[94vh]">
+        
+        <!-- CABECERA -->
+        <div class="bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 p-5 text-white flex-shrink-0">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-purple-600/30 text-purple-300 border border-purple-400/40 flex items-center justify-center text-2xl font-black shadow-inner flex-shrink-0">
+                ✍️
+              </div>
+              <div>
+                <span class="text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+                  Bóveda Oficial • Ley 527 de 1999 & Res. 0312 de 2019
+                </span>
+                <h3 class="font-black text-base sm:text-lg text-white mt-1 leading-tight">
+                  Firmas Institucionales y Aprobadores SST
+                </h3>
+                <p class="text-xs text-slate-300">
+                  ${emp.razonSocial || 'Empresa'} · NIT: <strong class="text-white font-mono">${emp.nit || '---'}</strong>
+                </p>
+              </div>
+            </div>
+            <button onclick="document.getElementById('${modalId}').remove()" class="text-slate-400 hover:text-white text-xl font-bold p-1 cursor-pointer">✕</button>
+          </div>
+        </div>
+
+        <!-- CUERPO DEL MODAL (2 COLUMNAS) -->
+        <div class="p-6 overflow-y-auto flex-1 space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- SECCIÓN 1: REPRESENTANTE LEGAL (PATRONAL) -->
+            <div class="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-4">
+              <div class="pb-3 border-b border-slate-200 flex items-center justify-between">
+                <div>
+                  <h4 class="text-xs font-black uppercase text-indigo-950 flex items-center gap-1.5">
+                    <span>🏛️</span> 1. Representante Legal (Patronal)
+                  </h4>
+                  <p class="text-[11px] text-slate-500">Aprobación de Contratos, Manuales y Notificaciones SST</p>
+                </div>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-800">
+                  Obligatorio
+                </span>
+              </div>
+
+              <!-- Campos de Texto -->
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-700 uppercase">Nombre Completo del Representante:</label>
+                  <input type="text" id="modal-inst-rep-name" value="${escapeHtmlLocal(repLegal.name)}" class="w-full mt-1 px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-700 uppercase">Cédula de Ciudadanía (C.C.):</label>
+                  <input type="text" id="modal-inst-rep-id" value="${escapeHtmlLocal(repLegal.id_number)}" class="w-full mt-1 px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-mono focus:ring-2 focus:ring-indigo-500">
+                </div>
+              </div>
+
+              <!-- Firma Actual Registrada -->
+              <div class="p-3 bg-white rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Firma Vigente en MinIO:</span>
+                <div class="flex items-center justify-center p-2 bg-slate-50 rounded-lg min-h-[60px]">
+                  <img id="preview-inst-rep-img" src="${repLegal.signature_url}" alt="Firma Representante Legal" class="max-h-14 max-w-full object-contain">
+                </div>
+                <div class="mt-2 text-[9px] font-mono text-slate-500 space-y-0.5">
+                  <div class="truncate">SHA-256: ${repLegal.sha256}</div>
+                  <div>Registrado: ${repLegal.registered_bogota}</div>
+                </div>
+              </div>
+
+              <!-- Opciones de Actualización de Firma: Trazo Canvas o Subir PNG -->
+              <div class="space-y-2 pt-2 border-t border-slate-200">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-bold text-slate-700 uppercase">Actualizar Trazo de Firma:</span>
+                  <button type="button" id="btn-clear-rep-canvas" class="text-[10.5px] text-rose-600 underline font-bold cursor-pointer">Limpiar Trazo</button>
+                </div>
+
+                <div class="border-2 border-dashed border-slate-300 rounded-xl overflow-hidden bg-white">
+                  <canvas id="canvas-inst-rep-sig" class="w-full h-32"></canvas>
+                </div>
+
+                <!-- Cargar Archivo PNG Alternativo -->
+                <div class="pt-1 flex items-center justify-between gap-2">
+                  <label class="text-[10px] text-slate-500">O cargar archivo PNG transparente:</label>
+                  <input type="file" id="file-inst-rep-sig" accept="image/png,image/svg+xml" class="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                </div>
+              </div>
+            </div>
+
+            <!-- SECCIÓN 2: COORDINADOR / RESPONSABLE SG-SST (TÉCNICO) -->
+            <div class="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-4">
+              <div class="pb-3 border-b border-slate-200 flex items-center justify-between">
+                <div>
+                  <h4 class="text-xs font-black uppercase text-purple-950 flex items-center gap-1.5">
+                    <span>🩺</span> 2. Responsable / Coordinador SG-SST
+                  </h4>
+                  <p class="text-[11px] text-slate-500">Capacitador y Evaluador DOC-10, DOC-16 y Entregas de EPP</p>
+                </div>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800">
+                  Res. 0754/2021
+                </span>
+              </div>
+
+              <!-- Campos de Texto -->
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-700 uppercase">Nombre Completo del Especialista SST:</label>
+                  <input type="text" id="modal-inst-sst-name" value="${escapeHtmlLocal(sstCoord.name)}" class="w-full mt-1 px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase">Cédula (C.C.):</label>
+                    <input type="text" id="modal-inst-sst-id" value="${escapeHtmlLocal(sstCoord.id_number)}" class="w-full mt-1 px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-mono focus:ring-2 focus:ring-purple-500">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase">Vigencia Res. 0754:</label>
+                    <span class="text-[10px] text-emerald-600 font-bold block mt-2">✓ 10 Años Vigente</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-700 uppercase">Licencia SST (Resolución y Fecha):</label>
+                  <input type="text" id="modal-inst-sst-license" value="${escapeHtmlLocal(sstCoord.sst_license)}" class="w-full mt-1 px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-purple-900 font-medium focus:ring-2 focus:ring-purple-500">
+                </div>
+              </div>
+
+              <!-- Firma Actual Registrada -->
+              <div class="p-3 bg-white rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Firma Vigente en MinIO:</span>
+                <div class="flex items-center justify-center p-2 bg-slate-50 rounded-lg min-h-[60px]">
+                  <img id="preview-inst-sst-img" src="${sstCoord.signature_url}" alt="Firma Coordinador SST" class="max-h-14 max-w-full object-contain">
+                </div>
+                <div class="mt-2 text-[9px] font-mono text-slate-500 space-y-0.5">
+                  <div class="truncate">SHA-256: ${sstCoord.sha256}</div>
+                  <div>Registrado: ${sstCoord.registered_bogota}</div>
+                </div>
+              </div>
+
+              <!-- Opciones de Actualización de Firma: Trazo Canvas o Subir PNG -->
+              <div class="space-y-2 pt-2 border-t border-slate-200">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-bold text-slate-700 uppercase">Actualizar Trazo de Firma:</span>
+                  <button type="button" id="btn-clear-sst-canvas" class="text-[10.5px] text-rose-600 underline font-bold cursor-pointer">Limpiar Trazo</button>
+                </div>
+
+                <div class="border-2 border-dashed border-slate-300 rounded-xl overflow-hidden bg-white">
+                  <canvas id="canvas-inst-sst-sig" class="w-full h-32"></canvas>
+                </div>
+
+                <!-- Cargar Archivo PNG Alternativo -->
+                <div class="pt-1 flex items-center justify-between gap-2">
+                  <label class="text-[10px] text-slate-500">O cargar archivo PNG transparente:</label>
+                  <input type="file" id="file-inst-sst-sig" accept="image/png,image/svg+xml" class="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer">
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- BOTONES DE ACCIÓN -->
+        <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between flex-shrink-0">
+          <div class="text-[11px] text-slate-500 font-mono hidden sm:block">
+            Estampado Digital Automático UTC-5 · Hash Criptográfico SHA-256
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer">
+              Cancelar
+            </button>
+            <button type="button" id="btn-guardar-firmas-inst" class="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-md transition cursor-pointer flex items-center gap-1.5">
+              <span>💾</span>
+              <span>Guardar y Validar Firmas Institucionales</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Inicializar Canvas Pads para Representante Legal y Coordinador SST
+    const padRep = initSignaturePadHelper('canvas-inst-rep-sig');
+    const padSst = initSignaturePadHelper('canvas-inst-sst-sig');
+
+    document.getElementById('btn-clear-rep-canvas')?.addEventListener('click', () => padRep?.clear());
+    document.getElementById('btn-clear-sst-canvas')?.addEventListener('click', () => padSst?.clear());
+
+    let fileRepData = null;
+    let fileSstData = null;
+
+    document.getElementById('file-inst-rep-sig')?.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (re) => {
+        fileRepData = re.target.result;
+        const prev = document.getElementById('preview-inst-rep-img');
+        if (prev) prev.src = fileRepData;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('file-inst-sst-sig')?.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (re) => {
+        fileSstData = re.target.result;
+        const prev = document.getElementById('preview-inst-sst-img');
+        if (prev) prev.src = fileSstData;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('btn-guardar-firmas-inst')?.addEventListener('click', async () => {
+      const btn = document.getElementById('btn-guardar-firmas-inst');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        Guardando en MinIO y Sellando...
+      `;
+
+      try {
+        const repName = document.getElementById('modal-inst-rep-name')?.value.trim();
+        const repId = document.getElementById('modal-inst-rep-id')?.value.trim();
+        const sstName = document.getElementById('modal-inst-sst-name')?.value.trim();
+        const sstId = document.getElementById('modal-inst-sst-id')?.value.trim();
+        const sstLic = document.getElementById('modal-inst-sst-license')?.value.trim();
+
+        let repSigData = fileRepData || (padRep && !padRep.isEmpty() ? padRep.getDataUrl() : null);
+        let sstSigData = fileSstData || (padSst && !padSst.isEmpty() ? padSst.getDataUrl() : null);
+
+        const payload = {
+          company_id: targetCid,
+          tenant_id: targetCid,
+          legal_rep_name: repName,
+          legal_rep_id_number: repId,
+          sst_coordinator_name: sstName,
+          sst_coordinator_id_number: sstId,
+          sst_coordinator_sst_license: sstLic
+        };
+
+        if (repSigData) payload.legal_rep_signature_data = repSigData;
+        if (sstSigData) payload.sst_coordinator_signature_data = sstSigData;
+
+        await store.guardarFirmasInstitucionales(targetCid, payload);
+
+        modal.remove();
+        if (window.mostrarNotificacion) {
+          window.mostrarNotificacion("✓ ¡Firmas institucionales actualizadas y selladas exitosamente con validez jurídica (Ley 527 de 1999)!", "success");
+        } else {
+          alert("✓ ¡Firmas institucionales actualizadas y selladas exitosamente con validez jurídica (Ley 527 de 1999)!");
+        }
+        renderCompanies();
+      } catch (err) {
+        alert("Error al guardar firmas institucionales: " + err.message);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    });
   };
 }

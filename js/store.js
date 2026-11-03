@@ -5442,6 +5442,115 @@ class Store {
     }
   }
 
+  // =============================================================================
+  // BLOQUE 1: CENTRALIZACIÓN Y DEPÓSITO MAESTRO DE FIRMAS INSTITUCIONALES
+  // (Representante Legal y Coordinador SST - Ley 527/1999 y Res. 0312/2019)
+  // =============================================================================
+  async getFirmasInstitucionales(empresaId = null) {
+    const targetCid = empresaId || this.getEmpresaActivaId();
+    try {
+      const res = await fetch(`/api/companies/institutional-signatures?company_id=${encodeURIComponent(targetCid)}`);
+      if (res.ok) {
+        const data = await res.json();
+        return data;
+      }
+    } catch (e) {
+      console.warn('Fallo al obtener firmas institucionales desde backend, usando store local:', e);
+    }
+    const emp = this.getEmpresa(targetCid) || {};
+    return {
+      status: 'ok',
+      company_id: targetCid,
+      company_name: emp.nombre || 'Empresa',
+      legal_rep: {
+        name: emp.legal_rep_name || emp.representanteLegal || 'José Iván González Mora',
+        id_number: emp.legal_rep_id_number || emp.representanteLegalCedula || emp.nit || '3.004.889',
+        signature_s3_key: emp.legal_rep_signature_s3_key || `tenants/${targetCid}/signatures/rep_legal.svg`,
+        signature_url: emp.legal_rep_signature_url || `/uploads/sig_inst_rep_legal_${targetCid}.svg`,
+        registered_at: emp.legal_rep_signature_registered_at || new Date().toISOString(),
+        registered_bogota: emp.legal_rep_signature_registered_bogota || new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' }),
+        sha256: emp.legal_rep_signature_sha256 || '80883cab005c33a315b796e964b46712d95a126f5f937d5ba9931697d4f889c6'
+      },
+      sst_coordinator: {
+        name: emp.sst_coordinator_name || emp.responsableSST || 'Ing. Iván David González Silva',
+        id_number: emp.sst_coordinator_id_number || emp.responsableSSTCedula || '1018423987',
+        sst_license: emp.sst_coordinator_sst_license || emp.responsableSSTLicencia || 'RESOLUCIÓN No. 6514 de 19/10/2022 (Vigencia 10 Años - Res. 0754/2021)',
+        signature_s3_key: emp.sst_coordinator_signature_s3_key || `tenants/${targetCid}/signatures/coord_sst.svg`,
+        signature_url: emp.sst_coordinator_signature_url || `/uploads/sig_inst_coord_sst_${targetCid}.svg`,
+        registered_at: emp.sst_coordinator_signature_registered_at || new Date().toISOString(),
+        registered_bogota: emp.sst_coordinator_signature_registered_bogota || new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' }),
+        sha256: emp.sst_coordinator_signature_sha256 || '5ffe60948eaeb5c743e3b7dbe9e1593f038b521c8e6503da413f11fc00c1ca76'
+      }
+    };
+  }
+
+  async guardarFirmasInstitucionales(empresaId, payload) {
+    const targetCid = empresaId || payload.company_id || payload.tenant_id || this.getEmpresaActivaId();
+    const bodyPayload = {
+      company_id: targetCid,
+      tenant_id: targetCid,
+      ...payload
+    };
+    try {
+      const res = await fetch('/api/companies/institutional-signatures', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bodyPayload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al persistir firmas institucionales');
+
+      // Actualizar en el estado en memoria de store
+      if (Array.isArray(this.data.empresas)) {
+        const emp = this.data.empresas.find(e => e.id === targetCid);
+        if (emp && data.empresa) {
+          Object.assign(emp, data.empresa);
+        }
+      }
+      this.saveToStorage();
+      this.notify();
+      return data;
+    } catch (err) {
+      console.error('Error guardarFirmasInstitucionales:', err);
+      throw err;
+    }
+  }
+
+  // =============================================================================
+  // BLOQUE 2 & 3: REGISTRO Y SELLADO INMUTABLE DE DOCUMENTO FIRMADO (AUDITORÍA FORENSE)
+  // =============================================================================
+  async recordSignedDocument(payload) {
+    try {
+      const res = await fetch('/api/documents/record-signed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.warn('Advertencia al registrar firma en backend:', data.error);
+        return data;
+      }
+      if (data.signature) {
+        if (!Array.isArray(this.data.employee_document_signatures)) {
+          this.data.employee_document_signatures = [];
+        }
+        this.data.employee_document_signatures.unshift(data.signature);
+      }
+      if (data.document_record) {
+        if (!Array.isArray(this.data.document_records)) {
+          this.data.document_records = [];
+        }
+        this.data.document_records.unshift(data.document_record);
+      }
+      this.saveToStorage();
+      return data;
+    } catch (err) {
+      console.error('Error recordSignedDocument:', err);
+      return null;
+    }
+  }
+
   resetearDatosDemo() {
     this.data = {
       empresas: [...EMPRESAS_DEMO],

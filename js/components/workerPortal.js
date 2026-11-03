@@ -8202,7 +8202,7 @@ window.eliminarDocumentoCarpetaConfirm = async function(docId, workerId) {
 // MODAL: GESTOR Y REPOSITORIO DE FIRMA DIGITAL DEL TRABAJADOR
 // Canvas Signature Pad táctil responsivo, SHA-256 y MinIO S3 (Ley 527 de 1999)
 // =============================================================================
-window.abrirModalRegistroFirmaTrabajador = function(trabajadorId) {
+window.abrirModalRegistroFirmaTrabajador = function(trabajadorId, callbackOnSuccess = null) {
   const trabajador = store.getTrabajadorPorId(trabajadorId);
   if (!trabajador) {
     alert("No se encontró el trabajador.");
@@ -8351,6 +8351,9 @@ window.abrirModalRegistroFirmaTrabajador = function(trabajadorId) {
 
       modalEl.remove();
       alert("✓ ¡Firma digital base registrada exitosamente con validez jurídica (Ley 527 de 1999)!");
+      if (typeof callbackOnSuccess === 'function') {
+        try { callbackOnSuccess(); } catch (cbErr) { console.warn("Error en callback tras firma:", cbErr); }
+      }
       if (typeof renderWorkerPortal === 'function') renderWorkerPortal();
     } catch (err) {
       alert("Error al registrar firma: " + err.message);

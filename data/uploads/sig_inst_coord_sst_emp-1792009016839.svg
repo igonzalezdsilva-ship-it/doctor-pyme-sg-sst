@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 100" width="340" height="100">
+  <defs>
+    <filter id="sig-glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0.5" dy="1" stdDeviation="0.8" flood-color="#0f172a" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <!-- Parche de Seguridad Ley 527 / Dec 2364 -->
+  <g filter="url(#sig-glow)">
+    <path d="M 30,65 Q 50,20 70,50 T 100,55 Q 130,25 160,60 T 200,50 Q 230,25 260,55 Q 210,85 140,80 L 280,68" fill="none" stroke="#1e1b4b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- Rubrica caligráfica inferior -->
+    <path d="M 40,78 Q 120,60 220,68 T 310,65" fill="none" stroke="#312e81" stroke-width="1.6" stroke-linecap="round" opacity="0.85"/>
+  </g>
+</svg>

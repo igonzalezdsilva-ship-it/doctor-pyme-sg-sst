@@ -389,14 +389,12 @@ export function imprimirActaEntregaEPP_SST_FOR_01(deliveryId) {
 
       <div class="sig-block">
         <div class="field-label" style="margin-bottom: 2px;">ENTREGADO Y ASIGNADO POR LA EMPRESA / SST</div>
-        <div class="sig-image-box">
-          <div style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 20pt; color: #0f766e; padding-top: 10px;">
-            ${empresa.responsable_sst || 'Responsable SG-SST'}
-          </div>
+        <div class="sig-image-box" style="min-height: 55px; display: flex; align-items: center; justify-content: center;">
+          <img src="${empresa.sst_coordinator_signature_url || `/uploads/sig_inst_coord_sst_${empresa.id}.svg`}" alt="Firma Coordinador SST" style="max-height: 52px; max-width: 170px; object-fit: contain; margin: 0 auto; display: block;" onerror="this.onerror=null; this.src='/uploads/sig_inst_coord_sst_${empresa.id}.svg';">
         </div>
         <div class="sig-line"></div>
-        <div style="font-size: 8.5pt; font-weight: bold; color: #0f172a;">${empresa.responsable_sst || 'Coordinador SG-SST'}</div>
-        <div style="font-size: 7.5pt; color: #475569;">${empresa.razonSocial} • Responsable SST</div>
+        <div style="font-size: 8.5pt; font-weight: bold; color: #0f172a;">${empresa.sst_coordinator_name || empresa.responsableSST || 'Coordinador SG-SST'}</div>
+        <div style="font-size: 7.5pt; color: #475569;">${empresa.razonSocial} • Lic. ${empresa.sst_coordinator_sst_license || empresa.responsableSSTLicencia || 'Vigente Res. 0754/2021'}</div>
         <div style="font-size: 7pt; color: #64748b;">Fecha/Hora: ${delivery.bogota_assigned_at || delivery.assigned_at}</div>
       </div>
     </div>

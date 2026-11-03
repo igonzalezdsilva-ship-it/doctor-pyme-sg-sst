@@ -468,3 +468,13 @@
 {"timestamp":"2026-11-03T16:25:56-05:00","action":"SAVE_DATABASE","bytes":3732794,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
 {"timestamp":"2026-11-03T16:58:18-05:00","action":"SAVE_DATABASE","bytes":3731912,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
 {"timestamp":"2026-11-03T17:10:54-05:00","action":"SAVE_DATABASE","bytes":3734646,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-11-03T17:15:14-05:00","action":"SAVE_DATABASE","bytes":3729791,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-11-03T17:17:16-05:00","action":"SAVE_DATABASE","bytes":3729732,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-11-03T17:19:44-05:00","action":"SAVE_DATABASE","bytes":3746128,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-11-03T17:30:34-05:00","action":"SAVE_DATABASE","bytes":3751933,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-11-03T17:31:10-05:00","action":"SAVE_DATABASE","bytes":3799673,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-11-03T17:31:41-05:00","action":"WORKER_ONBOARDING_SIGNED","worker_id":"trab-1793745034177","tenant_id":"emp-1792009016839","sha256":"7c87220796377381cbc4f120bb59a27808a4aa4a79fd4471ba38b794167bdf09","ip":"127.0.0.1"}
+{"timestamp":"2026-11-03T17:31:42-05:00","action":"SAVE_DATABASE","bytes":3800659,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-11-03T17:35:39-05:00","action":"SAVE_DATABASE","bytes":3817061,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-11-03T17:36:48-05:00","action":"SAVE_DATABASE","bytes":3826999,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
+{"timestamp":"2026-11-03T17:37:41-05:00","action":"SAVE_DATABASE","bytes":3827341,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
