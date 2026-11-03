@@ -231,7 +231,7 @@ ${systemInstruction ? `\nINSTRUCCIÓN ADICIONAL DEL MÓDULO:\n${systemInstructio
 
   /**
    * Motor de Síntesis Experta SG-SST Colombia para Políticas, Peligros GTC 45,
-   * Cuestionarios de 13/5 Preguntas, Temarios, Dictámenes Forenses Pro y Consultoría
+   * Cuestionarios de hasta 7 Preguntas, Temarios, Dictámenes Forenses Pro y Consultoría
    */
   sintetizarRespuestaExperta(prompt = '', empresa = null) {
     const emp = empresa || store.getEmpresaActiva() || {};
@@ -336,10 +336,10 @@ ${systemInstruction ? `\nINSTRUCCIÓN ADICIONAL DEL MÓDULO:\n${systemInstructio
       return '```json\n' + JSON.stringify(peligrosSugeridos, null, 2) + '\n```';
     }
 
-    // Caso 2: Generación de Cuestionario de Capacitación (JSON de 5 o 13 preguntas)
+    // Caso 2: Generación de Cuestionario de Capacitación (JSON de máximo 7 preguntas)
     if (prompt.includes('evaluación de conocimientos tipo test') && prompt.includes('```json')) {
       const matchNum = prompt.match(/con\s+(\d+)\s+preguntas/i);
-      const totalPreguntas = matchNum ? parseInt(matchNum[1], 10) : 5;
+      const totalPreguntas = matchNum ? Math.min(parseInt(matchNum[1], 10), 7) : 7;
       const matchTema = prompt.match(/TEMA:\s*"([^"]+)"/i);
       const temaCap = matchTema ? matchTema[1] : 'Seguridad y Salud en el Trabajo (SG-SST)';
 
@@ -502,7 +502,7 @@ ${systemInstruction ? `\nINSTRUCCIÓN ADICIONAL DEL MÓDULO:\n${systemInstructio
         }
       ];
 
-      return '```json\n' + JSON.stringify(bancoBase.slice(0, totalPreguntas), null, 2) + '\n```';
+      return '```json\n' + JSON.stringify(bancoBase.slice(0, Math.min(totalPreguntas, 7)), null, 2) + '\n```';
     }
 
     // Caso 3: Generación de Política Oficial SG-SST
@@ -552,10 +552,10 @@ La presente política será publicada en lugares visibles de la planta, socializ
 
 #### 1. DICTAMEN DE CONFORMIDAD NORMATIVA
 * **Estado General:** **CONFORMIDAD ESTRUCTURAL ALTA CON CONTROLES DIGITALES VERIFICABLES.**
-* La organización cuenta con trazabilidad electrónica inmutable (estampa cronológica ISO 8601 y validación de identidad) para la **Política de Tratamiento de Datos Personales (Ley 1581 de 2012)** en el registro único empresarial, así como para los formatos **DOC-10 (Asistencia e Inducción)** y **DOC-16 (Evaluación de Eficacia de 13 Preguntas)**.
+* La organización cuenta con trazabilidad electrónica inmutable (estampa cronológica ISO 8601 y validación de identidad) para la **Política de Tratamiento de Datos Personales (Ley 1581 de 2012)** en el registro único empresarial, así como para los formatos **DOC-10 (Asistencia e Inducción)** y **DOC-16 (Evaluación de Eficacia de hasta 7 Preguntas)**.
 
 #### 2. FORTALEZAS PROBATORIAS ANTE INSPECCIÓN DEL MINISTERIO DEL TRABAJO
-1. **Estándar 1.2.1 y 1.2.2 (Programa de Capacitación e Inducción):** El módulo E-Learning garantiza bloqueo preventivo hasta consumir el material multimedia y exige aprobación cuantitativa sobre 13 preguntas, generando soporte automático en DOC-10 y DOC-16.
+1. **Estándar 1.2.1 y 1.2.2 (Programa de Capacitación e Inducción):** El módulo E-Learning garantiza bloqueo preventivo hasta consumir el material multimedia y exige aprobación cuantitativa sobre las preguntas del cuestionario (máximo 7 preguntas), generando soporte automático en DOC-10 y DOC-16.
 2. **Estándar 4.1.1 (Metodología GTC 45):** La Matriz de Peligros integra controles en fuente, medio e individuo alineados con el Mapa de Procesos y Organigrama de la empresa.
 3. **Estándar 4.2.5 (Mantenimiento e Inspecciones Preoperacionales):** El Portal del Trabajador permite reportar hallazgos de maquinaria y herramientas en tiempo real con registro en bitácora.
 
@@ -587,7 +587,7 @@ La presente política será publicada en lugares visibles de la planta, socializ
 Desarrollar en los trabajadores las competencias técnicas y preventivas para identificar peligros en su puesto de trabajo, aplicar los procedimientos de operación segura y utilizar adecuadamente los controles y Elementos de Protección Personal (EPP) durante las actividades relacionadas con **${tema}**.
 
 #### 2. DURACIÓN E INTENSIDAD RECOMENDADA
-* **Duración Total:** 120 Minutos (60 min módulo E-Learning multimedia + 30 min práctica en planta + 30 min evaluación DOC-16 de 13 preguntas).
+* **Duración Total:** 120 Minutos (60 min módulo E-Learning multimedia + 30 min práctica en planta + 30 min evaluación DOC-16 de hasta 7 preguntas).
 
 #### 3. MÓDULOS FORMATIVOS CLAVE
 * **Módulo 1 — Marco Legal y Responsabilidades:** Derechos y deberes de los trabajadores (Art. 2.2.4.6.10 Dec. 1072), funciones del COPASST y consecuencias del incumplimiento de normas de seguridad.
@@ -599,7 +599,7 @@ Desarrollar en los trabajadores las competencias técnicas y preventivas para id
 Simulación en cuadrillas donde cada trabajador realiza la lista de chequeo preoperacional de su herramienta o área asignada y corrige 3 condiciones inseguras simuladas.
 
 #### 5. EVALUACIÓN DE EFICACIA (FORMATO DOC-16)
-Aplicación obligatoria del cuestionario de 13 preguntas de selección múltiple con calificación automática y registro inmutable de fecha y hora.`;
+Aplicación obligatoria del cuestionario de máximo 7 preguntas de selección múltiple con única respuesta con calificación automática y registro inmutable de fecha y hora.`;
     }
 
     // Caso 6: Plan de Acción para Estándar 0312
@@ -818,22 +818,22 @@ ESTRUCTURA DEL CONTENIDO FORMATIVO:
   }
 
   /**
-   * Genera Cuestionario de Evaluación para verificar la eficacia de la capacitación (Soporta 5 o 13 preguntas)
+   * Genera Cuestionario de Evaluación para verificar la eficacia de la capacitación (Máximo 7 preguntas)
    */
-  async generarCuestionarioCapacitacion(tema, numPreguntas = 13, empresa = null) {
-    let cantidad = 13;
+  async generarCuestionarioCapacitacion(tema, numPreguntas = 7, empresa = null) {
+    let cantidad = 7;
     let emp = empresa;
     if (typeof numPreguntas === 'number') {
-      cantidad = numPreguntas;
+      cantidad = Math.min(numPreguntas, 7);
     } else if (typeof empresa === 'number') {
-      cantidad = empresa;
+      cantidad = Math.min(empresa, 7);
       emp = arguments[3] || store.getEmpresaActiva();
     }
     if (!emp) emp = store.getEmpresaActiva();
     const contexto = this.construirContextoEmpresa(emp);
 
     const prompt = `
-Genera una evaluación de conocimientos tipo test con ${cantidad} preguntas para verificar la eficacia de la capacitación en:
+Genera una evaluación de conocimientos tipo test con ${cantidad} preguntas de selección múltiple con única respuesta (máximo 7 preguntas) para verificar la eficacia de la capacitación en:
 TEMA: "${tema}"
 
 ${contexto}

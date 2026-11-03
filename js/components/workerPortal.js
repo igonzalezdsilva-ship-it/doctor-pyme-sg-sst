@@ -3874,7 +3874,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
                   <span class="text-xl">🎓</span>
                   <div class="text-left">
                     <span class="block">Capacitaciones & E-Learning SST</span>
-                    <span class="text-[10px] font-normal text-indigo-200 block">Visor de diapositivas, videos y evaluación de 13 preguntas</span>
+                    <span class="text-[10px] font-normal text-indigo-200 block">Visor de diapositivas, videos y evaluación de hasta 7 preguntas</span>
                   </div>
                 </div>
                 <span class="text-sm font-bold text-indigo-200">➔</span>
@@ -4076,7 +4076,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
                 <span>Aula Virtual & Evaluaciones E-Learning</span>
               </h2>
               <p class="text-[11px] text-slate-300 leading-relaxed">
-                Cursos interactivos con diapositivas, videos técnicos y cuestionarios de 13 preguntas. Al aprobar, se expiden automáticamente tus formatos legales oficiales <strong>DOC-10</strong> (Asistencia) y <strong>DOC-16</strong> (Evaluación).
+                Cursos interactivos con diapositivas, videos técnicos y cuestionarios de hasta 7 preguntas de selección múltiple con única respuesta. Al aprobar, se expiden automáticamente tus formatos legales oficiales <strong>DOC-10</strong> (Asistencia) y <strong>DOC-16</strong> (Evaluación).
               </p>
               
               <!-- Barra de Progreso del Plan de Formación -->
@@ -4108,7 +4108,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
                 const evals = cap.evaluaciones || [];
                 const evalCap = evals.find(e => e.trabajadorId === trabajador.id || e.worker_id === trabajador.id);
                 const aprobada = !!(evalCap && (evalCap.passed || evalCap.aprobada || (evalCap.nota || 0) >= 3.5));
-                const numPreguntas = (cap.preguntas || []).length || 13;
+                const numPreguntas = Math.min((cap.preguntas || []).length || 7, 7);
                 const certCode = evalCap?.certificate_code || (evalCap?.id ? `DP-EVAL-${String(evalCap.id).slice(-6).toUpperCase()}` : null);
 
                 return `
@@ -6525,7 +6525,7 @@ window.abrirModalReportePeligro = function(trabajadorId) {
 
 // =============================================================================
 // MÓDULO E-LEARNING TRABAJADOR: AULA VIRTUAL Y EVALUACIÓN SECUENCIAL
-// Visor Multimedia (Google Slides/Video) -> Desbloqueo Preventivo -> 13 Preguntas
+// Visor Multimedia (Google Slides/Video) -> Desbloqueo Preventivo -> Cuestionario de hasta 7 Preguntas
 // =============================================================================
 
 export function abrirAulaVirtualTrabajador(capId, trabajadorId) {
@@ -6539,8 +6539,8 @@ export function abrirAulaVirtualTrabajador(capId, trabajadorId) {
 
   const embedPres = formatPresentationEmbedUrl(cap.presentacionUrl || cap.materialUrl);
   const embedVid = formatVideoEmbedUrl(cap.videoUrl);
-  const preguntas = cap.preguntas || [];
-  const totalPreguntas = preguntas.length || 13;
+  const preguntas = (cap.preguntas || []).slice(0, 7);
+  const totalPreguntas = preguntas.length || 7;
 
   const modalEl = document.createElement('div');
   modalEl.id = modalId;
@@ -6574,7 +6574,7 @@ export function abrirAulaVirtualTrabajador(capId, trabajadorId) {
           <span class="text-slate-300 font-bold hidden sm:inline">➔</span>
           <div class="flex items-center gap-2">
             <span id="badge-paso-2" class="w-6 h-6 rounded-full bg-slate-200 text-slate-600 font-black flex items-center justify-center text-xs">2</span>
-            <span id="text-paso-2" class="font-bold text-slate-400">Evaluación de 13 Preguntas</span>
+            <span id="text-paso-2" class="font-bold text-slate-400">Evaluación (${totalPreguntas} Preguntas)</span>
           </div>
         </div>
 
@@ -6592,7 +6592,7 @@ export function abrirAulaVirtualTrabajador(capId, trabajadorId) {
             <span class="text-xl">ℹ️</span>
             <div>
               <strong class="font-bold block mb-0.5">Instrucciones de Aprendizaje Obligatorias:</strong>
-              Para desbloquear la evaluación debes revisar la <strong>Presentación Oficial</strong> y el <strong>Video Técnico</strong>. Al finalizar la revisión, marca la casilla de confirmación para habilitar el examen de 13 preguntas.
+              Para desbloquear la evaluación debes revisar la <strong>Presentación Oficial</strong> y el <strong>Video Técnico</strong>. Al finalizar la revisión, marca la casilla de confirmación para habilitar el examen de hasta 7 preguntas.
             </div>
           </div>
 
@@ -6659,7 +6659,7 @@ export function abrirAulaVirtualTrabajador(capId, trabajadorId) {
             <label class="flex items-start gap-3 cursor-pointer">
               <input type="checkbox" id="check-confirmacion-lectura" class="mt-0.5 w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
               <span class="text-xs font-semibold text-purple-950">
-                Certifico que he revisado la presentación y el video de capacitación y me encuentro listo para presentar la evaluación de 13 preguntas.
+                Certifico que he revisado la presentación y el video de capacitación y me encuentro listo para presentar la evaluación de ${totalPreguntas} preguntas.
               </span>
             </label>
 
@@ -6669,19 +6669,19 @@ export function abrirAulaVirtualTrabajador(capId, trabajadorId) {
           </div>
         </div>
 
-        <!-- PASO 2: CUESTIONARIO INTERACTIVO (13 PREGUNTAS) -->
+        <!-- PASO 2: CUESTIONARIO INTERACTIVO (${totalPreguntas} PREGUNTAS) -->
         <div id="seccion-cuestionario-examen" class="hidden space-y-6 pt-4 border-t border-slate-200">
           <div class="bg-indigo-900 text-white p-4 rounded-2xl shadow-sm flex items-center justify-between flex-wrap gap-2">
             <div>
               <span class="text-[10px] text-indigo-300 font-bold uppercase tracking-wider block">Evaluación de Eficacia SG-SST</span>
-              <h4 class="text-sm font-bold text-white">Responde las 13 preguntas de opción múltiple</h4>
+              <h4 class="text-sm font-bold text-white">Responde las ${totalPreguntas} preguntas de selección múltiple con única respuesta</h4>
             </div>
             <div class="bg-white/10 px-3 py-1.5 rounded-xl border border-white/20 text-xs font-bold font-mono" id="contador-progreso-examen">
               0 de ${totalPreguntas} respondidas
             </div>
           </div>
 
-          <form id="form-examen-13-preguntas" class="space-y-5">
+          <form id="form-examen-preguntas" class="space-y-5">
             ${preguntas.map((p, idx) => {
               const num = idx + 1;
               const opts = p.opciones || ["A) ", "B) ", "C) ", "D) "];
@@ -6717,12 +6717,18 @@ export function abrirAulaVirtualTrabajador(capId, trabajadorId) {
 
             <div class="sticky bottom-0 bg-white/95 backdrop-blur-xs p-4 rounded-2xl border border-slate-200 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3">
               <span class="text-xs text-slate-500 font-medium text-center sm:text-left">
-                ⚠️ Recuerda que debes contestar <strong>las 13 preguntas</strong> para poder registrar tu calificación y generar tu formato legal.
+                ⚠️ Recuerda que debes contestar <strong>las ${totalPreguntas} preguntas</strong> para poder registrar tu calificación y generar tu formato legal.
               </span>
               <button type="submit" id="btn-enviar-examen" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-md shadow-emerald-600/20 transition cursor-pointer flex items-center justify-center gap-2">
                 <span>✓ Finalizar y Calificar Evaluación</span>
               </button>
             </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  `;
           </form>
         </div>
 
@@ -6803,7 +6809,8 @@ export function abrirAulaVirtualTrabajador(capId, trabajadorId) {
   });
 
   // Envío y calificación del examen
-  document.getElementById('form-examen-13-preguntas').onsubmit = async (e) => {
+  const formExamen = document.getElementById('form-examen-preguntas') || document.getElementById('form-examen-13-preguntas');
+  if (formExamen) formExamen.onsubmit = async (e) => {
     e.preventDefault();
 
     const faltantes = [];
@@ -6882,7 +6889,7 @@ export function mostrarModalResultadoEvaluacion(resultado, cap, trabajador) {
       <div class="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200 font-mono">
         <div>
           <span class="text-[10px] text-slate-400 block uppercase">Aciertos</span>
-          <span class="text-base font-black text-slate-800">${resultado.correct_count !== undefined ? resultado.correct_count : 13} / ${resultado.total_questions || 13}</span>
+          <span class="text-base font-black text-slate-800">${resultado.correct_count !== undefined ? resultado.correct_count : (resultado.total_questions || 7)} / ${resultado.total_questions || 7}</span>
         </div>
         <div>
           <span class="text-[10px] text-slate-400 block uppercase">Efectividad</span>

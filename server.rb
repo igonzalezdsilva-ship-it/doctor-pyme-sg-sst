@@ -1590,8 +1590,8 @@ mount_api(server, '/api/trainings/submit-evaluation') do |req, res|
       emp = db['empresas'].find { |e| e['id'] == company_id }
       company_name = emp ? emp['razonSocial'] : 'DOCTOR PYME'
 
-      preguntas = cap['preguntas'] || []
-      total_preguntas = preguntas.empty? ? 13 : preguntas.size
+      preguntas = (cap['preguntas'] || []).take(7)
+      total_preguntas = preguntas.empty? ? 7 : preguntas.size
 
       # Calificación automática rigurosa
       correct_count = 0

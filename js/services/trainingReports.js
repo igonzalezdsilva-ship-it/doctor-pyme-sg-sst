@@ -202,7 +202,7 @@ export function imprimirRegistroCapacitacionDOC10(evaluationId) {
       <div class="grid-3" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e2e8f0;">
         <div>
           <div class="field-label">Aciertos Obtenidos:</div>
-          <div class="field-value"><strong>${evalData.correct_count !== undefined ? evalData.correct_count : 13}</strong> de <strong>${evalData.total_questions || 13}</strong> preguntas</div>
+          <div class="field-value"><strong>${evalData.correct_count !== undefined ? evalData.correct_count : (evalData.total_questions || 7)}</strong> de <strong>${evalData.total_questions || 7}</strong> preguntas</div>
         </div>
         <div>
           <div class="field-label">Porcentaje de Rendimiento:</div>
@@ -234,7 +234,7 @@ export function imprimirRegistroCapacitacionDOC10(evaluationId) {
       <div class="forensic-stamp">
         <strong>Firma Hash SHA-256:</strong> ${evalData.cryptographic_evidence_hash || 'SHA256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}
         <br>
-        <span style="font-size: 7pt; color: #64748b;">Constancia de verificación: La presente certificación fue expedida tras la visualización comprobada del material multimedia y la resolución exitosa del cuestionario de 13 preguntas.</span>
+        <span style="font-size: 7pt; color: #64748b;">Constancia de verificación: La presente certificación fue expedida tras la visualización comprobada del material multimedia y la resolución exitosa del cuestionario de evaluación (${evalData.total_questions || 7} preguntas).</span>
       </div>
     </div>
 
@@ -265,7 +265,7 @@ export function imprimirRegistroCapacitacionDOC10(evaluationId) {
 
 /**
  * DOC-16: FORMATO DE EVALUACIÓN DE LA CAPACITACIÓN Y APRENDIZAJE
- * Detalle íntegro de las 13 preguntas, respuestas seleccionadas, correctas y calificación final
+ * Detalle íntegro de las preguntas de evaluación, respuestas seleccionadas, correctas y calificación final
  */
 export function imprimirEvaluacionCapacitacionDOC16(evaluationId) {
   const evalData = store.getEvaluacionPorId(evaluationId);
@@ -284,10 +284,10 @@ export function imprimirEvaluacionCapacitacionDOC16(evaluationId) {
   const pct = evalData.percentage !== undefined ? evalData.percentage : Math.round((nota / 5) * 100);
   const passed = evalData.passed !== undefined ? evalData.passed : (pct >= 70);
 
-  // Obtener detalle de las 13 preguntas
+  // Obtener detalle de las preguntas
   let preguntasDetalle = evalData.detailed_answers;
   if (!Array.isArray(preguntasDetalle) || preguntasDetalle.length === 0) {
-    const preguntasBase = training.preguntas || [];
+    const preguntasBase = (training.preguntas || []).slice(0, 7);
     const submittedAnswers = evalData.answers_submitted || [];
     preguntasDetalle = preguntasBase.map((p, idx) => {
       const ans_raw = submittedAnswers[idx];
@@ -315,6 +315,10 @@ export function imprimirEvaluacionCapacitacionDOC16(evaluationId) {
     });
   }
 
+  const totalPreguntasReporte = evalData.total_questions || (preguntasDetalle ? preguntasDetalle.length : 7) || 7;
+  const aciertosReporte = evalData.correct_count !== undefined ? evalData.correct_count : totalPreguntasReporte;
+  const minAprobReporte = Math.ceil(totalPreguntasReporte * 0.7);
+
   const html = `
     <!-- Encabezado Institucional Oficial -->
     <table class="header-table">
@@ -325,7 +329,7 @@ export function imprimirEvaluacionCapacitacionDOC16(evaluationId) {
         <td style="width: 53%; text-align: center;">
           <div class="doc-title">FORMATO DE EVALUACIÓN DE LA CAPACITACIÓN</div>
           <div class="doc-subtitle">SISTEMA DE GESTIÓN DE LA SEGURIDAD Y SALUD EN EL TRABAJO (SG-SST)</div>
-          <div style="font-size: 7.5pt; color: #64748b; margin-top: 2px;">Cuestionario Estructurado de 13 Preguntas • Eficacia del Aprendizaje (DTO 1072/2015)</div>
+          <div style="font-size: 7.5pt; color: #64748b; margin-top: 2px;">Cuestionario Estructurado de Evaluación • Eficacia del Aprendizaje (DTO 1072/2015)</div>
         </td>
         <td style="width: 25%; font-size: 8pt; line-height: 1.4;">
           <strong>Código:</strong> DOC-16<br>
@@ -374,10 +378,10 @@ export function imprimirEvaluacionCapacitacionDOC16(evaluationId) {
       </div>
     </div>
 
-    <!-- Bloque 2: Desglose de las 13 Preguntas -->
+    <!-- Bloque 2: Desglose de las Preguntas de Evaluación -->
     <div class="section-box">
       <div class="section-title">
-        <span>II. Desglose y Calificación de las 13 Preguntas de Evaluación</span>
+        <span>II. Desglose y Calificación de las Preguntas de Evaluación</span>
         <span style="font-size: 8pt; color: #64748b;">Selección Múltiple con Única Respuesta</span>
       </div>
 
@@ -448,7 +452,7 @@ export function imprimirEvaluacionCapacitacionDOC16(evaluationId) {
         <div style="background: white; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px;">
           <div class="field-label">Aciertos Totales:</div>
           <div style="font-size: 14pt; font-weight: 900; color: #1e1b4b;">
-            ${evalData.correct_count !== undefined ? evalData.correct_count : 13} / ${evalData.total_questions || 13}
+            ${aciertosReporte} / ${totalPreguntasReporte}
           </div>
         </div>
         <div style="background: white; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px;">
@@ -466,7 +470,7 @@ export function imprimirEvaluacionCapacitacionDOC16(evaluationId) {
       </div>
 
       <div style="margin-top: 10px; font-size: 8pt; color: #334155; line-height: 1.4;">
-        <strong>Criterio de Evaluación:</strong> Para obtener la aprobación de la capacitación y acreditar competencia en SG-SST se requiere un puntaje mínimo del <strong>70%</strong> (mínimo 10 de 13 preguntas correctas). 
+        <strong>Criterio de Evaluación:</strong> Para obtener la aprobación de la capacitación y acreditar competencia en SG-SST se requiere un puntaje mínimo del <strong>70%</strong> (mínimo ${minAprobReporte} de ${totalPreguntasReporte} preguntas correctas). 
         ${passed 
           ? `<span style="color: #15803d; font-weight: bold;">El trabajador demostró apropiación satisfactoria de las directrices de seguridad y salud en el trabajo.</span>`
           : `<span style="color: #b91c1c; font-weight: bold;">El trabajador debe programar una sesión de refuerzo y repetir la evaluación para alcanzar el estándar aprobatorio.</span>`

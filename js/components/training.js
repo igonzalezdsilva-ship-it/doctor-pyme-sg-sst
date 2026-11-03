@@ -1,6 +1,6 @@
 // =============================================================================
 // MÓDULO DE CAPACITACIONES, INDUCCIÓN Y EVALUACIÓN (E-LEARNING) - DOCTOR PYME
-// Plan de Formación, E-Learning Player, Quiz Builder de 13 Preguntas y Formatos DOC-10 / DOC-16
+// Plan de Formación, E-Learning Player, Quiz Builder de Máximo 7 Preguntas y Formatos DOC-10 / DOC-16
 // Cumplimiento Decreto 1072 de 2015 (Art. 2.2.4.6.11) y Res. 0312 de 2019 (Estándar 1.2.1)
 // =============================================================================
 
@@ -78,7 +78,7 @@ export function renderTraining() {
             </span>
           </div>
           <p class="text-xs text-slate-500 mt-1 max-w-2xl">
-            Gestión integral del Plan Anual de Formación SST. Creación de cursos con visor de diapositivas, videos embebidos, constructor de evaluaciones de 13 preguntas y generación de formatos legales DOC-10 y DOC-16.
+            Gestión integral del Plan Anual de Formación SST. Creación de cursos con visor de diapositivas, videos embebidos, constructor de evaluaciones de hasta 7 preguntas y generación de formatos legales DOC-10 y DOC-16.
           </p>
         </div>
 
@@ -213,7 +213,7 @@ export function renderTraining() {
                   <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-2 flex-wrap">
                       <button onclick="window.abrirQuizBuilder('${cap.id}')" class="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer">
-                        <span>📝</span> Constructor de Evaluación (${numPreguntas}/13 Preguntas)
+                        <span>📝</span> Constructor de Evaluación (${Math.min(numPreguntas, 7)}/7 Preguntas)
                       </button>
 
                       <button onclick="window.editarCapacitacionModal('${cap.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer">
@@ -277,8 +277,8 @@ export function renderTraining() {
                     const timestamp = ev.accepted_at_bogota || ev.timestamp || ev.fecha || '2026-01-15 17:00:00';
                     const nota = ev.nota || ev.score_obtained || 5.0;
                     const pct = ev.percentage !== undefined ? ev.percentage : Math.round((nota / 5) * 100);
-                    const aciertos = ev.correct_count !== undefined ? ev.correct_count : 13;
-                    const totalQ = ev.total_questions || 13;
+                    const totalQ = ev.total_questions || 7;
+                    const aciertos = ev.correct_count !== undefined ? ev.correct_count : totalQ;
 
                     return `
                       <tr class="hover:bg-slate-50/80 transition">
@@ -423,7 +423,7 @@ export function verMultimediaCapacitacion(capId, tipo) {
 };
 
 /**
- * MODAL CONSTRUCTOR DE EVALUACIONES (QUIZ BUILDER DE 13 PREGUNTAS)
+ * MODAL CONSTRUCTOR DE EVALUACIONES (QUIZ BUILDER DE MÁXIMO 7 PREGUNTAS)
  */
 export function abrirQuizBuilder(capId) {
   const cap = store.getCapacitacionPorId(capId);
@@ -437,9 +437,9 @@ export function abrirQuizBuilder(capId) {
   modal.id = modalId;
   modal.className = 'fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
 
-  // Asegurar que haya 13 preguntas configurables
-  let preguntas = JSON.parse(JSON.stringify(cap.preguntas || []));
-  while (preguntas.length < 13) {
+  // Asegurar que haya máximo 7 preguntas configurables
+  let preguntas = JSON.parse(JSON.stringify(cap.preguntas || [])).slice(0, 7);
+  while (preguntas.length < 7) {
     const idx = preguntas.length + 1;
     preguntas.push({
       pregunta: `Pregunta ${idx} de verificación sobre ${cap.tema}`,
@@ -460,21 +460,21 @@ export function abrirQuizBuilder(capId) {
       <div class="bg-indigo-900 px-6 py-4 text-white flex items-center justify-between flex-shrink-0">
         <div>
           <span class="text-[10px] text-indigo-300 font-bold uppercase tracking-wider block">Constructor de Evaluaciones (Quiz Builder)</span>
-          <h3 class="text-sm font-bold text-white">${cap.tema} (Estructura Estricta de 13 Preguntas)</h3>
+          <h3 class="text-sm font-bold text-white">${cap.tema} (Estructura de Máximo 7 Preguntas)</h3>
         </div>
         <button id="btn-cerrar-qb" class="text-slate-300 hover:text-white p-1 text-lg font-bold cursor-pointer">✕</button>
       </div>
 
       <div class="px-6 py-3 bg-purple-50 border-b border-purple-100 flex flex-wrap items-center justify-between gap-2 flex-shrink-0">
         <p class="text-xs text-purple-900">
-          Configura las <strong>13 preguntas de opción múltiple</strong> (A, B, C, D). Marca con el radio button cuál es la <strong>respuesta correcta</strong>.
+          Configura hasta <strong>7 preguntas de opción múltiple con única respuesta</strong> (A, B, C, D). Marca con el radio button cuál es la <strong>respuesta correcta</strong>.
         </p>
         <div class="flex items-center gap-2">
           <button type="button" id="btn-autogenerar-ia-qb" class="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-lg text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer">
-            <span>✨ Autogenerar 13 Preguntas con Gemini Pro</span>
+            <span>✨ Autogenerar 7 Preguntas con Gemini Pro</span>
           </button>
           <span class="text-xs font-bold text-purple-700 bg-white px-2.5 py-1 rounded-md border border-purple-200 shadow-2xs">
-            13 de 13 Preguntas
+            7 de 7 Preguntas
           </span>
         </div>
       </div>
@@ -526,14 +526,14 @@ export function abrirQuizBuilder(capId) {
 
         <div class="sticky bottom-0 bg-white/95 backdrop-blur-xs p-4 rounded-xl border border-slate-200 shadow-md flex items-center justify-between">
           <span class="text-xs text-slate-500 font-semibold">
-            ✓ Valida que cada una de las 13 preguntas tenga enunciado y su respuesta correcta.
+            ✓ Valida que cada una de las 7 preguntas tenga enunciado y su respuesta correcta única.
           </span>
           <div class="flex items-center gap-2">
             <button type="button" id="btn-cancelar-qb" class="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-50 transition cursor-pointer">
               Cancelar
             </button>
             <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/20 transition cursor-pointer">
-              Guardar 13 Preguntas
+              Guardar 7 Preguntas
             </button>
           </div>
         </div>
@@ -550,9 +550,9 @@ export function abrirQuizBuilder(capId) {
   if (btnAutoIA) {
     btnAutoIA.onclick = async () => {
       btnAutoIA.disabled = true;
-      btnAutoIA.innerHTML = '<span>⏳ Generando 13 preguntas con Gemini Pro...</span>';
+      btnAutoIA.innerHTML = '<span>⏳ Generando 7 preguntas con Gemini Pro...</span>';
       try {
-        const res = await generarCuestionarioCapacitacion(cap.tema, 13, store.getEmpresaActiva());
+        const res = await generarCuestionarioCapacitacion(cap.tema, 7, store.getEmpresaActiva());
         const listaIA = (res && Array.isArray(res.preguntas)) ? res.preguntas : [];
         if (listaIA.length > 0) {
           const bloques = modal.querySelectorAll('[data-question-index]');
@@ -586,7 +586,7 @@ export function abrirQuizBuilder(capId) {
         console.error('Error al autogenerar preguntas con Gemini Pro:', err);
       } finally {
         btnAutoIA.disabled = false;
-        btnAutoIA.innerHTML = '<span>✨ Autogenerar 13 Preguntas con Gemini Pro</span>';
+        btnAutoIA.innerHTML = '<span>✨ Autogenerar 7 Preguntas con Gemini Pro</span>';
       }
     };
   }
@@ -622,11 +622,11 @@ export function abrirQuizBuilder(capId) {
 
     store.guardarCapacitacion({
       ...cap,
-      preguntas: nuevasPreguntas
+      preguntas: nuevasPreguntas.slice(0, 7)
     });
 
     modal.remove();
-    alert(`✓ Se guardaron exitosamente las 13 preguntas para la capacitación "${cap.tema}".`);
+    alert(`✓ Se guardaron exitosamente las 7 preguntas para la capacitación "${cap.tema}".`);
     renderTraining();
   };
 };
@@ -789,7 +789,7 @@ function abrirModalCrearEditarCapacitacion(capExistente = null) {
         evaluaciones: []
       });
       modal.remove();
-      alert("✓ Capacitación creada con éxito. Ahora puedes configurar sus 13 preguntas en el Constructor de Evaluación.");
+      alert("✓ Capacitación creada con éxito. Ahora puedes configurar sus 7 preguntas en el Constructor de Evaluación.");
       renderTraining();
       // Abrir inmediatamente el constructor de preguntas
       setTimeout(() => window.abrirQuizBuilder(nuevaId), 300);

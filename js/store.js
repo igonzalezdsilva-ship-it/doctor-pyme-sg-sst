@@ -3029,78 +3029,6 @@ class Store {
         respuestaCorrecta: 1,
         correct_option_index: 1,
         justificacion: "El uso de EPP certificados es una barrera obligatoria de protección individual establecida en los protocolos de SST de la empresa."
-      },
-      {
-        pregunta: "¿Qué diferencia existe entre un \"Peligro\" y un \"Riesgo\" en el marco de la Guía GTC 45?",
-        opciones: [
-          "A) El peligro es la probabilidad y el riesgo es la fuente o condición.",
-          "B) El peligro es la fuente, situación o acto con potencial de daño; el riesgo es la combinación de la probabilidad de que ocurra y su severidad.",
-          "C) Son términos exactamente idénticos y sinónimos en la legislación colombiana.",
-          "D) El peligro solo aplica a trabajos de oficina y el riesgo a fábricas."
-        ],
-        respuestaCorrecta: 1,
-        correct_option_index: 1,
-        justificacion: "La GTC 45 define el Peligro como fuente o condición intrínseca y el Riesgo como la probabilidad y consecuencia de su materialización."
-      },
-      {
-        pregunta: "En caso de activarse la alarma de evacuación por emergencia en la sede o planta, ¿cuál es la conducta esperada?",
-        opciones: [
-          "A) Regresar al puesto de trabajo a recoger objetos personales y computadores.",
-          "B) Suspender actividades, desconectar equipos si es seguro, conservar la calma y dirigirse por la ruta de evacuación al Punto de Encuentro.",
-          "C) Correr gritando hacia la salida más cercana sin atender a los brigadistas.",
-          "D) Encerrarse en los baños o vestieres a esperar que pase la emergencia."
-        ],
-        respuestaCorrecta: 1,
-        correct_option_index: 1,
-        justificacion: "Los protocolos del Plan de Emergencias exigen evacuación ordenada, rápida y sin devolverse hacia el Punto de Encuentro designado."
-      },
-      {
-        pregunta: "¿Por qué son obligatorias las Pausas Activas durante la jornada laboral?",
-        opciones: [
-          "A) Para extender el tiempo de descanso sin justificación laboral.",
-          "B) Para prevenir trastornos musculoesqueléticos, disminuir la fatiga física/mental y favorecer el cambio de posturas prolongadas.",
-          "C) Para retrasar la entrega de productos en la línea de producción.",
-          "D) Solo aplican para personas mayores de 60 años."
-        ],
-        respuestaCorrecta: 1,
-        correct_option_index: 1,
-        justificacion: "La gimnasia laboral y pausas activas previenen enfermedades laborales ergonómicas y fatiga osteomuscular derivada de cargas estáticas."
-      },
-      {
-        pregunta: "¿Qué es un \"Acto Inseguro o Subestándar\"?",
-        opciones: [
-          "A) Una falla geológica imprevista de la naturaleza.",
-          "B) Una acción u omisión del trabajador que viola una norma de seguridad y facilita la ocurrencia de un accidente.",
-          "C) Un defecto en la pintura de una pared de la oficina.",
-          "D) Un día lluvioso en el trayecto hacia el trabajo."
-        ],
-        respuestaCorrecta: 1,
-        correct_option_index: 1,
-        justificacion: "El acto subestándar es el comportamiento humano que incumple el procedimiento seguro (ej. omitir el uso de EPP o deshabilitar guardas)."
-      },
-      {
-        pregunta: "¿Cuál es la política estricta de la empresa respecto al consumo de alcohol, tabaco y sustancias psicoactivas?",
-        opciones: [
-          "A) Se permite el consumo moderado durante la hora de almuerzo.",
-          "B) Está terminantemente prohibido presentarse a laborar o consumir sustancias psicoactivas y bebidas alcohólicas en las instalaciones.",
-          "C) Solo se prohíbe los días lunes y viernes.",
-          "D) Depende de la autorización verbal del jefe de turno."
-        ],
-        respuestaCorrecta: 1,
-        correct_option_index: 1,
-        justificacion: "La Política de Prevención de Alcohol y Drogas es de cero tolerancia por representar un peligro crítico para la vida y seguridad de todo el personal."
-      },
-      {
-        pregunta: "¿A través de qué mecanismo deben reportarse las condiciones inseguras o sugerencias de mejora en SST en DOCTOR PYME?",
-        opciones: [
-          "A) Únicamente enviando cartas físicas por correo postal tradicional.",
-          "B) Mediante el botón de Reporte de Peligros en el Portal del Trabajador y comunicándolo al Coordinador SST o COPASST.",
-          "C) Comentándolo de manera informal únicamente en redes sociales personales.",
-          "D) Guardando silencio para no generar llamados de atención a los compañeros."
-        ],
-        respuestaCorrecta: 1,
-        correct_option_index: 1,
-        justificacion: "El Decreto 1072/2015 exige disponer de mecanismos de reporte ágil y oportuno de condiciones peligrosas, disponible en el Portal del Trabajador."
       }
     ];
 
@@ -3124,7 +3052,7 @@ class Store {
         facilitador: 'Coordinador SG-SST / Especialista ARL',
         fecha: '2026-01-15',
         estado: 'Programada',
-        preguntas: preguntasDefecto,
+        preguntas: preguntasDefecto.slice(0, 7),
         evaluaciones: []
       };
       this.data.capacitaciones.unshift(cap1);
@@ -3145,8 +3073,11 @@ class Store {
         cap1.videoUrl = 'https://www.youtube.com/watch?v=kYJdZl21o5M';
         mod = true;
       }
-      if (!Array.isArray(cap1.preguntas) || cap1.preguntas.length < 13) {
-        cap1.preguntas = preguntasDefecto;
+      if (!Array.isArray(cap1.preguntas) || cap1.preguntas.length === 0) {
+        cap1.preguntas = preguntasDefecto.slice(0, 7);
+        mod = true;
+      } else if (cap1.preguntas.length > 7) {
+        cap1.preguntas = cap1.preguntas.slice(0, 7);
         mod = true;
       }
       if (mod) this.saveToStorage();
@@ -3271,8 +3202,8 @@ class Store {
     const trabajador = this.getTrabajadorPorId(worker_id);
     const empresa = this.getEmpresa(cap?.companyId || trabajador?.companyId) || this.getEmpresaActiva();
 
-    const preguntas = cap?.preguntas || [];
-    const total_preguntas = preguntas.length || 13;
+    const preguntas = (cap?.preguntas || []).slice(0, 7);
+    const total_preguntas = preguntas.length || 7;
 
     let correct_count = 0;
     const detailed_answers = preguntas.map((p, idx) => {

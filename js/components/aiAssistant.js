@@ -518,8 +518,8 @@ function renderVistaCapacitacion(container, contexto) {
   container.innerHTML = `
     <div class="space-y-4">
       <div class="p-4 bg-purple-50/70 border border-purple-100 rounded-xl text-xs text-purple-950">
-        <h4 class="font-bold mb-1">Diseñador Pedagógico SST con Banco de 13 Preguntas (DOC-16)</h4>
-        <p>Genera el temario completo de una capacitación con sus objetivos de aprendizaje, más el cuestionario oficial de 13 preguntas de selección múltiple con respuestas y justificaciones para el módulo E-Learning.</p>
+        <h4 class="font-bold mb-1">Diseñador Pedagógico SST con Banco de hasta 7 Preguntas (DOC-16)</h4>
+        <p>Genera el temario completo de una capacitación con sus objetivos de aprendizaje, más el cuestionario oficial de máximo 7 preguntas de selección múltiple con única respuesta para el módulo E-Learning.</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -547,7 +547,7 @@ function renderVistaCapacitacion(container, contexto) {
           <span>📖 Generar Temario</span>
         </button>
         <button id="btn-generar-cuestionario" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-md shadow-purple-600/20 transition flex items-center gap-1.5">
-          <span>📝 Generar 13 Preguntas con Gemini Pro</span>
+          <span>📝 Generar 7 Preguntas con Gemini Pro</span>
         </button>
       </div>
 
@@ -592,10 +592,10 @@ function renderVistaCapacitacion(container, contexto) {
     const tema = document.getElementById('sel-tema-capacitacion').value;
     const empresa = store.getEmpresaActiva();
     btnCuestionario.disabled = true;
-    btnCuestionario.innerHTML = `<span>⏳ Creando 13 Preguntas...</span>`;
+    btnCuestionario.innerHTML = `<span>⏳ Creando 7 Preguntas...</span>`;
 
     try {
-      const res = await generarCuestionarioCapacitacion(tema, 13, empresa);
+      const res = await generarCuestionarioCapacitacion(tema, 7, empresa);
       let preguntas = [];
       if (res && res.ok && Array.isArray(res.preguntas)) {
         preguntas = res.preguntas;
@@ -636,7 +636,7 @@ function renderVistaCapacitacion(container, contexto) {
       alert(`Error al generar cuestionario: ${err.message}`);
     } finally {
       btnCuestionario.disabled = false;
-      btnCuestionario.innerHTML = `<span>📝 Generar 13 Preguntas con Gemini Pro</span>`;
+      btnCuestionario.innerHTML = `<span>📝 Generar 7 Preguntas con Gemini Pro</span>`;
     }
   };
 }
