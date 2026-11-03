@@ -4180,9 +4180,9 @@
           ],
           "total_questions": 7,
           "correct_count": 7,
-          "percentage": 100.0,
-          "nota": 5.0,
-          "score_obtained": 5.0,
+          "percentage": 100,
+          "nota": 5,
+          "score_obtained": 5,
           "aprobada": true,
           "passed": true,
           "accepted_at_utc": "2026-11-03T22:10:34.944Z",
@@ -4215,88 +4215,160 @@
       "estado": "Programada",
       "preguntas": [
         {
-          "pregunta": "Según el SG-SST, ¿cuál es el objetivo primordial de la política de seguridad?",
+          "pregunta": "¿Cuál es el objetivo principal del Sistema de Gestión de la Seguridad y Salud en el Trabajo (SG-SST) según el Decreto 1072 de 2015?",
           "opciones": [
-            "A) Sancionar trabajadores con fallas operativas.",
-            "B) Prevenir lesiones y enfermedades laborales promoviendo el bienestar físico y mental.",
-            "C) Reducir los costos de compra en dotación y equipos.",
-            "D) Cumplir únicamente auditorías de clientes."
+            "A) Imponer sanciones económicas a los trabajadores que cometan faltas leves.",
+            "B) Anticipar, reconocer, evaluar y controlar los riesgos que puedan afectar la seguridad y salud en el trabajo.",
+            "C) Reducir los costos operativos de la empresa eliminando dotaciones de seguridad.",
+            "D) Delegar la responsabilidad de la seguridad únicamente en la ARL."
           ],
           "respuestaCorrecta": 1,
           "correct_option_index": 1,
           "justificacion": "El Decreto 1072 de 2015 define el SG-SST como el proceso lógico y por etapas para anticipar, reconocer, evaluar y controlar los riesgos laborales."
         },
         {
-          "pregunta": "¿Cuál de las sig¿A partir de qué altura se considera formalmente trabajo en alturas según la Res. 4272/2021?\nuientes es una responsabilidad obligatoria del trabajador en el SG-SST?",
+          "pregunta": "¿Cuál de las siguientes es una responsabilidad obligatoria del trabajador en el SG-SST?",
           "opciones": [
-            "A) 1.50 metros.",
-            "B) 1.80 metros.",
-            "C) 2.00 metros o más sobre un nivel inferior.",
-            "D) 3.50 metros en cubiertas inclinadas."
+            "A) Procurar el cuidado integral de su salud y suministrar información veraz sobre su estado de salud.",
+            "B) Comprar con su propio dinero los Elementos de Protección Personal (EPP).",
+            "C) Realizar el pago mensual de la afiliación a la ARL.",
+            "D) Diseñar la matriz de peligros y firmar los balances financieros."
           ],
-          "respuestaCorrecta": 2,
-          "correct_option_index": 2,
+          "respuestaCorrecta": 0,
+          "correct_option_index": 0,
           "justificacion": "El Art. 2.2.4.6.10 del Decreto 1072 de 2015 estipula el autocuidado y reporte veraz del estado de salud como deber ineludible del trabajador."
         },
         {
-          "pregunta": "Antes de iniciar trabajos en cubiertas o terrazas en Servicios IG, el documento obligatorio es:",
+          "pregunta": "¿Qué se entiende legalmente por un \"Accidente de Trabajo\" según la Ley 1562 de 2012?",
           "opciones": [
-            "A) Factura de compra de insumos de impermeabilización.",
-            "B) Copia simple de la cédula de ciudadanía.",
-            "C) Permiso de trabajo en alturas avalado por el coordinador SST y el ATS diligenciado.",
-            "D) Acta de entrega final del proyecto."
+            "A) Cualquier enfermedad común que se manifieste durante las vacaciones.",
+            "B) Todo suceso repentino que sobrevenga por causa o con ocasión del trabajo y produzca una lesión, perturbación funcional, invalidez o muerte.",
+            "C) Un altercado verbal entre compañeros fuera del horario laboral sin relación a la empresa.",
+            "D) Un resfriado común adquirido en la vivienda del empleado."
           ],
-          "respuestaCorrecta": 2,
-          "correct_option_index": 2,
+          "respuestaCorrecta": 1,
+          "correct_option_index": 1,
           "justificacion": "La Ley 1562 de 2012 define el accidente de trabajo como todo suceso repentino por causa o con ocasión del trabajo con daño orgánico o funcional."
         },
         {
-          "pregunta": "¿Qué resistencia mínima debe garantizar un punto de anclaje certificado contra caídas?",
+          "pregunta": "¿Cuál es el plazo legal máximo que tiene el trabajador para reportar un presunto accidente de trabajo al empleador?",
           "opciones": [
-            "A) 1.000 libras por persona conectada.",
-            "B) 2.500 libras con doble mosquetón.",
-            "C) 5.000 libras (22.2 kN) por cada trabajador acoplado.",
-            "D) La resistencia del marco de la ventana más cercano."
+            "A) 15 días calendario posteriores al suceso.",
+            "B) Inmediatamente o a más tardar dentro de las 48 horas siguientes al evento.",
+            "C) 1 mes después en la reunión mensual del COPASST.",
+            "D) No es necesario reportarlo si la lesión es leve."
           ],
-          "respuestaCorrecta": 2,
-          "correct_option_index": 2,
+          "respuestaCorrecta": 1,
+          "correct_option_index": 1,
           "justificacion": "La normativa colombiana exige reporte inmediato para que el empleador notifique formalmente a la ARL y EPS dentro de 2 días hábiles (48 horas)."
         },
         {
-          "pregunta": "Para lavado y desinfección de tanques de agua potable (espacios confinados), es imperativo:",
+          "pregunta": "¿Cuál es la función principal del Comité Paritario de Seguridad y Salud en el Trabajo (COPASST)?",
           "opciones": [
-            "A) Ingresar rápidamente sin encender luces artificiales.",
-            "B) Realizar medición atmosférica previa y mantener un vigía permanente en el exterior.",
-            "C) Usar únicamente agua caliente sin mascarilla protectora.",
-            "D) Trabajar sin ventilación para no dispersar el desinfectante."
+            "A) Fijar los salarios y aumentos anuales de la empresa.",
+            "B) Actuar como organismo de promoción, vigilancia y apoyo a las normas y medidas del SG-SST en la empresa.",
+            "C) Tramitar despidos con justa causa por bajo rendimiento.",
+            "D) Administrar los recursos bancarios y presupuestos de la compañía."
           ],
           "respuestaCorrecta": 1,
           "correct_option_index": 1,
           "justificacion": "La Res. 2013 de 1986 y Decreto 1072 determinan que el COPASST vigila, propone y promueve la salud ocupacional en todos los niveles."
         },
         {
-          "pregunta": "El rango de concentración de oxígeno apto y seguro para ingreso a tanques es:",
+          "pregunta": "¿Qué rol cumple el Comité de Convivencia Laboral (CCL) según la Resolución 652 de 2012?",
           "opciones": [
-            "A) 10% a 15%.",
-            "B) Menor a 18% siempre.",
-            "C) Entre 19.5% y 23.5%.",
-            "D) Mayor al 28% para facilitar la respiración."
+            "A) Imponer multas de tránsito a los vehículos de la empresa.",
+            "B) Prevenir el acoso laboral y tramitar confidencialmente quejas para proteger la dignidad de los trabajadores.",
+            "C) Organizar las fiestas de fin de año y actividades recreativas.",
+            "D) Asignar los turnos de horas extras nocturnas."
           ],
-          "respuestaCorrecta": 2,
-          "correct_option_index": 2,
+          "respuestaCorrecta": 1,
+          "correct_option_index": 1,
           "justificacion": "El CCL es un mecanismo preventivo para proteger a los trabajadores contra los riesgos psicosociales y situaciones de acoso laboral (Ley 1010 de 2006)."
         },
         {
-          "pregunta": "Al manipular solventes, resinas o imprimantes asfálticos, la fuente de consulta técnica obligatoria es:",
+          "pregunta": "Respecto al uso de los Elementos de Protección Personal (EPP), es correcto afirmar que:",
           "opciones": [
-            "A) El catálogo publicitario de la marca.",
-            "B) La Ficha de Datos de Seguridad (FDS/MSDS) bajo el Sistema Globalmente Armonizado.",
-            "C) La recomendación verbal del transportador.",
-            "D) La etiqueta del empaque secundario reciclado."
+            "A) Son opcionales si el trabajador considera que tiene mucha experiencia en el oficio.",
+            "B) Son de uso obligatorio, deben inspeccionarse antes de la labor y cuidarse según las normas técnicas de seguridad.",
+            "C) Deben compartirse entre todos los compañeros del turno sin higiene previa.",
+            "D) Pueden modificarse o recortarse para mayor comodidad del operario."
           ],
           "respuestaCorrecta": 1,
           "correct_option_index": 1,
           "justificacion": "El uso de EPP certificados es una barrera obligatoria de protección individual establecida en los protocolos de SST de la empresa."
+        },
+        {
+          "pregunta": "¿Qué diferencia existe entre un \"Peligro\" y un \"Riesgo\" en el marco de la Guía GTC 45?",
+          "opciones": [
+            "A) El peligro es la probabilidad y el riesgo es la fuente o condición.",
+            "B) El peligro es la fuente, situación o acto con potencial de daño; el riesgo es la combinación de la probabilidad de que ocurra y su severidad.",
+            "C) Son términos exactamente idénticos y sinónimos en la legislación colombiana.",
+            "D) El peligro solo aplica a trabajos de oficina y el riesgo a fábricas."
+          ],
+          "respuestaCorrecta": 1,
+          "correct_option_index": 1,
+          "justificacion": "La GTC 45 define el Peligro como fuente o condición intrínseca y el Riesgo como la probabilidad y consecuencia de su materialización."
+        },
+        {
+          "pregunta": "En caso de activarse la alarma de evacuación por emergencia en la sede o planta, ¿cuál es la conducta esperada?",
+          "opciones": [
+            "A) Regresar al puesto de trabajo a recoger objetos personales y computadores.",
+            "B) Suspender actividades, desconectar equipos si es seguro, conservar la calma y dirigirse por la ruta de evacuación al Punto de Encuentro.",
+            "C) Correr gritando hacia la salida más cercana sin atender a los brigadistas.",
+            "D) Encerrarse en los baños o vestieres a esperar que pase la emergencia."
+          ],
+          "respuestaCorrecta": 1,
+          "correct_option_index": 1,
+          "justificacion": "Los protocolos del Plan de Emergencias exigen evacuación ordenada, rápida y sin devolverse hacia el Punto de Encuentro designado."
+        },
+        {
+          "pregunta": "¿Por qué son obligatorias las Pausas Activas durante la jornada laboral?",
+          "opciones": [
+            "A) Para extender el tiempo de descanso sin justificación laboral.",
+            "B) Para prevenir trastornos musculoesqueléticos, disminuir la fatiga física/mental y favorecer el cambio de posturas prolongadas.",
+            "C) Para retrasar la entrega de productos en la línea de producción.",
+            "D) Solo aplican para personas mayores de 60 años."
+          ],
+          "respuestaCorrecta": 1,
+          "correct_option_index": 1,
+          "justificacion": "La gimnasia laboral y pausas activas previenen enfermedades laborales ergonómicas y fatiga osteomuscular derivada de cargas estáticas."
+        },
+        {
+          "pregunta": "¿Qué es un \"Acto Inseguro o Subestándar\"?",
+          "opciones": [
+            "A) Una falla geológica imprevista de la naturaleza.",
+            "B) Una acción u omisión del trabajador que viola una norma de seguridad y facilita la ocurrencia de un accidente.",
+            "C) Un defecto en la pintura de una pared de la oficina.",
+            "D) Un día lluvioso en el trayecto hacia el trabajo."
+          ],
+          "respuestaCorrecta": 1,
+          "correct_option_index": 1,
+          "justificacion": "El acto subestándar es el comportamiento humano que incumple el procedimiento seguro (ej. omitir el uso de EPP o deshabilitar guardas)."
+        },
+        {
+          "pregunta": "¿Cuál es la política estricta de la empresa respecto al consumo de alcohol, tabaco y sustancias psicoactivas?",
+          "opciones": [
+            "A) Se permite el consumo moderado durante la hora de almuerzo.",
+            "B) Está terminantemente prohibido presentarse a laborar o consumir sustancias psicoactivas y bebidas alcohólicas en las instalaciones.",
+            "C) Solo se prohíbe los días lunes y viernes.",
+            "D) Depende de la autorización verbal del jefe de turno."
+          ],
+          "respuestaCorrecta": 1,
+          "correct_option_index": 1,
+          "justificacion": "La Política de Prevención de Alcohol y Drogas es de cero tolerancia por representar un peligro crítico para la vida y seguridad de todo el personal."
+        },
+        {
+          "pregunta": "¿A través de qué mecanismo deben reportarse las condiciones inseguras o sugerencias de mejora en SST en DOCTOR PYME?",
+          "opciones": [
+            "A) Únicamente enviando cartas físicas por correo postal tradicional.",
+            "B) Mediante el botón de Reporte de Peligros en el Portal del Trabajador y comunicándolo al Coordinador SST o COPASST.",
+            "C) Comentándolo de manera informal únicamente en redes sociales personales.",
+            "D) Guardando silencio para no generar llamados de atención a los compañeros."
+          ],
+          "respuestaCorrecta": 1,
+          "correct_option_index": 1,
+          "justificacion": "El Decreto 1072/2015 exige disponer de mecanismos de reporte ágil y oportuno de condiciones peligrosas, disponible en el Portal del Trabajador."
         }
       ],
       "evaluaciones": [
@@ -14615,7 +14687,7 @@
       "ultimoIngreso": "2026-10-31T21:00:00.000Z"
     }
   ],
-  "updatedAt": "2026-11-03T16:58:18-05:00",
+  "updatedAt": "2026-11-03T17:10:54-05:00",
   "master_standard_templates": [
     {
       "id": "tpl-1-1-1-1",
@@ -16984,9 +17056,9 @@
       ],
       "total_questions": 7,
       "correct_count": 7,
-      "percentage": 100.0,
-      "nota": 5.0,
-      "score_obtained": 5.0,
+      "percentage": 100,
+      "nota": 5,
+      "score_obtained": 5,
       "aprobada": true,
       "passed": true,
       "accepted_at_utc": "2026-11-03T22:10:34.944Z",

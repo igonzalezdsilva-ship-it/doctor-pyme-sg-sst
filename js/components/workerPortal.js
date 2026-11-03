@@ -6729,12 +6729,6 @@ export function abrirAulaVirtualTrabajador(capId, trabajadorId) {
       </div>
     </div>
   `;
-          </form>
-        </div>
-
-      </div>
-    </div>
-  `;
 
   document.body.appendChild(modalEl);
 
