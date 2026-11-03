@@ -2236,7 +2236,8 @@
       }
     },
     "emp-1792009016839": {
-      "2026": {}
+      "2026": {
+      }
     },
     "emp-1792010387578": {
       "2026": {
@@ -2551,7 +2552,9 @@
       "afp": "Protección",
       "arl": "Positiva ARL",
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "empresaId": "emp-1792009016839",
       "pin": "4889"
@@ -2567,7 +2570,9 @@
       "fechaIngreso": "2026-08-21",
       "fechaFinContrato": "2027-02-21",
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2592,7 +2597,9 @@
       "fechaIngreso": "2026-08-18",
       "fechaFinContrato": "2027-08-18",
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2621,7 +2628,9 @@
       "fechaIngreso": "2026-07-24",
       "fechaFinContrato": "2027-01-24",
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2646,7 +2655,9 @@
       "fechaIngreso": "2026-07-16",
       "fechaFinContrato": "2027-01-16",
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2671,7 +2682,9 @@
       "fechaIngreso": "2026-07-10",
       "fechaFinContrato": "2027-01-10",
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2696,7 +2709,9 @@
       "fechaIngreso": "2026-07-03",
       "fechaFinContrato": "2027-01-03",
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2721,7 +2736,9 @@
       "fechaIngreso": "2026-07-03",
       "fechaFinContrato": "2027-01-03",
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2746,7 +2763,9 @@
       "fechaIngreso": "2026-06-23",
       "fechaFinContrato": "2026-12-23",
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2771,7 +2790,9 @@
       "fechaIngreso": "2024-07-23",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2796,7 +2817,9 @@
       "fechaIngreso": "2024-07-23",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2821,7 +2844,9 @@
       "fechaIngreso": "2026-04-16",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2846,7 +2871,9 @@
       "fechaIngreso": "2023-02-09",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2871,7 +2898,9 @@
       "fechaIngreso": "2021-07-07",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2896,7 +2925,9 @@
       "fechaIngreso": "2021-04-06",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2921,7 +2952,9 @@
       "fechaIngreso": "2019-08-30",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2946,7 +2979,9 @@
       "fechaIngreso": "2016-08-27",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2971,7 +3006,9 @@
       "fechaIngreso": "2014-08-01",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -2996,7 +3033,9 @@
       "fechaIngreso": "2012-04-10",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -3021,7 +3060,9 @@
       "fechaIngreso": "2007-07-04",
       "fechaFinContrato": null,
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente",
       "estado": "Activo",
       "companyId": "emp-1790438946268",
@@ -3056,7 +3097,9 @@
       "afp": "Protección",
       "arl": "Positiva ARL",
       "duracionMeses": null,
-      "prorrogas": [],
+      "prorrogas": [
+
+      ],
       "estadoPreaviso": "Pendiente"
     }
   ],
@@ -4157,7 +4200,9 @@
           "justificacion": "El Decreto 1072/2015 exige disponer de mecanismos de reporte ágil y oportuno de condiciones peligrosas, disponible en el Portal del Trabajador."
         }
       ],
-      "evaluaciones": []
+      "evaluaciones": [
+
+      ]
     },
     {
       "id": "cap-ind-emp-1792010387578",
@@ -4331,7 +4376,9 @@
           "justificacion": "El Decreto 1072/2015 exige disponer de mecanismos de reporte ágil y oportuno de condiciones peligrosas, disponible en el Portal del Trabajador."
         }
       ],
-      "evaluaciones": []
+      "evaluaciones": [
+
+      ]
     }
   ],
   "equipos": [
@@ -4927,7 +4974,8 @@
       "intervention_type": "Preoperacional",
       "status_result": "Aprobado",
       "aptoOperar": "SI",
-      "checklist_answers": {},
+      "checklist_answers": {
+      },
       "evidence_photo_url": "",
       "observaciones": "Montacargas en óptimas condiciones de frenos e hidráulica.",
       "notes": "Montacargas en óptimas condiciones de frenos e hidráulica.",
@@ -5066,7 +5114,8 @@
       "intervention_type": "Preoperacional",
       "status_result": "Aprobado",
       "aptoOperar": "SI",
-      "checklist_answers": {},
+      "checklist_answers": {
+      },
       "evidence_photo_url": "",
       "observaciones": "Montacargas en óptimas condiciones de frenos e hidráulica.",
       "notes": "Montacargas en óptimas condiciones de frenos e hidráulica.",
@@ -5654,7 +5703,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       }
     },
     {
@@ -5775,7 +5830,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Psicosocial (responsabilidad y toma de decisiones) • Peligro Biomecánico (trabajo de escritorio)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       }
     },
     {
@@ -5905,7 +5966,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       }
     },
     {
@@ -5974,7 +6041,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Psicosocial (gestión administrativa) • Peligro Biomecánico (pantallas de visualización) • Peligro Locativo en inspecciones de campo",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -6097,7 +6170,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -6220,7 +6299,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Eléctrico (baja y media tensión) • Peligro Mecánico (órganos móviles) • Peligro Químico (lubricantes, solventes)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -6343,7 +6428,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -6466,7 +6557,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro de Tránsito / Movilidad • Peligro Mecánico (atropellamiento, volcamiento) • Peligro Biomecánico (vibraciones cuerpo entero)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -6589,7 +6686,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro de Tránsito / Movilidad • Peligro Mecánico (atropellamiento, volcamiento) • Peligro Biomecánico (vibraciones cuerpo entero)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -6712,7 +6815,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -6835,7 +6944,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -6958,7 +7073,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Eléctrico (baja y media tensión) • Peligro Mecánico (órganos móviles) • Peligro Químico (lubricantes, solventes)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -7071,7 +7192,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Psicosocial (gestión administrativa) • Peligro Biomecánico (pantallas de visualización) • Peligro Locativo en inspecciones de campo",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -7185,7 +7312,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Psicosocial (responsabilidad y toma de decisiones) • Peligro Biomecánico (trabajo de escritorio)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -7308,7 +7441,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -7431,7 +7570,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Eléctrico (baja y media tensión) • Peligro Mecánico (órganos móviles) • Peligro Químico (lubricantes, solventes)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -7549,7 +7694,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -7724,7 +7875,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -7951,7 +8108,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -8084,7 +8247,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -8214,7 +8383,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -8337,7 +8512,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -8458,7 +8639,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Psicosocial (gestión administrativa) • Peligro Biomecánico (pantallas de visualización) • Peligro Locativo en inspecciones de campo",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -8588,7 +8775,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -8667,7 +8860,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Psicosocial (responsabilidad y toma de decisiones) • Peligro Biomecánico (trabajo de escritorio)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -8788,7 +8987,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Psicosocial (gestión administrativa) • Peligro Biomecánico (pantallas de visualización) • Peligro Locativo en inspecciones de campo",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -8911,7 +9116,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -9034,7 +9245,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -9157,7 +9374,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -9287,7 +9510,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Eléctrico (baja y media tensión) • Peligro Mecánico (órganos móviles) • Peligro Químico (lubricantes, solventes)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -9410,7 +9639,13 @@
       "anexoContractual": {
         "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
         "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994."
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -9464,6 +9699,143 @@
       },
       "id": "cargo-cfg-1793496501739",
       "updatedAt": "2026-11-01T01:28:21.830Z"
+    },
+    {
+      "cargo": "AYUDANTE DE OBRA",
+      "companyId": "emp-1792009016839",
+      "perfil": {
+        "objetivo": "Desempeñar con excelencia y estricto apego a las normas de seguridad las funciones asociadas al cargo de AYUDANTE DE OBRA, asegurando la continuidad operacional y la prevención de accidentes laborales.",
+        "educacion": "Bachiller Académico o Técnico Laboral",
+        "experiencia": "1 año en labores afines a la operación o manufactura",
+        "formacionSST": "Inducción general en SG-SST, Curso 50h SST (si aplica), Protocolo de EPP, Plan de Emergencias y Reporte de Peligros.",
+        "competencias": "Compromiso con el autocuidado, disciplina operacional, trabajo en equipo, orientación a la calidad y comunicación efectiva.",
+        "examenesMedicos": "Énfasis osteomuscular, agudeza visual, audiometría tonal ocupacional y valoración médica general."
+      },
+      "manualFunciones": {
+        "funcionesOperativas": [
+          "Ejecutar las labores diarias asignadas al puesto de AYUDANTE DE OBRA cumpliendo con los estándares técnicos y de calidad establecidos.",
+          "Inspeccionar el estado de las herramientas, máquinas y equipos asignados antes de iniciar las operaciones.",
+          "Mantener el orden, la limpieza y la organización estricta en su área o puesto de trabajo.",
+          "Notificar de inmediato cualquier falla, avería o condición anómala en la maquinaria o procesos.",
+          "Participar en los inventarios, relevos de turno y diligenciamiento de planillas de control operativo."
+        ],
+        "responsabilidadesSST": [
+          "Procurar el cuidado integral de su salud física y mental en el desarrollo de sus actividades laborales.",
+          "Suministrar información clara, veraz y completa sobre su estado de salud al empleador o área de SST.",
+          "Cumplir a cabalidad las normas, reglamentos, instrucciones y procedimientos del SG-SST de la empresa.",
+          "Informar de manera oportuna sobre los peligros y riesgos latentes detectados en su sitio de trabajo.",
+          "Participar activamente en las actividades de capacitación, entrenamiento y simulacros de emergencia programados.",
+          "Participar y contribuir activamente al cumplimiento de los objetivos y metas del SG-SST (Dec. 1072/2015 Art. 2.2.4.6.10).",
+          "Usar permanentemente y cuidar los Elementos de Protección Personal (EPP) suministrados por la empresa."
+        ]
+      },
+      "pts": {
+        "titulo": "Procedimiento de Trabajo Seguro (PTS) para AYUDANTE DE OBRA",
+        "peligrosEvaluados": [
+          "Peligro Mecánico (atrapamiento",
+          "golpes por herramientas)",
+          "Peligro Biomecánico (posturas prolongadas",
+          "manipulación de cargas)",
+          "Peligro Locativo (superficies irregulares",
+          "caídas al mismo nivel)"
+        ],
+        "eppRequeridos": [
+          "Casco de seguridad con barbuquejo",
+          "Gafas de seguridad con protección UV",
+          "Botas de seguridad con puntera dieléctrica",
+          "Guantes de protección mecánica",
+          "Protección auditiva de inserción"
+        ],
+        "faseAntes": "Realizar inspección preoperacional obligatoria del área y herramientas. Verificar que los EPP se encuentren limpios y en óptimo estado. Reportar cualquier síntoma de salud que impida la labor.\n1. Diligenciamiento de Permisos y Charla SST: Reunirse en la base de la obra. Verificar con el Inspector SST el estado físico y anímico del personal, diligenciar y firmar el Permiso de Trabajo en Alturas, Permiso de Trabajo en Caliente (si aplica soplete) y formato ATS diario.\n2. Inspección Preoperacional de EPP y EPCC: Inspeccionar de forma táctil y visual reatas, costuras y herrajes del arnés; comprobar apertura y cierre automático de mosquetones; revisar fecha de fabricación (< 5 años o según fabricante); chequear respirador y filtros.\n3. Señalización y Delimitación en Nivel Cero: Instalar cinta perimetral de peligro roja/amarilla, colombinas y conos reflectivos en el suelo justo debajo del área de cubierta o terraza a intervenir.\n4. Ascenso Seguro a Cubierta o Terraza: Utilizar escaleras fijas o andamios certificados. Subir manteniendo los 3 puntos de apoyo en todo momento (dos manos y un pie, o dos pies y una mano). Conectar el freno de detención a la línea de vida vertical antes del primer escalón.\n5. Instalación de Puntos de Anclaje y Líneas de Vida: Acoplar conectores Tie-off o abrazaderas de viga a estructuras certificadas de concreto o acero estructural (capacidad mínima demostrada de 5.000 lbf por persona). Conectar la eslinga con absorbedor antes de acercarse al pretil o borde.\n6. Izaje Seguro de Materiales e Insumos: Elevar cuñetes de emulsión, mantos y herramientas mediante aparejo de polea certificado con cuerda trenzada de 12 mm o malacate eléctrico fijado a la losa.\n7. Escarificado, Limpieza y Retiro de Manto Deteriorado: Utilizar espátulas, cincel o pulidora manual con disco de copa diamantado. Raspar material asfáltico viejo y retirar partes sueltas de mortero. Conectar la aspiradora o barrer humedeciendo previamente.\n8. Lavado de Sustrato y Resane de Fisuras: Conectar la hidrolavadora a toma con interruptor diferencial GFCI. Aplicar agua a presión para retirar polvo, lodo y grasas. Resanar fisuras con mortero impermeabilizante o sellador elastomérico usando llana y espátula.\n9. Aplicación de Emulsión o Imprimante Asfáltico: Verter el imprimante en bandeja plástica. Esparcir con rodillo o brocha ancha de manera uniforme manteniendo posturas de rodillas protegidas con rodilleras industriales.\n10. Instalación de Manto Asfáltico con Soplete (Trabajo en Caliente): Verificar válvula reguladora del cilindro de GLP. Encender soplete con chispero. Calentar la cara inferior del manto hasta fundir la película de polietileno mientras se desenrolla el manto presionando con espátula o rodillo de presión.\n11. Orden, Aseo y Disposición de Residuos: Recoger retazos de manto asfáltico, envases plásticos de solventes y escombros. Depositar en costales de fibra y bajar mediante malacate o polea hacia el punto de acopio.\n12. Desconexión de Equipos y Cierre de Permiso: Apagar válvulas de cilindros de GLP y purgar mangueras. Desconectar tableros eléctricos. Descender de la cubierta utilizando el sistema de acceso vertical. Entregar el área y firmar el cierre del Permiso de Trabajo con el Inspector SST.",
+        "faseDurante": "Mantener la atención y concentración exclusiva en la labor. Prohibido el uso de celulares o distractores en áreas operativas. Aplicar posturas ergonómicas y pausas activas. Respetar las guardas de seguridad.\n* Diligenciar al 100% el permiso y ATS antes de iniciar.\n* Comprobar aptitud médica vigente en el profesiograma.\n* No iniciar labores si no hay coordinador de alturas en obra.\n* Registrar la inspección en la lista de chequeo diaria.\n* Retirar de servicio y marcar de inmediato cualquier equipo con cortes, costuras rotas, quemaduras o deformación mecánica.\n* Delimitar un radio de seguridad mínimo de 2.0 metros respecto al borde de caída.* Prohibir el paso peatonal no autorizado bajo el área de labor.\n* Prohibido subir o bajar con herramientas en las manos.\n* Mantener el frente de subida hacia los peldaños.\n* Usar bolso o morral portaherramientas para el ascenso.\n* Jamás anclarse a tuberías de PVC, bajantes de agua, pasamanos débiles ni ductos de ventilación.\n* Asegurar que el factor de caída sea siempre Factor 0 o 1 (punto de anclaje por encima de la cabeza).\n* Coordinar maniobra mediante comunicación por radio o señas claras.* Operar polea sin asomarse al vacío (usar línea de restricción a 1.2 m del borde).* Cargas superiores a 25 kg deben izarse mecánicamente.\n\n\n* Uso permanente de protección respiratoria con prefiltros P100.\n* Protección auditiva y gafas herméticas tipo monogafa.\n* Descansos ergonómicos cada 20 minutos de uso de herramientas vibratorias.\n* Mantener conexiones eléctricas suspendidas y secas en todo momento.* Uso de botas de caucho antideslizantes.\n* Permanecer 100% anclado a la línea de vida mientras el piso se encuentre húmedo.\n* Uso de guantes de nitrilo de caña larga y respirador con cartucho químico para vapores orgánicos.\n* Uso obligatorio de rodilleras acolchadas ergonómicas.\n* Posicionarse a favor del viento para alejar los vapores del rostro.\n* Disponer de un extintor multipropósito ABC de 20 lb a menos de 3 metros del punto de llama.\n* Uso de delantal, guantes de carnaza larga y polainas ignífugas.\n* El cilindro de GLP debe permanecer vertical, amarrado y a mínimo 5 metros del soplete en llama.\n* Barrer la superficie dejando la losa completamente despejada.\n* Clasificar residuos peligrosos (RESPEL) con rotulado SGA.\n* No dejar materiales acopiados a menos de 1.5 metros del borde de losa.\n* Realizar prueba de jabón en válvulas de cierre de gas.\n* Inspeccionar el área 30 minutos después de apagar el soplete (vigilancia contra rescoldos o fuego latente).\n* Devolver arneses limpios y secos al cuarto de almacenamiento de SST.",
+        "faseDespues": "Desenergizar y apagar los equipos siguiendo la secuencia del manual. Realizar limpieza y orden y aseo del puesto. Almacenar herramientas en su sitio designado. Reportar el estado final del turno.",
+        "emergencias": "En caso de incidente, accidente o conato de incendio: Detener de inmediato la labor, activar la alarma, evacuar por la ruta señalizada hacia el Punto de Encuentro y avisar de inmediato al Coordinador SST.\n1. En caso de Caída Suspendida de un Trabajador\nAlerta inmediata: Dar la voz de alarma al Coordinador de Trabajo en Alturas y a la brigada de emergencia.\nControl del trauma de suspensión: Si el trabajador está consciente, indicarle que flexione repetidamente las piernas hacia el pecho o utilice la cinta antipánico de alivio de suspensión para bombear sangre desde las extremidades inferiores hacia el corazón.\nRescate técnico en menos de 15 minutos: El personal capacitado operará el kit de rescate en alturas preinstalado (polipasto de rescate 4:1 con descendedor auto-frenante) para bajar o izar a la víctima a una superficie rígida y segura.\nPost-rescate: Ubicar al accidentado en posición semisentada o decúbito lateral estable (no acostarlo totalmente plano boca arriba de forma brusca para evitar sobrecarga de retorno venoso al corazón).\n2. En caso de Incendio o Conflagración por Soplete/Gas\nCerrar inmediatamente la llave de paso del cilindro de gas licuado de petróleo (GLP) si la válvula no está envuelta en llamas directas.\nTomar el extintor ABC de 20 lb ubicado en el puesto, halar el pasador de seguridad, apuntar la boquilla hacia la base del fuego en ángulo de 45° y descargar en movimiento de abanico.\nSi el fuego no se controla en los primeros 30 segundos o compromete el cilindro de gas, evacuar de inmediato la losa/cubierta por las rutas de evacuación señalizadas y comunicarse con la línea 123 (Cuerpo Oficial de Bomberos).\n3. En caso de Contacto Químico o Intoxicación por Vapores\nContacto ocular con solvente/imprimante: Lavar con agua limpia a chorro continuo o suero fisiológico durante mínimo 15 minutos manteniendo los párpados completamente abiertos. No frotar.\nContacto en piel: Retirar de inmediato la ropa impregnada de químico y lavar la zona afectada con abundante agua y jabón neutro.\nInhalación: Trasladar inmediatamente al trabajador hacia un área abierta, con sombra y libre de vapores. Mantener ventilado.\nEntregar al personal médico de traslado la Ficha de Datos de Seguridad (FDS) del producto involucrado.\n4. Cadena de Comunicación de Emergencias - Servicios IG\nResidente de Obra / Supervisor SST Servicios IG: Celular de emergencias operativas de campo.\nLínea Única de Emergencias Nacional: 123 (Bomberos, Defensa Civil, Cruz Roja y Policía).\nLínea de Atención de Urgencias ARL (Compañía de Seguros de Riesgos Laborales): Para autorización médica y direccionamiento a la clínica de la red asistencial con convenio para traumas y quemaduras."
+      },
+      "profesiograma": {
+        "ingreso": "Examen médico ocupacional con énfasis osteomuscular, Visiometría ocupacional, Audiometría tonal y Espirometría (si hay exposición a material particulado).",
+        "periodico": "Control anual osteomuscular, audiometría de control y seguimiento en Programa de Vigilancia Epidemiológica (PVE).",
+        "egreso": "Valoración médica ocupacional general de retiro (vigencia 5 días hábiles tras terminación del contrato).",
+        "restricciones": "Vértigo no controlado (para trabajo en alturas), afecciones respiratorias severas no tratadas o hernias discales agudas sin rehabilitación."
+      },
+      "matrizEpp": {
+        "eppRequeridos": [
+          "Casco de seguridad tipo II con barbuquejo de 3 o cuatro puntos de sujeción (con amortiguación para impactos laterales).",
+          "Gafas de seguridad con filtro UV 400 (uso permanente en exteriores soleados; transparentes con ventilación indirecta durante lijado o pulido).",
+          "Protección auditiva tipo inserción o copa (requerida durante el uso de hidrolavadoras, escarificadoras o pulidoras).",
+          "Guantes de protección específicos:",
+          "Guantes de vaqueta/carnaza con costura de refuerzo para transporte de materiales, izaje y manejo de soplete.",
+          "Guantes de nitrilo o neopreno de caña alta para la manipulación y aplicación directa de imprimantes, resinas o solventes.",
+          "Calzado de seguridad: Botas de seguridad con puntera reforzada, suela de caucho vulcanizado antideslizante (y botas de caucho de caña alta con puntera para fases de hidrolavado).",
+          "Rodilleras ergonómicas industriales: De material flexible y acolchado de alta densidad para postura de rodillas.",
+          "Dotación térmica y de protección corporal: Camisa de manga larga de dril/algodón grueso, capuchón tipo monja para protección de cuello y orejas contra radiación solar y delantal/polainas de carnaza (exclusivo para aplicación con soplete).",
+          "Sistema de Protección Contra Caídas (SPCC): Arnés de cuerpo entero multipropósito en X o H de 4 argollas (dorsal, esternal y laterales), eslinga doble con absorbedor de energía (eslinga en Y) y freno de detención para línea de vida vertical de 5/8\"."
+        ],
+        "normasTecnicas": "Casco ANSI Z89.1, Gafas ANSI Z87.1, Botas ASTM F2413 / NTC 2396, Guantes EN 388, Protección Auditiva ANSI S3.19.",
+        "frecuenciaReposicion": "Dotación legal cada 4 meses (30 abril, 31 agosto, 20 diciembre - Art. 230 CST) y reposición inmediata de EPP por deterioro o desgaste."
+      },
+      "anexoContractual": {
+        "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
+        "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
+      },
+      "contratoModelo": {
+        "tipoSugerido": "Término Indefinido",
+        "jornada": "46 horas semanales ordinarias (Ley 2101 de 2021) conforme al horario establecido por el empleador.",
+        "lugarTrabajo": "Sedes e instalaciones operativas y administrativas de la empresa contratante.",
+        "obligacionesSST": "El trabajador se compromete expresamente a cumplir todas las directrices del SG-SST (Decreto 1072 de 2015). El incumplimiento reiterado de normas de seguridad constituirá justa causa de terminación del contrato."
+      },
+      "fuentes": {
+        "manual": [
+          {
+            "id": "f-manual-1793729781142",
+            "titulo": "Manual de Funciones y Responsabilidades SG-SST Dec. 1072 (Google Docs)",
+            "url": "https://docs.google.com/document/d/1y2GNo3owQiyUmRa_WM9EwyQEjwGy9yOZtuHbCBXoTg0/edit?usp=sharing"
+          }
+        ],
+        "perfil": [
+          {
+            "id": "f-perfil-1793729781164",
+            "titulo": "Perfil del Cargo, Educación y Competencias Res. 0312 (Google Sheets)",
+            "url": "https://docs.google.com/document/d/1Sf4ymoFi3Ps1sO_4jxwFf0Y0SXPubtQtJBo0Sb1aS2o/edit?usp=sharing"
+          }
+        ],
+        "pts": [
+          {
+            "id": "f-1793731085868",
+            "titulo": "PTS - AYUDANTE DE OBRA",
+            "url": "https://docs.google.com/document/d/1TEZ5L6Ie5-Q8lzsPw7KIgBHKYCAd0DkP-Kv1EHt67w0/edit?usp=sharing"
+          }
+        ],
+        "profesiograma": [
+          {
+            "id": "f-profesiograma-1793729781206",
+            "titulo": "Matriz de Profesiograma y Exámenes Médicos Res. 2346/2007 (Google Sheets)",
+            "url": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?usp=sharing"
+          }
+        ],
+        "epp": [
+          {
+            "id": "f-1793731226188",
+            "titulo": "",
+            "url": ""
+          }
+        ],
+        "anexo": [
+          {
+            "id": "f-anexo-1793729781242",
+            "titulo": "Anexo Contractual de Responsabilidades SST y Riesgos CST (Google Docs)",
+            "url": "https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing"
+          }
+        ]
+      },
+      "id": "cargo-cfg-1793729781143",
+      "updatedAt": "2026-11-03T18:43:48.932Z"
     }
   ],
   "process_maps": [
@@ -9732,7 +10104,9 @@
       "inputs": "Balance financiero, análisis DOFA, marco regulatorio",
       "outputs": "Plan Estratégico y Presupuesto Oficial Aprobado",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9747,7 +10121,9 @@
       "inputs": "Plan Estratégico",
       "outputs": "Actas de alineación directiva y compromisos",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9762,7 +10138,9 @@
       "inputs": "Informes de gestión, auditorías, estados financieros",
       "outputs": "Acta formal de Revisión Gerencial",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9777,7 +10155,9 @@
       "inputs": "Hallazgos de revisión gerencial",
       "outputs": "Planes de mejora y reasignación de partidas",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9792,7 +10172,9 @@
       "inputs": "Autoevaluación Res. 0312, matriz de peligros previa",
       "outputs": "Plan Anual de Trabajo SST firmado por Gerencia",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9824,7 +10206,9 @@
       "inputs": "Reportes de incidentes, estadísticas de nómina",
       "outputs": "Tablero de Control de Indicadores SST",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9839,7 +10223,9 @@
       "inputs": "Informes de investigación de accidentes (FURAT)",
       "outputs": "Plan de Acciones Correctivas cerrado y verificado",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9854,7 +10240,9 @@
       "inputs": "Requerimientos de cliente",
       "outputs": "Orden de producción y planos de ensamble",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9886,7 +10274,9 @@
       "inputs": "Materia prima",
       "outputs": "Reporte de aceptación de insumos",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9952,7 +10342,9 @@
       "inputs": "Mueble/producto ensamblado",
       "outputs": "Checklist de control de calidad final",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9967,7 +10359,9 @@
       "inputs": "Producto aprobado",
       "outputs": "Producto empacado listo para despacho",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9982,7 +10376,9 @@
       "inputs": "Catálogo de cargos, manual de funciones",
       "outputs": "Profesiograma oficial actualizado",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -9997,7 +10393,9 @@
       "inputs": "Documentos del aspirante, examen de ingreso",
       "outputs": "Contrato firmado, anexos SST y afiliaciones activas",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10012,7 +10410,9 @@
       "inputs": "Base de datos de contratos",
       "outputs": "Cartas de preaviso o actas de prórroga emitidas",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10027,7 +10427,9 @@
       "inputs": "Paz y salvo laboral, entrega de puesto",
       "outputs": "Liquidación salarial pagada y certificado de examen",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10095,7 +10497,9 @@
       "inputs": "Reporte de trabajo finalizado",
       "outputs": "Hoja de vida de la herramienta actualizada",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10110,7 +10514,9 @@
       "inputs": "Procedimiento de auditoría, estándares mínimos",
       "outputs": "Plan de auditoría formalizado y comunicado",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10125,7 +10531,9 @@
       "inputs": "Listas de verificación Res. 0312, evidencias",
       "outputs": "Libro de notas de auditoría y registros fotográficos",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10140,7 +10548,9 @@
       "inputs": "Hallazgos consolidados",
       "outputs": "Informe de Auditoría Interna entregado a Gerencia",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10155,7 +10565,9 @@
       "inputs": "Planes de acción propuestos",
       "outputs": "Certificado de cierre de no conformidades",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-20T14:48:11-05:00",
       "updatedAt": "2026-10-20T14:48:11-05:00"
     },
@@ -10188,7 +10600,9 @@
       "inputs": "Balance financiero, análisis DOFA, marco regulatorio",
       "outputs": "Plan Estratégico y Presupuesto Oficial Aprobado",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10203,7 +10617,9 @@
       "inputs": "Plan Estratégico",
       "outputs": "Actas de alineación directiva y compromisos",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10218,7 +10634,9 @@
       "inputs": "Informes de gestión, auditorías, estados financieros",
       "outputs": "Acta formal de Revisión Gerencial",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10233,7 +10651,9 @@
       "inputs": "Hallazgos de revisión gerencial",
       "outputs": "Planes de mejora y reasignación de partidas",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10248,7 +10668,9 @@
       "inputs": "Autoevaluación Res. 0312, matriz de peligros previa",
       "outputs": "Plan Anual de Trabajo SST firmado por Gerencia",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10280,7 +10702,9 @@
       "inputs": "Reportes de incidentes, estadísticas de nómina",
       "outputs": "Tablero de Control de Indicadores SST",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10295,7 +10719,9 @@
       "inputs": "Informes de investigación de accidentes (FURAT)",
       "outputs": "Plan de Acciones Correctivas cerrado y verificado",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10310,7 +10736,9 @@
       "inputs": "Requerimientos de cliente",
       "outputs": "Orden de producción y planos de ensamble",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10342,7 +10770,9 @@
       "inputs": "Materia prima",
       "outputs": "Reporte de aceptación de insumos",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10408,7 +10838,9 @@
       "inputs": "Mueble/producto ensamblado",
       "outputs": "Checklist de control de calidad final",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10423,7 +10855,9 @@
       "inputs": "Producto aprobado",
       "outputs": "Producto empacado listo para despacho",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10438,7 +10872,9 @@
       "inputs": "Catálogo de cargos, manual de funciones",
       "outputs": "Profesiograma oficial actualizado",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10453,7 +10889,9 @@
       "inputs": "Documentos del aspirante, examen de ingreso",
       "outputs": "Contrato firmado, anexos SST y afiliaciones activas",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10468,7 +10906,9 @@
       "inputs": "Base de datos de contratos",
       "outputs": "Cartas de preaviso o actas de prórroga emitidas",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10483,7 +10923,9 @@
       "inputs": "Paz y salvo laboral, entrega de puesto",
       "outputs": "Liquidación salarial pagada y certificado de examen",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10551,7 +10993,9 @@
       "inputs": "Reporte de trabajo finalizado",
       "outputs": "Hoja de vida de la herramienta actualizada",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10566,7 +11010,9 @@
       "inputs": "Procedimiento de auditoría, estándares mínimos",
       "outputs": "Plan de auditoría formalizado y comunicado",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10581,7 +11027,9 @@
       "inputs": "Listas de verificación Res. 0312, evidencias",
       "outputs": "Libro de notas de auditoría y registros fotográficos",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10596,7 +11044,9 @@
       "inputs": "Hallazgos consolidados",
       "outputs": "Informe de Auditoría Interna entregado a Gerencia",
       "routine_type": "No_Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     },
@@ -10611,7 +11061,9 @@
       "inputs": "Planes de acción propuestos",
       "outputs": "Certificado de cierre de no conformidades",
       "routine_type": "Rutinaria",
-      "associated_tools_ids": [],
+      "associated_tools_ids": [
+
+      ],
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
     }
@@ -11310,6 +11762,44 @@
       "is_active": true,
       "createdAt": "2026-10-31T20:26:31-05:00",
       "updatedAt": "2026-10-31T20:26:31-05:00"
+    },
+    {
+      "id": "jp-emp-1792009016839-1793729781035-llj",
+      "tenant_id": "emp-1792009016839",
+      "code": "CARG-003",
+      "title": "AYUDANTE DE OBRA",
+      "hierarchy_level": "Operativo",
+      "parent_job_position_id": null,
+      "summary_objective": "Apoyar de manera técnica, operativa y segura la ejecución de proyectos de alistamiento de superficies, impermeabilización de terrazas, y mantenimiento e instalación de cubiertas en alturas, garantizando el cumplimiento estricto de los procedimientos de trabajo seguro, el uso adecuado de equipos de protección contra caídas y el manejo responsable de productos químicos e insumos constructivos.",
+      "required_education": "Bachiller Académico o Técnico",
+      "required_experience": "1 año de experiencia",
+      "required_skills": [
+        "Trabajo en equipo",
+        "seguridad industrial",
+        "compromiso"
+      ],
+      "medical_exams_profesiograma": {
+        "ingreso": [
+          "Examen Médico Ocupacional con énfasis Osteomuscular",
+          "Optometría",
+          "Audiometría"
+        ],
+        "periodico": [
+          "Control Médico Anual SST"
+        ],
+        "egreso": [
+          "Examen Médico de Retiro"
+        ]
+      },
+      "required_epp_list": [
+        "Casco de Seguridad",
+        "Botas de Seguridad",
+        "Guantes de Protección",
+        "Protección Auditiva"
+      ],
+      "is_active": true,
+      "updatedAt": "2026-11-03T18:16:21.035Z",
+      "createdAt": "2026-11-03T18:16:21.035Z"
     }
   ],
   "process_activity_positions": [
@@ -11818,7 +12308,9 @@
       "updatedAt": "2026-10-31T20:26:31-05:00"
     }
   ],
-  "job_position_documents": [],
+  "job_position_documents": [
+
+  ],
   "super_admins": [
     {
       "id": "sa-001",
@@ -11845,7 +12337,7 @@
       "ultimoIngreso": "2026-10-31T21:00:00.000Z"
     }
   ],
-  "updatedAt": "2026-10-31T20:50:11-05:00",
+  "updatedAt": "2026-11-03T13:43:49-05:00",
   "master_standard_templates": [
     {
       "id": "tpl-1-1-1-1",
@@ -14433,6 +14925,216 @@
       "is_active": true,
       "created_at": "2026-10-31T20:41:35-05:00",
       "updated_at": "2026-10-31T20:41:35-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-1",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "EPP-CAS-01",
+      "item_name": "Casco de Seguridad Industrial Tipo I Clase E (4 puntos de apoyo)",
+      "category": "EPP",
+      "body_part_protected": "Cabeza",
+      "technical_standard": "ANSI Z89.1 / NTC 1523",
+      "useful_life_days": 365,
+      "requires_size": false,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-2",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "EPP-GAF-01",
+      "item_name": "Gafas de Seguridad con Protección Lateral y Filtro Antiempañante",
+      "category": "EPP",
+      "body_part_protected": "Ojos_Rostro",
+      "technical_standard": "ANSI Z87.1 / NTC 1825",
+      "useful_life_days": 90,
+      "requires_size": false,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-3",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "EPP-AUD-01",
+      "item_name": "Protector Auditivo de Inserción Siliconado Reutilizable NRR 27dB",
+      "category": "EPP",
+      "body_part_protected": "Auditiva",
+      "technical_standard": "ANSI S3.19 / NTC 2272",
+      "useful_life_days": 60,
+      "requires_size": false,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-4",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "EPP-AUD-02",
+      "item_name": "Protector Auditivo Tipo Copa para Ensamble a Casco NRR 25dB",
+      "category": "EPP",
+      "body_part_protected": "Auditiva",
+      "technical_standard": "ANSI S3.19",
+      "useful_life_days": 180,
+      "requires_size": false,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-5",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "EPP-RES-01",
+      "item_name": "Respirador N95 Libre de Mantenimiento contra Material Particulado",
+      "category": "EPP",
+      "body_part_protected": "Respiratoria",
+      "technical_standard": "NIOSH 42 CFR 84 / NTC 3852",
+      "useful_life_days": 30,
+      "requires_size": false,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-6",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "EPP-RES-02",
+      "item_name": "Respirador Media Cara Reutilizable con Filtros Mixtos Químicos/Polvo",
+      "category": "EPP",
+      "body_part_protected": "Respiratoria",
+      "technical_standard": "NIOSH 42 CFR 84 / NTC 1728",
+      "useful_life_days": 180,
+      "requires_size": false,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-7",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "EPP-GUA-01",
+      "item_name": "Guantes de Vaqueta de Cuero Reforzado para Riesgo Mecánico",
+      "category": "EPP",
+      "body_part_protected": "Manos_Brazos",
+      "technical_standard": "EN 388:2016 / NTC 2190",
+      "useful_life_days": 60,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-8",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "EPP-GUA-02",
+      "item_name": "Guantes de Nitrilo Industrial Alta Resistencia Química y Grasas",
+      "category": "EPP",
+      "body_part_protected": "Manos_Brazos",
+      "technical_standard": "EN 374 / NTC 2219",
+      "useful_life_days": 45,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-9",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "EPP-CAL-01",
+      "item_name": "Botas de Seguridad Cuero Hidrofugado con Puntera de Acero",
+      "category": "EPP",
+      "body_part_protected": "Pies_Piernas",
+      "technical_standard": "ASTM F2413 / NTC 2396",
+      "useful_life_days": 120,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-10",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "EPP-CAL-02",
+      "item_name": "Botas Dieléctricas con Puntera Composite 18kV Suela PU/TPU",
+      "category": "EPP",
+      "body_part_protected": "Pies_Piernas",
+      "technical_standard": "ASTM F2413 Dieléctrica",
+      "useful_life_days": 180,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-11",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "EPP-ALT-01",
+      "item_name": "Arnés de Seguridad Cuerpo Entero Multipropósito 4 Argollas",
+      "category": "EPP",
+      "body_part_protected": "Alturas_Anticaidas",
+      "technical_standard": "ANSI Z359.11 / Res. 4272:2021",
+      "useful_life_days": 365,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-12",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "DOT-CAM-01",
+      "item_name": "Camisa de Dotación Manga Larga Jean 14 oz Trabajo Pesado",
+      "category": "DOTACION_LEGAL",
+      "body_part_protected": "Tronco_Cuerpo",
+      "technical_standard": "CST Art. 230 / NTC 2261",
+      "useful_life_days": 120,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-13",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "DOT-PAN-01",
+      "item_name": "Pantalón de Dotación Jean Minero / Operativo 14 oz Doble Costura",
+      "category": "DOTACION_LEGAL",
+      "body_part_protected": "Pies_Piernas",
+      "technical_standard": "CST Art. 230",
+      "useful_life_days": 120,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-14",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "DOT-CHA-01",
+      "item_name": "Chaqueta Impermeable de Alta Visibilidad con Cintas Reflectivas 3M",
+      "category": "DOTACION_LEGAL",
+      "body_part_protected": "Tronco_Cuerpo",
+      "technical_standard": "ANSI/ISEA 107",
+      "useful_life_days": 180,
+      "requires_size": true,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
+    },
+    {
+      "id": "epp-cat-emp-1792009016839-15",
+      "tenant_id": "emp-1792009016839",
+      "item_code": "DOT-PET-01",
+      "item_name": "Peto de Carnaza Resistente a Chispas y Radiación Térmica",
+      "category": "ROPA_TRABAJO_ESPECIAL",
+      "body_part_protected": "Tronco_Cuerpo",
+      "technical_standard": "NTC 3252",
+      "useful_life_days": 180,
+      "requires_size": false,
+      "is_active": true,
+      "created_at": "2026-11-03T13:38:58-05:00",
+      "updated_at": "2026-11-03T13:38:58-05:00"
     }
   ],
   "job_position_epp_matrix": [
