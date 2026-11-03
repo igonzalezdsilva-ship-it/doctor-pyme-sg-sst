@@ -1312,115 +1312,115 @@ export async function renderProcessMap() {
                                   <!-- Fila 1: Cláusulas I, II, III -->
                                   <div>
                                     <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
-                                      <span>I. Cláusula Primera - Peligros GTC 45:</span>
-                                      <span class="text-[9px] font-semibold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">Notificación</span>
+                                      <span>I. Cláusula Primera: Objeto, Cargo y Alcance</span>
+                                      <span class="text-[9px] font-semibold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">Objeto</span>
                                     </label>
                                     <textarea 
-                                      id="est-anexo-riesgos-${cargo.id}" 
+                                      id="est-anexo-clausula1-${cargo.id}" 
                                       rows="4"
-                                      placeholder="Peligros prioritarios según matriz GTC 45..."
+                                      placeholder="Objeto contractual, cargo y alcance de funciones..."
                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition shadow-2xs"
-                                    >${escapeHtmlCargo(configCargo.anexoContractual?.notificacionRiesgos || '')}</textarea>
+                                    >${escapeHtmlCargo(configCargo.anexoContractual?.clausula1_objeto || configCargo.anexoContractual?.notificacionRiesgos || '')}</textarea>
                                   </div>
                                   <div>
                                     <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
-                                      <span>II. Cláusula Segunda - Deberes en SST:</span>
-                                      <span class="text-[9px] font-semibold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">Art. 58 CST</span>
+                                      <span>II. Cláusula Segunda: Duración y Terminación</span>
+                                      <span class="text-[9px] font-semibold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">Duración</span>
                                     </label>
                                     <textarea 
-                                      id="est-anexo-clausula-${cargo.id}" 
+                                      id="est-anexo-clausula2-${cargo.id}" 
                                       rows="4"
-                                      placeholder="Obligaciones ineludibles y autocuidado (Dec. 1072)..."
+                                      placeholder="Duración de la labor y causales de terminación..."
                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition shadow-2xs"
-                                    >${escapeHtmlCargo(configCargo.anexoContractual?.clausulaPrincipal || '')}</textarea>
+                                    >${escapeHtmlCargo(configCargo.anexoContractual?.clausula2_duracion || '')}</textarea>
                                   </div>
                                   <div>
                                     <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
-                                      <span>III. Cláusula Tercera - EPP & Dotación:</span>
-                                      <span class="text-[9px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">Res. 2400</span>
+                                      <span>III. Cláusula Tercera: Salario y Forma de Pago</span>
+                                      <span class="text-[9px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">Salario</span>
                                     </label>
                                     <textarea 
-                                      id="est-anexo-epp-${cargo.id}" 
+                                      id="est-anexo-clausula3-${cargo.id}" 
                                       rows="4"
-                                      placeholder="Uso permanente, inspección y reposición de EPP (Art. 230 CST)..."
+                                      placeholder="Monto salarial, periodicidad y prestaciones sociales..."
                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition shadow-2xs"
-                                    >${escapeHtmlCargo(configCargo.anexoContractual?.usoEpp || '')}</textarea>
+                                    >${escapeHtmlCargo(configCargo.anexoContractual?.clausula3_salario || '')}</textarea>
                                   </div>
 
                                   <!-- Fila 2: Cláusulas IV, V, VI -->
                                   <div>
                                     <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
-                                      <span>IV. Cláusula Cuarta - Trabajo Seguro (PTS):</span>
-                                      <span class="text-[9px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">Protocolos</span>
+                                      <span>IV. Cláusula Cuarta: Protocolos SST (Alto Riesgo)</span>
+                                      <span class="text-[9px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">SST / PTS</span>
                                     </label>
                                     <textarea 
-                                      id="est-anexo-pts-${cargo.id}" 
+                                      id="est-anexo-clausula4-${cargo.id}" 
                                       rows="4"
-                                      placeholder="Cumplimiento de PTS, permisos y prohibición de actos inseguros..."
+                                      placeholder="Obligaciones especiales, protocolos de alto riesgo y uso de EPP..."
                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition shadow-2xs"
-                                    >${escapeHtmlCargo(configCargo.anexoContractual?.cumplimientoPts || '')}</textarea>
+                                    >${escapeHtmlCargo(configCargo.anexoContractual?.clausula4_obligaciones_sst || configCargo.anexoContractual?.clausulaPrincipal || '')}</textarea>
+                                  </div>
+                                  <div>
+                                    <label class="block text-[11px] font-bold text-rose-700 mb-1 flex items-center justify-between">
+                                      <span>V. Cláusula Quinta: Faltas Graves y Justa Causa</span>
+                                      <span class="text-[9px] font-semibold text-rose-700 bg-rose-100 px-1.5 py-0.5 rounded">Art. 62 CST</span>
+                                    </label>
+                                    <textarea 
+                                      id="est-anexo-clausula5-${cargo.id}" 
+                                      rows="4"
+                                      placeholder="Faltas graves de seguridad y causales de terminación con justa causa..."
+                                      class="w-full px-3 py-2 bg-rose-50/50 border border-rose-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-rose-500 focus:outline-none transition shadow-2xs"
+                                    >${escapeHtmlCargo(configCargo.anexoContractual?.clausula5_faltas_graves || configCargo.anexoContractual?.regimenSancionatorio || '')}</textarea>
                                   </div>
                                   <div>
                                     <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
-                                      <span>V. Cláusula Quinta - Reporte de Incidentes:</span>
-                                      <span class="text-[9px] font-semibold text-cyan-700 bg-cyan-50 px-1.5 py-0.5 rounded">Dec. 1295</span>
+                                      <span>VI. Cláusula Sexta: Culpa Exclusiva y Exoneración</span>
+                                      <span class="text-[9px] font-semibold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded">Art. 216 CST</span>
                                     </label>
                                     <textarea 
-                                      id="est-anexo-incidentes-${cargo.id}" 
+                                      id="est-anexo-clausula6-${cargo.id}" 
                                       rows="4"
-                                      placeholder="Notificación inmediata de accidentes y condiciones subestándar..."
+                                      placeholder="Culpa exclusiva del trabajador, imprudencia temeraria y exoneración patronal..."
                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition shadow-2xs"
-                                    >${escapeHtmlCargo(configCargo.anexoContractual?.reporteIncidentes || '')}</textarea>
-                                  </div>
-                                  <div>
-                                    <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
-                                      <span>VI. Cláusula Sexta - Capacitaciones:</span>
-                                      <span class="text-[9px] font-semibold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded">Plan Anual</span>
-                                    </label>
-                                    <textarea 
-                                      id="est-anexo-capac-${cargo.id}" 
-                                      rows="4"
-                                      placeholder="Asistencia obligatoria a capacitaciones, inducción y simulacros..."
-                                      class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition shadow-2xs"
-                                    >${escapeHtmlCargo(configCargo.anexoContractual?.capacitaciones || '')}</textarea>
+                                    >${escapeHtmlCargo(configCargo.anexoContractual?.clausula6_culpa_exclusiva || '')}</textarea>
                                   </div>
 
                                   <!-- Fila 3: Cláusulas VII, VIII, IX -->
                                   <div>
                                     <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
-                                      <span>VII. Cláusula Séptima - Exámenes Médicos:</span>
-                                      <span class="text-[9px] font-semibold text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded">Res. 2346</span>
+                                      <span>VII. Cláusula Séptima: Seguridad Social Integral</span>
+                                      <span class="text-[9px] font-semibold text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded">Salud/ARL</span>
                                     </label>
                                     <textarea 
-                                      id="est-anexo-examenes-${cargo.id}" 
+                                      id="est-anexo-clausula7-${cargo.id}" 
                                       rows="4"
-                                      placeholder="Asistencia a valoraciones médicas y cumplimiento de recomendaciones..."
+                                      placeholder="Afiliación y aportes a EPS, AFP y ARL (Ley 100/93)..."
                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition shadow-2xs"
-                                    >${escapeHtmlCargo(configCargo.anexoContractual?.examenesMedicos || '')}</textarea>
+                                    >${escapeHtmlCargo(configCargo.anexoContractual?.clausula7_seguridad_social || '')}</textarea>
                                   </div>
                                   <div>
                                     <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
-                                      <span>VIII. Cláusula Octava - Cero Alcohol / Drogas:</span>
-                                      <span class="text-[9px] font-semibold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded">Prevención</span>
+                                      <span>VIII. Cláusula Octava: Portabilidad de Herramientas</span>
+                                      <span class="text-[9px] font-semibold text-cyan-700 bg-cyan-50 px-1.5 py-0.5 rounded">Herramientas</span>
                                     </label>
                                     <textarea 
-                                      id="est-anexo-sustancias-${cargo.id}" 
+                                      id="est-anexo-clausula8-${cargo.id}" 
                                       rows="4"
-                                      placeholder="Prohibición de consumo o porte y consentimiento para pruebas preventivas..."
+                                      placeholder="Custodia, cuidado, inventario y portabilidad de herramientas de trabajo..."
                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition shadow-2xs"
-                                    >${escapeHtmlCargo(configCargo.anexoContractual?.politicaSustancias || '')}</textarea>
+                                    >${escapeHtmlCargo(configCargo.anexoContractual?.clausula8_elementos_herramientas || '')}</textarea>
                                   </div>
                                   <div>
-                                    <label class="block text-[11px] font-bold text-rose-700 mb-1 flex items-center justify-between">
-                                      <span>IX. Cláusula Novena - Régimen Sancionatorio:</span>
-                                      <span class="text-[9px] font-semibold text-rose-700 bg-rose-100 px-1.5 py-0.5 rounded">Art. 62 CST</span>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
+                                      <span>IX. Cláusula Novena: Domicilio, Acuerdo Total y Firmas</span>
+                                      <span class="text-[9px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">Cierre Legal</span>
                                     </label>
                                     <textarea 
-                                      id="est-anexo-sancion-${cargo.id}" 
+                                      id="est-anexo-clausula9-${cargo.id}" 
                                       rows="4"
-                                      placeholder="Incumplimiento como falta grave y justa causa de terminación..."
-                                      class="w-full px-3 py-2 bg-rose-50/50 border border-rose-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-rose-500 focus:outline-none transition shadow-2xs"
-                                    >${escapeHtmlCargo(configCargo.anexoContractual?.regimenSancionatorio || '')}</textarea>
+                                      placeholder="Domicilio contractual, acuerdo total y constancia formal de suscripción..."
+                                      class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition shadow-2xs"
+                                    >${escapeHtmlCargo(configCargo.anexoContractual?.clausula9_domicilio_firmas || '')}</textarea>
                                   </div>
                                 </div>
                               ` : ''}
@@ -3578,7 +3578,7 @@ window.imprimirMatrizEPP = function(cargoId) {
   abrirVentanaImpresion(`Matriz_EPP_${cargo.code}`, html);
 };
 
-// 6. ANEXO CONTRACTUAL DE SST Y NOTIFICACIÓN EXPRESA DE RIESGOS (9 CLÁUSULAS ESTRUCTURADAS)
+// 6. ANEXO CONTRACTUAL DE SST Y NOTIFICACIÓN EXPRESA DE RIESGOS (ESTRUCTURA CONTRACTUAL DEFINIDA)
 window.imprimirAnexoContractual = function(cargoId) {
   const empresa = store.getEmpresaActiva();
   const cargo = store.getJobPosition(cargoId);
@@ -3587,6 +3587,16 @@ window.imprimirAnexoContractual = function(cargoId) {
   const configCargo = store.getPerfilCargo(cargo.title, empresa.id);
   const anexoCfg = configCargo?.anexoContractual || {};
 
+  const c1 = anexoCfg.clausula1_objeto || anexoCfg.notificacionRiesgos || `EL EMPLEADOR contrata los servicios personales de EL TRABAJADOR para desempeñar el cargo de ${cargo.title}, ejecutando con diligencia, lealtad y subordinación las funciones inherentes al puesto conforme al Manual de Funciones, Perfil de Cargo y directrices técnicas de la empresa en el marco de su objeto social.`;
+  const c2 = anexoCfg.clausula2_duracion || 'El presente contrato se pacta por el término pactado / duración de la obra o labor encomendada. La relación laboral terminará válidamente por culminación de la labor, mutuo acuerdo o unilateralmente con justa causa conforme al Artículo 62 del Código Sustantivo del Trabajo (CST), sin lugar a indemnización.';
+  const c3 = anexoCfg.clausula3_salario || 'EL EMPLEADOR pagará a EL TRABAJADOR como remuneración mensual o quincenal por la prestación de sus servicios la suma estipulada en dinero legal colombiano, sirviendo de base para la liquidación de prestaciones sociales legales y aportes a Seguridad Social Integral.';
+  const c4 = anexoCfg.clausula4_obligaciones_sst || anexoCfg.clausulaPrincipal || 'Dada la naturaleza de alto riesgo y directrices del SG-SST, EL TRABAJADOR se obliga a: a) Procurar el cuidado integral de su salud; b) Cumplir estrictamente los Procedimientos de Trabajo Seguro (PTS); c) Portar y mantener los EPP asignados; d) No ejecutar tareas de alto riesgo sin Permiso de Trabajo y lista de chequeo; e) Asistir a capacitaciones y exámenes ocupacionales.';
+  const c5 = anexoCfg.clausula5_faltas_graves || anexoCfg.regimenSancionatorio || 'Se califica expresamente como FALTA GRAVE (Art. 58 y Art. 62 Literal a) Num. 6 del CST, y Art. 91 Dec. 1295/94): el no uso reiterado de los EPP, el desacato de los PTS, presentarse bajo efectos de alcohol o drogas, operar maquinaria sin autorización, y cualquier omisión que comprometa la seguridad, facultando la terminación unilateral con justa causa.';
+  const c6 = anexoCfg.clausula6_culpa_exclusiva || 'Si ocurre un accidente de trabajo derivado de la imprudencia temeraria, desatención voluntaria, violación de los Procedimientos de Trabajo Seguro o desacato de órdenes directas de SST por parte del trabajador, dicho evento se considerará por CULPA EXCLUSIVA DEL TRABAJADOR, exonerando al empleador de responsabilidad civil ordinaria de perjuicios (Art. 216 CST).';
+  const c7 = anexoCfg.clausula7_seguridad_social || 'EL EMPLEADOR afiliará y mantendrá al día las cotizaciones de EL TRABAJADOR al Sistema de Seguridad Social Integral: Salud (EPS), Pensión (AFP) y Riesgos Laborales (ARL), garantizando la cobertura de contingencias comunes y profesionales conforme a la Ley 100 de 1993 y Decreto 1072 de 2015.';
+  const c8 = anexoCfg.clausula8_elementos_herramientas || 'EL EMPLEADOR suministrará las herramientas, equipos y elementos requeridos para la labor, los cuales son propiedad de la empresa y se entregan bajo inventario y custodia. En caso de portabilidad o traslado fuera del centro de trabajo, el trabajador responderá por su debido cuidado, reporte de fallas y restitución inmediata.';
+  const c9 = anexoCfg.clausula9_domicilio_firmas || 'Las partes fijan como domicilio contractual la ciudad de ejecución de labores y manifiestan que este documento contiene la totalidad de los acuerdos vinculantes. Las partes firman en señal de expresa conformidad en dos ejemplares de igual tenor.';
+
   const html = `
     <table class="header-table">
       <tr>
@@ -3594,11 +3604,11 @@ window.imprimirAnexoContractual = function(cargoId) {
           ${generarCeldaLogoEmpresa(empresa, 'Blindaje Jurídico Laboral')}
         </td>
         <td style="width: 50%;">
-          <div class="doc-title">ANEXO CONTRACTUAL DE SST Y NOTIFICACIÓN EXPRESA DE RIESGOS</div>
-          <div class="doc-subtitle">Código Sustantivo del Trabajo Arts. 58 y 62 • Dec. 1072 de 2015 Art. 2.2.4.6.15 • 9 Cláusulas</div>
+          <div class="doc-title">MINUTA Y ANEXO CONTRACTUAL DE TRABAJO & SST</div>
+          <div class="doc-subtitle">Código Sustantivo del Trabajo • Dec. 1072 de 2015 Art. 2.2.4.6.15 • Blindaje Patronal</div>
         </td>
         <td style="width: 25%; font-size: 8pt; line-height: 1.4;">
-          <strong>ANEXO AL CONTRATO LABORAL</strong><br>
+          <strong>DOCUMENTO CONTRACTUAL</strong><br>
           <strong>CARGO:</strong> ${cargo.title}<br>
           <strong>FECHA:</strong> ${new Date().toLocaleDateString('es-CO')}<br>
           <strong>EMPRESA:</strong> ${empresa.razonSocial}
@@ -3608,87 +3618,84 @@ window.imprimirAnexoContractual = function(cargoId) {
 
     <div class="section-box">
       <p style="font-size: 8.5pt; margin: 0; line-height: 1.5; text-align: justify;">
-        El presente documento forma parte integral del Contrato Individual de Trabajo celebrado entre la empresa <strong>${empresa.razonSocial}</strong> (NIT: ${empresa.nit}) y el TRABAJADOR contratado para desempeñar el cargo de <strong>${cargo.title}</strong>. En virtud del deber legal de protección y prevención a cargo del empleador, y las obligaciones de obediencia, fidelidad y autocuidado a cargo del trabajador previstas en el Código Sustantivo del Trabajo (Arts. 56, 58 y 62), el Decreto Único Reglamentario 1072 de 2015 (Artículos 2.2.4.6.10 y 2.2.4.6.15), la Ley 1562 de 2012 y la Resolución 0312 de 2019, las partes pactan y suscriben de común acuerdo las siguientes nueve (9) cláusulas de obligatorio cumplimiento:
+        Entre los suscritos a saber: por una parte <strong>${empresa.razonSocial}</strong> (NIT: ${empresa.nit}), quien en adelante se denominará <strong>EL EMPLEADOR</strong>, y por la otra parte el trabajador que suscribe al pie de este documento, quien en adelante se denominará <strong>EL TRABAJADOR</strong> contratado para el cargo de <strong>${cargo.title}</strong>, se celebra el presente contrato individual y anexo contractual de trabajo con observancia plena de las siguientes cláusulas y estipulaciones:
       </p>
     </div>
 
     <!-- CLÁUSULA I -->
-    <div class="section-box" style="margin-bottom: 12px; padding: 10px 14px;">
-      <div class="section-title" style="font-size: 9pt; margin-bottom: 6px;">CLÁUSULA PRIMERA: NOTIFICACIÓN EXPRESA DE PELIGROS Y RIESGOS INHERENTES (GTC 45)</div>
-      <p style="font-size: 8.5pt; margin: 0 0 5px 0; text-align: justify; line-height: 1.45;">
-        El TRABAJADOR declara expresamente haber sido notificado, orientado e instruido sobre los factores de riesgo y peligros prioritarios a los que estará expuesto en su puesto y áreas de desempeño, conforme a la Matriz de Identificación de Peligros y Valoración de Riesgos GTC 45 de la empresa:
-      </p>
-      <p style="font-size: 8.5pt; font-weight: bold; color: #0f172a; margin: 0; background: #f8fafc; padding: 6px 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
-        ${anexoCfg.notificacionRiesgos || 'Riesgo Mecánico • Riesgo Biomecánico • Riesgo Físico • Riesgo Locativo • Riesgo Psicosocial'}
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px;">CLÁUSULA PRIMERA: OBJETO, CARGO Y ALCANCE</div>
+      <p style="font-size: 8.5pt; line-height: 1.45; margin: 0; text-align: justify;">
+        ${c1}
       </p>
     </div>
 
     <!-- CLÁUSULA II -->
-    <div class="section-box" style="margin-bottom: 12px; padding: 10px 14px;">
-      <div class="section-title" style="font-size: 9pt; margin-bottom: 6px;">CLÁUSULA SEGUNDA: OBLIGACIONES Y DEBERES INELUDIBLES EN SST (ART. 58 CST & DTO. 1072)</div>
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px;">CLÁUSULA SEGUNDA: DURACIÓN Y TERMINACIÓN DE LA LABOR</div>
       <p style="font-size: 8.5pt; line-height: 1.45; margin: 0; text-align: justify;">
-        ${anexoCfg.clausulaPrincipal || 'El TRABAJADOR declara conocer la Política de SST y se compromete a procurar el cuidado integral de su salud, suministrar información clara y veraz sobre su estado de salud, cumplir cabalmente las normas y reglamentos del SG-SST y acatar todas las directrices preventivas impartidas por la empresa y la ARL conforme al Art. 58 del Código Sustantivo del Trabajo y Decreto 1072 de 2015.'}
+        ${c2}
       </p>
     </div>
 
     <!-- CLÁUSULA III -->
-    <div class="section-box" style="margin-bottom: 12px; padding: 10px 14px;">
-      <div class="section-title" style="font-size: 9pt; margin-bottom: 6px;">CLÁUSULA TERCERA: USO OBLIGATORIO, CONSERVACIÓN Y REPOSICIÓN DE EPP Y DOTACIÓN (RES. 2400 & ART. 230 CST)</div>
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px;">CLÁUSULA TERCERA: SALARIO Y FORMA DE PAGO</div>
       <p style="font-size: 8.5pt; line-height: 1.45; margin: 0; text-align: justify;">
-        ${anexoCfg.usoEpp || 'El TRABAJADOR asume la obligación ineludible de utilizar permanentemente y en forma adecuada la dotación y los Elementos de Protección Personal (EPP) suministrados por el empleador bajo normas ANSI/NTC (Res. 2400/79 y Art. 230 CST). Asimismo, se obliga a inspeccionarlos antes de cada faena, asearlos, conservarlos y reportar oportunamente cualquier deterioro para su reposición inmediata.'}
+        ${c3}
       </p>
     </div>
 
     <!-- CLÁUSULA IV -->
-    <div class="section-box" style="margin-bottom: 12px; padding: 10px 14px;">
-      <div class="section-title" style="font-size: 9pt; margin-bottom: 6px;">CLÁUSULA CUARTA: CUMPLIMIENTO DE PROCEDIMIENTOS DE TRABAJO SEGURO (PTS) Y TAREAS DE ALTO RIESGO</div>
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px;">CLÁUSULA CUARTA: OBLIGACIONES ESPECIALES Y PROTOCOLOS SST (ALTO RIESGO)</div>
       <p style="font-size: 8.5pt; line-height: 1.45; margin: 0; text-align: justify;">
-        ${anexoCfg.cumplimientoPts || 'El TRABAJADOR se compromete a ejecutar sus funciones en estricto acatamiento de los Procedimientos de Trabajo Seguro (PTS), manuales de operación y directrices técnicas. Queda rotundamente prohibido anular guardas o protecciones, operar maquinaria sin autorización, o emprender tareas críticas de alto riesgo (alturas, energías peligrosas, caliente o confinados) sin el respectivo Permiso de Trabajo firmado y lista de verificación.'}
+        ${c4}
       </p>
     </div>
 
     <!-- CLÁUSULA V -->
-    <div class="section-box" style="margin-bottom: 12px; padding: 10px 14px;">
-      <div class="section-title" style="font-size: 9pt; margin-bottom: 6px;">CLÁUSULA QUINTA: REPORTE INMEDIATO DE INCIDENTES, ACCIDENTES Y CONDICIONES INSEGURAS (DTO. 1295 DE 1994)</div>
-      <p style="font-size: 8.5pt; line-height: 1.45; margin: 0; text-align: justify;">
-        ${anexoCfg.reporteIncidentes || 'El TRABAJADOR se obliga a informar oportunamente y de manera inmediata a su superior jerárquico y al responsable de SST todo incidente, casi-accidente o accidente de trabajo acaecido, antes de concluir su jornada (Dec. 1295/94). Igualmente, tiene el deber inexcusable de alertar de inmediato sobre cualquier condición o acto inseguro identificado en las áreas de trabajo.'}
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px; border-left: 4px solid #b91c1c; background: #fff5f5;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px; color: #b91c1c; border-bottom-color: #fecaca;">CLÁUSULA QUINTA: FALTAS GRAVES Y JUSTAS CAUSAS DE TERMINACIÓN</div>
+      <p style="font-size: 8.5pt; line-height: 1.45; margin: 0; color: #7f1d1d; text-align: justify;">
+        ${c5}
       </p>
     </div>
 
     <!-- CLÁUSULA VI -->
-    <div class="section-box" style="margin-bottom: 12px; padding: 10px 14px;">
-      <div class="section-title" style="font-size: 9pt; margin-bottom: 6px;">CLÁUSULA SEXTA: PARTICIPACIÓN OBLIGATORIA EN CAPACITACIONES, INDUCCIÓN Y SIMULACROS (DTO. 1072)</div>
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px; border-left: 4px solid #4338ca; background: #f8fafc;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px; color: #3730a3; border-bottom-color: #e0e7ff;">CLÁUSULA SEXTA: CULPA EXCLUSIVA DEL TRABAJADOR Y EXONERACIÓN PATRONAL (ART. 216 CST)</div>
       <p style="font-size: 8.5pt; line-height: 1.45; margin: 0; text-align: justify;">
-        ${anexoCfg.capacitaciones || 'El TRABAJADOR se obliga a asistir puntualmente y participar de forma activa en todas las sesiones de inducción, reinducción, entrenamientos técnicos, capacitaciones y simulacros de evacuación programados en el Plan Anual de Capacitación en SST (Dec. 1072 Art. 2.2.4.6.11), así como presentar y aprobar las evaluaciones de conocimiento respectivas.'}
+        ${c6}
       </p>
     </div>
 
     <!-- CLÁUSULA VII -->
-    <div class="section-box" style="margin-bottom: 12px; padding: 10px 14px;">
-      <div class="section-title" style="font-size: 9pt; margin-bottom: 6px;">CLÁUSULA SÉPTIMA: EVALUACIONES MÉDICAS OCUPACIONALES Y PROFESIOGRAMA (RES. 2346 DE 2007)</div>
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px;">CLÁUSULA SÉPTIMA: SEGURIDAD SOCIAL INTEGRAL</div>
       <p style="font-size: 8.5pt; line-height: 1.45; margin: 0; text-align: justify;">
-        ${anexoCfg.examenesMedicos || 'El TRABAJADOR se compromete a acudir a las valoraciones médicas ocupacionales (ingreso, periódicas, por reintegro, posincapacidad y egreso) según el Profesiograma Institucional (Res. 2346/07) y a observar rigurosamente las recomendaciones y restricciones preventivas emitidas por medicina del trabajo.'}
+        ${c7}
       </p>
     </div>
 
     <!-- CLÁUSULA VIII -->
-    <div class="section-box" style="margin-bottom: 12px; padding: 10px 14px;">
-      <div class="section-title" style="font-size: 9pt; margin-bottom: 6px;">CLÁUSULA OCTAVA: POLÍTICA DE PREVENCIÓN DE CONSUMO DE ALCOHOL, TABACO Y SUSTANCIAS PSICOACTIVAS</div>
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px;">CLÁUSULA OCTAVA: ELEMENTOS DE TRABAJO Y PORTABILIDAD DE HERRAMIENTAS</div>
       <p style="font-size: 8.5pt; line-height: 1.45; margin: 0; text-align: justify;">
-        ${anexoCfg.politicaSustancias || 'Se prohíbe terminantemente presentarse a laborar bajo la influencia de bebidas embriagantes, drogas o sustancias alucinógenas, así como su introducción, tenencia o consumo en las instalaciones, obras o vehículos de la empresa. El TRABAJADOR autoriza expresamente la práctica de pruebas preventivas de alcoholimetría y toxicología en cualquier momento de su jornada.'}
+        ${c8}
       </p>
     </div>
 
     <!-- CLÁUSULA IX -->
-    <div class="section-box" style="margin-bottom: 12px; padding: 10px 14px; border-left: 4px solid #b91c1c; background: #fff5f5;">
-      <div class="section-title" style="font-size: 9pt; margin-bottom: 6px; color: #b91c1c; border-bottom-color: #fecaca;">CLÁUSULA NOVENA: RÉGIMEN SANCIONATORIO, FALTAS GRAVES Y JUSTA CAUSA DE DESPIDO (ART. 62 CST)</div>
-      <p style="font-size: 8.5pt; line-height: 1.45; margin: 0; color: #7f1d1d; text-align: justify;">
-        ${anexoCfg.regimenSancionatorio || 'Las partes acuerdan expresamente que la violación o incumplimiento grave o reiterado por parte del TRABAJADOR de cualquiera de las normas, obligaciones, prohibiciones o cláusulas contenidas en este anexo, en el Reglamento Interno o en las directrices del SG-SST, constituirá FALTA GRAVE a las obligaciones del trabajador (Art. 58 y Art. 62 Literal a) Numeral 6 del Código Sustantivo del Trabajo, y Art. 91 del Decreto 1295 de 1994), facultando al empleador para dar por terminado unilateralmente el contrato de trabajo con justa causa y sin lugar a indemnización alguna.'}
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px;">CLÁUSULA NOVENA: DOMICILIO CONTRACTUAL, ACUERDO TOTAL Y FIRMAS</div>
+      <p style="font-size: 8.5pt; line-height: 1.45; margin: 0; text-align: justify;">
+        ${c9}
       </p>
     </div>
 
-    <div style="font-size: 8.5pt; margin: 20px 0 35px 0; text-align: justify;">
-      En constancia de comprensión, aceptación y notificación plena de las nueve (9) cláusulas aquí contenidas, se suscribe en dos (2) ejemplares del mismo tenor a los ${new Date().getDate()} días del mes de ${new Intl.DateTimeFormat('es-CO', { month: 'long' }).format(new Date())} de ${new Date().getFullYear()}.
+    <div style="font-size: 8.5pt; margin: 18px 0 32px 0; text-align: justify;">
+      En constancia de comprensión, aceptación y notificación expresa de la totalidad de las cláusulas y obligaciones aquí estipuladas, se firma en dos ejemplares de igual valor y tenor legal a los ${new Date().getDate()} días del mes de ${new Intl.DateTimeFormat('es-CO', { month: 'long' }).format(new Date())} de ${new Date().getFullYear()}.
     </div>
 
     <div class="sig-container">
@@ -3707,7 +3714,7 @@ window.imprimirAnexoContractual = function(cargoId) {
     </div>
   `;
 
-  abrirVentanaImpresion(`Anexo_Contractual_${cargo.code}`, html);
+  abrirVentanaImpresion(`Contrato_Anexo_${cargo.code}`, html);
 };
 
 // =============================================================================
@@ -3829,27 +3836,31 @@ window.guardarEstructuraDocCargo = function(cargoId, docKey) {
       frecuenciaReposicion: reposVal
     };
   } else if (docKey === 'anexo') {
-    const riesgosVal = document.getElementById(`est-anexo-riesgos-${cargoId}`)?.value.trim() || '';
-    const clausulaVal = document.getElementById(`est-anexo-clausula-${cargoId}`)?.value.trim() || '';
-    const eppVal = document.getElementById(`est-anexo-epp-${cargoId}`)?.value.trim() || '';
-    const ptsVal = document.getElementById(`est-anexo-pts-${cargoId}`)?.value.trim() || '';
-    const incidentesVal = document.getElementById(`est-anexo-incidentes-${cargoId}`)?.value.trim() || '';
-    const capacVal = document.getElementById(`est-anexo-capac-${cargoId}`)?.value.trim() || '';
-    const examenesVal = document.getElementById(`est-anexo-examenes-${cargoId}`)?.value.trim() || '';
-    const sustanciasVal = document.getElementById(`est-anexo-sustancias-${cargoId}`)?.value.trim() || '';
-    const sancionVal = document.getElementById(`est-anexo-sancion-${cargoId}`)?.value.trim() || '';
+    const c1Val = (document.getElementById(`est-anexo-clausula1-${cargoId}`) || document.getElementById(`est-anexo-riesgos-${cargoId}`))?.value.trim() || '';
+    const c2Val = document.getElementById(`est-anexo-clausula2-${cargoId}`)?.value.trim() || '';
+    const c3Val = document.getElementById(`est-anexo-clausula3-${cargoId}`)?.value.trim() || '';
+    const c4Val = (document.getElementById(`est-anexo-clausula4-${cargoId}`) || document.getElementById(`est-anexo-clausula-${cargoId}`))?.value.trim() || '';
+    const c5Val = (document.getElementById(`est-anexo-clausula5-${cargoId}`) || document.getElementById(`est-anexo-sancion-${cargoId}`))?.value.trim() || '';
+    const c6Val = document.getElementById(`est-anexo-clausula6-${cargoId}`)?.value.trim() || '';
+    const c7Val = document.getElementById(`est-anexo-clausula7-${cargoId}`)?.value.trim() || '';
+    const c8Val = document.getElementById(`est-anexo-clausula8-${cargoId}`)?.value.trim() || '';
+    const c9Val = document.getElementById(`est-anexo-clausula9-${cargoId}`)?.value.trim() || '';
 
     configCargo.anexoContractual = {
       ...(configCargo.anexoContractual || {}),
-      notificacionRiesgos: riesgosVal,
-      clausulaPrincipal: clausulaVal,
-      usoEpp: eppVal,
-      cumplimientoPts: ptsVal,
-      reporteIncidentes: incidentesVal,
-      capacitaciones: capacVal,
-      examenesMedicos: examenesVal,
-      politicaSustancias: sustanciasVal,
-      regimenSancionatorio: sancionVal
+      clausula1_objeto: c1Val,
+      clausula2_duracion: c2Val,
+      clausula3_salario: c3Val,
+      clausula4_obligaciones_sst: c4Val,
+      clausula5_faltas_graves: c5Val,
+      clausula6_culpa_exclusiva: c6Val,
+      clausula7_seguridad_social: c7Val,
+      clausula8_elementos_herramientas: c8Val,
+      clausula9_domicilio_firmas: c9Val,
+      // Retrocompatibilidad
+      notificacionRiesgos: c1Val,
+      clausulaPrincipal: c4Val,
+      regimenSancionatorio: c5Val
     };
   }
 
