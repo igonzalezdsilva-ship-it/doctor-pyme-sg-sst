@@ -67,11 +67,12 @@ module PureRubyZip
   end
 end
 
-root = File.expand_path(File.dirname(__FILE__))
+ROOT_DIR = File.expand_path(File.dirname(__FILE__))
+root = ROOT_DIR
 port = (ENV['PORT'] || 3000).to_i
 
-DATA_DIR = File.join(root, 'data')
-BACKUPS_DIR = File.join(root, 'backups')
+DATA_DIR = File.join(ROOT_DIR, 'data')
+BACKUPS_DIR = File.join(ROOT_DIR, 'backups')
 UPLOADS_DIR = File.join(DATA_DIR, 'uploads')
 DB_FILE = File.join(DATA_DIR, 'database.json')
 AUDIT_FILE = File.join(DATA_DIR, 'audit_log.jsonl')
@@ -3601,9 +3602,20 @@ mount_api(server, '/api/worker/delete-folder-document') do |req, res|
         db['employee_folder_documents'].reject! { |d| d['id'] == doc_id }
 
         # Intentar eliminar físicamente de uploads si existe
-        if deleted_doc && deleted_doc['file_url']
-          local_file = File.join(ROOT_DIR, deleted_doc['file_url'].sub(/^\//, ''))
-          File.delete(local_file) if File.exist?(local_file)
+        if deleted_doc
+          fname = deleted_doc['disk_file_name'] || (deleted_doc['file_url'] ? File.basename(deleted_doc['file_url']) : nil)
+          if fname && !fname.empty?
+            local_file = File.join(UPLOADS_DIR, fname)
+            FileUtils.rm_f(local_file) if File.exist?(local_file)
+          end
+
+          # También remover de evidencias si fue enlazado al SG-SST (1.1.3 o 3.1.4)
+          if db['evidencias'].is_a?(Array) && (deleted_doc['file_s3_key'] || deleted_doc['file_url'])
+            db['evidencias'].reject! do |e|
+              (deleted_doc['file_s3_key'] && e['file_s3_key'] == deleted_doc['file_s3_key']) ||
+              (deleted_doc['file_url'] && e['url'] == deleted_doc['file_url'])
+            end
+          end
         end
 
         File.open(DB_FILE, 'w:UTF-8') { |f| f.write(JSON.pretty_generate(db)) }
