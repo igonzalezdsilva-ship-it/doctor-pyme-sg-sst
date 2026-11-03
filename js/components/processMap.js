@@ -887,80 +887,139 @@ export async function renderProcessMap() {
                               ${docMeta.key === 'manual' ? `
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
                                   
-                                  <!-- BLOQUE I: PROPÓSITO GENERAL DEL CARGO -->
-                                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 flex flex-col justify-between">
-                                    <div>
-                                      <label class="block text-[11px] font-black text-slate-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
-                                        <span class="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-black">I</span>
-                                        <span>I. PROPÓSITO GENERAL DEL CARGO</span>
-                                      </label>
-                                      <p class="text-[10px] text-slate-500 mb-2">
-                                        Misión, razón de ser y objetivo central del puesto en la organización y el SG-SST:
-                                      </p>
+                                  <!-- BLOQUE I: IDENTIFICACIÓN DEL CARGO -->
+                                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 space-y-2">
+                                    <label class="block text-[11px] font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                                      <span class="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-black">I</span>
+                                      <span>I. IDENTIFICACIÓN Y UBICACIÓN DEL CARGO</span>
+                                    </label>
+                                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                                      <div>
+                                        <span class="font-bold text-slate-600 block mb-0.5">Departamento / Área:</span>
+                                        <input 
+                                          type="text" 
+                                          id="est-manual-dept-${cargo.id}" 
+                                          value="${escapeHtmlCargo(cargo.department || 'Operaciones y Producción')}" 
+                                          class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                                        >
+                                      </div>
+                                      <div>
+                                        <span class="font-bold text-slate-600 block mb-0.5">Jefe Inmediato:</span>
+                                        <input 
+                                          type="text" 
+                                          id="est-manual-jefe-${cargo.id}" 
+                                          value="${escapeHtmlCargo(cargo.parent_job_position_title || 'Jefe Inmediato / Coordinador Operativo')}" 
+                                          class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                                        >
+                                      </div>
                                     </div>
-                                    <textarea 
-                                      id="est-manual-proposito-${cargo.id}"
-                                      rows="4"
-                                      class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-2xs leading-relaxed"
-                                      placeholder="Definir el propósito general y misión principal del cargo..."
-                                    >${escapeHtmlCargo(propositoGeneral)}</textarea>
+                                    <p class="text-[10px] text-slate-500">
+                                      Nivel Jerárquico: <strong class="text-indigo-900">${cargo.hierarchy_level}</strong> • Código: <strong class="font-mono text-slate-800">${cargo.code || 'CARG'}</strong>
+                                    </p>
                                   </div>
 
-                                  <!-- BLOQUE II: OBJETIVOS ESPECÍFICOS DEL CARGO (METODOLOGÍA SMART) -->
+                                  <!-- BLOQUE II: PERFIL Y COMPETENCIAS REQUERIDAS -->
                                   <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 flex flex-col justify-between">
                                     <div>
                                       <label class="block text-[11px] font-black text-slate-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
                                         <span class="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-black">II</span>
-                                        <span>II. OBJETIVOS ESPECÍFICOS DEL CARGO (METODOLOGÍA SMART)</span>
+                                        <span>II. PERFIL DEL CARGO & COMPETENCIAS (REQUISITOS MÍNIMOS)</span>
                                       </label>
-                                      <p class="text-[10px] text-slate-500 mb-2">
-                                        Metas específicas, medibles, alcanzables, relevantes y con tiempo determinado (1 por línea):
-                                      </p>
-                                    </div>
-                                    <textarea 
-                                      id="est-manual-smart-${cargo.id}"
-                                      rows="4"
-                                      class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-2xs leading-relaxed"
-                                      placeholder="Definir metas cuantitativas y cualitativas SMART asociadas al cargo (1 por línea)..."
-                                    >${escapeHtmlCargo(objetivosSmart)}</textarea>
-                                  </div>
-
-                                  <!-- BLOQUE III: FUNCIONES Y RESPONSABILIDADES DETALLADAS POR PROCESO -->
-                                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 flex flex-col justify-between">
-                                    <div>
-                                      <label class="block text-[11px] font-black text-slate-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
-                                        <span class="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-black">III</span>
-                                        <span>III. FUNCIONES Y RESPONSABILIDADES DETALLADAS POR PROCESO</span>
-                                      </label>
-                                      <p class="text-[10px] text-slate-500 mb-2">
-                                        Actividades operativas, procedimentales PHVA y responsabilidades por proceso (1 por línea):
-                                      </p>
-                                    </div>
-                                    <textarea 
-                                      id="est-manual-funciones-${cargo.id}"
-                                      rows="5"
-                                      class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-2xs leading-relaxed"
-                                      placeholder="Detallar las funciones y responsabilidades del cargo por proceso (1 por línea)..."
-                                    >${escapeHtmlCargo(funcionesPorProceso)}</textarea>
-                                  </div>
-
-                                  <!-- BLOQUE IV: PERFIL DEL CARGO Y COMPETENCIAS REQUERIDAS -->
-                                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 flex flex-col justify-between">
-                                    <div>
-                                      <label class="block text-[11px] font-black text-slate-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
-                                        <span class="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-black">IV</span>
-                                        <span>IV. PERFIL DEL CARGO Y COMPETENCIAS REQUERIDAS</span>
-                                      </label>
-                                      <p class="text-[10px] text-slate-500 mb-2">
-                                        Educación, experiencia previa, formación en SST, habilidades técnicas y comportamentales:
+                                      <p class="text-[10px] text-slate-500 mb-1">
+                                        Educación, experiencia, formación SST y habilidades blandas/operativas:
                                       </p>
                                     </div>
                                     <textarea 
                                       id="est-manual-perfil-${cargo.id}"
-                                      rows="5"
+                                      rows="3"
                                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-2xs leading-relaxed"
-                                      placeholder="Definir requisitos de perfil, experiencia y competencias (1 por línea o viñetas)..."
+                                      placeholder="Educación, experiencia, formación SST y competencias clave (1 por línea)..."
                                     >${escapeHtmlCargo(perfilCompetencias)}</textarea>
+                                  </div>
+
+                                  <!-- BLOQUE III: OBJETIVO DEL CARGO -->
+                                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+                                    <div>
+                                      <label class="block text-[11px] font-black text-slate-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
+                                        <span class="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-black">III</span>
+                                        <span>III. OBJETIVO Y PROPÓSITO MISIONAL DEL CARGO</span>
+                                      </label>
+                                      <p class="text-[10px] text-slate-500 mb-1">
+                                        Misión del puesto y compromiso expreso con la preservación de la vida, salud y SG-SST:
+                                      </p>
+                                    </div>
+                                    <textarea 
+                                      id="est-manual-proposito-${cargo.id}"
+                                      rows="3"
+                                      class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-2xs leading-relaxed"
+                                      placeholder="Definir el propósito misional del cargo y compromiso con el SG-SST..."
+                                    >${escapeHtmlCargo(propositoGeneral)}</textarea>
+                                  </div>
+
+                                  <!-- BLOQUE IV: FUNCIONES TÉCNICAS Y OPERATIVAS -->
+                                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+                                    <div>
+                                      <label class="block text-[11px] font-black text-slate-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
+                                        <span class="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-black">IV</span>
+                                        <span>IV. FUNCIONES TÉCNICAS Y OPERATIVAS (CICLO PHVA)</span>
+                                      </label>
+                                      <p class="text-[10px] text-slate-500 mb-1">
+                                        Labores secuenciales diarias, semanales y periódicas del cargo (1 por línea):
+                                      </p>
+                                    </div>
+                                    <textarea 
+                                      id="est-manual-funciones-${cargo.id}"
+                                      rows="3"
+                                      class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-2xs leading-relaxed"
+                                      placeholder="Funciones operativas diarias y por proceso (1 por línea)..."
+                                    >${escapeHtmlCargo(funcionesPorProceso)}</textarea>
+                                  </div>
+
+                                  <!-- BLOQUE V: RESPONSABILIDADES EN LA GERENCIA DEL SG-SST -->
+                                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+                                    <div>
+                                      <label class="block text-[11px] font-black text-slate-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
+                                        <span class="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-black">V</span>
+                                        <span>V. RESPONSABILIDADES EN LA GERENCIA DEL SG-SST (DEC. 1072 & RES. 0312)</span>
+                                      </label>
+                                      <p class="text-[10px] text-slate-500 mb-1">
+                                        Estándares mínimos, plan de trabajo anual, reporte e investigación de incidentes/ATEL:
+                                      </p>
+                                    </div>
+                                    <textarea 
+                                      id="est-manual-smart-${cargo.id}"
+                                      rows="3"
+                                      class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-2xs leading-relaxed"
+                                      placeholder="Responsabilidades legales obligatorias en SST (1 por línea)..."
+                                    >${escapeHtmlCargo(objetivosSmart)}</textarea>
+                                  </div>
+
+                                  <!-- BLOQUE VI: AUTORIDAD, ALCANCE Y FACULTAD DE SUSPENSIÓN -->
+                                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+                                    <div>
+                                      <label class="block text-[11px] font-black text-slate-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
+                                        <span class="w-5 h-5 rounded-md bg-rose-100 text-rose-700 flex items-center justify-center text-[10px] font-black">VI</span>
+                                        <span>VI. AUTORIDAD Y FACULTAD DE SUSPENSIÓN POR RIESGO INMINENTE</span>
+                                      </label>
+                                      <p class="text-[10px] text-slate-500 mb-1">
+                                        Autoridad operacional y potestad vinculante para detener tareas inseguras o sin EPP:
+                                      </p>
+                                    </div>
+                                    <div class="space-y-1.5">
+                                      <input 
+                                        type="text" 
+                                        id="est-manual-autoridad-${cargo.id}" 
+                                        value="${escapeHtmlCargo(cargo.authority_scope || 'Autoridad técnica y operacional en su puesto de trabajo y custodia de recursos asignados.')}" 
+                                        class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs" 
+                                        placeholder="Alcance de autoridad..."
+                                      >
+                                      <textarea 
+                                        id="est-manual-suspension-${cargo.id}" 
+                                        rows="2" 
+                                        class="w-full px-2.5 py-1.5 bg-rose-50 border border-rose-200 text-rose-900 rounded-lg text-xs" 
+                                        placeholder="Facultad de suspensión por riesgo..."
+                                      >${escapeHtmlCargo(cargo.suspension_faculty || 'Facultad expresa y obligatoria para suspender de forma inmediata cualquier labor o actividad en caso de constatar un riesgo grave o inminente para la vida o la salud, o ante la falta de EPP.')}</textarea>
+                                    </div>
                                   </div>
 
                                 </div>
@@ -3002,157 +3061,308 @@ function abrirVentanaImpresion(tituloDoc, htmlBody) {
   printWin.document.close();
 }
 
-// 1. MANUAL ESPECÍFICO DE FUNCIONES Y RESPONSABILIDADES
-window.imprimirManualDeCargo = function(cargoId) {
+// 1. MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES (FORMATO INSTITUCIONAL CONTRACTUAL)
+window.imprimirManualDeCargo = function(cargoId, trabajadorId = null) {
   const empresa = store.getEmpresaActiva();
   const cargo = store.getJobPosition(cargoId);
   if (!empresa || !cargo) return;
+
+  // Resolver trabajador asociado si no se especificó directamente
+  let trabajador = null;
+  if (trabajadorId) {
+    trabajador = store.getTrabajadorPorId(trabajadorId);
+  }
+  if (!trabajador) {
+    const trabs = store.getTrabajadores(empresa.id).filter(t => (t.cargo || '').toLowerCase().trim() === (cargo.title || '').toLowerCase().trim());
+    if (trabs.length > 0) trabajador = trabs[0];
+  }
+
+  // Buscar firma digital previa en base de datos inmutable
+  const docSigs = store.data.employee_document_signatures || [];
+  const sigFound = trabajador
+    ? docSigs.find(s => (s.employee_id === trabajador.id || s.trabajadorId === trabajador.id) && (s.document_type === 'MANUAL_DE_CARGO' || (s.document_type || '').includes('MANUAL')))
+    : null;
 
   const funcData = store.getJobPositionFunctions(cargoId);
   const configCargo = store.getPerfilCargo(cargo.title, empresa.id);
   const manualCfg = configCargo?.manualFunciones || {};
 
-  const propositoGeneral = manualCfg.propositoGeneral 
+  const propositoGeneral = cargo.job_objective
+    || manualCfg.propositoGeneral 
     || cargo.summary_objective 
     || configCargo?.perfil?.objetivo 
-    || 'Ejecutar las labores asignadas conforme a los lineamientos operativos, asegurando el cumplimiento estricto del Sistema de Gestión de Seguridad y Salud en el Trabajo.';
+    || `Desempeñar con excelencia técnica, compromiso ético y estricto apego a las normas operacionales las actividades asignadas al puesto de ${cargo.title}, garantizando la preservación de la vida, salud y bienestar integral en el marco del SG-SST y la protección del medio ambiente.`;
 
-  const objetivosSmartLines = (manualCfg.objetivosSmartList && manualCfg.objetivosSmartList.length > 0)
-    ? manualCfg.objetivosSmartList
-    : (typeof manualCfg.objetivosSmart === 'string' && manualCfg.objetivosSmart.trim()
-        ? manualCfg.objetivosSmart.split('\n').map(s => s.trim()).filter(Boolean)
-        : (manualCfg.responsabilidadesSST && manualCfg.responsabilidadesSST.length > 0
-            ? manualCfg.responsabilidadesSST
-            : funcData.sst));
+  const sstLines = (cargo.sst_responsibilities && cargo.sst_responsibilities.length > 0)
+    ? cargo.sst_responsibilities
+    : ((manualCfg.responsabilidadesSST && manualCfg.responsabilidadesSST.length > 0)
+        ? manualCfg.responsabilidadesSST
+        : ((manualCfg.objetivosSmartList && manualCfg.objetivosSmartList.length > 0)
+            ? manualCfg.objetivosSmartList
+            : (funcData.sst && funcData.sst.length > 0 ? funcData.sst : [
+                'Procurar el cuidado integral de su salud física y mental en el desarrollo de sus actividades laborales (Dec. 1072/2015 Art. 2.2.4.6.10 Num. 1).',
+                'Suministrar información clara, veraz y completa sobre su estado de salud al empleador o área de SST (Dec. 1072/2015 Num. 2).',
+                'Cumplir a cabalidad las normas, reglamentos, instrucciones y procedimientos de trabajo seguro del SG-SST (Dec. 1072/2015 Num. 3).',
+                'Informar oportunamente al empleador o supervisor sobre los peligros y riesgos latentes detectados en su puesto o área de trabajo (Num. 4).',
+                'Participar activamente en las actividades de capacitación, inducción y simulacros de emergencia programados en el Plan Anual (Num. 5).',
+                'Participar y contribuir activamente al cumplimiento de los objetivos y metas del SG-SST de la empresa (Num. 6).',
+                'Reportar de forma inmediata todo incidente, accidente de trabajo o condición insegura a la coordinación de SST.',
+                'Participar en los programas de vigilancia epidemiológica ocupacional y apoyar la labor de los comités paritarios (COPASST / Convivencia).'
+              ])));
 
-  const funcionesPorProcesoLines = (manualCfg.funcionesPorProcesoList && manualCfg.funcionesPorProcesoList.length > 0)
-    ? manualCfg.funcionesPorProcesoList
-    : (typeof manualCfg.funcionesPorProceso === 'string' && manualCfg.funcionesPorProceso.trim()
-        ? manualCfg.funcionesPorProceso.split('\n').map(s => s.trim()).filter(Boolean)
-        : (manualCfg.funcionesOperativas && manualCfg.funcionesOperativas.length > 0
-            ? manualCfg.funcionesOperativas
-            : funcData.operativas));
+  const funcionesLines = (cargo.operational_functions && cargo.operational_functions.length > 0)
+    ? cargo.operational_functions
+    : ((manualCfg.funcionesOperativas && manualCfg.funcionesOperativas.length > 0)
+        ? manualCfg.funcionesOperativas
+        : ((manualCfg.funcionesPorProcesoList && manualCfg.funcionesPorProcesoList.length > 0)
+            ? manualCfg.funcionesPorProcesoList
+            : (funcData.operativas && funcData.operativas.length > 0 ? funcData.operativas : [
+                `Ejecutar las labores diarias y secuenciales asignadas al puesto de ${cargo.title} cumpliendo los estándares de calidad y seguridad.`,
+                'Inspeccionar y verificar el estado óptimo de las herramientas, maquinarias y equipos antes de iniciar operaciones.',
+                'Mantener el orden, aseo estricto (5S) y organización en su área de influencia operativa.',
+                'Notificar de inmediato al superior jerárquico cualquier falla, desviación o condición subestándar en los procesos.',
+                'Participar en el diligenciamiento de bitácoras, listas de chequeo preoperacional y controles de entrega de turno.'
+              ])));
 
-  let perfilCompetenciasLines = [];
-  if (manualCfg.perfilCompetenciasList && manualCfg.perfilCompetenciasList.length > 0) {
-    perfilCompetenciasLines = manualCfg.perfilCompetenciasList;
-  } else if (typeof manualCfg.perfilCompetencias === 'string' && manualCfg.perfilCompetencias.trim()) {
-    perfilCompetenciasLines = manualCfg.perfilCompetencias.split('\n').map(s => s.trim()).filter(Boolean);
-  } else {
-    if (cargo.required_education || configCargo?.perfil?.educacion) {
-      perfilCompetenciasLines.push(`Educación Formal: ${cargo.required_education || configCargo.perfil.educacion}`);
-    }
-    if (cargo.required_experience || configCargo?.perfil?.experiencia) {
-      perfilCompetenciasLines.push(`Experiencia Mínima: ${cargo.required_experience || configCargo.perfil.experiencia}`);
-    }
-    const skills = Array.isArray(cargo.required_skills) && cargo.required_skills.length > 0 
-      ? cargo.required_skills.join(', ') 
-      : (configCargo?.perfil?.competencias || '');
-    if (skills) {
-      perfilCompetenciasLines.push(`Competencias & Habilidades: ${skills}`);
-    }
-    if (configCargo?.perfil?.formacionSST) {
-      perfilCompetenciasLines.push(`Formación SST Obligatoria: ${configCargo.perfil.formacionSST}`);
-    }
-  }
+  const personalidadSkills = (cargo.personality_skills && cargo.personality_skills.length > 0)
+    ? cargo.personality_skills
+    : ['Liderazgo y comunicación asertiva', 'Disciplina operacional y autocuidado', 'Capacidad de análisis y resolución de problemas', 'Trabajo en equipo y adaptabilidad', 'Orientación a la calidad y mejora continua'];
+
+  const educacionFormal = cargo.required_education || configCargo?.perfil?.educacion || 'Bachiller Académico o Técnico Laboral';
+  const formacionSST = configCargo?.perfil?.formacionSST || 'Inducción General SG-SST, Curso Virtual 50/20 Horas SG-SST (Dec. 1072/2015), Protocolos de Bioseguridad y Manejo de Emergencias (Res. 0312/2019)';
+  const experienciaRequerida = cargo.required_experience || configCargo?.perfil?.experiencia || '1 año en labores afines a la operación o al sector productivo';
+
+  const deptoArea = cargo.department || (funcData.procesos.length > 0 ? funcData.procesos.join(', ') : (trabajador?.area || 'Operaciones y Producción'));
+  const jefeInmediato = cargo.parent_job_position_title || (cargo.hierarchy_level === 'Directivo' ? 'Junta Directiva / Representante Legal' : 'Gerencia General / Líder de Proceso');
+  const autoridadAlcance = cargo.authority_scope || 'Autoridad técnica y operacional en su puesto de trabajo. Coordinación directa de labores encomendadas, gestión de recursos operativos y custodia de maquinaria, herramientas e insumos asignados.';
+  const suspensionFacultad = cargo.suspension_faculty || 'Facultad expresa y obligatoria para suspender de forma inmediata cualquier labor o actividad en caso de constatar un riesgo grave o inminente para la vida o la salud, o ante la ausencia o deterioro de Elementos de Protección Personal (EPP), notificando de inmediato a la jefatura de SST.';
+
+  const codigoManual = `MAN-${cargo.code || 'CARG-001'}`;
+  const versionDoc = '01';
+  const fechaVigencia = cargo.updatedAt ? new Date(cargo.updatedAt).toLocaleDateString('es-CO') : new Date().toLocaleDateString('es-CO');
 
   const html = `
-    <table class="header-table">
+    <!-- 1. ENCABEZADO CONTRACTUAL Y DE CONTROL DOCUMENTAL -->
+    <table class="header-table" style="margin-bottom: 12px;">
       <tr>
-        <td style="width: 25%; text-align: center; vertical-align: middle;">
-          ${generarCeldaLogoEmpresa(empresa, 'Manual de Funciones')}
+        <td style="width: 22%; text-align: center; vertical-align: middle; padding: 6px;">
+          ${generarCeldaLogoEmpresa(empresa, 'Manual de Cargos')}
         </td>
-        <td style="width: 50%;">
-          <div class="doc-title">MANUAL ESPECÍFICO DE FUNCIONES Y RESPONSABILIDADES EN SST</div>
-          <div class="doc-subtitle">Decreto 1072 de 2015 Art. 2.2.4.6.8 Num. 2 • Res. 0312 de 2019 Est. 1.1.2</div>
+        <td style="width: 53%; text-align: center; padding: 6px;">
+          <div class="doc-title" style="font-size: 11pt; line-height: 1.3;">MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES</div>
+          <div class="doc-subtitle" style="font-size: 8pt; margin-top: 2px;">
+            Decreto 1072 de 2015 (Art. 2.2.4.6.8 Num. 2 & Art. 2.2.4.6.10) • Resolución 0312 de 2019 Estándar 1.1.2
+          </div>
+          <div style="font-size: 8pt; font-weight: bold; color: #4338ca; margin-top: 2px;">
+            DOCUMENTO INSTITUCIONAL VINCULANTE & ANEXO LABORAL DE SEGURIDAD Y SALUD EN EL TRABAJO
+          </div>
         </td>
-        <td style="width: 25%; font-size: 8pt; line-height: 1.4;">
-          <strong>CÓDIGO:</strong> MN-CARG-${cargo.code}<br>
-          <strong>VERSIÓN:</strong> 01<br>
-          <strong>FECHA:</strong> ${new Date().toLocaleDateString('es-CO')}<br>
-          <strong>EMPRESA:</strong> ${empresa.razonSocial}
+        <td style="width: 25%; font-size: 7.5pt; line-height: 1.45; padding: 6px; background: #f8fafc;">
+          <strong>CÓDIGO:</strong> ${codigoManual}<br>
+          <strong>VERSIÓN:</strong> ${versionDoc}<br>
+          <strong>VIGENCIA:</strong> ${fechaVigencia}<br>
+          <strong>ESTÁNDAR:</strong> Res. 0312 Numeral 1.1.2<br>
+          <strong>RETENCIÓN:</strong> 20 Años (Dec. 1072)
         </td>
       </tr>
     </table>
 
-    <div class="section-box">
-      <div class="section-title">I. PROPÓSITO GENERAL DEL CARGO</div>
-      <div class="grid-2">
-        <div><div class="field-label">Nombre del Cargo:</div><div class="field-value">${cargo.title}</div></div>
-        <div><div class="field-label">Nivel Jerárquico:</div><div class="field-value">${cargo.hierarchy_level}</div></div>
-        <div><div class="field-label">Empresa / Razón Social:</div><div class="field-value">${empresa.razonSocial} (NIT: ${empresa.nit})</div></div>
-        <div><div class="field-label">Jefe Inmediato:</div><div class="field-value">${cargo.hierarchy_level === 'Directivo' ? 'Junta Directiva / Representante Legal' : 'Líder de Proceso / Gerencia'}</div></div>
-      </div>
-      <div style="margin-top: 8px;">
-        <div class="field-label">Propósito / Misión General:</div>
-        <div class="field-value" style="text-align: justify; line-height: 1.5;">${propositoGeneral}</div>
+    <!-- DATOS CONTRACTUALES DEL EMPLEADOR Y DEL TRABAJADOR / TITULAR -->
+    <table class="data-table" style="margin-bottom: 14px; font-size: 8pt;">
+      <tr style="background: #eef2ff;">
+        <th colspan="2" style="font-size: 8.5pt; color: #1e1b4b; text-transform: uppercase;">
+          🏢 1. DATOS DEL EMPLEADOR / CONTRATANTE
+        </th>
+        <th colspan="2" style="font-size: 8.5pt; color: #1e1b4b; text-transform: uppercase;">
+          👷 2. DATOS DEL TRABAJADOR / TITULAR DEL CARGO
+        </th>
+      </tr>
+      <tr>
+        <td style="width: 15%; font-weight: bold; background: #f8fafc;">Razón Social:</td>
+        <td style="width: 35%;"><strong>${empresa.razonSocial}</strong></td>
+        <td style="width: 15%; font-weight: bold; background: #f8fafc;">Nombre Completo:</td>
+        <td style="width: 35%;"><strong>${trabajador ? trabajador.nombre : '[POR ASIGNAR / VACANTE]'}</strong></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; background: #f8fafc;">NIT:</td>
+        <td>${empresa.nit}</td>
+        <td style="font-weight: bold; background: #f8fafc;">Documento Identidad:</td>
+        <td><strong>C.C. ${trabajador ? (trabajador.identificacion || trabajador.cedula || 'N/A') : '____________________'}</strong></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; background: #f8fafc;">Dirección & Sede:</td>
+        <td>${empresa.direccion || 'Calle Principal Zona Industrial'}</td>
+        <td style="font-weight: bold; background: #f8fafc;">Fecha de Ingreso:</td>
+        <td>${trabajador ? (trabajador.fechaIngreso || trabajador.fechaContrato || trabajador.fechaInicio || 'Al momento de contratación') : '____________________'}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; background: #f8fafc;">Teléfono & Ciudad:</td>
+        <td>${empresa.telefono || '(601) 745-0000'} • ${empresa.ciudad || 'Bogotá D.C., Colombia'}</td>
+        <td style="font-weight: bold; background: #f8fafc;">Tipo de Contrato:</td>
+        <td><strong>${trabajador ? (trabajador.tipoContrato || 'Término Indefinido') : 'Contrato Individual de Trabajo'}</strong></td>
+      </tr>
+    </table>
+
+    <!-- 2. CUERPO ESTRUCTURADO DEL MANUAL -->
+
+    <!-- I. IDENTIFICACIÓN DEL CARGO -->
+    <div class="section-box" style="padding: 10px 14px; margin-bottom: 12px;">
+      <div class="section-title">I. IDENTIFICACIÓN Y UBICACIÓN ORGANIZACIONAL DEL CARGO</div>
+      <div class="grid-2" style="font-size: 8.5pt;">
+        <div>
+          <div class="field-label">Nombre Oficial del Cargo:</div>
+          <div class="field-value" style="font-size: 10pt; color: #1e1b4b;">${cargo.title}</div>
+        </div>
+        <div>
+          <div class="field-label">Nivel Jerárquico:</div>
+          <div class="field-value">${cargo.hierarchy_level}</div>
+        </div>
+        <div>
+          <div class="field-label">Departamento / Área / Procesos:</div>
+          <div class="field-value">${deptoArea}</div>
+        </div>
+        <div>
+          <div class="field-label">Cargo del Jefe Inmediato / Superior Jerárquico:</div>
+          <div class="field-value">${jefeInmediato}</div>
+        </div>
       </div>
     </div>
 
-    <div class="section-box">
-      <div class="section-title">II. OBJETIVOS ESPECÍFICOS DEL CARGO (METODOLOGÍA SMART)</div>
-      <p style="font-size: 8.5pt; color: #475569; margin: 0 0 6px 0;">
-        Metas y objetivos específicos, medibles, alcanzables, pertinentes y temporales definidos para el puesto:
-      </p>
-      <ul style="margin: 0; padding-left: 20px; font-size: 9pt; line-height: 1.6;">
-        ${objetivosSmartLines.map(s => `<li>${s}</li>`).join('')}
-      </ul>
+    <!-- II. PERFIL DEL CARGO (REQUISITOS MÍNIMOS Y COMPETENCIAS) -->
+    <div class="section-box" style="padding: 10px 14px; margin-bottom: 12px;">
+      <div class="section-title">II. PERFIL DEL CARGO (REQUISITOS MÍNIMOS, COMPETENCIAS Y FORMACIÓN)</div>
+      <div style="font-size: 8.5pt; line-height: 1.5; space-y: 6px;">
+        <div style="margin-bottom: 5px;">
+          <strong>• Educación Formal Requerida:</strong> ${educacionFormal}
+        </div>
+        <div style="margin-bottom: 5px;">
+          <strong>• Formación Adicional & Certificaciones SG-SST:</strong> ${formacionSST}
+        </div>
+        <div style="margin-bottom: 5px;">
+          <strong>• Experiencia Laboral Mínima:</strong> ${experienciaRequerida}
+        </div>
+        <div>
+          <strong>• Aspectos de Personalidad & Competencias Clave:</strong>
+          <div style="margin-top: 3px; display: flex; flex-wrap: wrap; gap: 4px;">
+            ${personalidadSkills.map(sk => `<span class="badge" style="background: #e0f2fe; color: #0369a1; padding: 2px 7px; font-size: 8pt;">✓ ${sk}</span>`).join('')}
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="section-box">
-      <div class="section-title">III. FUNCIONES Y RESPONSABILIDADES DETALLADAS POR PROCESO</div>
-      <p style="font-size: 8.5pt; color: #475569; margin: 0 0 6px 0;">
-        Cadenas de valor y procesos donde participa: 
-        ${funcData.procesos.map(pr => `<span class="badge" style="margin-right: 4px;">${pr}</span>`).join('')}
+    <!-- III. OBJETIVO DEL CARGO -->
+    <div class="section-box" style="padding: 10px 14px; margin-bottom: 12px;">
+      <div class="section-title">III. OBJETIVO Y PROPÓSITO MISIONAL DEL CARGO</div>
+      <div style="font-size: 8.5pt; line-height: 1.5; text-align: justify;">
+        <p style="margin: 0 0 6px 0;">${propositoGeneral}</p>
+        <p style="margin: 0; font-style: italic; color: #334155; background: #f8fafc; padding: 6px 10px; border-left: 3px solid #4338ca; border-radius: 4px;">
+          <strong>Compromiso SG-SST y Protección Ambiental:</strong> El titular del cargo asume el compromiso ineludible de preservar su vida, salud física y mental, reportar de forma oportuna cualquier condición o acto subestándar, portar diligentemente los Elementos de Protección Personal (EPP) suministrados y proteger activamente los recursos naturales y el medio ambiente en su entorno laboral.
+        </p>
+      </div>
+    </div>
+
+    <!-- IV. FUNCIONES TÉCNICAS Y OPERATIVAS DEL CARGO -->
+    <div class="section-box" style="padding: 10px 14px; margin-bottom: 12px;">
+      <div class="section-title">IV. FUNCIONES TÉCNICAS Y OPERATIVAS DEL CARGO (CICLO PHVA)</div>
+      <p style="font-size: 8pt; color: #64748b; margin: 0 0 6px 0;">
+        Labores diarias, periódicas y secuenciales que debe desempeñar de forma personal, directa y subordinada:
       </p>
-      <ol style="margin: 0; padding-left: 20px; font-size: 9pt; line-height: 1.6;">
-        ${funcionesPorProcesoLines.map(f => `<li>${f}</li>`).join('')}
+      <ol style="margin: 0; padding-left: 20px; font-size: 8.5pt; line-height: 1.55;">
+        ${funcionesLines.map(f => `<li style="margin-bottom: 4px;">${f}</li>`).join('')}
       </ol>
     </div>
 
-    <div class="section-box">
-      <div class="section-title">IV. PERFIL DEL CARGO Y COMPETENCIAS REQUERIDAS</div>
-      <ul style="margin: 0; padding-left: 20px; font-size: 9pt; line-height: 1.6;">
-        ${perfilCompetenciasLines.map(p => `<li>${p.replace(/^[•\-\*]\s*/, '')}</li>`).join('')}
+    <!-- V. RESPONSABILIDADES EN LA GERENCIA DEL SG-SST -->
+    <div class="section-box" style="padding: 10px 14px; margin-bottom: 12px;">
+      <div class="section-title">V. RESPONSABILIDADES LEGALES EN LA GERENCIA DEL SG-SST (DEC. 1072/2015 & RES. 0312/2019)</div>
+      <p style="font-size: 8pt; color: #64748b; margin: 0 0 6px 0;">
+        Obligaciones expresas del trabajador bajo los Artículos 2.2.4.6.8 y 2.2.4.6.10 del Decreto 1072 y el Estándar 1.1.2:
+      </p>
+      <ul style="margin: 0; padding-left: 18px; font-size: 8.5pt; line-height: 1.55;">
+        ${sstLines.map(r => `<li style="margin-bottom: 4px;">${r}</li>`).join('')}
       </ul>
     </div>
 
-    ${funcData.herramientas.length > 0 ? `
-      <div class="section-box">
-        <div class="section-title">V. ACTIVOS, MAQUINARIA Y HERRAMIENTAS BAJO SU OPERACIÓN O CUSTODIA</div>
-        <table class="data-table">
-          <thead>
-            <tr><th>Código</th><th>Herramienta / Equipo</th><th>Marca & Modelo</th><th>Tipo</th></tr>
-          </thead>
-          <tbody>
-            ${funcData.herramientas.map(h => `
-              <tr>
-                <td><strong>${h.internal_code || 'ACT'}</strong></td>
-                <td>${h.exact_name}</td>
-                <td>${h.brand || 'N/A'} ${h.model || ''}</td>
-                <td>${h.tool_type || 'Industrial'}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
+    <!-- VI. AUTORIDAD Y ALCANCE -->
+    <div class="section-box" style="padding: 10px 14px; margin-bottom: 14px; background: #fdfefe;">
+      <div class="section-title">VI. AUTORIDAD, ALCANCE Y FACULTAD DE SUSPENSIÓN POR RIESGO</div>
+      <div style="font-size: 8.5pt; line-height: 1.5;">
+        <div style="margin-bottom: 6px;">
+          <strong>• Personal y Recursos Bajo su Autoridad:</strong> ${autoridadAlcance}
+        </div>
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid #ef4444; border-radius: 6px; padding: 8px 10px; color: #991b1b;">
+          <strong>🛑 Facultad Expresa de Suspensión Inmediata de Tareas (Cero Tolerancia al Riesgo):</strong><br>
+          ${suspensionFacultad}
+        </div>
       </div>
-    ` : ''}
+    </div>
 
-    <div class="sig-container">
-      <div class="sig-block">
-        <div class="sig-line"></div>
-        <strong>${empresa.representanteLegal || 'REPRESENTANTE LEGAL'}</strong><br>
-        <span style="font-size: 8pt; color: #64748b;">Empleador / Gerencia General</span>
+    <!-- 3. PIE DE PÁGINA CONTRACTUAL Y SOCIALIZACIÓN (FIRMAS DE RESPONSABILIDAD) -->
+    <div class="section-box" style="padding: 12px 16px; margin-top: 14px; background: #fafafa; border: 1.5px solid #cbd5e1; page-break-inside: avoid;">
+      <div class="section-title" style="border-bottom: 1.5px solid #cbd5e1; margin-bottom: 8px;">
+        VII. SOCIALIZACIÓN, ACEPTACIÓN VINCULANTE Y FIRMAS DE RESPONSABILIDAD
       </div>
-      <div class="sig-block">
-        <div class="sig-line"></div>
-        <strong>TITULAR DEL CARGO</strong><br>
-        <span style="font-size: 8pt; color: #64748b;">C.C. ________________________ • Recibido y Aceptado</span>
+
+      <!-- Cláusula de Notificación y Aceptación con Texto Legal Exacto -->
+      <div style="font-size: 8pt; text-align: justify; line-height: 1.45; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; margin-bottom: 16px; color: #0f172a;">
+        <strong>CLÁUSULA DE NOTIFICACIÓN, SOCIALIZACIÓN Y ACEPTACIÓN POR EL TRABAJADOR:</strong><br>
+        "Certifico que he recibido, leído, comprendido y aceptado en su totalidad el presente MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES correspondiente a mi cargo en ${empresa.razonSocial}. Me comprometo a cumplir estrictamente las funciones asignadas, los procedimientos de trabajo seguro (PTS) y las directrices del Sistema de Gestión de Seguridad y Salud en el Trabajo (SG-SST)."
       </div>
+
+      <!-- Bloques de Firmas: Institucional (Elaboró/Aprobó) y Titular -->
+      <table style="width: 100%; border-collapse: collapse; margin-top: 8px;">
+        <tr>
+          <!-- BLOQUE INSTITUCIONAL: ELABORÓ / REVISÓ -->
+          <td style="width: 32%; text-align: center; vertical-align: bottom; padding: 0 10px;">
+            <div class="sig-line"></div>
+            <strong style="font-size: 8.5pt;">${empresa.responsableSST || 'ESP. EN SEGURIDAD Y SALUD EN EL TRABAJO'}</strong><br>
+            <span style="font-size: 7.5pt; color: #64748b;">ELABORÓ / REVISÓ (SST)</span><br>
+            <span style="font-size: 7pt; color: #94a3b8;">Licencia SST No. ${empresa.licenciaSST || '15482-2022'}</span>
+          </td>
+
+          <!-- BLOQUE INSTITUCIONAL: APROBÓ -->
+          <td style="width: 32%; text-align: center; vertical-align: bottom; padding: 0 10px;">
+            <div class="sig-line"></div>
+            <strong style="font-size: 8.5pt;">${empresa.representanteLegal || 'REPRESENTANTE LEGAL'}</strong><br>
+            <span style="font-size: 7.5pt; color: #64748b;">APROBÓ (GERENCIA GENERAL)</span><br>
+            <span style="font-size: 7pt; color: #94a3b8;">Empleador / Representación Legal</span>
+          </td>
+
+          <!-- BLOQUE DEL TRABAJADOR TITULAR -->
+          <td style="width: 36%; text-align: center; vertical-align: bottom; padding: 0 10px; border-left: 1px dashed #cbd5e1;">
+            ${sigFound ? `
+              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 6px; margin-bottom: 6px;">
+                <img src="${sigFound.signature_image_file || sigFound.firmaDataUrl}" alt="Firma Trabajador" style="max-height: 48px; margin: 0 auto; display: block;">
+                <div style="font-size: 7.5pt; font-weight: bold; color: #15803d; margin-top: 2px;">
+                  ✓ FIRMA DIGITALIZADA INMUTABLE (LEY 527/1999)
+                </div>
+                <div style="font-size: 6.5pt; font-family: monospace; color: #334155; word-break: break-all;">
+                  SHA-256: ${sigFound.signature_sha256 || sigFound.sha256_hash || 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}
+                </div>
+                <div style="font-size: 6.5pt; color: #475569;">
+                  Fecha Bogotá: ${sigFound.bogota_timestamp || new Date(sigFound.signed_at).toLocaleString('es-CO')}
+                </div>
+                <div style="font-size: 6.5pt; color: #64748b; font-family: monospace;">
+                  S3: ${sigFound.pdf_s3_key || `doctorpyme-storage/tenants/${empresa.id}/manuals/${trabajador?.id}_MANUAL_DE_CARGO_signed.pdf`}
+                </div>
+              </div>
+            ` : `
+              <div class="sig-line" style="margin-top: 50px;"></div>
+            `}
+            <strong style="font-size: 8.5pt;">${trabajador ? trabajador.nombre : 'TITULAR DEL CARGO'}</strong><br>
+            <span style="font-size: 7.5pt; color: #64748b;">
+              C.C. ${trabajador ? (trabajador.identificacion || trabajador.cedula || '__________________') : '__________________'} • Recibido y Aceptado
+            </span><br>
+            <span style="font-size: 7pt; color: #94a3b8;">
+              ${sigFound ? 'Documento Socializado & Vigente' : 'Pendiente por Socializar y Firmar'}
+            </span>
+          </td>
+        </tr>
+      </table>
     </div>
   `;
 
-  abrirVentanaImpresion(`Manual_de_Cargo_${cargo.code}`, html);
+  abrirVentanaImpresion(`Manual_de_Cargos_${cargo.code || 'CARG'}_${trabajador ? trabajador.identificacion : 'General'}`, html);
 };
 
 // 2. PERFIL DE CARGO Y REQUISITOS DE COMPETENCIA
@@ -3751,6 +3961,10 @@ window.guardarEstructuraDocCargo = function(cargoId, docKey) {
     )?.value.trim() || '';
 
     const perfilVal = document.getElementById(`est-manual-perfil-${cargoId}`)?.value.trim() || '';
+    const deptVal = document.getElementById(`est-manual-dept-${cargoId}`)?.value.trim() || cargo.department || 'Operaciones y Producción';
+    const jefeVal = document.getElementById(`est-manual-jefe-${cargoId}`)?.value.trim() || cargo.parent_job_position_title || 'Jefe Inmediato';
+    const autoridadVal = document.getElementById(`est-manual-autoridad-${cargoId}`)?.value.trim() || cargo.authority_scope || '';
+    const suspensionVal = document.getElementById(`est-manual-suspension-${cargoId}`)?.value.trim() || cargo.suspension_faculty || '';
 
     const smartLines = smartVal.split('\n').map(s => s.trim()).filter(Boolean);
     const funcionesLines = funcionesVal.split('\n').map(s => s.trim()).filter(Boolean);
@@ -3766,12 +3980,27 @@ window.guardarEstructuraDocCargo = function(cargoId, docKey) {
       funcionesPorProcesoList: funcionesLines,
       perfilCompetencias: perfilVal,
       perfilCompetenciasList: perfilLines,
+      department: deptVal,
+      parent_job_position_title: jefeVal,
+      authority_scope: autoridadVal,
+      suspension_faculty: suspensionVal,
       // Retrocompatibilidad
       funcionesOperativas: funcionesLines,
       responsabilidadesSST: smartLines
     };
 
-    store.saveJobPosition({ ...cargo, summary_objective: propositoVal }, empresa.id);
+    store.saveJobPosition({
+      ...cargo,
+      summary_objective: propositoVal,
+      job_objective: propositoVal,
+      department: deptVal,
+      parent_job_position_title: jefeVal,
+      operational_functions: funcionesLines,
+      sst_responsibilities: smartLines,
+      personality_skills: perfilLines,
+      authority_scope: autoridadVal,
+      suspension_faculty: suspensionVal
+    }, empresa.id);
   } else if (docKey === 'perfil') {
     const eduVal = document.getElementById(`est-perfil-edu-${cargoId}`)?.value.trim() || '';
     const expVal = document.getElementById(`est-perfil-exp-${cargoId}`)?.value.trim() || '';

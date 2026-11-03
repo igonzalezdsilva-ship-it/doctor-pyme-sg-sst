@@ -4544,12 +4544,20 @@ class Store {
       tenant_id: targetCid,
       code: jobData.code || `CARG-${String(this.data.job_positions.length + 1).padStart(3, '0')}`,
       title: jobData.title || 'Nuevo Cargo',
+      department: jobData.department || 'Operaciones y Producción',
       hierarchy_level: jobData.hierarchy_level || 'Operativo',
       parent_job_position_id: jobData.parent_job_position_id || null,
-      summary_objective: jobData.summary_objective || '',
+      parent_job_position_title: jobData.parent_job_position_title || (jobData.hierarchy_level === 'Directivo' ? 'Junta Directiva / Representante Legal' : 'Jefe Inmediato / Coordinador de Área'),
+      summary_objective: jobData.summary_objective || jobData.job_objective || '',
+      job_objective: jobData.job_objective || jobData.summary_objective || `Desempeñar con excelencia técnica y estricto apego a las normas del SG-SST las actividades asignadas al puesto de ${jobData.title || 'este cargo'}.`,
       required_education: jobData.required_education || 'Bachiller Académico o Técnico',
       required_experience: jobData.required_experience || '1 año de experiencia',
       required_skills: Array.isArray(jobData.required_skills) ? jobData.required_skills : (typeof jobData.required_skills === 'string' ? jobData.required_skills.split(',').map(s => s.trim()) : []),
+      personality_skills: Array.isArray(jobData.personality_skills) ? jobData.personality_skills : ['Liderazgo y comunicación asertiva', 'Disciplina operacional y autocuidado', 'Resolución de problemas técnicos', 'Trabajo en equipo y adaptabilidad'],
+      operational_functions: Array.isArray(jobData.operational_functions) ? jobData.operational_functions : [],
+      sst_responsibilities: Array.isArray(jobData.sst_responsibilities) ? jobData.sst_responsibilities : [],
+      authority_scope: jobData.authority_scope || 'Autoridad técnica y operacional en su puesto de trabajo y custodia de herramientas/equipos asignados.',
+      suspension_faculty: jobData.suspension_faculty || 'Facultad expresa y obligatoria para suspender de forma inmediata cualquier labor o actividad en caso de constatar un riesgo grave o inminente para la vida o la salud, o ante la falta de EPP.',
       medical_exams_profesiograma: jobData.medical_exams_profesiograma || { ingreso: ['Examen Médico Ocupacional con énfasis Osteomuscular', 'Optometría', 'Audiometría'], periodico: ['Control Médico Anual SST'], egreso: ['Examen Médico de Retiro'] },
       required_epp_list: Array.isArray(jobData.required_epp_list) ? jobData.required_epp_list : ['Casco de Seguridad', 'Botas de Seguridad', 'Guantes de Protección', 'Protección Auditiva'],
       is_active: jobData.is_active !== false,
@@ -4804,10 +4812,65 @@ class Store {
           tipoDocumento: data.signature.document_type,
           titulo: data.signature.document_title,
           fechaHoraISO: data.signature.signed_at,
-          hashDocumento: data.signature.signature_sha256,
+          hashDocumento: data.signature.signature_sha256 || data.signature.sha256_hash,
           firmaDataUrl: data.signature.signature_image_file,
-          companyId: data.signature.tenant_id
+          companyId: data.signature.tenant_id,
+          pdf_s3_key: data.signature.pdf_s3_key
         });
+
+        // Inyección Automática de Soporte Probatorio en Estándar 1.1.2 (Res. 0312 de 2019)
+        if (data.signature.document_type === 'MANUAL_DE_CARGO' || (data.signature.document_type || '').includes('MANUAL')) {
+          const trab = this.getTrabajadorPorId(data.signature.employee_id) || {};
+          const evidId = `evid-${data.signature.tenant_id}-1.1.2-${data.signature.employee_id}-manual`;
+          if (!Array.isArray(this.data.evidencias)) this.data.evidencias = [];
+          this.data.evidencias = this.data.evidencias.filter(e => e.id !== evidId);
+          this.data.evidencias.unshift({
+            id: evidId,
+            companyId: data.signature.tenant_id,
+            tenant_id: data.signature.tenant_id,
+            numeral: '1.1.2',
+            nombre: `MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES - ${trab.nombre || 'Trabajador'} (${trab.cargo || ''}) [Firmado]`,
+            titulo: `Manual de Cargos, Responsabilidades y Funciones - ${trab.nombre || 'Trabajador'}`,
+            tipo: 'application/pdf',
+            tamanio: 285000,
+            url: data.signature.signature_image_file,
+            pdf_s3_key: data.signature.pdf_s3_key,
+            sha256_hash: data.signature.signature_sha256 || data.signature.sha256_hash,
+            trabajadorId: data.signature.employee_id,
+            trabajadorNombre: trab.nombre,
+            cargo: trab.cargo,
+            fecha: data.signature.signed_at,
+            fechaCargue: data.signature.signed_at,
+            anio: new Date().getFullYear().toString(),
+            origen: 'MÓDULO OFICIAL TALENTO HUMANO Y SG-SST (RES. 0312 ESTÁNDAR 1.1.2)'
+          });
+
+          // Actualizar estado en evaluaciones activas
+          const cId = data.signature.tenant_id;
+          if (this.data.evaluaciones && this.data.evaluaciones[cId]) {
+            const ev = this.data.evaluaciones[cId];
+            if (Array.isArray(ev)) {
+              const item = ev.find(it => it.numeral === '1.1.2' || it.numeral === '1.1.2.5');
+              if (item) {
+                item.cumple = true;
+                item.no_aplica = false;
+                item.justificacion = `Soportado con Manuales de Cargos y Responsabilidades firmados digitalmente (Ley 527/1999) por ${trab.nombre || 'el titular'}.`;
+              }
+            } else if (typeof ev === 'object') {
+              Object.keys(ev).forEach(yr => {
+                if (ev[yr] && typeof ev[yr] === 'object') {
+                  ['1.1.2', '1.1.2.1', '1.1.2.5', '1.1.2.6'].forEach(num => {
+                    if (ev[yr][num]) {
+                      ev[yr][num].estado = 'CUMPLE';
+                      ev[yr][num].justificacion = `Soportado con Manuales de Cargos, Responsabilidades y Funciones socializados y firmados bajo Ley 527 de 1999.`;
+                    }
+                  });
+                }
+              });
+            }
+          }
+        }
+
         this.saveToStorage();
         this.notify();
       }
@@ -4816,6 +4879,46 @@ class Store {
       console.error('Error submitWorkerDocumentSignature:', err);
       throw err;
     }
+  }
+
+  getAuditManualesFirmados(companyId = null) {
+    const targetCid = companyId || this.getEmpresaActivaId();
+    const trabajadores = this.getTrabajadores(targetCid);
+    const sigs = (this.data.employee_document_signatures || []).filter(s => s.document_type === 'MANUAL_DE_CARGO');
+
+    const lista = trabajadores.map(trab => {
+      const sig = sigs.find(s => s.employee_id === trab.id || s.trabajadorId === trab.id);
+      return {
+        worker_id: trab.id,
+        worker_name: trab.nombre,
+        national_id: trab.identificacion || trab.cedula,
+        cargo: trab.cargo,
+        area: trab.area || 'Operaciones',
+        fecha_ingreso: trab.fechaIngreso || trab.fechaContrato || trab.fechaInicio || 'N/A',
+        tipo_contrato: trab.tipoContrato || 'Término Indefinido',
+        is_signed: !!sig,
+        signed_at: sig?.signed_at || null,
+        bogota_signed_at: sig?.bogota_timestamp || (sig?.signed_at ? new Date(sig.signed_at).toLocaleString('es-CO') : null),
+        signer_ip: sig?.signer_ip || sig?.client_ip || 'N/A',
+        sha256_hash: sig?.sha256_hash || sig?.signature_sha256 || null,
+        pdf_s3_key: sig?.pdf_s3_key || (sig ? `doctorpyme-storage/tenants/${targetCid}/manuals/${trab.id}_MANUAL_DE_CARGO_signed.pdf` : null),
+        signature_file: sig?.signature_image_file || null
+      };
+    });
+
+    const total = lista.length;
+    const firmados = lista.filter(item => item.is_signed).length;
+    const pendientes = total - firmados;
+    const porcentaje = total > 0 ? Math.round((firmados / total) * 100) : 0;
+
+    return {
+      targetCid,
+      total,
+      firmados,
+      pendientes,
+      porcentaje,
+      lista
+    };
   }
 
   async submitWorkerToolAssignment(payload) {

@@ -98,12 +98,20 @@ CREATE TABLE IF NOT EXISTS job_positions (
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   code VARCHAR(50) NOT NULL,
   title VARCHAR(255) NOT NULL,
+  department VARCHAR(255),
   hierarchy_level hierarchy_level_enum NOT NULL DEFAULT 'Operativo',
   parent_job_position_id UUID REFERENCES job_positions(id) ON DELETE SET NULL,
+  parent_job_position_title VARCHAR(255),
   summary_objective TEXT,
+  job_objective TEXT,
   required_education TEXT,
   required_experience TEXT,
   required_skills JSONB DEFAULT '[]'::jsonb,
+  personality_skills JSONB DEFAULT '[]'::jsonb,
+  operational_functions JSONB DEFAULT '[]'::jsonb,
+  sst_responsibilities JSONB DEFAULT '[]'::jsonb,
+  authority_scope TEXT,
+  suspension_faculty BOOLEAN DEFAULT TRUE,
   medical_exams_profesiograma JSONB DEFAULT '{"ingreso": [], "periodico": [], "egreso": []}'::jsonb,
   required_epp_list TEXT[] DEFAULT '{}',
   is_active BOOLEAN DEFAULT TRUE,
@@ -111,6 +119,16 @@ CREATE TABLE IF NOT EXISTS job_positions (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   CONSTRAINT uq_tenant_job_title UNIQUE (tenant_id, title)
 );
+
+-- Migraciones seguras para job_positions
+ALTER TABLE job_positions ADD COLUMN IF NOT EXISTS department VARCHAR(255);
+ALTER TABLE job_positions ADD COLUMN IF NOT EXISTS parent_job_position_title VARCHAR(255);
+ALTER TABLE job_positions ADD COLUMN IF NOT EXISTS job_objective TEXT;
+ALTER TABLE job_positions ADD COLUMN IF NOT EXISTS personality_skills JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE job_positions ADD COLUMN IF NOT EXISTS operational_functions JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE job_positions ADD COLUMN IF NOT EXISTS sst_responsibilities JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE job_positions ADD COLUMN IF NOT EXISTS authority_scope TEXT;
+ALTER TABLE job_positions ADD COLUMN IF NOT EXISTS suspension_faculty BOOLEAN DEFAULT TRUE;
 
 -- Procesos de la Organización
 CREATE TABLE IF NOT EXISTS processes (
@@ -405,18 +423,60 @@ CREATE TABLE IF NOT EXISTS employee_document_signatures (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   employee_id UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+  manual_document_id UUID REFERENCES job_position_documents(id) ON DELETE SET NULL,
   document_type VARCHAR(100) NOT NULL, -- HABEAS_DATA_ONBOARDING, MANUAL_DE_CARGO, PERFIL_DE_CARGO, PLAN_DE_TRABAJO_SEGURO, PROFESIOGRAMA_CARGO, ANEXO_CONTRACTUAL_Y_NOTIFICACION_RIESGOS, ACTA_ENTREGA_EPP
   document_id UUID,
   document_code VARCHAR(100),
   document_title VARCHAR(255) NOT NULL,
-  signature_image_file TEXT NOT NULL,
-  signature_sha256 VARCHAR(64) NOT NULL,
-  signed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  assigned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  is_signed BOOLEAN DEFAULT FALSE,
+  signature_image_file TEXT,
+  signature_svg_or_base64 TEXT,
+  signature_sha256 VARCHAR(64),
+  sha256_hash VARCHAR(64),
+  signed_at TIMESTAMP WITH TIME ZONE,
   client_ip VARCHAR(50),
+  signer_ip VARCHAR(50),
   user_agent TEXT,
+  signer_user_agent TEXT,
+  pdf_s3_key TEXT,
   legal_retention_years INT DEFAULT 20, -- Art. 2.2.4.6.13 Dec. 1072/2015
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Migraciones para employee_document_signatures
+ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS manual_document_id UUID REFERENCES job_position_documents(id) ON DELETE SET NULL;
+ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS assigned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS is_signed BOOLEAN DEFAULT FALSE;
+ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS signature_svg_or_base64 TEXT;
+ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS sha256_hash VARCHAR(64);
+ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS signer_ip VARCHAR(50);
+ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS signer_user_agent TEXT;
+ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS pdf_s3_key TEXT;
+
+-- Asignación y Socialización de Manual de Cargos al Trabajador
+CREATE TABLE IF NOT EXISTS employee_job_position_assignments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  employee_id UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+  job_position_id UUID NOT NULL REFERENCES job_positions(id) ON DELETE CASCADE,
+  manual_document_id UUID REFERENCES job_position_documents(id) ON DELETE SET NULL,
+  assigned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  is_signed BOOLEAN DEFAULT FALSE,
+  signed_at TIMESTAMP WITH TIME ZONE,
+  signature_svg_or_base64 TEXT,
+  signer_ip VARCHAR(50),
+  signer_user_agent TEXT,
+  sha256_hash VARCHAR(64),
+  pdf_s3_key TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT uq_employee_job_assignment UNIQUE (tenant_id, employee_id, job_position_id)
+);
+
+ALTER TABLE employee_job_position_assignments ENABLE ROW LEVEL SECURITY;
+CREATE POLICY rls_employee_job_position_assignments_tenant ON employee_job_position_assignments
+  FOR ALL USING (tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid);
 
 -- Actas de Entrega de Dotación y EPP (Estándar 4.2.6 Res. 0312/2019)
 CREATE TABLE IF NOT EXISTS epp_deliveries (

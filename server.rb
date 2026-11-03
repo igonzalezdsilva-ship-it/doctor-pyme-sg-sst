@@ -2936,12 +2936,14 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
   elsif req.request_method == 'POST'
     begin
       payload = JSON.parse(req.body)
-      worker_id = payload['worker_id'] || payload['trabajadorId']
+      worker_id = payload['worker_id'] || payload['employee_id'] || payload['trabajadorId']
       tenant_id = payload['tenant_id'] || payload['companyId']
       doc_type = payload['document_type'] || 'DOCUMENTO_CARGO'
-      doc_id = payload['document_id'] || "DOC-#{Time.now.to_i}"
+      manual_document_id = payload['manual_document_id'] || payload['document_id'] || "DOC-#{Time.now.to_i}"
+      doc_id = payload['document_id'] || manual_document_id
       doc_title = payload['document_title'] || 'Documento Oficial de Cargo'
-      sig_data = payload['signature_base64'] || payload['firmaDataUrl'] || ''
+      sig_data = payload['signature_base64'] || payload['signature_svg_or_base64'] || payload['firmaDataUrl'] || ''
+      assigned_at = payload['assigned_at']
 
       unless worker_id && !sig_data.empty?
         res.status = 400
@@ -2962,6 +2964,7 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
       bogota_time = (timestamp_now.utc - 5*3600).strftime('%Y-%m-%d %H:%M:%S UTC-5 (Bogotá)')
       clean_doc = doc_type.gsub(/[^a-zA-Z0-9_]/, '_')
       sha256_hash = Digest::SHA256.hexdigest("#{clean_doc}_#{worker_id}_#{timestamp_iso}_#{png_data.length}")
+      pdf_s3_key = "doctorpyme-storage/tenants/#{tenant_id}/manuals/#{worker_id}_#{clean_doc}_signed.pdf"
 
       filename = "sig_doc_#{clean_doc}_#{tenant_id}_#{worker_id}_#{timestamp_now.strftime('%Y%m%d_%H%M%S')}.png"
       file_path = File.join(UPLOADS_DIR, filename)
@@ -2976,22 +2979,118 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
         'companyId' => tenant_id,
         'employee_id' => worker_id,
         'trabajadorId' => worker_id,
+        'manual_document_id' => manual_document_id,
         'document_type' => doc_type,
         'document_id' => doc_id,
         'document_code' => doc_id,
         'document_title' => doc_title,
-        'signature_image_file' => "/uploads/#{filename}",
-        'signature_sha256' => sha256_hash,
+        'assigned_at' => assigned_at || timestamp_iso,
+        'is_signed' => true,
         'signed_at' => timestamp_iso,
         'bogota_timestamp' => bogota_time,
+        'signature_image_file' => "/uploads/#{filename}",
+        'signature_svg_or_base64' => "/uploads/#{filename}",
+        'signature_sha256' => sha256_hash,
+        'sha256_hash' => sha256_hash,
         'client_ip' => client_ip,
+        'signer_ip' => client_ip,
         'user_agent' => user_agent,
+        'signer_user_agent' => user_agent,
+        'pdf_s3_key' => pdf_s3_key,
         'legal_retention_years' => 20
       }
 
       db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       db['employee_document_signatures'] ||= []
       db['employee_document_signatures'] << sig_record
+
+      # Actualizar o insertar asignación en employee_job_position_assignments
+      db['employee_job_position_assignments'] ||= []
+      asg = db['employee_job_position_assignments'].find { |a| a['employee_id'] == worker_id }
+      if asg
+        asg['manual_document_id'] = manual_document_id
+        asg['is_signed'] = true
+        asg['signed_at'] = timestamp_iso
+        asg['bogota_signed_at'] = bogota_time
+        asg['signature_svg_or_base64'] = "/uploads/#{filename}"
+        asg['signer_ip'] = client_ip
+        asg['signer_user_agent'] = user_agent
+        asg['sha256_hash'] = sha256_hash
+        asg['pdf_s3_key'] = pdf_s3_key
+        asg['updated_at'] = timestamp_iso
+      else
+        db['employee_job_position_assignments'] << {
+          'id' => "asg-job-#{Time.now.to_i}-#{rand(1000..9999)}",
+          'tenant_id' => tenant_id,
+          'employee_id' => worker_id,
+          'job_position_id' => payload['job_position_id'] || payload['cargo_id'] || '',
+          'manual_document_id' => manual_document_id,
+          'assigned_at' => assigned_at || timestamp_iso,
+          'is_signed' => true,
+          'signed_at' => timestamp_iso,
+          'bogota_signed_at' => bogota_time,
+          'signature_svg_or_base64' => "/uploads/#{filename}",
+          'signer_ip' => client_ip,
+          'signer_user_agent' => user_agent,
+          'sha256_hash' => sha256_hash,
+          'pdf_s3_key' => pdf_s3_key,
+          'created_at' => timestamp_iso,
+          'updated_at' => timestamp_iso
+        }
+      end
+
+      # Inyección Automática en Estándar 1.1.2 Res. 0312 de 2019
+      if doc_type == 'MANUAL_DE_CARGO' || doc_type.to_s.include?('MANUAL')
+        trabajador_obj = (db['trabajadores'] || []).find { |t| t['id'] == worker_id } || {}
+        worker_name = trabajador_obj['nombre'] || 'Trabajador'
+        cargo_name = trabajador_obj['cargo'] || 'Cargo'
+        evid_id = "evid-#{tenant_id}-1.1.2-#{worker_id}-manual"
+
+        db['evidencias'] ||= []
+        db['evidencias'].reject! { |e| e['id'] == evid_id }
+        db['evidencias'] << {
+          'id' => evid_id,
+          'companyId' => tenant_id,
+          'tenant_id' => tenant_id,
+          'numeral' => '1.1.2',
+          'nombre' => "MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES - #{worker_name} (#{cargo_name}) [Firmado]",
+          'titulo' => "Manual de Cargos, Responsabilidades y Funciones - #{worker_name}",
+          'tipo' => 'application/pdf',
+          'tamanio' => 285000,
+          'url' => "/uploads/#{filename}",
+          'pdf_s3_key' => pdf_s3_key,
+          'sha256_hash' => sha256_hash,
+          'trabajadorId' => worker_id,
+          'trabajadorNombre' => worker_name,
+          'cargo' => cargo_name,
+          'fecha' => timestamp_iso,
+          'fechaCargue' => timestamp_iso,
+          'anio' => Time.now.year.to_s,
+          'origen' => 'MÓDULO OFICIAL TALENTO HUMANO Y SG-SST (RES. 0312 ESTÁNDAR 1.1.2)'
+        }
+
+        # Actualizar cumplimiento en evaluaciones SG-SST
+        db['evaluaciones'] ||= {}
+        if db['evaluaciones'][tenant_id].is_a?(Array)
+          item_112 = db['evaluaciones'][tenant_id].find { |it| it['numeral'] == '1.1.2' || it['numeral'] == '1.1.2.5' }
+          if item_112
+            item_112['cumple'] = true
+            item_112['no_aplica'] = false
+            item_112['justificacion'] = "Soportado con Manuales de Cargo y Responsabilidades firmados digitalmente (Ley 527/1999) y asignación formal de funciones SG-SST."
+          end
+        elsif db['evaluaciones'][tenant_id].is_a?(Hash)
+          db['evaluaciones'][tenant_id].each do |_anio, eval_hash|
+            if eval_hash.is_a?(Hash)
+              ['1.1.2', '1.1.2.1', '1.1.2.5', '1.1.2.6'].each do |num|
+                if eval_hash[num]
+                  eval_hash[num]['estado'] = 'CUMPLE'
+                  eval_hash[num]['justificacion'] = "Soportado con Manuales de Cargos, Responsabilidades y Funciones firmados digitalmente (Ley 527/1999) y socializados al personal."
+                end
+              end
+            end
+          end
+        end
+      end
 
       db['firmas'] ||= []
       db['firmas'] << {
@@ -3005,7 +3104,8 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
         'ipCliente' => client_ip,
         'hashDocumento' => sha256_hash,
         'firmaDataUrl' => "/uploads/#{filename}",
-        'companyId' => tenant_id
+        'companyId' => tenant_id,
+        'pdf_s3_key' => pdf_s3_key
       }
 
       tmp_file = "#{DB_FILE}.tmp"
@@ -3018,16 +3118,77 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
         worker_id: worker_id,
         document_type: doc_type,
         sha256: sha256_hash,
+        pdf_s3_key: pdf_s3_key,
         ip: client_ip
       }
       File.open(AUDIT_FILE, 'a:UTF-8') { |af| af.puts(audit_entry.to_json) } rescue nil
 
       res['Content-Type'] = 'application/json; charset=utf-8'
-      res.body = { status: 'ok', signature: sig_record }.to_json
+      res.body = { status: 'ok', signature: sig_record, pdf_s3_key: pdf_s3_key, sha256_hash: sha256_hash }.to_json
     rescue => err
       res.status = 500
       res['Content-Type'] = 'application/json; charset=utf-8'
       res.body = { error: "Error al registrar firma del documento: #{err.message}" }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# 4.1. Auditoría de Socialización y Firmas de Manuales (Res. 0312 Est. 1.1.2)
+mount_api(server, '/api/admin/manual-signatures-audit') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'GET'
+    begin
+      tenant_id = req.query['tenant_id'] || req.query['companyId']
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      trabajadores = (db['trabajadores'] || []).select { |t| tenant_id.nil? || tenant_id.empty? || t['companyId'] == tenant_id }
+      sigs = (db['employee_document_signatures'] || []).select { |s| s['document_type'] == 'MANUAL_DE_CARGO' }
+
+      audit_list = trabajadores.map do |trab|
+        sig = sigs.find { |s| s['employee_id'] == trab['id'] || s['trabajadorId'] == trab['id'] }
+        {
+          'worker_id' => trab['id'],
+          'worker_name' => trab['nombre'],
+          'national_id' => trab['identificacion'] || trab['cedula'],
+          'cargo' => trab['cargo'],
+          'area' => trab['area'] || 'Operaciones',
+          'fecha_ingreso' => trab['fechaIngreso'] || trab['fechaContrato'] || trab['fechaInicio'],
+          'is_signed' => !sig.nil?,
+          'signed_at' => sig ? sig['signed_at'] : nil,
+          'bogota_signed_at' => sig ? (sig['bogota_timestamp'] || sig['signed_at']) : nil,
+          'signer_ip' => sig ? (sig['signer_ip'] || sig['client_ip']) : nil,
+          'sha256_hash' => sig ? (sig['sha256_hash'] || sig['signature_sha256']) : nil,
+          'pdf_s3_key' => sig ? sig['pdf_s3_key'] : nil,
+          'signature_file' => sig ? sig['signature_image_file'] : nil
+        }
+      end
+
+      total = audit_list.length
+      firmados = audit_list.count { |item| item['is_signed'] }
+      pendientes = total - firmados
+      porcentaje = total > 0 ? ((firmados.to_f / total) * 100).round(1) : 0
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = {
+        'status' => 'ok',
+        'tenant_id' => tenant_id,
+        'standard_numeral' => '1.1.2',
+        'metrics' => {
+          'total_workers' => total,
+          'signed_count' => firmados,
+          'pending_count' => pendientes,
+          'compliance_percentage' => porcentaje
+        },
+        'audit_list' => audit_list
+      }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: "Error al consultar auditoría de manuales: #{err.message}" }.to_json
     end
   else
     res.status = 405

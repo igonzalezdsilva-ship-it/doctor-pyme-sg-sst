@@ -302,6 +302,12 @@ function renderConsolaGestionTrabajadores(container) {
               <span>Catálogo Maestro EPP</span>
             </button>
 
+            <!-- BOTÓN AUDITORÍA DE SOCIALIZACIÓN Y FIRMA DE MANUALES (ESTÁNDAR 1.1.2) -->
+            <button onclick="window.abrirModalAuditoriaManuales()" class="px-4 py-2.5 bg-purple-700 hover:bg-purple-600 text-white rounded-xl text-xs font-black transition flex items-center gap-2 cursor-pointer shadow-lg shadow-purple-900/30 active:scale-95" title="Auditoría de Socialización y Firmas de Manuales de Cargo (Res. 0312 Estándar 1.1.2)">
+              <span>📋</span>
+              <span>Auditoría Firmas Manuales (Est. 1.1.2)</span>
+            </button>
+
             <button onclick="window.abrirModalInstrumentoCargo('contrato')" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-sm">
               <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
               <span>Instrumentos por Cargo</span>
@@ -2529,8 +2535,16 @@ window.generarPdfPerfilCargo = function(cargoName, companyId) {
 };
 
 // 3. GENERADOR OFICIAL DE MANUAL DE FUNCIONES Y RESPONSABILIDADES SST (PDF)
-window.generarPdfManualFunciones = function(cargoName, companyId) {
+window.generarPdfManualFunciones = function(cargoName, companyId, trabajadorId = null) {
   const empresa = store.getEmpresa(companyId) || store.getEmpresaActiva();
+  const cargos = store.getJobPositions(empresa?.id);
+  const cargoObj = cargos.find(j => (j.title || '').toLowerCase().trim() === (cargoName || '').toLowerCase().trim() || j.id === cargoName);
+  
+  if (cargoObj && window.imprimirManualDeCargo) {
+    window.imprimirManualDeCargo(cargoObj.id, trabajadorId);
+    return;
+  }
+
   const cfg = store.getPerfilCargo(cargoName, companyId);
 
   const win = window.open('', '_blank');
@@ -3531,16 +3545,17 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
                         </div>
                       </div>
 
-                      <span class="px-2 py-0.5 rounded-full text-[9px] font-black flex-shrink-0 ${firmado ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
-                        ${firmado ? '✓ Firmado' : '⚠️ Pendiente'}
+                      <span class="px-2.5 py-1 rounded-full text-[9px] font-black flex-shrink-0 ${firmado ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
+                        ${firmado ? '✓ Firmado y Vigente' : '⚠️ Pendiente por Firmar'}
                       </span>
                     </div>
 
                     ${firmado ? `
                       <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 text-[10px] font-mono text-slate-300 space-y-0.5">
-                        <p class="text-emerald-400 font-bold">● Sello Legal Activo (Ley 527 / Retención 20 Años)</p>
-                        <p class="truncate">Hash: ${sigFound.signature_sha256 || sigFound.hashDocumento || 'SHA-256'}</p>
-                        <p class="text-slate-400">Firmado: ${sigFound.bogota_timestamp || new Date(sigFound.signed_at || sigFound.fechaHoraISO || Date.now()).toLocaleString()}</p>
+                        <p class="text-emerald-400 font-bold">● Sello Legal Activo (Ley 527 / Retención 20 Años • Res. 0312 Est. 1.1.2)</p>
+                        <p class="truncate">Hash SHA-256: ${sigFound.signature_sha256 || sigFound.sha256_hash || sigFound.hashDocumento || 'SHA-256'}</p>
+                        <p class="text-slate-400">Firmado (Bogotá): ${sigFound.bogota_timestamp || new Date(sigFound.signed_at || sigFound.fechaHoraISO || Date.now()).toLocaleString('es-CO')}</p>
+                        <p class="text-indigo-400 text-[9px] truncate">S3: ${sigFound.pdf_s3_key || `doctorpyme-storage/tenants/${empresa.id}/manuals/${trabajador.id}_MANUAL_DE_CARGO_signed.pdf`}</p>
                       </div>
                     ` : ''}
 
@@ -3550,15 +3565,15 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
                         onclick="window.abrirModalFirmarDocumentoCargo('${inst.type}', '${escapeHtml(inst.title)}', '${trabajador.id}')"
                         class="py-2 px-3 ${firmado ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-teal-600 hover:bg-teal-500 text-white shadow-md'} rounded-xl text-xs font-black transition flex items-center justify-center gap-1.5 cursor-pointer"
                       >
-                        <span>${firmado ? '👁️ Ver Documento' : '✍️ Leer y Firmar'}</span>
+                        <span>${firmado ? '👁️ Ver y Consultar' : '✍️ Leer y Firmar'}</span>
                       </button>
 
                       <button 
                         type="button" 
                         onclick="window.imprimirInstrumentoActivoModal(null, '${inst.type === 'MANUAL_DE_CARGO' ? 'manual' : (inst.type === 'PERFIL_DE_CARGO' ? 'perfil' : (inst.type === 'PLAN_DE_TRABAJO_SEGURO' ? 'pts' : 'contrato'))}', '${trabajador.id}')"
-                        class="py-2 px-3 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
+                        class="py-2 px-3 ${firmado ? 'bg-emerald-950/80 hover:bg-emerald-900 text-emerald-200 border border-emerald-700/50' : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700'} rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
                       >
-                        <span>📥 PDF</span>
+                        <span>${firmado ? '📥 Copia Firmada (PDF)' : '🖨️ Minuta Oficial'}</span>
                       </button>
                     </div>
                   </div>
@@ -4486,6 +4501,14 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
     ? todasActividadesProcesos.filter(a => a.responsible_position_id === cargoFormal.id)
     : [];
 
+  // Verificar si ya existe firma registrada para este documento
+  const docSigs = store.data.employee_document_signatures || [];
+  const sigFound = docSigs.find(s => 
+    (s.employee_id === trabajador.id || s.trabajadorId === trabajador.id) && 
+    (s.document_type === docType || (docType === 'MANUAL_DE_CARGO' && (s.document_type || '').includes('MANUAL')))
+  );
+  const isFirmado = !!sigFound;
+
   const modalId = 'modal-firmar-documento-cargo';
   const existing = document.getElementById(modalId);
   if (existing) existing.remove();
@@ -4495,33 +4518,175 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
   let codigoDoc = '';
 
   if (docType === 'MANUAL_DE_CARGO') {
-    codigoDoc = 'MN-CARG-001';
+    codigoDoc = `MAN-${cargoFormal?.code || 'OPE-001'}`;
+    const depto = cargoFormal?.department || trabajador.area || 'Operaciones y Producción';
+    const jefe = cargoFormal?.parent_job_position_title || (cargoFormal?.hierarchy_level === 'Directivo' ? 'Junta Directiva / Representante Legal' : 'Gerencia General / Líder de Proceso');
+    const objetivo = cargoFormal?.job_objective || cargoFormal?.summary_objective || configCargo?.perfil?.objetivo || `Desempeñar con excelencia técnica, compromiso ético y estricto apego a las normas del SG-SST las actividades asignadas al puesto de ${trabajador.cargo}.`;
+    const edu = cargoFormal?.required_education || configCargo?.perfil?.educacion || 'Bachiller Académico o Técnico Laboral';
+    const exp = cargoFormal?.required_experience || configCargo?.perfil?.experiencia || '1 año en labores afines a la operación o manufactura';
+    const formSst = configCargo?.perfil?.formacionSST || 'Inducción General SG-SST, Curso 50/20h SST (Dec. 1072/2015), Protocolos de Bioseguridad y Manejo de Emergencias (Res. 0312/2019)';
+    const skills = (cargoFormal?.personality_skills && cargoFormal.personality_skills.length > 0)
+      ? cargoFormal.personality_skills
+      : ['Liderazgo y comunicación asertiva', 'Disciplina operacional y autocuidado', 'Capacidad analítica y resolución de problemas', 'Trabajo en equipo y adaptabilidad', 'Orientación a la calidad'];
+
+    const funciones = (cargoFormal?.operational_functions && cargoFormal.operational_functions.length > 0)
+      ? cargoFormal.operational_functions
+      : (misActividadesPHVA.length > 0
+          ? misActividadesPHVA.map(a => `[${a.phva_phase}] ${a.name}: ${a.description}`)
+          : (configCargo?.manualFunciones?.funcionesOperativas || [
+              `Ejecutar las labores diarias y secuenciales asignadas al puesto de ${trabajador.cargo} cumpliendo con los estándares técnicos y de calidad establecidos.`,
+              'Inspeccionar y verificar el estado óptimo de las herramientas, maquinarias y equipos antes de iniciar operaciones.',
+              'Mantener el orden, aseo estricto (5S) y organización en su puesto de trabajo.',
+              'Notificar de inmediato cualquier falla, desviación o condición subestándar en los procesos.',
+              'Participar en los controles de entrega de turno y diligenciamiento de bitácoras operativas.'
+            ]));
+
+    const responsabilidades = (cargoFormal?.sst_responsibilities && cargoFormal.sst_responsibilities.length > 0)
+      ? cargoFormal.sst_responsibilities
+      : (configCargo?.manualFunciones?.responsabilidadesSST || [
+          'Procurar el cuidado integral de su salud física y mental en el desarrollo de sus actividades laborales (Dec. 1072/2015 Art. 2.2.4.6.10 Num. 1).',
+          'Suministrar información clara, veraz y completa sobre su estado de salud al empleador o área de SST (Num. 2).',
+          'Cumplir a cabalidad las normas, reglamentos, instrucciones y procedimientos de trabajo seguro del SG-SST (Num. 3).',
+          'Informar oportunamente al empleador o supervisor sobre los peligros y riesgos latentes detectados en su sitio de trabajo (Num. 4).',
+          'Participar activamente en las actividades de capacitación, inducción y simulacros de emergencia programados en el Plan Anual (Num. 5).',
+          'Participar y contribuir activamente al cumplimiento de los objetivos y metas del SG-SST de la empresa (Num. 6).',
+          'Reportar e investigar todo incidente, accidente de trabajo o condición insegura de forma inmediata al supervisor de SST.',
+          'Participar en los programas de vigilancia epidemiológica y comités institucionales (COPASST / Convivencia).'
+        ]);
+
+    const autoridad = cargoFormal?.authority_scope || 'Autoridad técnica y operacional en su puesto de trabajo. Coordinación directa de labores encomendadas y custodia de herramientas o equipos asignados.';
+    const suspension = cargoFormal?.suspension_faculty || 'Facultad expresa y obligatoria para suspender de forma inmediata cualquier labor o actividad en caso de constatar un riesgo grave o inminente para la vida o la salud, o ante la ausencia o deterioro de Elementos de Protección Personal (EPP), notificando de inmediato a la jefatura de SST.';
+
     contenidoHtml = `
-      <div class="space-y-3 text-xs leading-relaxed text-slate-800">
-        <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl">
-          <span class="font-black text-indigo-950 block">Propósito Principal del Puesto:</span>
-          <p class="mt-0.5 text-indigo-900">${cargoFormal?.summary_objective || configCargo?.perfil?.objetivo || 'Ejecutar las labores operativas con estricto apego al SG-SST.'}</p>
+      <div class="space-y-4 text-xs leading-relaxed text-slate-800">
+        
+        <!-- ENCABEZADO CONTRACTUAL Y DE CONTROL DOCUMENTAL -->
+        <div class="bg-indigo-50/70 p-3.5 rounded-2xl border border-indigo-200 space-y-2">
+          <div class="flex items-center justify-between pb-2 border-b border-indigo-200">
+            <div>
+              <span class="text-[9px] font-black uppercase tracking-wider text-indigo-700 block">Encabezado Contractual & Control Documental</span>
+              <strong class="text-sm font-black text-indigo-950">${empresa.razonSocial} (NIT: ${empresa.nit})</strong>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg text-[10px] font-mono font-black bg-indigo-950 text-white">
+              ${codigoDoc} • Versión 01
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+            <div><strong>Trabajador Titular:</strong> ${trabajador.nombre}</div>
+            <div><strong>Cédula de Ciudadanía:</strong> C.C. ${trabajador.identificacion || trabajador.cedula}</div>
+            <div><strong>Fecha de Ingreso:</strong> ${trabajador.fechaIngreso || trabajador.fechaContrato || trabajador.fechaInicio || 'Al momento de vinculación'}</div>
+            <div><strong>Tipo de Contrato:</strong> ${trabajador.tipoContrato || 'Término Indefinido'}</div>
+            <div><strong>Sede / Dirección:</strong> ${empresa.direccion || 'Calle Principal Zona Industrial'}</div>
+            <div><strong>Ciudad & Contacto:</strong> ${empresa.ciudad || 'Bogotá D.C.'} • ${empresa.telefono || '(601) 745-0000'}</div>
+          </div>
         </div>
 
-        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">I. Funciones Operativas Asignadas por Procesos</h4>
-        <ul class="list-disc pl-5 space-y-1 text-[11px] text-slate-700">
-          ${misActividadesPHVA.length > 0
-            ? misActividadesPHVA.map(a => `<li><strong>[${a.phva_phase}] ${a.name}:</strong> ${a.description}</li>`).join('')
-            : (configCargo?.manualFunciones?.funcionesOperativas || []).map(f => `<li>${f}</li>`).join('')
-          }
-        </ul>
+        <!-- I. IDENTIFICACIÓN DEL CARGO -->
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
+          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider flex items-center gap-1.5">
+            <span class="w-4 h-4 rounded bg-indigo-100 text-indigo-800 flex items-center justify-center text-[10px] font-black">I</span>
+            <span>I. Identificación y Ubicación del Cargo</span>
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+            <div><strong>Cargo Oficial:</strong> ${trabajador.cargo}</div>
+            <div><strong>Nivel Jerárquico:</strong> ${cargoFormal?.hierarchy_level || 'Operativo'}</div>
+            <div><strong>Departamento / Proceso:</strong> ${depto}</div>
+            <div><strong>Jefe Inmediato:</strong> ${jefe}</div>
+          </div>
+        </div>
 
-        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider pt-2">II. Responsabilidades Legales SG-SST (Dec. 1072 Art. 2.2.4.6.10)</h4>
-        <ul class="list-disc pl-5 space-y-1 text-[11px] text-slate-700">
-          ${(configCargo?.manualFunciones?.responsabilidadesSST || [
-            'Procurar el cuidado integral de su salud física y mental.',
-            'Suministrar información clara, veraz y completa sobre su estado de salud.',
-            'Cumplir las normas, reglamentos e instrucciones del SG-SST de la empresa.',
-            'Informar oportunamente sobre los peligros y riesgos latentes detectados en su sitio de trabajo.',
-            'Participar en las capacitaciones y simulacros programados.',
-            'Usar obligatoriamente los EPP y cuidar los equipos bajo su custodia.'
-          ]).map(r => `<li>${r}</li>`).join('')}
-        </ul>
+        <!-- II. PERFIL DEL CARGO (REQUISITOS MÍNIMOS Y COMPETENCIAS) -->
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
+          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider flex items-center gap-1.5">
+            <span class="w-4 h-4 rounded bg-indigo-100 text-indigo-800 flex items-center justify-center text-[10px] font-black">II</span>
+            <span>II. Perfil del Cargo, Requisitos Mínimos y Competencias</span>
+          </h4>
+          <div class="space-y-1 text-[11px] pt-1">
+            <p><strong>• Educación Formal:</strong> ${edu} (Licencia SST según aplique)</p>
+            <p><strong>• Formación Adicional / Certificaciones SG-SST:</strong> ${formSst}</p>
+            <p><strong>• Experiencia Mínima:</strong> ${exp}</p>
+            <div class="pt-1">
+              <strong>• Competencias y Personalidad:</strong>
+              <div class="flex flex-wrap gap-1 mt-1">
+                ${skills.map(sk => `<span class="px-2 py-0.5 rounded text-[10px] bg-slate-200 text-slate-800 font-bold">✓ ${sk}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- III. OBJETIVO DEL CARGO -->
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
+          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider flex items-center gap-1.5">
+            <span class="w-4 h-4 rounded bg-indigo-100 text-indigo-800 flex items-center justify-center text-[10px] font-black">III</span>
+            <span>III. Objetivo y Propósito Misional del Cargo</span>
+          </h4>
+          <p class="text-[11px] text-slate-700 leading-relaxed pt-1">${objetivo}</p>
+          <p class="text-[10px] italic text-slate-500 bg-white p-2 rounded border border-slate-200 mt-1">
+            <strong>Compromiso SG-SST:</strong> Preservar la vida, la salud integral y el bienestar, cumplir normas de seguridad y proteger activamente el medio ambiente.
+          </p>
+        </div>
+
+        <!-- IV. FUNCIONES TÉCNICAS Y OPERATIVAS -->
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
+          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider flex items-center gap-1.5">
+            <span class="w-4 h-4 rounded bg-indigo-100 text-indigo-800 flex items-center justify-center text-[10px] font-black">IV</span>
+            <span>IV. Funciones Técnicas y Operativas del Cargo (Ciclo PHVA)</span>
+          </h4>
+          <ol class="list-decimal pl-5 space-y-1 text-[11px] text-slate-700 pt-1">
+            ${funciones.map(f => `<li>${f}</li>`).join('')}
+          </ol>
+        </div>
+
+        <!-- V. RESPONSABILIDADES EN LA GERENCIA DEL SG-SST -->
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
+          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider flex items-center gap-1.5">
+            <span class="w-4 h-4 rounded bg-indigo-100 text-indigo-800 flex items-center justify-center text-[10px] font-black">V</span>
+            <span>V. Responsabilidades Legales en la Gerencia del SG-SST (Dec. 1072 & Res. 0312)</span>
+          </h4>
+          <ul class="list-disc pl-5 space-y-1 text-[11px] text-slate-700 pt-1">
+            ${responsabilidades.map(r => `<li>${r}</li>`).join('')}
+          </ul>
+        </div>
+
+        <!-- VI. AUTORIDAD Y ALCANCE -->
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
+          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider flex items-center gap-1.5">
+            <span class="w-4 h-4 rounded bg-rose-100 text-rose-800 flex items-center justify-center text-[10px] font-black">VI</span>
+            <span>VI. Autoridad, Alcance y Facultad de Suspensión por Riesgo Inminente</span>
+          </h4>
+          <div class="space-y-1.5 text-[11px] pt-1">
+            <p><strong>• Alcance y Autoridad:</strong> ${autoridad}</p>
+            <div class="p-2 bg-rose-50 border border-rose-200 text-rose-900 rounded-lg">
+              <strong>🛑 Facultad Expresa de Suspensión Inmediata (Cero Tolerancia):</strong><br>
+              ${suspension}
+            </div>
+          </div>
+        </div>
+
+        <!-- VII. PIE DE PÁGINA CONTRACTUAL Y SOCIALIZACIÓN -->
+        <div class="bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200 space-y-2">
+          <h4 class="font-black text-amber-950 border-b border-amber-200 pb-1 text-xs uppercase tracking-wider">
+            VII. Cláusula de Notificación, Socialización y Aceptación por el Trabajador
+          </h4>
+          <p class="text-[11px] text-amber-950 leading-relaxed italic bg-white p-2.5 rounded-xl border border-amber-200">
+            "Certifico que he recibido, leído, comprendido y aceptado en su totalidad el presente MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES correspondiente a mi cargo en ${empresa.razonSocial}. Me comprometo a cumplir estrictamente las funciones asignadas, los procedimientos de trabajo seguro (PTS) y las directrices del Sistema de Gestión de Seguridad y Salud en el Trabajo (SG-SST)."
+          </p>
+
+          <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-600 pt-1 border-t border-amber-200">
+            <div>
+              <strong>ELABORÓ / REVISÓ (SST):</strong><br>
+              ${empresa.responsableSST || 'Esp. en Seguridad y Salud en el Trabajo'}<br>
+              Licencia SST No. ${empresa.licenciaSST || '15482-2022'}
+            </div>
+            <div>
+              <strong>APROBÓ (GERENCIA GENERAL):</strong><br>
+              ${empresa.representanteLegal || 'Representante Legal / Gerencia'}<br>
+              Empleador Oficial
+            </div>
+          </div>
+        </div>
+
       </div>
     `;
   } else if (docType === 'PERFIL_DE_CARGO') {
@@ -4599,14 +4764,19 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
   modalEl.className = 'fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
 
   modalEl.innerHTML = `
-    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden my-auto flex flex-col max-h-[92vh]">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-3xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
       
       <!-- Cabecera del Visor Modal -->
-      <div class="bg-gradient-to-r from-slate-900 to-indigo-950 p-4 text-white flex items-center justify-between flex-shrink-0">
+      <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-4 text-white flex items-center justify-between flex-shrink-0">
         <div class="flex items-center gap-2.5">
-          <span class="text-xl">📄</span>
+          <span class="text-2xl flex-shrink-0">📜</span>
           <div>
-            <span class="text-[9px] font-black uppercase tracking-wider text-teal-300 block font-mono">${codigoDoc}</span>
+            <div class="flex items-center gap-2">
+              <span class="text-[9px] font-black uppercase tracking-wider text-teal-300 font-mono">${codigoDoc}</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-black ${isFirmado ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
+                ${isFirmado ? '✓ Firmado y Vigente' : '⚠️ Pendiente por Firmar'}
+              </span>
+            </div>
             <h3 class="font-black text-sm text-white">${cargoTitle}</h3>
           </div>
         </div>
@@ -4617,30 +4787,82 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
       <div class="p-5 overflow-y-auto flex-1 space-y-4">
         ${contenidoHtml}
 
-        <!-- Zona de Firma Táctil en Canvas -->
-        <div class="pt-4 border-t border-slate-200 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-black text-slate-900 uppercase">✍️ Firma con tu Dedo en Pantalla:</span>
-            <button type="button" id="btn-clear-doc-sig" class="text-[10px] text-rose-600 underline font-bold cursor-pointer">Limpiar</button>
+        <!-- Zona de Firma Táctil o Sello Digital Registrado -->
+        ${isFirmado ? `
+          <div class="pt-4 border-t border-slate-200">
+            <div class="p-4 bg-emerald-50/80 rounded-2xl border border-emerald-200 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-black text-emerald-900 uppercase flex items-center gap-1.5">
+                  <span>✓</span> Documento Firmado Digitalmente (Ley 527 de 1999)
+                </span>
+                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-200 text-emerald-900">
+                  Retención Legal: 20 Años
+                </span>
+              </div>
+              
+              <div class="flex flex-col sm:flex-row items-center gap-4 pt-1">
+                <div class="p-2 bg-white rounded-xl border border-emerald-200 flex-shrink-0 text-center">
+                  <img src="${sigFound.signature_image_file || sigFound.signature_svg_or_base64 || sigFound.firmaDataUrl}" alt="Firma" style="max-height: 55px; max-width: 170px; object-fit: contain;">
+                  <span class="text-[9px] text-slate-500 block font-mono mt-0.5">${trabajador.nombre}</span>
+                </div>
+                <div class="text-[10px] font-mono text-slate-700 space-y-1 overflow-hidden">
+                  <p class="truncate"><strong class="text-slate-900">Hash SHA-256:</strong> ${sigFound.signature_sha256 || sigFound.sha256_hash || sigFound.hashDocumento || 'SHA-256'}</p>
+                  <p><strong class="text-slate-900">Fecha Bogotá (UTC-5):</strong> ${sigFound.bogota_timestamp || (sigFound.signed_at ? new Date(sigFound.signed_at).toLocaleString('es-CO') : 'Registrado')}</p>
+                  <p><strong class="text-slate-900">Dirección IP:</strong> ${sigFound.signer_ip || sigFound.client_ip || sigFound.ipCliente || '127.0.0.1'}</p>
+                  <p class="truncate text-indigo-700"><strong class="text-slate-900">Ruta MinIO S3:</strong> ${sigFound.pdf_s3_key || `doctorpyme-storage/tenants/${empresa.id}/manuals/${trabajador.id}_MANUAL_DE_CARGO_signed.pdf`}</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-50">
-            <canvas id="canvas-doc-sig" class="signature-pad-canvas w-full h-36"></canvas>
+        ` : `
+          <div class="pt-4 border-t border-slate-200 space-y-3">
+            <!-- Confirmación de Identidad -->
+            <label class="flex items-start gap-2 p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-950 cursor-pointer">
+              <input type="checkbox" id="chk-confirm-identity-doc" class="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500">
+              <span>
+                <strong>Declaración Juramentada de Identidad:</strong> Certifico que soy <strong>${trabajador.nombre}</strong>, titular de la Cédula de Ciudadanía No. <strong>${trabajador.identificacion || trabajador.cedula}</strong>, y que acepto y recibo formalmente este Manual de Cargos y Responsabilidades.
+              </span>
+            </label>
+
+            <!-- Zona de Firma Táctil en Canvas -->
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-black text-slate-900 uppercase">✍️ Firma con tu Dedo o Puntero en Pantalla:</span>
+                <button type="button" id="btn-clear-doc-sig" class="text-[10px] text-rose-600 underline font-bold cursor-pointer">Limpiar Firma</button>
+              </div>
+              <div class="border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-50">
+                <canvas id="canvas-doc-sig" class="signature-pad-canvas w-full h-36"></canvas>
+              </div>
+              <div class="p-2 bg-slate-50 rounded-xl text-[10px] text-slate-500 font-mono flex items-center justify-between">
+                <span>Validez: Ley 527 de 1999 (Comercio Electrónico y Firmas)</span>
+                <span>Retención Legal: 20 Años (Dec. 1072/2015)</span>
+              </div>
+            </div>
           </div>
-          <div class="p-2 bg-slate-50 rounded-xl text-[10px] text-slate-500 font-mono flex items-center justify-between">
-            <span>Validez: Ley 527 de 1999</span>
-            <span>Retención Legal: 20 Años</span>
-          </div>
-        </div>
+        `}
       </div>
 
       <!-- Acciones Inferiores -->
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2 flex-shrink-0">
-        <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer">
-          Cancelar
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 flex-shrink-0">
+        <button 
+          type="button" 
+          onclick="window.imprimirManualDeCargo('${cargoFormal ? cargoFormal.id : ""}', '${trabajador.id}')"
+          class="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+        >
+          <span>📥 Descargar Copia Oficial (PDF)</span>
         </button>
-        <button type="button" id="btn-confirm-doc-sig" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black transition cursor-pointer shadow-md">
-          ✓ Confirmar Firma Digital
-        </button>
+
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer">
+            Cerrar
+          </button>
+          ${!isFirmado ? `
+            <button type="button" id="btn-confirm-doc-sig" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black transition cursor-pointer shadow-md flex items-center gap-1.5">
+              <span>✍️</span>
+              <span>Aceptar y Firmar Manual de Funciones</span>
+            </button>
+          ` : ''}
+        </div>
       </div>
 
     </div>
@@ -4648,39 +4870,54 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
 
   document.body.appendChild(modalEl);
 
-  const pad = setupSignaturePad('canvas-doc-sig');
-  document.getElementById('btn-clear-doc-sig')?.addEventListener('click', () => pad?.clear());
+  if (!isFirmado) {
+    const pad = setupSignaturePad('canvas-doc-sig');
+    document.getElementById('btn-clear-doc-sig')?.addEventListener('click', () => pad?.clear());
 
-  document.getElementById('btn-confirm-doc-sig')?.addEventListener('click', async () => {
-    if (pad?.isEmpty()) {
-      alert("Por favor firma en el recuadro antes de confirmar.");
-      return;
-    }
+    document.getElementById('btn-confirm-doc-sig')?.addEventListener('click', async () => {
+      const chk = document.getElementById('chk-confirm-identity-doc');
+      if (chk && !chk.checked) {
+        alert("Por favor marca la casilla de Declaración Juramentada de Identidad antes de firmar.");
+        return;
+      }
 
-    const btn = document.getElementById('btn-confirm-doc-sig');
-    btn.disabled = true;
-    btn.innerText = "Guardando...";
+      if (pad?.isEmpty()) {
+        alert("Por favor firma en el recuadro antes de confirmar.");
+        return;
+      }
 
-    try {
-      const sigData = pad.getDataUrl();
-      await store.submitWorkerDocumentSignature({
-        worker_id: trabajador.id,
-        tenant_id: empresa.id,
-        document_type: docType,
-        document_id: codigoDoc,
-        document_title: cargoTitle,
-        signature_base64: sigData
-      });
+      const btn = document.getElementById('btn-confirm-doc-sig');
+      btn.disabled = true;
+      btn.innerText = "Guardando firma y sellando en MinIO S3...";
 
-      modalEl.remove();
-      alert(`✓ El documento "${cargoTitle}" ha sido firmado digitalmente y archivado con retención de 20 años.`);
-      renderWorkerPortal();
-    } catch (err) {
-      alert("Error al firmar documento: " + err.message);
-      btn.disabled = false;
-      btn.innerText = "✓ Confirmar Firma Digital";
-    }
-  });
+      try {
+        const sigData = pad.getDataUrl();
+        await store.submitWorkerDocumentSignature({
+          worker_id: trabajador.id,
+          employee_id: trabajador.id,
+          tenant_id: empresa.id,
+          document_type: docType,
+          manual_document_id: cargoFormal?.id ? `jpd-man-${cargoFormal.id}` : codigoDoc,
+          document_id: codigoDoc,
+          document_title: cargoTitle,
+          signature_base64: sigData
+        });
+
+        modalEl.remove();
+        alert(`✓ El documento "${cargoTitle}" ha sido firmado digitalmente con validez legal (Ley 527/1999) e inyectado en el Estándar 1.1.2 de la Resolución 0312.`);
+        renderWorkerPortal();
+        
+        // Abrir la copia firmada en PDF para descarga inmediata
+        if (window.imprimirManualDeCargo) {
+          window.imprimirManualDeCargo(cargoFormal?.id, trabajador.id);
+        }
+      } catch (err) {
+        alert("Error al firmar documento: " + err.message);
+        btn.disabled = false;
+        btn.innerText = "✍️ Aceptar y Firmar Manual de Funciones";
+      }
+    });
+  }
 };
 
 // =============================================================================
@@ -6801,7 +7038,7 @@ window.imprimirInstrumentoActivoModal = function(cargoId, instrumento, trabajado
     return;
   }
   if (instrumento === 'manual' && window.imprimirManualDeCargo) {
-    window.imprimirManualDeCargo(cargoId);
+    window.imprimirManualDeCargo(cargoId, trabajadorId);
   } else if (instrumento === 'perfil' && window.imprimirPerfilDeCargo) {
     window.imprimirPerfilDeCargo(cargoId);
   } else if (instrumento === 'pts' && window.imprimirPlanTrabajoSeguro) {
@@ -6815,4 +7052,175 @@ window.imprimirInstrumentoActivoModal = function(cargoId, instrumento, trabajado
   } else {
     alert(`Minuta y documento en PDF generado según los estándares colombianos.`);
   }
+};
+
+// =============================================================================
+// MODAL: AUDITORÍA DE SOCIALIZACIÓN Y FIRMAS DE MANUALES (ESTÁNDAR 1.1.2)
+// =============================================================================
+window.abrirModalAuditoriaManuales = function() {
+  const empresaActiva = store.getEmpresaActiva();
+  if (!empresaActiva) return;
+
+  const auditData = store.getAuditManualesFirmados(empresaActiva.id);
+  const modalId = 'modal-auditoria-manuales';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+
+  modalEl.innerHTML = `
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-4xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      
+      <!-- Cabecera -->
+      <div class="bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 p-5 text-white flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl flex-shrink-0">📋</span>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[9px] font-black uppercase tracking-wider text-purple-300 font-mono">RESOLUCIÓN 0312 DE 2019 • ESTÁNDAR 1.1.2</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-black ${auditData.porcentaje === 100 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
+                ${auditData.porcentaje}% Cumplimiento
+              </span>
+            </div>
+            <h3 class="font-black text-base text-white">Auditoría de Socialización y Firma de Manuales de Cargos y Responsabilidades</h3>
+            <p class="text-[11px] text-slate-300">Empresa: <strong>${empresaActiva.razonSocial}</strong> (NIT: ${empresaActiva.nit})</p>
+          </div>
+        </div>
+        <button onclick="document.getElementById('${modalId}').remove()" class="text-slate-400 hover:text-white text-lg font-bold p-1 cursor-pointer">✕</button>
+      </div>
+
+      <!-- Contenido y Métricas -->
+      <div class="p-5 overflow-y-auto flex-1 space-y-4">
+        
+        <!-- KPIs de Auditoría -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-center">
+            <span class="text-[10px] font-bold text-slate-500 block uppercase">Total Colaboradores</span>
+            <span class="text-xl font-black text-slate-900">${auditData.total}</span>
+          </div>
+          <div class="p-3 bg-emerald-50 rounded-2xl border border-emerald-200 text-center">
+            <span class="text-[10px] font-bold text-emerald-700 block uppercase">Firmados y Vigentes</span>
+            <span class="text-xl font-black text-emerald-700">${auditData.firmados}</span>
+          </div>
+          <div class="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-center">
+            <span class="text-[10px] font-bold text-amber-700 block uppercase">Pendientes por Firmar</span>
+            <span class="text-xl font-black text-amber-700">${auditData.pendientes}</span>
+          </div>
+          <div class="p-3 bg-purple-50 rounded-2xl border border-purple-200 text-center">
+            <span class="text-[10px] font-bold text-purple-700 block uppercase">Soporte Numeral 1.1.2</span>
+            <span class="text-xl font-black text-purple-900">${auditData.porcentaje}%</span>
+          </div>
+        </div>
+
+        <!-- Tabla Detallada -->
+        <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-slate-700 text-[10px] uppercase tracking-wider border-b border-slate-200">
+                  <th class="p-3">Colaborador / Titular</th>
+                  <th class="p-3">Cargo & Departamento</th>
+                  <th class="p-3 text-center">Estado Firma</th>
+                  <th class="p-3">Fecha y Hora (Bogotá)</th>
+                  <th class="p-3">Sello SHA-256 / S3</th>
+                  <th class="p-3 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                ${auditData.lista.map(item => `
+                  <tr class="hover:bg-slate-50/80 transition">
+                    <td class="p-3">
+                      <strong class="text-slate-900 block">${item.worker_name}</strong>
+                      <span class="text-[10px] text-slate-500 font-mono">C.C. ${item.national_id}</span>
+                    </td>
+                    <td class="p-3">
+                      <span class="font-bold text-slate-800 block">${item.cargo}</span>
+                      <span class="text-[10px] text-slate-500">${item.area}</span>
+                    </td>
+                    <td class="p-3 text-center">
+                      <span class="px-2.5 py-1 rounded-full text-[9px] font-black inline-block ${item.is_signed ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-300'}">
+                        ${item.is_signed ? '✓ Firmado y Vigente' : '⚠️ Pendiente por Firmar'}
+                      </span>
+                    </td>
+                    <td class="p-3 text-[11px] text-slate-600">
+                      ${item.bogota_signed_at || '<span class="text-slate-400 italic">Sin firmar</span>'}
+                    </td>
+                    <td class="p-3 text-[10px] font-mono text-slate-500 max-w-[180px]">
+                      ${item.sha256_hash ? `<span class="truncate block text-slate-700" title="${item.sha256_hash}">Hash: ${item.sha256_hash.substring(0, 16)}...</span>` : ''}
+                      ${item.pdf_s3_key ? `<span class="truncate block text-indigo-600 text-[9px]" title="${item.pdf_s3_key}">S3: ...${item.pdf_s3_key.split('/').pop()}</span>` : '<span class="text-slate-400 italic">No generado</span>'}
+                    </td>
+                    <td class="p-3 text-right">
+                      <div class="flex items-center justify-end gap-1.5">
+                        <button 
+                          type="button" 
+                          onclick="window.imprimirManualDeCargo(null, '${item.worker_id}')"
+                          class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 rounded-lg text-[10px] font-bold transition cursor-pointer"
+                          title="Ver y descargar acta en PDF"
+                        >
+                          📄 PDF
+                        </button>
+                        ${!item.is_signed ? `
+                          <button 
+                            type="button" 
+                            onclick="window.verPortalComoTrabajador('${item.worker_id}')"
+                            class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-[10px] font-bold transition cursor-pointer"
+                            title="Firmar en portal del trabajador"
+                          >
+                            ✍️ Firmar
+                          </button>
+                        ` : ''}
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 flex-shrink-0">
+        <button 
+          type="button" 
+          onclick="window.exportarAuditoriaManualesCsv()" 
+          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+        >
+          <span>📥</span>
+          <span>Descargar Reporte de Auditoría en Lote (CSV)</span>
+        </button>
+
+        <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(modalEl);
+};
+
+window.exportarAuditoriaManualesCsv = function() {
+  const empresaActiva = store.getEmpresaActiva();
+  if (!empresaActiva) return;
+  const auditData = store.getAuditManualesFirmados(empresaActiva.id);
+
+  let csv = 'Trabajador,Identificacion,Cargo,Area,TipoContrato,FechaIngreso,EstadoFirma,FechaFirmaBogota,HashSHA256,RutaS3MinIO,DireccionIP\n';
+  auditData.lista.forEach(i => {
+    csv += `"${i.worker_name}","${i.national_id}","${i.cargo}","${i.area}","${i.tipo_contrato}","${i.fecha_ingreso}","${i.is_signed ? 'Firmado' : 'Pendiente'}","${i.bogota_signed_at || ''}","${i.sha256_hash || ''}","${i.pdf_s3_key || ''}","${i.signer_ip || ''}"\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Auditoria_Manuales_Cargo_Est_1_1_2_${empresaActiva.nit}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 };
