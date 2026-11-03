@@ -1236,6 +1236,60 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
 
     const cargoObj = jobPositions.find(j => j.title.toLowerCase().trim() === cargoActivo.toLowerCase().trim() || j.id === cargoActivo);
 
+    const configCargo = store.getPerfilCargo(cargoActivo, empresaActiva.id);
+    const manualCfg = configCargo?.manualFunciones || {};
+    const funcData = cargoObj ? store.getJobPositionFunctions(cargoObj.id) : { sst: [], operativas: [], procesos: [] };
+
+    // Verificar si el trabajador en contexto ya firmó este documento
+    const docSigs = store.data.employee_document_signatures || [];
+    const sigFound = trabajadorContexto
+      ? docSigs.find(s => (s.employee_id === trabajadorContexto.id || s.trabajadorId === trabajadorContexto.id) && (s.document_type === 'MANUAL_DE_CARGO' || (s.document_type || '').includes('MANUAL')))
+      : null;
+    const isFirmado = !!sigFound;
+
+    const deptoArea = cargoObj?.department || (funcData.procesos.length > 0 ? funcData.procesos.join(', ') : (trabajadorContexto?.area || 'Operaciones y Producción'));
+    const jefeInmediato = cargoObj?.parent_job_position_title || (cargoObj?.hierarchy_level === 'Directivo' ? 'Junta Directiva / Representante Legal' : 'Gerencia General / Líder de Proceso');
+    const propositoGeneral = cargoObj?.job_objective || manualCfg.propositoGeneral || cargoObj?.summary_objective || configCargo?.perfil?.objetivo || `Desempeñar con excelencia técnica, compromiso ético y estricto apego a las normas operacionales las actividades asignadas al puesto de ${cargoActivo}, garantizando la preservación de la vida, salud y bienestar integral en el marco del SG-SST y la protección del medio ambiente.`;
+
+    const educacionFormal = cargoObj?.required_education || configCargo?.perfil?.educacion || 'Bachiller Académico o Técnico Laboral';
+    const formacionSST = configCargo?.perfil?.formacionSST || 'Inducción General SG-SST, Curso Virtual 50/20 Horas SG-SST (Dec. 1072/2015), Protocolos de Bioseguridad y Manejo de Emergencias (Res. 0312/2019)';
+    const experienciaRequerida = cargoObj?.required_experience || configCargo?.perfil?.experiencia || '1 año en labores afines a la operación o al sector productivo';
+    const personalidadSkills = (cargoObj?.personality_skills && cargoObj.personality_skills.length > 0)
+      ? cargoObj.personality_skills
+      : ['Liderazgo y comunicación asertiva', 'Disciplina operacional y autocuidado', 'Capacidad de análisis y resolución de problemas', 'Trabajo en equipo y adaptabilidad', 'Orientación a la calidad y mejora continua'];
+
+    const funcionesLines = (cargoObj?.operational_functions && cargoObj.operational_functions.length > 0)
+      ? cargoObj.operational_functions
+      : ((manualCfg.funcionesOperativas && manualCfg.funcionesOperativas.length > 0)
+          ? manualCfg.funcionesOperativas
+          : (funcData.operativas && funcData.operativas.length > 0 ? funcData.operativas : [
+              `Ejecutar las labores diarias y secuenciales asignadas al puesto de ${cargoActivo} cumpliendo los estándares de calidad y seguridad.`,
+              'Inspeccionar y verificar el estado óptimo de las herramientas, maquinarias y equipos antes de iniciar operaciones.',
+              'Mantener el orden, aseo estricto (5S) y organización en su área de influencia operativa.',
+              'Notificar de inmediato al superior jerárquico cualquier falla, desviación o condición subestándar en los procesos.',
+              'Participar en el diligenciamiento de bitácoras, listas de chequeo preoperacional y controles de entrega de turno.'
+            ]));
+
+    const sstLines = (cargoObj?.sst_responsibilities && cargoObj.sst_responsibilities.length > 0)
+      ? cargoObj.sst_responsibilities
+      : ((manualCfg.responsabilidadesSST && manualCfg.responsabilidadesSST.length > 0)
+          ? manualCfg.responsabilidadesSST
+          : (funcData.sst && funcData.sst.length > 0 ? funcData.sst : [
+              'Procurar el cuidado integral de su salud física y mental en el desarrollo de sus actividades laborales (Dec. 1072/2015 Art. 2.2.4.6.10 Num. 1).',
+              'Suministrar información clara, veraz y completa sobre su estado de salud al empleador o área de SST (Dec. 1072/2015 Num. 2).',
+              'Cumplir a cabalidad las normas, reglamentos, instrucciones y procedimientos de trabajo seguro del SG-SST (Dec. 1072/2015 Num. 3).',
+              'Informar oportunamente al empleador o supervisor sobre los peligros y riesgos latentes detectados en su puesto o área de trabajo (Num. 4).',
+              'Participar activamente en las actividades de capacitación, inducción y simulacros de emergencia programados en el Plan Anual (Num. 5).',
+              'Participar y contribuir activamente al cumplimiento de los objetivos y metas del SG-SST de la empresa (Num. 6).',
+              'Reportar de forma inmediata todo incidente, accidente de trabajo o condición insegura a la coordinación de SST.',
+              'Participar en los programas de vigilancia epidemiológica ocupacional y apoyar la labor de los comités paritarios (COPASST / Convivencia).'
+            ]));
+
+    const autoridadAlcance = cargoObj?.authority_scope || 'Autoridad técnica y operacional en su puesto de trabajo. Coordinación directa de labores encomendadas, gestión de recursos operativos y custodia de maquinaria, herramientas e insumos asignados.';
+    const suspensionFacultad = cargoObj?.suspension_faculty || 'Facultad expresa y obligatoria para suspender de forma inmediata cualquier labor o actividad en caso de constatar un riesgo grave o inminente para la vida o la salud, o ante la ausencia o deterioro de Elementos de Protección Personal (EPP), notificando de inmediato a la jefatura de SST.';
+
+    const codigoManual = `MAN-${cargoObj?.code || 'CARG-001'}`;
+
     modalEl.innerHTML = `
       <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-4xl overflow-hidden my-6 animate-scaleIn flex flex-col max-h-[92vh]">
         
@@ -1262,7 +1316,7 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
               <span class="text-sm font-medium text-indigo-300">• Cargo: ${cargoActivo}</span>
             </h3>
             <p class="text-xs text-slate-300 mt-0.5">
-              ${infoInst.norma}. Consulta documentos guía oficiales, plantillas en Docs/Sheets, o adjunta y visualiza archivos locales en PDF.
+              ${infoInst.norma}. Consulta y visualiza en tiempo real los instrumentos institucionales de talento humano y SST.
             </p>
           </div>
 
@@ -1335,13 +1389,297 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
             <div class="flex items-center gap-2 flex-wrap">
               <button 
                 type="button" 
-                onclick="window.imprimirInstrumentoActivoModal('${cargoObj ? cargoObj.id : ''}', '${instrumentoActivo}', '${trabajadorContexto ? trabajadorContexto.id : ''}')" 
+                onclick="window.imprimirInstrumentoActivoModal('${cargoObj ? cargoObj.id : cargoActivo}', '${instrumentoActivo}', '${trabajadorContexto ? trabajadorContexto.id : ''}')" 
                 class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-xs font-black shadow-md transition flex items-center gap-1.5 cursor-pointer active:scale-95"
               >
                 <span>🖨️ Generar y Descargar Minuta en PDF</span>
               </button>
             </div>
           </div>
+
+          <!-- =================================================================== -->
+          <!-- VISUALIZADOR OFICIAL DEL INSTRUMENTO EN PANTALLA                    -->
+          <!-- =================================================================== -->
+          ${instrumentoActivo === 'manual' ? `
+            <div class="bg-white rounded-2xl border-2 border-purple-200 shadow-sm overflow-hidden space-y-4 p-5">
+              <!-- Encabezado Contractual y Control Documental -->
+              <div class="bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 text-white p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div>
+                  <span class="text-[10px] uppercase tracking-wider font-mono text-purple-200 block font-bold">Documento Institucional Vinculante & Anexo Laboral SG-SST</span>
+                  <h4 class="text-base font-black text-white">MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES</h4>
+                  <span class="text-[11px] text-purple-200">Decreto 1072 de 2015 (Art. 2.2.4.6.8 & 2.2.4.6.10) • Resolución 0312 Estándar 1.1.2</span>
+                </div>
+                <div class="text-right text-[11px] font-mono bg-white/10 p-2 rounded-lg border border-white/20">
+                  <div><strong>CÓDIGO:</strong> ${codigoManual}</div>
+                  <div><strong>VERSIÓN:</strong> 01 • <strong>VIGENCIA:</strong> ${new Date().toLocaleDateString('es-CO')}</div>
+                  <div class="text-purple-300"><strong>RETENCIÓN LEGAL:</strong> 20 Años</div>
+                </div>
+              </div>
+
+              <!-- Datos Empleador y Trabajador -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                  <strong class="text-slate-900 block border-b pb-1 font-bold">🏢 1. DATOS DEL EMPLEADOR / CONTRATANTE:</strong>
+                  <p><strong>Razón Social:</strong> ${empresaActiva.razonSocial}</p>
+                  <p><strong>NIT:</strong> ${empresaActiva.nit}</p>
+                  <p><strong>Dirección:</strong> ${empresaActiva.direccion || 'Calle Principal Zona Industrial'}</p>
+                  <p><strong>Ciudad:</strong> ${empresaActiva.ciudad || 'Bogotá D.C.'} • Tel: ${empresaActiva.telefono || '(601) 745-0000'}</p>
+                </div>
+                <div class="p-3 bg-purple-50/50 border border-purple-200 rounded-xl space-y-1">
+                  <strong class="text-purple-950 block border-b border-purple-200 pb-1 font-bold">👷 2. DATOS DEL TRABAJADOR / TITULAR:</strong>
+                  <p><strong>Nombre Completo:</strong> ${trabajadorContexto ? trabajadorContexto.nombre : '<span class="italic text-slate-500">Documento General para el Cargo</span>'}</p>
+                  <p><strong>Cédula:</strong> ${trabajadorContexto ? `C.C. ${trabajadorContexto.identificacion || trabajadorContexto.cedula}` : 'A convenir al contratar'}</p>
+                  <p><strong>Fecha Ingreso:</strong> ${trabajadorContexto ? (trabajadorContexto.fechaIngreso || trabajadorContexto.fechaContrato || 'Al contratar') : 'Al inicio de labores'}</p>
+                  <p><strong>Tipo Contrato:</strong> ${trabajadorContexto ? (trabajadorContexto.tipoContrato || 'Término Indefinido') : 'Contrato Individual de Trabajo'}</p>
+                </div>
+              </div>
+
+              <!-- I. Identificación del Cargo -->
+              <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                <h5 class="text-xs font-black uppercase text-indigo-950 flex items-center gap-1.5 border-b pb-1">
+                  <span class="w-4 h-4 rounded bg-indigo-600 text-white flex items-center justify-center text-[10px]">I</span>
+                  <span>I. Identificación y Ubicación Organizacional del Cargo</span>
+                </h5>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
+                  <div><strong>Nombre Oficial del Cargo:</strong> <span class="font-bold text-indigo-900">${cargoActivo}</span></div>
+                  <div><strong>Nivel Jerárquico:</strong> ${cargoObj?.hierarchy_level || 'Operativo'}</div>
+                  <div><strong>Departamento / Proceso:</strong> ${deptoArea}</div>
+                  <div><strong>Jefe Inmediato:</strong> ${jefeInmediato}</div>
+                </div>
+              </div>
+
+              <!-- II. Perfil del Cargo -->
+              <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+                <h5 class="text-xs font-black uppercase text-indigo-950 flex items-center gap-1.5 border-b pb-1">
+                  <span class="w-4 h-4 rounded bg-indigo-600 text-white flex items-center justify-center text-[10px]">II</span>
+                  <span>II. Perfil del Cargo (Requisitos Mínimos, Competencias y Formación)</span>
+                </h5>
+                <div class="space-y-1 text-xs pt-1">
+                  <p><strong>• Educación Formal Requerida:</strong> ${educacionFormal}</p>
+                  <p><strong>• Formación Adicional & Certificaciones SG-SST:</strong> ${formacionSST}</p>
+                  <p><strong>• Experiencia Laboral Mínima:</strong> ${experienciaRequerida}</p>
+                  <div>
+                    <strong>• Aspectos de Personalidad & Competencias:</strong>
+                    <div class="flex flex-wrap gap-1 mt-1">
+                      ${personalidadSkills.map(s => `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-800">✓ ${s}</span>`).join('')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- III. Objetivo del Cargo -->
+              <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+                <h5 class="text-xs font-black uppercase text-indigo-950 flex items-center gap-1.5 border-b pb-1">
+                  <span class="w-4 h-4 rounded bg-indigo-600 text-white flex items-center justify-center text-[10px]">III</span>
+                  <span>III. Objetivo y Propósito Misional del Cargo</span>
+                </h5>
+                <p class="text-xs text-slate-700 leading-relaxed pt-1">${propositoGeneral}</p>
+                <div class="p-2.5 bg-white rounded-lg border-l-4 border-indigo-600 text-[11px] italic text-slate-600">
+                  <strong>Compromiso SG-SST y Medio Ambiente:</strong> El titular del cargo se compromete a preservar su vida, su salud integral y el bienestar, cumplir estrictamente los Procedimientos de Trabajo Seguro (PTS) y proteger activamente el medio ambiente.
+                </div>
+              </div>
+
+              <!-- IV. Funciones Técnicas y Operativas -->
+              <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+                <h5 class="text-xs font-black uppercase text-indigo-950 flex items-center gap-1.5 border-b pb-1">
+                  <span class="w-4 h-4 rounded bg-indigo-600 text-white flex items-center justify-center text-[10px]">IV</span>
+                  <span>IV. Funciones Técnicas y Operativas del Cargo (Ciclo PHVA)</span>
+                </h5>
+                <ol class="list-decimal pl-5 space-y-1 text-xs text-slate-700 pt-1">
+                  ${funcionesLines.map(f => `<li>${f}</li>`).join('')}
+                </ol>
+              </div>
+
+              <!-- V. Responsabilidades en la Gerencia del SG-SST -->
+              <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+                <h5 class="text-xs font-black uppercase text-indigo-950 flex items-center gap-1.5 border-b pb-1">
+                  <span class="w-4 h-4 rounded bg-indigo-600 text-white flex items-center justify-center text-[10px]">V</span>
+                  <span>V. Responsabilidades Legales en la Gerencia del SG-SST (Dec. 1072 & Res. 0312)</span>
+                </h5>
+                <ul class="list-disc pl-5 space-y-1 text-xs text-slate-700 pt-1">
+                  ${sstLines.map(r => `<li>${r}</li>`).join('')}
+                </ul>
+              </div>
+
+              <!-- VI. Autoridad y Alcance -->
+              <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+                <h5 class="text-xs font-black uppercase text-rose-950 flex items-center gap-1.5 border-b pb-1">
+                  <span class="w-4 h-4 rounded bg-rose-600 text-white flex items-center justify-center text-[10px]">VI</span>
+                  <span>VI. Autoridad, Alcance y Facultad de Suspensión por Riesgo Inminente</span>
+                </h5>
+                <div class="space-y-1.5 text-xs pt-1">
+                  <p><strong>• Personal y Recursos Bajo su Autoridad:</strong> ${autoridadAlcance}</p>
+                  <div class="p-2.5 bg-rose-50 border border-rose-200 text-rose-950 rounded-xl">
+                    <strong>🛑 Facultad Expresa de Suspensión Inmediata (Cero Tolerancia al Riesgo):</strong><br>
+                    ${suspensionFacultad}
+                  </div>
+                </div>
+              </div>
+
+              <!-- VII. Cláusula de Socialización y Firmas -->
+              <div class="p-4 bg-amber-50/70 rounded-2xl border border-amber-200 space-y-3">
+                <h5 class="text-xs font-black uppercase text-amber-950 border-b border-amber-200 pb-1 flex items-center justify-between">
+                  <span>VII. Socialización, Aceptación Vinculante y Firmas de Responsabilidad</span>
+                  ${isFirmado ? `<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-600 text-white font-bold">✓ Firmado Digitalmente</span>` : `<span class="px-2 py-0.5 rounded text-[10px] bg-amber-200 text-amber-900 font-bold">Pendiente de Firma</span>`}
+                </h5>
+                <div class="p-2.5 bg-white rounded-xl border border-amber-200 text-xs italic text-slate-700 leading-relaxed">
+                  <strong>CLÁUSULA DE NOTIFICACIÓN, SOCIALIZACIÓN Y ACEPTACIÓN POR EL TRABAJADOR:</strong><br>
+                  "Certifico que he recibido, leído, comprendido y aceptado en su totalidad el presente MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES correspondiente a mi cargo en ${empresaActiva.razonSocial}. Me comprometo a cumplir estrictamente las funciones asignadas, los procedimientos de trabajo seguro (PTS) y las directrices del Sistema de Gestión de Seguridad y Salud en el Trabajo (SG-SST)."
+                </div>
+
+                <!-- Firmas -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-center text-xs">
+                  <div class="p-2.5 bg-white rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <div class="pt-6 border-b border-slate-300 mb-2"></div>
+                    <strong class="text-slate-900 block">${empresaActiva.responsableSST || 'ESP. EN SEGURIDAD Y SALUD EN EL TRABAJO'}</strong>
+                    <span class="text-[10px] text-slate-500">ELABORÓ / REVISÓ (SST)</span>
+                    <span class="text-[9px] text-slate-400">Lic. SST No. ${empresaActiva.licenciaSST || '15482-2022'}</span>
+                  </div>
+
+                  <div class="p-2.5 bg-white rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <div class="pt-6 border-b border-slate-300 mb-2"></div>
+                    <strong class="text-slate-900 block">${empresaActiva.representanteLegal || 'REPRESENTANTE LEGAL'}</strong>
+                    <span class="text-[10px] text-slate-500">APROBÓ (GERENCIA GENERAL)</span>
+                    <span class="text-[9px] text-slate-400">Empleador Oficial</span>
+                  </div>
+
+                  <div class="p-2.5 bg-white rounded-xl border ${isFirmado ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'} flex flex-col justify-between">
+                    ${isFirmado ? `
+                      <div>
+                        <img src="${sigFound.signature_image_file || sigFound.signature_svg_or_base64 || sigFound.firmaDataUrl}" alt="Firma" class="max-h-12 mx-auto object-contain">
+                        <span class="text-[9px] font-mono font-bold text-emerald-700 block">✓ Sello Digital Ley 527/1999</span>
+                        <span class="text-[8px] font-mono text-slate-500 block truncate">Hash: ${(sigFound.signature_sha256 || sigFound.sha256_hash || '').substring(0, 16)}...</span>
+                      </div>
+                    ` : `
+                      <div class="pt-6 border-b border-slate-300 mb-2"></div>
+                    `}
+                    <strong class="text-slate-900 block">${trabajadorContexto ? trabajadorContexto.nombre : 'TITULAR DEL CARGO'}</strong>
+                    <span class="text-[10px] text-slate-500">C.C. ${trabajadorContexto ? (trabajadorContexto.identificacion || trabajadorContexto.cedula) : 'Por Vincular'}</span>
+                    ${(!isFirmado && trabajadorContexto) ? `
+                      <button type="button" onclick="window.abrirModalFirmarDocumentoCargo('MANUAL_DE_CARGO', '${escapeHtml(cargoActivo)}', '${trabajadorContexto.id}')" class="mt-2 px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-[10px] font-bold shadow-xs cursor-pointer">
+                        ✍️ Firmar Ahora
+                      </button>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Botones de Acción al pie de la vista previa -->
+              <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200">
+                <button 
+                  type="button" 
+                  onclick="window.imprimirManualDeCargo('${cargoObj ? cargoObj.id : cargoActivo}', '${trabajadorContexto ? trabajadorContexto.id : ''}')"
+                  class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>🖨️ Imprimir / Guardar Manual en PDF</span>
+                </button>
+                <button 
+                  type="button" 
+                  onclick="window.abrirModalAdministrarCargos('${cargoActivo}')"
+                  class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                >
+                  <span>⚙️ Ajustar Parámetros del Manual</span>
+                </button>
+              </div>
+            </div>
+          ` : instrumentoActivo === 'perfil' ? `
+            <div class="bg-white rounded-2xl border-2 border-amber-200 shadow-sm p-5 space-y-4">
+              <div class="bg-gradient-to-r from-amber-900 to-slate-900 text-white p-4 rounded-xl flex justify-between items-center">
+                <div>
+                  <h4 class="text-base font-black">PERFIL DEL CARGO Y COMPETENCIAS SST</h4>
+                  <span class="text-[11px] text-amber-200">Resolución 0312 de 2019 Estándar 1.1.3 • Decreto 1072 de 2015</span>
+                </div>
+                <div class="text-right text-[11px] font-mono bg-white/10 p-2 rounded-lg">
+                  <div><strong>CÓDIGO:</strong> PF-CARG-${cargoObj?.code || '001'}</div>
+                  <div><strong>ESTÁNDAR:</strong> 1.1.3</div>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div class="p-3 bg-slate-50 border rounded-xl"><strong>Educación Requerida:</strong><br>${educacionFormal}</div>
+                <div class="p-3 bg-slate-50 border rounded-xl"><strong>Experiencia Requerida:</strong><br>${experienciaRequerida}</div>
+              </div>
+              <div class="p-3.5 bg-slate-50 border rounded-xl text-xs space-y-2">
+                <strong>Formación Obligatoria en SG-SST:</strong>
+                <p class="text-slate-700">${formacionSST}</p>
+                <strong>Competencias Clave:</strong>
+                <div class="flex flex-wrap gap-1">
+                  ${personalidadSkills.map(s => `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900">✓ ${s}</span>`).join('')}
+                </div>
+              </div>
+              <div class="flex justify-between items-center pt-2 border-t">
+                <button type="button" onclick="window.imprimirPerfilDeCargo('${cargoObj ? cargoObj.id : cargoActivo}', '${trabajadorContexto ? trabajadorContexto.id : ''}')" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black">
+                  🖨️ Imprimir Perfil en PDF
+                </button>
+                <button type="button" onclick="window.abrirModalAdministrarCargos('${cargoActivo}')" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold">
+                  ⚙️ Ajustar Parámetros
+                </button>
+              </div>
+            </div>
+          ` : instrumentoActivo === 'pts' ? `
+            <div class="bg-white rounded-2xl border-2 border-teal-200 shadow-sm p-5 space-y-4">
+              <div class="bg-gradient-to-r from-teal-900 to-slate-900 text-white p-4 rounded-xl flex justify-between items-center">
+                <div>
+                  <h4 class="text-base font-black">PROCEDIMIENTO DE TRABAJO SEGURO (PTS)</h4>
+                  <span class="text-[11px] text-teal-200">Guía Técnica GTC 45 • Res. 0312 Estándar 4.2.1</span>
+                </div>
+                <div class="text-right text-[11px] font-mono bg-white/10 p-2 rounded-lg">
+                  <div><strong>CÓDIGO:</strong> PTS-${cargoObj?.code || '001'}</div>
+                  <div><strong>ESTÁNDAR:</strong> 4.2.1</div>
+                </div>
+              </div>
+              <div class="p-3 bg-slate-50 border rounded-xl text-xs space-y-1.5">
+                <strong>Peligros Prioritarios Evaluados (GTC 45):</strong>
+                <ul class="list-disc pl-5 text-slate-700">
+                  ${(configCargo?.pts?.peligrosEvaluados || ['Peligro Mecánico (atrapamiento, cortes)', 'Peligro Biomecánico (posturas forzadas, cargas)', 'Peligro Locativo y Físico (ruido, superficies)']).map(p => `<li>${p}</li>`).join('')}
+                </ul>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>1. Antes:</strong><p class="text-[11px] text-slate-600 mt-0.5">${configCargo?.pts?.faseAntes || 'Inspección preoperacional de herramientas y verificación de EPP.'}</p></div>
+                <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>2. Durante:</strong><p class="text-[11px] text-slate-600 mt-0.5">${configCargo?.pts?.faseDurante || 'Atención exclusiva en la labor, respetar guardas y paradas de emergencia.'}</p></div>
+                <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>3. Después:</strong><p class="text-[11px] text-slate-600 mt-0.5">${configCargo?.pts?.faseDespues || 'Desenergizar equipos, ordenar puesto y reportar novedades al supervisor.'}</p></div>
+              </div>
+              <div class="flex justify-between items-center pt-2 border-t">
+                <button type="button" onclick="window.imprimirPlanTrabajoSeguro('${cargoObj ? cargoObj.id : cargoActivo}')" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-black">
+                  🖨️ Imprimir PTS en PDF
+                </button>
+                <button type="button" onclick="window.abrirModalAdministrarCargos('${cargoActivo}')" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold">
+                  ⚙️ Ajustar Parámetros
+                </button>
+              </div>
+            </div>
+          ` : instrumentoActivo === 'contrato' ? `
+            <div class="bg-white rounded-2xl border-2 border-blue-200 shadow-sm p-5 space-y-4">
+              <div class="bg-gradient-to-r from-blue-950 to-slate-900 text-white p-4 rounded-xl flex justify-between items-center">
+                <div>
+                  <h4 class="text-base font-black">CONTRATO INDIVIDUAL DE TRABAJO & ANEXO SST</h4>
+                  <span class="text-[11px] text-blue-200">Código Sustantivo del Trabajo (CST Arts. 37-47) • 9 Cláusulas Estructuradas</span>
+                </div>
+                <div class="text-right text-[11px] font-mono bg-white/10 p-2 rounded-lg">
+                  <div><strong>MINUTA:</strong> CST-09CL</div>
+                  <div><strong>ANEXO SST:</strong> Dec. 1072/2015</div>
+                </div>
+              </div>
+              <div class="p-3 bg-slate-50 border rounded-xl text-xs space-y-2">
+                <p class="font-bold text-slate-900">Estructura Legal Vinculante en 9 Cláusulas:</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
+                  <div class="p-2 bg-white rounded border"><strong>I. Objeto & Cargo:</strong> ${cargoActivo}</div>
+                  <div class="p-2 bg-white rounded border"><strong>II. Duración & Fin:</strong> Término pactado / Obra</div>
+                  <div class="p-2 bg-white rounded border"><strong>III. Salario & Pago:</strong> Remuneración de ley</div>
+                  <div class="p-2 bg-white rounded border"><strong>IV. Protocolos SST:</strong> Dec. 1072 / Res. 0312</div>
+                  <div class="p-2 bg-white rounded border text-rose-800"><strong>V. Faltas Graves:</strong> Art. 58/62 CST</div>
+                  <div class="p-2 bg-white rounded border text-indigo-800"><strong>VI. Culpa Exclusiva:</strong> Exoneración Art. 216</div>
+                  <div class="p-2 bg-white rounded border"><strong>VII. Seg. Social:</strong> Salud, Pensión, ARL</div>
+                  <div class="p-2 bg-white rounded border"><strong>VIII. Elementos:</strong> Dotación e inventario</div>
+                  <div class="p-2 bg-white rounded border"><strong>IX. Domicilio:</strong> Acuerdo vinculante</div>
+                </div>
+              </div>
+              <div class="flex justify-between items-center pt-2 border-t">
+                <button type="button" onclick="window.imprimirInstrumentoActivoModal('${cargoObj ? cargoObj.id : cargoActivo}', 'contrato', '${trabajadorContexto ? trabajadorContexto.id : ''}')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black">
+                  🖨️ Generar y Descargar Minuta de Contrato (PDF)
+                </button>
+              </div>
+            </div>
+          ` : ''}
 
           <!-- =================================================================== -->
           <!-- 1. ZONA DE DOCUMENTOS GUÍA, PLANTILLAS BASE Y FUENTES MULTI-ENLACE -->
@@ -1695,13 +2033,15 @@ window.eliminarEvidenciaInstrumentoModal = async function(id, cargoName, tipoIns
 };
 
 window.ejecutarGeneracionPdfModal = function(tipo, trabajadorId, cargoName) {
-  const empresaActiva = store.getEmpresaActiva();
-  const cargoObj = store.getJobPositions(empresaActiva?.id).find(j => j.title.toLowerCase().trim() === (cargoName || '').toLowerCase().trim() || j.id === cargoName);
+  const empresaActiva = store.getEmpresaActiva() || store.getEmpresas()[0];
+  const cargoObj = store.getJobPositions(empresaActiva?.id).find(j => (j.title || '').toLowerCase().trim() === (cargoName || '').toLowerCase().trim() || j.id === cargoName);
+  const targetCargoId = cargoObj ? cargoObj.id : cargoName;
+
   if (tipo === 'contrato') {
     if (trabajadorId) {
       window.generarPdfContratoTrabajador(trabajadorId);
     } else {
-      const trabs = store.getTrabajadores(empresaActiva?.id).filter(t => t.cargo === cargoName);
+      const trabs = store.getTrabajadores(empresaActiva?.id).filter(t => (t.cargo || '').toLowerCase().trim() === (cargoName || '').toLowerCase().trim());
       if (trabs.length > 0) {
         window.generarPdfContratoTrabajador(trabs[0].id);
       } else if (cargoObj && window.imprimirAnexoContractual) {
@@ -1711,26 +2051,38 @@ window.ejecutarGeneracionPdfModal = function(tipo, trabajadorId, cargoName) {
       }
     }
   } else if (tipo === 'perfil') {
-    if (cargoObj && window.imprimirPerfilDeCargo) window.imprimirPerfilDeCargo(cargoObj.id);
+    if (window.imprimirPerfilDeCargo) window.imprimirPerfilDeCargo(targetCargoId, trabajadorId);
     else window.generarPdfPerfilCargo(cargoName, empresaActiva?.id);
   } else if (tipo === 'manual') {
-    if (cargoObj && window.imprimirManualDeCargo) window.imprimirManualDeCargo(cargoObj.id);
-    else window.generarPdfManualFunciones(cargoName, empresaActiva?.id);
+    if (window.imprimirManualDeCargo) window.imprimirManualDeCargo(targetCargoId, trabajadorId);
+    else window.generarPdfManualFunciones(cargoName, empresaActiva?.id, trabajadorId);
   } else if (tipo === 'pts') {
-    if (cargoObj && window.imprimirPlanTrabajoSeguro) window.imprimirPlanTrabajoSeguro(cargoObj.id);
+    if (window.imprimirPlanTrabajoSeguro) window.imprimirPlanTrabajoSeguro(targetCargoId);
     else window.generarPdfPtsCargo(cargoName, empresaActiva?.id);
   } else if (tipo === 'profesiograma') {
-    if (cargoObj && window.imprimirProfesiograma) window.imprimirProfesiograma(cargoObj.id);
+    if (window.imprimirProfesiograma) window.imprimirProfesiograma(targetCargoId);
   } else if (tipo === 'epp') {
-    if (cargoObj && window.imprimirMatrizEPP) window.imprimirMatrizEPP(cargoObj.id);
+    if (window.imprimirMatrizEPP) window.imprimirMatrizEPP(targetCargoId);
   } else if (tipo === 'anexo') {
-    if (cargoObj && window.imprimirAnexoContractual) window.imprimirAnexoContractual(cargoObj.id);
+    if (window.imprimirAnexoContractual) window.imprimirAnexoContractual(targetCargoId);
   }
 };
 
 window.imprimirInstrumentoActivoModal = function(cargoId, tipoInstrumento, trabajadorId) {
-  const cargoObj = store.getJobPosition(cargoId);
-  const cargoName = cargoObj ? cargoObj.title : '';
+  let cargoObj = cargoId ? store.getJobPosition(cargoId) : null;
+  if (!cargoObj && cargoId) {
+    const empresaActiva = store.getEmpresaActiva() || store.getEmpresas()[0];
+    cargoObj = store.getJobPositions(empresaActiva?.id).find(j => (j.title || '').toLowerCase().trim() === String(cargoId).toLowerCase().trim());
+  }
+  if (!cargoObj && trabajadorId) {
+    const t = store.getTrabajadorPorId(trabajadorId);
+    if (t?.job_position_id) cargoObj = store.getJobPosition(t.job_position_id);
+    if (!cargoObj && t?.cargo) {
+      const empresaActiva = store.getEmpresaActiva() || store.getEmpresas()[0];
+      cargoObj = store.getJobPositions(empresaActiva?.id).find(j => (j.title || '').toLowerCase().trim() === (t.cargo || '').toLowerCase().trim());
+    }
+  }
+  const cargoName = cargoObj ? cargoObj.title : (cargoId || '');
   window.ejecutarGeneracionPdfModal(tipoInstrumento, trabajadorId, cargoName);
 };
 
@@ -1994,6 +2346,10 @@ window.abrirModalAdministrarCargos = function(cargoInicial = null) {
 
   const renderModalContent = () => {
     configCargo = store.getPerfilCargo(cargoActivo, empresaActiva.id);
+    const cargoObjAdmin = (store.data.job_positions || []).find(j => 
+      store._matchTenant(j.tenant_id, empresaActiva.id) && 
+      ((j.title || '').toLowerCase().trim() === cargoActivo.toLowerCase().trim() || j.id === cargoActivo)
+    );
 
     modalEl.innerHTML = `
       <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-3xl overflow-hidden my-6 animate-scaleIn flex flex-col max-h-[90vh]">
@@ -2090,24 +2446,63 @@ window.abrirModalAdministrarCargos = function(cargoInicial = null) {
             </div>
           ` : ''}
 
-          <!-- SUB-PESTAÑA 2: MANUAL DE FUNCIONES -->
+          <!-- SUB-PESTAÑA 2: MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES -->
           ${pestanaActiva === 'manual' ? `
             <div class="space-y-4">
               <div class="flex items-center justify-between">
-                <h4 class="text-xs font-black text-slate-800 uppercase tracking-wider">Funciones Operativas y Responsabilidades SG-SST</h4>
+                <div>
+                  <h4 class="text-xs font-black text-slate-800 uppercase tracking-wider">Manual de Cargos, Responsabilidades y Funciones</h4>
+                  <span class="text-[10px] text-slate-500">Decreto 1072/2015 Art. 2.2.4.6.8 & Art. 2.2.4.6.10 • Res. 0312 Estándar 1.1.2</span>
+                </div>
                 <button onclick="window.generarPdfManualFunciones('${cargoActivo}', '${empresaActiva.id}')" class="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
                   🖨️ Descargar Manual (PDF)
                 </button>
               </div>
 
               <div>
-                <label class="block font-bold text-slate-700 mb-1">Funciones Operativas Principales (Una por línea):</label>
-                <textarea id="cargo-manual-funciones" rows="5" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs leading-relaxed font-sans">${(configCargo.manualFunciones?.funcionesOperativas || []).join('\n')}</textarea>
+                <label class="block font-bold text-slate-700 mb-1">III. Objetivo y Propósito Misional del Cargo:</label>
+                <textarea id="cargo-manual-objetivo" rows="2" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-sans">${cargoObjAdmin?.job_objective || configCargo.manualFunciones?.propositoGeneral || configCargo.perfil?.objetivo || ''}</textarea>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">Nivel Jerárquico:</label>
+                  <select id="cargo-manual-nivel" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium">
+                    <option value="Operativo" ${(cargoObjAdmin?.hierarchy_level === 'Operativo' || !cargoObjAdmin) ? 'selected' : ''}>Operativo</option>
+                    <option value="Asistencial / Técnico" ${cargoObjAdmin?.hierarchy_level?.includes('Asistencial') || cargoObjAdmin?.hierarchy_level?.includes('Técnico') ? 'selected' : ''}>Asistencial / Técnico</option>
+                    <option value="Profesional" ${cargoObjAdmin?.hierarchy_level === 'Profesional' ? 'selected' : ''}>Profesional</option>
+                    <option value="Directivo" ${cargoObjAdmin?.hierarchy_level === 'Directivo' ? 'selected' : ''}>Directivo</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">Departamento / Proceso:</label>
+                  <input type="text" id="cargo-manual-depto" value="${cargoObjAdmin?.department || 'Operaciones y Producción'}" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium">
+                </div>
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">Jefe Inmediato:</label>
+                  <input type="text" id="cargo-manual-jefe" value="${cargoObjAdmin?.parent_job_position_title || 'Gerencia General / Líder de Proceso'}" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium">
+                </div>
               </div>
 
               <div>
-                <label class="block font-bold text-slate-700 mb-1">Responsabilidades Específicas en SG-SST (Dec. 1072/2015 Art. 2.2.4.6.10):</label>
-                <textarea id="cargo-manual-sst" rows="5" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs leading-relaxed font-sans">${(configCargo.manualFunciones?.responsabilidadesSST || []).join('\n')}</textarea>
+                <label class="block font-bold text-slate-700 mb-1">IV. Funciones Técnicas y Operativas (Una por línea):</label>
+                <textarea id="cargo-manual-funciones" rows="5" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs leading-relaxed font-sans">${(cargoObjAdmin?.operational_functions && cargoObjAdmin.operational_functions.length > 0 ? cargoObjAdmin.operational_functions : (configCargo.manualFunciones?.funcionesOperativas || [])).join('\n')}</textarea>
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">V. Responsabilidades en la Gerencia del SG-SST (Dec. 1072 & Res. 0312 - Una por línea):</label>
+                <textarea id="cargo-manual-sst" rows="5" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs leading-relaxed font-sans">${(cargoObjAdmin?.sst_responsibilities && cargoObjAdmin.sst_responsibilities.length > 0 ? cargoObjAdmin.sst_responsibilities : (configCargo.manualFunciones?.responsabilidadesSST || [])).join('\n')}</textarea>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">VI. Autoridad y Alcance:</label>
+                  <textarea id="cargo-manual-autoridad" rows="2" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs">${cargoObjAdmin?.authority_scope || 'Autoridad técnica y operacional en su puesto de trabajo. Coordinación directa de labores encomendadas, gestión de recursos operativos y custodia de maquinaria, herramientas e insumos asignados.'}</textarea>
+                </div>
+                <div>
+                  <label class="block font-bold text-rose-700 mb-1">🛑 Facultad de Suspensión por Riesgo Inminente:</label>
+                  <textarea id="cargo-manual-suspension" rows="2" class="w-full px-3 py-2 border border-rose-200 rounded-xl text-xs text-rose-950 bg-rose-50/50">${cargoObjAdmin?.suspension_faculty || 'Facultad expresa y obligatoria para suspender de forma inmediata cualquier labor o actividad en caso de constatar un riesgo grave o inminente para la vida o la salud, o ante la ausencia o deterioro de Elementos de Protección Personal (EPP), notificando de inmediato a la jefatura de SST.'}</textarea>
+                </div>
               </div>
             </div>
           ` : ''}
@@ -2230,6 +2625,7 @@ window.abrirModalAdministrarCargos = function(cargoInicial = null) {
           },
           manualFunciones: {
             ...configCargo.manualFunciones,
+            propositoGeneral: document.getElementById('cargo-manual-objetivo')?.value || configCargo.manualFunciones?.propositoGeneral,
             funcionesOperativas: document.getElementById('cargo-manual-funciones')?.value ? document.getElementById('cargo-manual-funciones').value.split('\n').filter(Boolean) : configCargo.manualFunciones?.funcionesOperativas,
             responsabilidadesSST: document.getElementById('cargo-manual-sst')?.value ? document.getElementById('cargo-manual-sst').value.split('\n').filter(Boolean) : configCargo.manualFunciones?.responsabilidadesSST
           },
@@ -2251,7 +2647,35 @@ window.abrirModalAdministrarCargos = function(cargoInicial = null) {
         };
 
         store.guardarPerfilCargo(payload);
-        alert(`✓ Parámetros del cargo "${cargoActivo}" guardados exitosamente.`);
+
+        // Sincronizar simultáneamente en el catálogo de cargos job_positions
+        const existingJp = (store.data.job_positions || []).find(j => 
+          store._matchTenant(j.tenant_id, empresaActiva.id) && 
+          ((j.title || '').toLowerCase().trim() === cargoActivo.toLowerCase().trim() || j.id === cargoActivo)
+        );
+
+        const jpRecord = {
+          id: existingJp ? existingJp.id : `jp-${empresaActiva.id}-${Date.now()}`,
+          tenant_id: empresaActiva.id,
+          code: existingJp?.code || `CARG-${String((store.data.job_positions || []).length + 1).padStart(3, '0')}`,
+          title: cargoActivo,
+          department: document.getElementById('cargo-manual-depto')?.value || existingJp?.department || 'Operaciones y Producción',
+          hierarchy_level: document.getElementById('cargo-manual-nivel')?.value || existingJp?.hierarchy_level || 'Operativo',
+          parent_job_position_title: document.getElementById('cargo-manual-jefe')?.value || existingJp?.parent_job_position_title || 'Gerencia General / Líder de Proceso',
+          job_objective: document.getElementById('cargo-manual-objetivo')?.value || document.getElementById('cargo-perfil-objetivo')?.value || existingJp?.job_objective || '',
+          summary_objective: document.getElementById('cargo-manual-objetivo')?.value || existingJp?.summary_objective || '',
+          required_education: document.getElementById('cargo-perfil-educacion')?.value || existingJp?.required_education || '',
+          required_experience: document.getElementById('cargo-perfil-experiencia')?.value || existingJp?.required_experience || '',
+          personality_skills: document.getElementById('cargo-perfil-competencias')?.value ? document.getElementById('cargo-perfil-competencias').value.split(',').map(s => s.trim()) : (existingJp?.personality_skills || []),
+          operational_functions: payload.manualFunciones.funcionesOperativas || existingJp?.operational_functions || [],
+          sst_responsibilities: payload.manualFunciones.responsabilidadesSST || existingJp?.sst_responsibilities || [],
+          authority_scope: document.getElementById('cargo-manual-autoridad')?.value || existingJp?.authority_scope || '',
+          suspension_faculty: document.getElementById('cargo-manual-suspension')?.value || existingJp?.suspension_faculty || ''
+        };
+
+        store.saveJobPosition(jpRecord, empresaActiva.id);
+
+        alert(`✓ Parámetros y Manual del cargo "${cargoActivo}" guardados y actualizados exitosamente.`);
         renderModalContent();
       };
     }
@@ -2604,77 +3028,16 @@ window.generarPdfPerfilCargo = function(cargoName, companyId) {
   win.document.close();
 };
 
-// 3. GENERADOR OFICIAL DE MANUAL DE FUNCIONES Y RESPONSABILIDADES SST (PDF)
+// 3. GENERADOR OFICIAL DE MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES (PDF)
 window.generarPdfManualFunciones = function(cargoName, companyId, trabajadorId = null) {
   const empresa = store.getEmpresa(companyId) || store.getEmpresaActiva();
   const cargos = store.getJobPositions(empresa?.id);
   const cargoObj = cargos.find(j => (j.title || '').toLowerCase().trim() === (cargoName || '').toLowerCase().trim() || j.id === cargoName);
   
-  if (cargoObj && window.imprimirManualDeCargo) {
-    window.imprimirManualDeCargo(cargoObj.id, trabajadorId);
+  if (window.imprimirManualDeCargo) {
+    window.imprimirManualDeCargo(cargoObj ? cargoObj.id : cargoName, trabajadorId);
     return;
   }
-
-  const cfg = store.getPerfilCargo(cargoName, companyId);
-
-  const win = window.open('', '_blank');
-  win.document.write(`
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-      <meta charset="UTF-8">
-      <title>Manual de Funciones y Responsabilidades SST - ${cargoName}</title>
-      <style>
-        @page { size: letter; margin: 15mm; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #0f172a; margin: 0; padding: 15px; font-size: 10px; line-height: 1.45; }
-        .header { text-align: center; border-bottom: 2px solid #6b21a8; padding-bottom: 10px; margin-bottom: 15px; }
-        h1 { margin: 0; font-size: 13.5px; text-transform: uppercase; color: #6b21a8; }
-        h2 { margin: 2px 0 0; font-size: 10.5px; color: #1e293b; text-transform: uppercase; }
-        .section-title { background: #f3e8ff; border-left: 4px solid #6b21a8; padding: 5px 8px; font-weight: bold; text-transform: uppercase; margin: 12px 0 6px; color: #581c87; font-size: 10px; }
-        ul { margin: 0; padding-left: 18px; }
-        li { margin-bottom: 5px; }
-        @media print { body { padding: 0; } .no-print { display: none; } }
-      </style>
-    </head>
-    <body>
-      <div class="no-print" style="text-align: right; margin-bottom: 12px;">
-        <button onclick="window.print()" style="padding: 8px 18px; background: #6b21a8; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;">
-          🖨️ Imprimir / Guardar como PDF
-        </button>
-      </div>
-
-      <div class="header">
-        ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 52px; max-width: 150px; object-fit: contain; margin-bottom: 5px;"><br>` : ''}
-        <strong style="font-size: 13px; color: #0f172a;">${empresa.razonSocial}</strong>
-        <div style="font-size: 9px; color: #64748b;">NIT: ${empresa.nit} • Sistema de Gestión de Seguridad y Salud en el Trabajo</div>
-        <h1>MANUAL DE FUNCIONES Y ASIGNACIÓN DE RESPONSABILIDADES SST</h1>
-        <h2>Decreto 1072 de 2015 (Artículos 2.2.4.6.8 & 2.2.4.6.10) • Cargo: ${cargoName}</h2>
-      </div>
-
-      <div class="section-title">1. Funciones Operativas Principales del Puesto</div>
-      <ul>
-        ${(cfg.manualFunciones?.funcionesOperativas || []).map(f => `<li>${f}</li>`).join('')}
-      </ul>
-
-      <div class="section-title">2. Responsabilidades Legales Obligatorias en SG-SST (Dec. 1072/2015)</div>
-      <ul>
-        ${(cfg.manualFunciones?.responsabilidadesSST || []).map(r => `<li><strong>${r.substring(0, 3)}</strong> ${r.substring(3)}</li>`).join('')}
-      </ul>
-
-      <div style="margin-top: 35px; display: flex; justify-content: space-around; text-align: center;">
-        <div style="width: 220px; border-top: 1px solid #334155; padding-top: 4px;">
-          <strong>Gerencia / Talento Humano</strong><br>
-          <span style="font-size: 8.5px; color: #64748b;">Asignación de Responsabilidades</span>
-        </div>
-        <div style="width: 220px; border-top: 1px solid #334155; padding-top: 4px;">
-          <strong>Responsable SG-SST</strong><br>
-          <span style="font-size: 8.5px; color: #64748b;">Verificación Cumplimiento</span>
-        </div>
-      </div>
-    </body>
-    </html>
-  `);
-  win.document.close();
 };
 
 // 4. GENERADOR OFICIAL DE PROCEDIMIENTO DE TRABAJO SEGURO (PTS - PDF)
@@ -7187,64 +7550,21 @@ window.confirmarImportacionMasivaTrabajadores = function() {
 };
 
 window.imprimirInstrumentoActivoModal = function(cargoId, instrumento, trabajadorId) {
-  if (instrumento === 'contrato') {
-    if (trabajadorId) {
-      window.generarPdfContratoTrabajador(trabajadorId);
-      return;
-    }
-    const empresaActiva = store.getEmpresaActiva();
-    const cargoObj = cargoId ? store.getJobPosition(cargoId) : null;
-    if (cargoObj) {
-      const trabs = store.getTrabajadores(empresaActiva?.id).filter(t => t.cargo === cargoObj.title);
-      if (trabs.length > 0) {
-        window.generarPdfContratoTrabajador(trabs[0].id);
-        return;
-      }
-    }
-    if (cargoId && window.imprimirAnexoContractual) {
-      window.imprimirAnexoContractual(cargoId);
-      return;
-    }
+  let cargoObj = cargoId ? store.getJobPosition(cargoId) : null;
+  if (!cargoObj && cargoId) {
+    const empresaActiva = store.getEmpresaActiva() || store.getEmpresas()[0];
+    cargoObj = store.getJobPositions(empresaActiva?.id).find(j => (j.title || '').toLowerCase().trim() === String(cargoId).toLowerCase().trim());
   }
-
-  if (instrumento === 'anexo') {
-    if (cargoId && window.imprimirAnexoContractual) {
-      window.imprimirAnexoContractual(cargoId);
-      return;
-    } else if (trabajadorId) {
-      window.generarPdfContratoTrabajador(trabajadorId);
-      return;
-    }
-  }
-
-  if (!cargoId && trabajadorId) {
+  if (!cargoObj && trabajadorId) {
     const trab = store.getTrabajadorPorId(trabajadorId);
-    if (trab && trab.cargo) {
-      const empresaActiva = store.getEmpresaActiva();
-      const cObj = store.getJobPositions(empresaActiva?.id).find(j => j.title.toLowerCase().trim() === trab.cargo.toLowerCase().trim());
-      if (cObj) cargoId = cObj.id;
+    if (trab?.job_position_id) cargoObj = store.getJobPosition(trab.job_position_id);
+    if (!cargoObj && trab?.cargo) {
+      const empresaActiva = store.getEmpresaActiva() || store.getEmpresas()[0];
+      cargoObj = store.getJobPositions(empresaActiva?.id).find(j => (j.title || '').toLowerCase().trim() === (trab.cargo || '').toLowerCase().trim());
     }
   }
-
-  if (!cargoId) {
-    alert("Para emitir el documento en PDF, este cargo debe estar registrado en el Catálogo de Cargos (Módulo de Procesos).");
-    return;
-  }
-  if (instrumento === 'manual' && window.imprimirManualDeCargo) {
-    window.imprimirManualDeCargo(cargoId, trabajadorId);
-  } else if (instrumento === 'perfil' && window.imprimirPerfilDeCargo) {
-    window.imprimirPerfilDeCargo(cargoId);
-  } else if (instrumento === 'pts' && window.imprimirPlanTrabajoSeguro) {
-    window.imprimirPlanTrabajoSeguro(cargoId);
-  } else if (instrumento === 'profesiograma' && window.imprimirProfesiograma) {
-    window.imprimirProfesiograma(cargoId);
-  } else if (instrumento === 'epp' && window.imprimirMatrizEPP) {
-    window.imprimirMatrizEPP(cargoId);
-  } else if ((instrumento === 'contrato' || instrumento === 'anexo') && window.imprimirAnexoContractual) {
-    window.imprimirAnexoContractual(cargoId);
-  } else {
-    alert(`Minuta y documento en PDF generado según los estándares colombianos.`);
-  }
+  const cargoName = cargoObj ? cargoObj.title : (cargoId || '');
+  window.ejecutarGeneracionPdfModal(instrumento, trabajadorId, cargoName);
 };
 
 // =============================================================================

@@ -3062,19 +3062,59 @@ function abrirVentanaImpresion(tituloDoc, htmlBody) {
 }
 
 // 1. MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES (FORMATO INSTITUCIONAL CONTRACTUAL)
-window.imprimirManualDeCargo = function(cargoId, trabajadorId = null) {
-  const empresa = store.getEmpresaActiva();
-  const cargo = store.getJobPosition(cargoId);
-  if (!empresa || !cargo) return;
+window.imprimirManualDeCargo = function(cargoId = null, trabajadorId = null) {
+  const empresa = store.getEmpresaActiva() || store.getEmpresas()[0];
+  if (!empresa) return;
 
   // Resolver trabajador asociado si no se especificó directamente
   let trabajador = null;
   if (trabajadorId) {
     trabajador = store.getTrabajadorPorId(trabajadorId);
   }
-  if (!trabajador) {
-    const trabs = store.getTrabajadores(empresa.id).filter(t => (t.cargo || '').toLowerCase().trim() === (cargo.title || '').toLowerCase().trim());
+
+  // Resolver objeto de cargo desde catálogo por ID o por título
+  let cargo = cargoId ? store.getJobPosition(cargoId) : null;
+  if (!cargo && cargoId) {
+    const positions = store.getJobPositions(empresa.id);
+    cargo = positions.find(j => (j.title || '').toLowerCase().trim() === String(cargoId).toLowerCase().trim() || j.id === cargoId);
+  }
+  if (!cargo && trabajador) {
+    if (trabajador.job_position_id) {
+      cargo = store.getJobPosition(trabajador.job_position_id);
+    }
+    if (!cargo && trabajador.cargo) {
+      const positions = store.getJobPositions(empresa.id);
+      cargo = positions.find(j => (j.title || '').toLowerCase().trim() === (trabajador.cargo || '').toLowerCase().trim());
+    }
+  }
+  if (!trabajador && cargo) {
+    const trabs = store.getTrabajadores(empresa.id).filter(t => t.job_position_id === cargo.id || (t.cargo || '').toLowerCase().trim() === (cargo.title || '').toLowerCase().trim());
     if (trabs.length > 0) trabajador = trabs[0];
+  }
+
+  const cargoTitle = cargo?.title || (typeof cargoId === 'string' && cargoId ? cargoId : (trabajador?.cargo || 'Cargo Operativo'));
+  const configCargo = store.getPerfilCargo(cargoTitle, empresa.id);
+  const manualCfg = configCargo?.manualFunciones || {};
+  const funcData = cargo ? store.getJobPositionFunctions(cargo.id) : { sst: [], operativas: [], procesos: [] };
+
+  if (!cargo) {
+    cargo = {
+      id: `jp-${empresa.id}-temp-${Date.now()}`,
+      tenant_id: empresa.id,
+      code: 'CARG-001',
+      title: cargoTitle,
+      department: trabajador?.area || 'Operaciones y Producción',
+      hierarchy_level: 'Operativo',
+      parent_job_position_title: 'Gerencia General / Líder de Proceso',
+      job_objective: configCargo?.perfil?.objetivo,
+      required_education: configCargo?.perfil?.educacion,
+      required_experience: configCargo?.perfil?.experiencia,
+      personality_skills: configCargo?.perfil?.competencias ? configCargo.perfil.competencias.split(',').map(s => s.trim()) : null,
+      operational_functions: manualCfg?.funcionesOperativas,
+      sst_responsibilities: manualCfg?.responsabilidadesSST,
+      authority_scope: 'Autoridad técnica y operacional en su puesto de trabajo. Coordinación directa de labores encomendadas, gestión de recursos operativos y custodia de maquinaria, herramientas e insumos asignados.',
+      suspension_faculty: 'Facultad expresa y obligatoria para suspender de forma inmediata cualquier labor o actividad en caso de constatar un riesgo grave o inminente para la vida o la salud, o ante la ausencia o deterioro de Elementos de Protección Personal (EPP), notificando de inmediato a la jefatura de SST.'
+    };
   }
 
   // Buscar firma digital previa en base de datos inmutable
@@ -3082,10 +3122,6 @@ window.imprimirManualDeCargo = function(cargoId, trabajadorId = null) {
   const sigFound = trabajador
     ? docSigs.find(s => (s.employee_id === trabajador.id || s.trabajadorId === trabajador.id) && (s.document_type === 'MANUAL_DE_CARGO' || (s.document_type || '').includes('MANUAL')))
     : null;
-
-  const funcData = store.getJobPositionFunctions(cargoId);
-  const configCargo = store.getPerfilCargo(cargo.title, empresa.id);
-  const manualCfg = configCargo?.manualFunciones || {};
 
   const propositoGeneral = cargo.job_objective
     || manualCfg.propositoGeneral 
@@ -3363,12 +3399,36 @@ window.imprimirManualDeCargo = function(cargoId, trabajadorId = null) {
 };
 
 // 2. PERFIL DE CARGO Y REQUISITOS DE COMPETENCIA
-window.imprimirPerfilDeCargo = function(cargoId) {
-  const empresa = store.getEmpresaActiva();
-  const cargo = store.getJobPosition(cargoId);
-  if (!empresa || !cargo) return;
+window.imprimirPerfilDeCargo = function(cargoId = null, trabajadorId = null) {
+  const empresa = store.getEmpresaActiva() || store.getEmpresas()[0];
+  if (!empresa) return;
 
-  const configCargo = store.getPerfilCargo(cargo.title, empresa.id);
+  let cargo = cargoId ? store.getJobPosition(cargoId) : null;
+  if (!cargo && cargoId) {
+    const positions = store.getJobPositions(empresa.id);
+    cargo = positions.find(j => (j.title || '').toLowerCase().trim() === String(cargoId).toLowerCase().trim() || j.id === cargoId);
+  }
+  if (!cargo && trabajadorId) {
+    const t = store.getTrabajadorPorId(trabajadorId);
+    if (t?.job_position_id) cargo = store.getJobPosition(t.job_position_id);
+    if (!cargo && t?.cargo) {
+      cargo = store.getJobPositions(empresa.id).find(j => (j.title || '').toLowerCase().trim() === (t.cargo || '').toLowerCase().trim());
+    }
+  }
+  const cargoTitle = cargo?.title || (typeof cargoId === 'string' && cargoId ? cargoId : 'Cargo Operativo');
+  const configCargo = store.getPerfilCargo(cargoTitle, empresa.id);
+
+  if (!cargo) {
+    cargo = {
+      id: `jp-${empresa.id}-temp`,
+      code: 'CARG-001',
+      title: cargoTitle,
+      hierarchy_level: 'Operativo',
+      required_education: configCargo?.perfil?.educacion || 'Bachiller o Técnico',
+      required_experience: configCargo?.perfil?.experiencia || '1 año'
+    };
+  }
+
   const educacion = cargo.required_education || configCargo?.perfil?.educacion || 'Bachiller o Técnico';
   const experiencia = cargo.required_experience || configCargo?.perfil?.experiencia || '1 año';
   const formacionSST = configCargo?.perfil?.formacionSST || 'Inducción General y Específica en SG-SST, Curso Virtual de 50/20 Horas en SG-SST y Primeros Auxilios.';
@@ -3477,14 +3537,28 @@ window.imprimirPerfilDeCargo = function(cargoId) {
 };
 
 // 3. PLAN DE TRABAJO SEGURO (PTS)
-window.imprimirPlanTrabajoSeguro = function(cargoId) {
-  const empresa = store.getEmpresaActiva();
-  const cargo = store.getJobPosition(cargoId);
-  if (!empresa || !cargo) return;
+window.imprimirPlanTrabajoSeguro = function(cargoId = null) {
+  const empresa = store.getEmpresaActiva() || store.getEmpresas()[0];
+  if (!empresa) return;
 
-  const funcData = store.getJobPositionFunctions(cargoId);
-  const configCargo = store.getPerfilCargo(cargo.title, empresa.id);
+  let cargo = cargoId ? store.getJobPosition(cargoId) : null;
+  if (!cargo && cargoId) {
+    const positions = store.getJobPositions(empresa.id);
+    cargo = positions.find(j => (j.title || '').toLowerCase().trim() === String(cargoId).toLowerCase().trim() || j.id === cargoId);
+  }
+  const cargoTitle = cargo?.title || (typeof cargoId === 'string' && cargoId ? cargoId : 'Cargo Operativo');
+  const configCargo = store.getPerfilCargo(cargoTitle, empresa.id);
   const ptsCfg = configCargo?.pts || {};
+  const funcData = cargo ? store.getJobPositionFunctions(cargo.id) : { sst: [], operativas: [], procesos: [] };
+
+  if (!cargo) {
+    cargo = {
+      id: `jp-${empresa.id}-temp`,
+      code: 'CARG-001',
+      title: cargoTitle,
+      hierarchy_level: 'Operativo'
+    };
+  }
 
   const html = `
     <table class="header-table">
