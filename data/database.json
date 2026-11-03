@@ -3101,6 +3101,32 @@
 
       ],
       "estadoPreaviso": "Pendiente"
+    },
+    {
+      "id": "trab-1793733974262",
+      "companyId": "emp-1792009016839",
+      "job_position_id": "jp-emp-1792009016839-1793729781035-llj",
+      "nombre": "DILAN ARLEY ARIAS TOLOZA",
+      "identificacion": "1033716997",
+      "cedula": "1033716997",
+      "cargo": "AYUDANTE DE OBRA",
+      "salario": 1750905,
+      "tipoContrato": "Término Fijo",
+      "fechaContrato": "2026-11-04",
+      "fechaIngreso": "2026-11-04",
+      "fechaFinContrato": "2027-02-04",
+      "estado": "Activo",
+      "area": "Operaciones",
+      "correo": "arias_toloza2507@gmail.com",
+      "telefono": "",
+      "eps": "FAMISANAR E.P.S.",
+      "afp": "PORVENIR S.A.",
+      "arl": "Sura ARL",
+      "duracionMeses": null,
+      "prorrogas": [
+
+      ],
+      "estadoPreaviso": "Pendiente"
     }
   ],
   "capacitaciones": [
@@ -10053,15 +10079,6 @@
         "frecuenciaReposicion": "Dotación legal cada 4 meses (30 abril, 31 agosto, 20 diciembre - Art. 230 CST) y reposición inmediata de EPP por deterioro o desgaste."
       },
       "anexoContractual": {
-        "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
-        "notificacionRiesgos": "Peligro Mecánico (atrapamiento, golpes por herramientas) • Peligro Biomecánico (posturas prolongadas, manipulación de cargas) • Peligro Locativo (superficies irregulares, caídas al mismo nivel)",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
-        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
-        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
-        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
-        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
-        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
-        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico.",
         "clausula1_objeto": "EL EMPLEADOR contrata los servicios personales de EL TRABAJADOR para desempeñar el cargo de AYUDANTE DE OBRA, ejecutando con diligencia, lealtad y subordinación las funciones inherentes al puesto conforme al Manual de Funciones, Perfil de Cargo y directrices técnicas de la empresa en el marco de su objeto social.",
         "clausula2_duracion": "El presente contrato se pacta por el término pactado / duración de la obra o labor encomendada. La relación laboral terminará válidamente por culminación de la labor, mutuo acuerdo o unilateralmente con justa causa conforme al Artículo 62 del Código Sustantivo del Trabajo (CST), sin lugar a indemnización.",
         "clausula3_salario": "EL EMPLEADOR pagará a EL TRABAJADOR como remuneración mensual o quincenal por la prestación de sus servicios la suma estipulada en dinero legal colombiano, sirviendo de base para la liquidación de prestaciones sociales legales y aportes a Seguridad Social Integral.",
@@ -10070,7 +10087,16 @@
         "clausula6_culpa_exclusiva": "Si ocurre un accidente de trabajo derivado de la imprudencia temeraria, desatención voluntaria, violación de los Procedimientos de Trabajo Seguro o desacato de órdenes directas de SST por parte del trabajador, dicho evento se considerará por CULPA EXCLUSIVA DEL TRABAJADOR, exonerando al empleador de responsabilidad civil ordinaria de perjuicios (Art. 216 CST).",
         "clausula7_seguridad_social": "EL EMPLEADOR afiliará y mantendrá al día las cotizaciones de EL TRABAJADOR al Sistema de Seguridad Social Integral: Salud (EPS), Pensión (AFP) y Riesgos Laborales (ARL), garantizando la cobertura de contingencias comunes y profesionales conforme a la Ley 100 de 1993 y Decreto 1072 de 2015.",
         "clausula8_elementos_herramientas": "EL EMPLEADOR suministrará las herramientas, equipos y elementos requeridos para la labor, los cuales son propiedad de la empresa y se entregan bajo inventario y custodia. En caso de portabilidad o traslado fuera del centro de trabajo, el trabajador responderá por su debido cuidado, reporte de fallas y restitución inmediata.",
-        "clausula9_domicilio_firmas": "Las partes fijan como domicilio contractual la ciudad de ejecución de labores y manifiestan que este documento contiene la totalidad de los acuerdos vinculantes. Las partes firman en señal de expresa conformidad en dos ejemplares de igual tenor."
+        "clausula9_domicilio_firmas": "Las partes fijan como domicilio contractual la ciudad de ejecución de labores y manifiestan que este documento contiene la totalidad de los acuerdos vinculantes. Las partes firman en señal de expresa conformidad en dos ejemplares de igual tenor.",
+        "notificacionRiesgos": "EL EMPLEADOR contrata los servicios personales de EL TRABAJADOR para desempeñar el cargo de AYUDANTE DE OBRA, ejecutando con diligencia, lealtad y subordinación las funciones inherentes al puesto conforme al Manual de Funciones, Perfil de Cargo y directrices técnicas de la empresa en el marco de su objeto social.",
+        "clausulaPrincipal": "Dada la naturaleza de alto riesgo y directrices del SG-SST, EL TRABAJADOR se obliga a: a) Procurar el cuidado integral de su salud; b) Cumplir estrictamente los Procedimientos de Trabajo Seguro (PTS); c) Portar y mantener los EPP asignados; d) No ejecutar tareas de alto riesgo sin Permiso de Trabajo y lista de chequeo; e) Asistir a capacitaciones y exámenes ocupacionales.",
+        "regimenSancionatorio": "Se califica expresamente como FALTA GRAVE (Art. 58 y Art. 62 Literal a) Num. 6 del CST, y Art. 91 Dec. 1295/94): el no uso reiterado de los EPP, el desacato de los PTS, presentarse bajo efectos de alcohol o drogas, operar maquinaria sin autorización, y cualquier omisión que comprometa la seguridad, facultando la terminación unilateral con justa causa.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -10116,14 +10142,21 @@
         ],
         "anexo": [
           {
-            "id": "f-anexo-1793729781242",
-            "titulo": "Anexo Contractual de Responsabilidades SST y Riesgos CST (Google Docs)",
+            "id": "f-1793733732023",
+            "titulo": "CONTRATO - AYUDANTE DE OBRA",
+            "url": "https://docs.google.com/document/d/1SXJMMsgna-slQ5ByY58ur07jwvMdAWsvTeGUA14ilNs/edit?usp=sharing"
+          }
+        ],
+        "contrato": [
+          {
+            "id": "f-contrato-1793733981901",
+            "titulo": "Minuta Oficial Contrato Individual y Anexo SST CST (Google Docs)",
             "url": "https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing"
           }
         ]
       },
       "id": "cargo-cfg-1793729781143",
-      "updatedAt": "2026-11-03T18:43:48.932Z"
+      "updatedAt": "2026-11-03T19:26:21.901Z"
     }
   ],
   "process_maps": [
@@ -12625,7 +12658,7 @@
       "ultimoIngreso": "2026-10-31T21:00:00.000Z"
     }
   ],
-  "updatedAt": "2026-11-03T13:43:49-05:00",
+  "updatedAt": "2026-11-03T14:31:28-05:00",
   "master_standard_templates": [
     {
       "id": "tpl-1-1-1-1",

@@ -1636,6 +1636,8 @@ window.ejecutarGeneracionPdfModal = function(tipo, trabajadorId, cargoName) {
       const trabs = store.getTrabajadores(empresaActiva?.id).filter(t => t.cargo === cargoName);
       if (trabs.length > 0) {
         window.generarPdfContratoTrabajador(trabs[0].id);
+      } else if (cargoObj && window.imprimirAnexoContractual) {
+        window.imprimirAnexoContractual(cargoObj.id);
       } else {
         alert("Para generar la minuta de contrato laboral, selecciona un trabajador asignado a este cargo.");
       }
@@ -2195,7 +2197,7 @@ window.abrirModalAdministrarCargos = function(cargoInicial = null) {
 // GENERADORES OFICIALES DE PDF (CONTRATO, PERFIL, MANUAL, PTS)
 // =============================================================================
 
-// 1. GENERADOR OFICIAL DE CONTRATO LABORAL INDIVIDUAL DE TRABAJO
+// 1. GENERADOR OFICIAL DE CONTRATO LABORAL INDIVIDUAL DE TRABAJO (9 CLÁUSULAS ESTRUCTURADAS)
 window.generarPdfContratoTrabajador = function(trabajadorId) {
   const trabajador = store.getTrabajadorPorId(trabajadorId);
   if (!trabajador) {
@@ -2203,8 +2205,39 @@ window.generarPdfContratoTrabajador = function(trabajadorId) {
     return;
   }
   const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva();
-
   const formatCOP = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
+
+  // Obtener la estructura oficial de 9 cláusulas configurada para el cargo
+  const configCargo = store.getPerfilCargo(trabajador.cargo, empresa.id);
+  const anexoCfg = configCargo?.anexoContractual || {};
+
+  const c1 = anexoCfg.clausula1_objeto || anexoCfg.notificacionRiesgos || `EL EMPLEADOR contrata los servicios personales de EL TRABAJADOR para desempeñar el cargo de ${trabajador.cargo}, ejecutando de manera directa, subordinada y diligente las funciones inherentes al puesto conforme al Manual de Funciones, Perfil de Cargo y directrices técnicas de la empresa en el marco de su objeto social.`;
+
+  let duracionDefault = 'El presente contrato se celebra por la duración de la obra o labor encomendada / por el término pactado entre las partes. La relación laboral terminará válidamente por culminación de la labor contratada, por mutuo acuerdo entre las partes o unilateralmente con justa causa debidamente comprobada conforme al Artículo 62 del Código Sustantivo del Trabajo (CST), sin lugar a indemnización.';
+  if (trabajador.tipoContrato === 'Término Fijo' && trabajador.fechaFinContrato) {
+    duracionDefault = `El presente contrato se celebra a TÉRMINO FIJO con fecha de inicio el ${trabajador.fechaContrato || trabajador.fechaIngreso || 'inicio de labores'} y fecha de vencimiento pactada el ${trabajador.fechaFinContrato}. Su prórroga se regirá estrictamente por lo previsto en el Artículo 46 del Código Sustantivo del Trabajo. La terminación operará válidamente por expiración del plazo fijado con el preaviso legal de mínimo treinta (30) días, por mutuo acuerdo o unilateralmente con justa causa (Art. 62 CST).`;
+  } else if (trabajador.tipoContrato === 'Término Indefinido') {
+    duracionDefault = `El presente contrato se celebra a TÉRMINO INDEFINIDO a partir del ${trabajador.fechaContrato || trabajador.fechaIngreso || 'inicio de labores'}, subsistiendo mientras perduren las causas que le dieron origen y la materia del trabajo. Podrá darse por terminado válidamente por mutuo acuerdo o unilateralmente con justa causa conforme al Artículo 62 del Código Sustantivo del Trabajo.`;
+  }
+  const c2 = anexoCfg.clausula2_duracion || duracionDefault;
+
+  const c3 = anexoCfg.clausula3_salario || `EL EMPLEADOR pagará a EL TRABAJADOR por la prestación de sus servicios el salario mensual de ${formatCOP(trabajador.salario)} M/CTE, pagadero en las fechas fijadas por la empresa, sobre el cual se liquidarán las prestaciones sociales de ley y los aportes al Sistema de Seguridad Social Integral conforme a la legislación laboral colombiana.`;
+  const c4 = anexoCfg.clausula4_obligaciones_sst || anexoCfg.clausulaPrincipal || 'Dada la naturaleza de alto riesgo y directrices del SG-SST, EL TRABAJADOR se obliga perentoriamente a: a) Procurar el cuidado integral de su salud; b) Cumplir estrictamente los Procedimientos de Trabajo Seguro (PTS); c) Portar, inspeccionar y mantener permanentemente los EPP asignados; d) No ejecutar tareas de alto riesgo sin Permiso de Trabajo y lista de chequeo; e) Asistir a capacitaciones, simulacros y exámenes ocupacionales.';
+  const c5 = anexoCfg.clausula5_faltas_graves || anexoCfg.regimenSancionatorio || 'Se califica expresamente como FALTA GRAVE (Art. 58 y Art. 62 Literal a) Num. 6 del CST, y Art. 91 Dec. 1295/94): el no uso reiterado de los EPP, el desacato de los PTS, presentarse bajo efectos de alcohol o drogas, operar maquinaria sin autorización, y cualquier omisión que comprometa la seguridad, facultando la terminación unilateral con justa causa y sin lugar a indemnización.';
+  const c6 = anexoCfg.clausula6_culpa_exclusiva || 'Si ocurre un accidente de trabajo derivado de la imprudencia temeraria, desatención voluntaria, violación de los Procedimientos de Trabajo Seguro o desacato de órdenes directas de SST por parte del trabajador, dicho evento se considerará por CULPA EXCLUSIVA DEL TRABAJADOR, exonerando al empleador de responsabilidad civil ordinaria de perjuicios (Art. 216 CST).';
+  const c7 = anexoCfg.clausula7_seguridad_social || 'EL EMPLEADOR afiliará y mantendrá al día las cotizaciones de EL TRABAJADOR al Sistema de Seguridad Social Integral: Salud (EPS), Pensión (AFP) y Riesgos Laborales (ARL), garantizando la cobertura de contingencias comunes y profesionales conforme a la Ley 100 de 1993 y Decreto 1072 de 2015.';
+  const c8 = anexoCfg.clausula8_elementos_herramientas || 'EL EMPLEADOR suministrará las herramientas, equipos y elementos requeridos para la labor, los cuales son propiedad de la empresa y se entregan bajo inventario y custodia. En caso de portabilidad o traslado fuera del centro de trabajo, el trabajador responderá por su debido cuidado, reporte de fallas y restitución inmediata.';
+  const c9 = anexoCfg.clausula9_domicilio_firmas || 'Las partes fijan como domicilio contractual la ciudad de ejecución de labores y manifiestan que este documento contiene la totalidad de los acuerdos vinculantes. Las partes firman en señal de expresa conformidad en dos ejemplares de igual tenor.';
+
+  // Verificación de firma digital del trabajador
+  const firmas = (store.getFirmasPorTrabajador ? store.getFirmasPorTrabajador(trabajador.id) : []) || [];
+  const firmaRegistrada = firmas.find(f => 
+    f.documentoCodigo === 'CONTRATO_INDIVIDUAL' || 
+    f.documentoCodigo === 'contrato' || 
+    f.documentoId === 'contrato' ||
+    f.tipo === 'CONTRATO' ||
+    f.firmaBase64
+  );
 
   const win = window.open('', '_blank');
   win.document.write(`
@@ -2214,35 +2247,36 @@ window.generarPdfContratoTrabajador = function(trabajadorId) {
       <meta charset="UTF-8">
       <title>Contrato Individual de Trabajo - ${trabajador.nombre}</title>
       <style>
-        @page { size: letter; margin: 15mm; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #0f172a; background: white; margin: 0; padding: 15px; font-size: 10.5px; line-height: 1.5; }
-        .header { text-align: center; border-bottom: 2px solid #1e293b; padding-bottom: 12px; margin-bottom: 15px; }
-        h1 { margin: 0; font-size: 14px; text-transform: uppercase; color: #0f172a; font-weight: 900; }
-        h2 { margin: 3px 0 0; font-size: 11px; color: #4338ca; text-transform: uppercase; font-weight: bold; }
-        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        .data-table th, .data-table td { border: 1px solid #cbd5e1; padding: 5px 8px; text-align: left; }
-        .data-table th { background: #f8fafc; font-weight: bold; width: 30%; font-size: 10px; }
-        .clausula { margin-bottom: 12px; text-align: justify; }
-        .clausula strong { color: #1e1b4b; }
-        .sig-table { width: 100%; border-collapse: collapse; margin-top: 40px; }
-        .sig-table td { width: 50%; vertical-align: top; text-align: center; padding: 0 25px; }
-        .sig-line { border-top: 1px solid #334155; margin-bottom: 5px; }
+        @page { size: letter; margin: 12mm 15mm; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #0f172a; background: white; margin: 0; padding: 18px 24px; font-size: 8.5pt; line-height: 1.45; }
+        .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 12px; }
+        h1 { margin: 0; font-size: 13pt; text-transform: uppercase; color: #0f172a; font-weight: 900; }
+        h2 { margin: 2px 0 0; font-size: 9pt; color: #4338ca; text-transform: uppercase; font-weight: bold; }
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 8.5pt; }
+        .data-table th, .data-table td { border: 1px solid #cbd5e1; padding: 4.5px 8px; text-align: left; vertical-align: middle; }
+        .data-table th { background: #f8fafc; font-weight: bold; width: 28%; font-size: 8pt; color: #334155; }
+        .section-box { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; margin-bottom: 9px; page-break-inside: avoid; }
+        .section-title { font-size: 9pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 3px; margin: 0 0 5px 0; }
+        .clausula-text { font-size: 8.5pt; line-height: 1.45; margin: 0; text-align: justify; }
+        .sig-table { width: 100%; border-collapse: collapse; margin-top: 25px; page-break-inside: avoid; }
+        .sig-table td { width: 50%; vertical-align: top; text-align: center; padding: 0 20px; }
+        .sig-line { border-top: 1px solid #0f172a; margin-bottom: 5px; }
         @media print { body { padding: 0; } .no-print { display: none; } }
       </style>
     </head>
     <body>
       <div class="no-print" style="text-align: right; margin-bottom: 12px;">
-        <button onclick="window.print()" style="padding: 8px 18px; background: #4338ca; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;">
+        <button onclick="window.print()" style="padding: 8px 18px; background: #4338ca; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
           🖨️ Imprimir / Guardar como PDF
         </button>
       </div>
 
       <div class="header">
-        ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 55px; max-width: 150px; object-fit: contain; margin-bottom: 6px;"><br>` : ''}
-        <strong style="font-size: 14px; color: #0f172a;">${empresa.razonSocial}</strong>
-        <div style="font-size: 10px; color: #64748b;">NIT: ${empresa.nit} • Matriz de Talento Humano & SG-SST</div>
+        ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 50px; max-width: 150px; object-fit: contain; margin-bottom: 4px;"><br>` : ''}
+        <strong style="font-size: 13pt; color: #0f172a;">${empresa.razonSocial}</strong>
+        <div style="font-size: 9.5pt; color: #64748b;">NIT: ${empresa.nit} • Matriz de Talento Humano & SG-SST</div>
         <h1>CONTRATO INDIVIDUAL DE TRABAJO A ${trabajador.tipoContrato ? trabajador.tipoContrato.toUpperCase() : 'TÉRMINO INDEFINIDO'}</h1>
-        <h2>Conforme al Código Sustantivo del Trabajo de Colombia</h2>
+        <h2>Conforme al Código Sustantivo del Trabajo de Colombia • 9 Cláusulas Estructuradas</h2>
       </div>
 
       <table class="data-table">
@@ -2272,7 +2306,7 @@ window.generarPdfContratoTrabajador = function(trabajadorId) {
         </tr>
         <tr>
           <th>FECHA DE INICIO DE LABORES:</th>
-          <td><strong>${trabajador.fechaContrato || trabajador.fechaIngreso}</strong></td>
+          <td><strong>${trabajador.fechaContrato || trabajador.fechaIngreso || 'Al momento de suscripción'}</strong></td>
         </tr>
         ${trabajador.fechaFinContrato ? `
           <tr>
@@ -2286,55 +2320,116 @@ window.generarPdfContratoTrabajador = function(trabajadorId) {
         </tr>
       </table>
 
-      <div class="clausula">
-        <strong>PRIMERA. OBJETO:</strong> EL EMPLEADOR contrata los servicios personales de EL TRABAJADOR para desempeñar el cargo de <strong>${trabajador.cargo}</strong>, ejecutando las labores asignadas con lealtad, eficiencia y estricto cumplimiento de los procedimientos técnicos y de seguridad industrial de la empresa.
+      <div class="section-box" style="background: #f8fafc;">
+        <p class="clausula-text">
+          Entre los suscritos a saber: por una parte <strong>${empresa.razonSocial}</strong> (NIT: ${empresa.nit}), sociedad legalmente constituida, representada por <strong>${empresa.representanteLegal || 'la Gerencia General'}</strong>, en adelante <strong>EL EMPLEADOR</strong>, y por la otra parte <strong>${trabajador.nombre}</strong>, mayor de edad, identificado(a) con cédula de ciudadanía Nº <strong>${trabajador.identificacion || trabajador.cedula}</strong>, en adelante <strong>EL TRABAJADOR</strong> contratado para el cargo de <strong>${trabajador.cargo}</strong>, se celebra el presente <strong>CONTRATO INDIVIDUAL DE TRABAJO Y ANEXO CONTRACTUAL DE SST</strong>, el cual se regirá por el Código Sustantivo del Trabajo de Colombia, el Decreto 1072 de 2015, la Resolución 0312 de 2019 y las siguientes nueve (9) cláusulas pactadas de común acuerdo:
+        </p>
       </div>
 
-      <div class="clausula">
-        <strong>SEGUNDA. REMUNERACIÓN:</strong> EL EMPLEADOR pagará a EL TRABAJADOR por la prestación de sus servicios el salario mensual de <strong>${formatCOP(trabajador.salario)}</strong>, pagadero en las fechas fijadas por la empresa, sobre el cual se liquidarán las prestaciones sociales y aportes a Seguridad Social Integral (Salud, Pensión y Riesgos Laborales ARL).
+      <!-- CLÁUSULA I -->
+      <div class="section-box">
+        <div class="section-title">CLÁUSULA PRIMERA: OBJETO, CARGO Y ALCANCE</div>
+        <p class="clausula-text">${c1}</p>
       </div>
 
-      <div class="clausula">
-        <strong>TERCERA. JORNADA ORDINARIA:</strong> EL TRABAJADOR cumplirá una jornada máxima de 46 horas semanales (conforme a la Ley 2101 de 2021), distribuidas en los turnos y horarios dispuestos por EL EMPLEADOR según las necesidades operacionales.
+      <!-- CLÁUSULA II -->
+      <div class="section-box">
+        <div class="section-title">CLÁUSULA SEGUNDA: DURACIÓN Y TERMINACIÓN DE LA LABOR</div>
+        <p class="clausula-text">${c2}</p>
       </div>
 
-      <div class="clausula">
-        <strong>CUARTA. OBLIGACIONES ESPECIALES EN SEGURIDAD Y SALUD EN EL TRABAJO (SG-SST):</strong> En cumplimiento del Decreto Único Reglamentario 1072 de 2015 (Artículo 2.2.4.6.10), EL TRABAJADOR se obliga a: 
-        1) Procurar el cuidado integral de su salud; 
-        2) Suministrar información clara y veraz sobre su estado de salud; 
-        3) Cumplir cabalmente las normas y reglamentos del SG-SST; 
-        4) Participar en las capacitaciones programadas; 
-        5) Usar obligatoriamente y conservar los Elementos de Protección Personal (EPP) suministrados. <em>El incumplimiento grave o reiterado de las directrices de seguridad constituirá justa causa para la terminación unilateral del contrato de trabajo por parte de EL EMPLEADOR.</em>
+      <!-- CLÁUSULA III -->
+      <div class="section-box">
+        <div class="section-title">CLÁUSULA TERCERA: SALARIO Y FORMA DE PAGO</div>
+        <p class="clausula-text">${c3}</p>
       </div>
 
-      <div class="clausula">
-        <strong>QUINTA. CONFIDENCIALIDAD:</strong> EL TRABAJADOR se compromete a guardar absoluta reserva de la información técnica, fórmulas, recetas de producción, clientes y secretos comerciales a los que tenga acceso en el ejercicio de sus funciones.
+      <!-- CLÁUSULA IV -->
+      <div class="section-box">
+        <div class="section-title">CLÁUSULA CUARTA: OBLIGACIONES ESPECIALES Y PROTOCOLOS SST (ALTO RIESGO)</div>
+        <p class="clausula-text">${c4}</p>
+      </div>
+
+      <!-- CLÁUSULA V -->
+      <div class="section-box" style="border-left: 4px solid #b91c1c; background: #fff5f5;">
+        <div class="section-title" style="color: #b91c1c; border-bottom-color: #fecaca;">CLÁUSULA QUINTA: FALTAS GRAVES Y JUSTAS CAUSAS DE TERMINACIÓN</div>
+        <p class="clausula-text" style="color: #7f1d1d;">${c5}</p>
+      </div>
+
+      <!-- CLÁUSULA VI -->
+      <div class="section-box" style="border-left: 4px solid #4338ca; background: #f8fafc;">
+        <div class="section-title" style="color: #3730a3; border-bottom-color: #e0e7ff;">CLÁUSULA SEXTA: CULPA EXCLUSIVA DEL TRABAJADOR Y EXONERACIÓN PATRONAL (ART. 216 CST)</div>
+        <p class="clausula-text">${c6}</p>
+      </div>
+
+      <!-- CLÁUSULA VII -->
+      <div class="section-box">
+        <div class="section-title">CLÁUSULA SÉPTIMA: SEGURIDAD SOCIAL INTEGRAL</div>
+        <p class="clausula-text">${c7}</p>
+      </div>
+
+      <!-- CLÁUSULA VIII -->
+      <div class="section-box">
+        <div class="section-title">CLÁUSULA OCTAVA: ELEMENTOS DE TRABAJO Y PORTABILIDAD DE HERRAMIENTAS</div>
+        <p class="clausula-text">${c8}</p>
+      </div>
+
+      <!-- CLÁUSULA IX -->
+      <div class="section-box">
+        <div class="section-title">CLÁUSULA NOVENA: DOMICILIO CONTRACTUAL, ACUERDO TOTAL Y FIRMAS</div>
+        <p class="clausula-text">${c9}</p>
+      </div>
+
+      <div style="font-size: 8.5pt; margin: 15px 0 25px 0; text-align: justify; line-height: 1.5;">
+        Para constancia de comprensión, aceptación expresa y notificación plena de las nueve (9) cláusulas aquí contenidas, se firma en dos (2) ejemplares de igual valor y tenor legal a los ${new Date().getDate()} días del mes de ${new Intl.DateTimeFormat('es-CO', { month: 'long' }).format(new Date())} de ${new Date().getFullYear()}.
       </div>
 
       <table class="sig-table">
         <tr>
           <td>
+            <div style="min-height: 52px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px;">
+              <!-- Sello / Firma patronal -->
+            </div>
             <div class="sig-line"></div>
-            <strong>${empresa.razonSocial}</strong><br>
-            <span>NIT: ${empresa.nit}</span><br>
-            <span>EL EMPLEADOR</span>
+            <strong style="font-size: 9.5pt; color: #0f172a;">${empresa.razonSocial}</strong><br>
+            <span style="font-size: 8.5pt; color: #334155;">NIT: ${empresa.nit}</span><br>
+            <span style="font-size: 8pt; color: #64748b;">Rep. Legal: ${empresa.representanteLegal || 'Gerencia General'}</span><br>
+            <strong style="font-size: 8pt; color: #1e1b4b;">EL EMPLEADOR</strong>
           </td>
           <td>
+            <div style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 4px;">
+              ${firmaRegistrada ? `
+                <img src="${firmaRegistrada.firmaBase64}" alt="Firma ${trabajador.nombre}" style="max-height: 48px; max-width: 170px; object-fit: contain; margin-bottom: 2px;">
+                <div style="font-size: 7pt; font-family: monospace; color: #047857; font-weight: bold;">✓ FIRMA ELECTRÓNICA REGISTRADA (Ley 527/99)</div>
+              ` : `
+                <span style="font-size: 8pt; color: #94a3b8; font-style: italic;">[Firma autógrafa o digital del colaborador]</span>
+              `}
+            </div>
             <div class="sig-line"></div>
-            <strong>${trabajador.nombre}</strong><br>
-            <span>C.C. ${trabajador.identificacion || trabajador.cedula}</span><br>
-            <span>EL TRABAJADOR</span>
+            <strong style="font-size: 9.5pt; color: #0f172a;">${trabajador.nombre}</strong><br>
+            <span style="font-size: 8.5pt; color: #334155;">C.C. Nº ${trabajador.identificacion || trabajador.cedula}</span><br>
+            <span style="font-size: 8pt; color: #64748b;">Cargo: ${trabajador.cargo}</span><br>
+            <strong style="font-size: 8pt; color: #1e1b4b;">EL TRABAJADOR (Aceptación Expresa y Vinculante)</strong>
           </td>
         </tr>
       </table>
 
       <div style="margin-top: 25px; border-top: 1px solid #cbd5e1; padding-top: 5px; font-size: 8px; color: #94a3b8; text-align: center;">
-        Documento generado a través de DOCTOR PYME SG-SST • Validez probatoria Código Sustantivo del Trabajo
+        Documento generado a través de DOCTOR PYME SG-SST • Validez probatoria Código Sustantivo del Trabajo • Decreto 1072 de 2015
       </div>
     </body>
     </html>
   `);
   win.document.close();
+};
+
+// Alias directo para compatibilidad de llamadas
+window.imprimirMinutaContratoTrabajador = function(trabajadorId, cargoId) {
+  if (trabajadorId) {
+    window.generarPdfContratoTrabajador(trabajadorId);
+  } else if (cargoId && window.imprimirAnexoContractual) {
+    window.imprimirAnexoContractual(cargoId);
+  }
 };
 
 // 2. GENERADOR OFICIAL DE PERFIL DEL CARGO (PDF)
@@ -4468,13 +4563,32 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
     `;
   } else {
     codigoDoc = 'ANX-CONT-004';
+    const anexoCfg = configCargo?.anexoContractual || {};
+    const c1 = anexoCfg.clausula1_objeto || anexoCfg.notificacionRiesgos || `EL EMPLEADOR contrata los servicios personales de EL TRABAJADOR para desempeñar el cargo de ${trabajador.cargo}, ejecutando de manera directa, subordinada y diligente las funciones inherentes al puesto conforme al Manual de Funciones, Perfil de Cargo y directrices técnicas de la empresa en el marco de su objeto social.`;
+    const c2 = anexoCfg.clausula2_duracion || 'El presente contrato se celebra por la duración de la obra o labor encomendada / por el término pactado entre las partes. La relación laboral terminará válidamente por culminación de la labor contratada, por mutuo acuerdo entre las partes o unilateralmente con justa causa conforme al Artículo 62 del Código Sustantivo del Trabajo (CST), sin lugar a indemnización.';
+    const c3 = anexoCfg.clausula3_salario || 'EL EMPLEADOR pagará a EL TRABAJADOR por la prestación de sus servicios la remuneración mensual pactada en dinero legal colombiano, sobre la cual se liquidarán las prestaciones sociales de ley y los aportes al Sistema de Seguridad Social Integral.';
+    const c4 = anexoCfg.clausula4_obligaciones_sst || anexoCfg.clausulaPrincipal || 'Dada la naturaleza de alto riesgo y directrices del SG-SST, EL TRABAJADOR se obliga perentoriamente a procurar el cuidado integral de su salud, cumplir estrictamente los Procedimientos de Trabajo Seguro (PTS), portar los EPP y no realizar tareas críticas sin permiso de trabajo.';
+    const c5 = anexoCfg.clausula5_faltas_graves || anexoCfg.regimenSancionatorio || 'Se califica expresamente como FALTA GRAVE (Art. 58 y Art. 62 Literal a) Num. 6 del CST, y Art. 91 Dec. 1295/94): el no uso reiterado de los EPP, el desacato de los PTS, presentarse bajo efectos de alcohol o drogas y cualquier omisión que comprometa la seguridad, facultando la terminación unilateral con justa causa.';
+    const c6 = anexoCfg.clausula6_culpa_exclusiva || 'Si ocurre un accidente de trabajo derivado de la imprudencia temeraria, desatención voluntaria o violación de procedimientos de seguridad por parte del trabajador, dicho evento se considerará por CULPA EXCLUSIVA DEL TRABAJADOR, exonerando al empleador de responsabilidad civil ordinaria de perjuicios (Art. 216 CST).';
+    const c7 = anexoCfg.clausula7_seguridad_social || 'EL EMPLEADOR afiliará y mantendrá al día las cotizaciones de EL TRABAJADOR al Sistema de Seguridad Social Integral: Salud (EPS), Pensión (AFP) y Riesgos Laborales (ARL) conforme a la Ley 100 de 1993 y Decreto 1072 de 2015.';
+    const c8 = anexoCfg.clausula8_elementos_herramientas || 'EL EMPLEADOR suministrará las herramientas, equipos y elementos requeridos para la labor bajo inventario y custodia. En caso de portabilidad o traslado, el trabajador responderá por su debido cuidado y restitución inmediata.';
+    const c9 = anexoCfg.clausula9_domicilio_firmas || 'Las partes fijan como domicilio contractual la ciudad de ejecución de labores y manifiestan que este documento contiene la totalidad de los acuerdos vinculantes suscritos en dos ejemplares.';
+
     contenidoHtml = `
-      <div class="space-y-3 text-xs leading-relaxed text-slate-800">
-        <p>
-          El TRABAJADOR declara expresamente que ha sido notificado de los riesgos y peligros de su puesto, y se compromete a acatar estrictamente todas las medidas de prevención del SG-SST (Dec. 1072/2015).
-        </p>
-        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-950">
-          <strong>Régimen Disciplinario y Sancionatorio:</strong> El incumplimiento grave de las normas de seguridad constituirá justa causa de terminación del contrato de trabajo conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.
+      <div class="space-y-2.5 text-xs leading-relaxed text-slate-800">
+        <div class="p-2.5 bg-indigo-50 border border-indigo-200 rounded-xl text-[11px] text-indigo-950">
+          <strong>Minuta Contractual Oficial:</strong> Contrato Individual de Trabajo y Anexo SST (9 Cláusulas Estructuradas conforme al CST y Dec. 1072).
+        </div>
+        <div class="space-y-2 max-h-[380px] overflow-y-auto pr-1">
+          <div class="p-2 bg-slate-50 border rounded-lg"><strong>I. Objeto, Cargo y Alcance:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c1}</p></div>
+          <div class="p-2 bg-slate-50 border rounded-lg"><strong>II. Duración y Terminación:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c2}</p></div>
+          <div class="p-2 bg-slate-50 border rounded-lg"><strong>III. Salario y Forma de Pago:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c3}</p></div>
+          <div class="p-2 bg-slate-50 border rounded-lg"><strong>IV. Obligaciones y Protocolos SST:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c4}</p></div>
+          <div class="p-2 bg-rose-50 border border-rose-200 rounded-lg"><strong>V. Faltas Graves y Justa Causa:</strong> <p class="text-[11px] text-rose-900 mt-0.5">${c5}</p></div>
+          <div class="p-2 bg-indigo-50 border border-indigo-200 rounded-lg"><strong>VI. Culpa Exclusiva y Exoneración:</strong> <p class="text-[11px] text-indigo-900 mt-0.5">${c6}</p></div>
+          <div class="p-2 bg-slate-50 border rounded-lg"><strong>VII. Seguridad Social Integral:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c7}</p></div>
+          <div class="p-2 bg-slate-50 border rounded-lg"><strong>VIII. Elementos y Portabilidad de Herramientas:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c8}</p></div>
+          <div class="p-2 bg-slate-50 border rounded-lg"><strong>IX. Domicilio, Acuerdo Total y Firmas:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c9}</p></div>
         </div>
       </div>
     `;
@@ -6643,10 +6757,45 @@ window.confirmarImportacionMasivaTrabajadores = function() {
 };
 
 window.imprimirInstrumentoActivoModal = function(cargoId, instrumento, trabajadorId) {
-  if (instrumento === 'contrato' && trabajadorId) {
-    window.imprimirMinutaContratoTrabajador(trabajadorId);
-    return;
+  if (instrumento === 'contrato') {
+    if (trabajadorId) {
+      window.generarPdfContratoTrabajador(trabajadorId);
+      return;
+    }
+    const empresaActiva = store.getEmpresaActiva();
+    const cargoObj = cargoId ? store.getJobPosition(cargoId) : null;
+    if (cargoObj) {
+      const trabs = store.getTrabajadores(empresaActiva?.id).filter(t => t.cargo === cargoObj.title);
+      if (trabs.length > 0) {
+        window.generarPdfContratoTrabajador(trabs[0].id);
+        return;
+      }
+    }
+    if (cargoId && window.imprimirAnexoContractual) {
+      window.imprimirAnexoContractual(cargoId);
+      return;
+    }
   }
+
+  if (instrumento === 'anexo') {
+    if (cargoId && window.imprimirAnexoContractual) {
+      window.imprimirAnexoContractual(cargoId);
+      return;
+    } else if (trabajadorId) {
+      window.generarPdfContratoTrabajador(trabajadorId);
+      return;
+    }
+  }
+
+  if (!cargoId && trabajadorId) {
+    const trab = store.getTrabajadorPorId(trabajadorId);
+    if (trab && trab.cargo) {
+      const empresaActiva = store.getEmpresaActiva();
+      const cObj = store.getJobPositions(empresaActiva?.id).find(j => j.title.toLowerCase().trim() === trab.cargo.toLowerCase().trim());
+      if (cObj) cargoId = cObj.id;
+    }
+  }
+
   if (!cargoId) {
     alert("Para emitir el documento en PDF, este cargo debe estar registrado en el Catálogo de Cargos (Módulo de Procesos).");
     return;
@@ -6657,7 +6806,11 @@ window.imprimirInstrumentoActivoModal = function(cargoId, instrumento, trabajado
     window.imprimirPerfilDeCargo(cargoId);
   } else if (instrumento === 'pts' && window.imprimirPlanTrabajoSeguro) {
     window.imprimirPlanTrabajoSeguro(cargoId);
-  } else if (instrumento === 'contrato' && window.imprimirAnexoContractual) {
+  } else if (instrumento === 'profesiograma' && window.imprimirProfesiograma) {
+    window.imprimirProfesiograma(cargoId);
+  } else if (instrumento === 'epp' && window.imprimirMatrizEPP) {
+    window.imprimirMatrizEPP(cargoId);
+  } else if ((instrumento === 'contrato' || instrumento === 'anexo') && window.imprimirAnexoContractual) {
     window.imprimirAnexoContractual(cargoId);
   } else {
     alert(`Minuta y documento en PDF generado según los estándares colombianos.`);
