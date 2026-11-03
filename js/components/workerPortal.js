@@ -553,7 +553,7 @@ function renderConsolaGestionTrabajadores(container) {
                 <th class="py-3.5 px-4">Salario Mensual</th>
                 <th class="py-3.5 px-4">Contrato, Ingreso & Vencimiento</th>
                 <th class="py-3.5 px-4 text-center">Estado</th>
-                <th class="py-3.5 px-4 text-center">Instrumentos por Cargo (Estándares Mínimos & PDF)</th>
+                <th class="py-3.5 px-4 text-center">Instrumentos Oficiales & Expediente Laboral (SG-SST)</th>
                 <th class="py-3.5 px-4 text-right">Acciones</th>
               </tr>
             </thead>
@@ -578,6 +578,7 @@ function renderConsolaGestionTrabajadores(container) {
                 const tipoContratoStr = t.tipoContrato || 'Término Indefinido';
                 const salarioNum = Number(t.salario) || 0;
                 const alerta = calcularAlertaContrato(t);
+                const comp = store.calculateFolderCompleteness ? store.calculateFolderCompleteness(t.id) : { isComplete: false, presentCount: 0, totalRequired: 5 };
 
                 return `
                   <tr class="hover:bg-slate-50 transition group">
@@ -670,12 +671,33 @@ function renderConsolaGestionTrabajadores(container) {
                           <span>PTS</span>
                         </button>
 
+                        <!-- 5. Carpeta / Expediente Digital del Trabajador -->
+                        <button onclick="window.abrirModalCarpetaTrabajador('${t.id}')" class="px-2 py-1 ${comp.isComplete ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-600' : 'bg-slate-100 text-slate-800 border-slate-300 hover:bg-indigo-600'} hover:text-white rounded-md text-[10px] font-bold border transition shadow-2xs cursor-pointer flex items-center gap-1" title="Expediente Laboral Digital (${comp.presentCount}/${comp.totalRequired} documentos)">
+                          <span>📁</span>
+                          <span>Carpeta</span>
+                          <span class="px-1 py-0.2 rounded-full text-[8.5px] font-mono font-bold ${comp.isComplete ? 'bg-emerald-200 text-emerald-900' : 'bg-amber-200 text-amber-900'}">${comp.presentCount}/${comp.totalRequired}</span>
+                        </button>
+
                       </div>
                     </td>
 
                     <!-- Acciones -->
                     <td class="py-3 px-4 text-right whitespace-nowrap">
                       <div class="flex items-center justify-end gap-1.5">
+                        
+                        <!-- Firma Digital Base (Ley 527/1999) -->
+                        ${t.has_registered_signature ? `
+                          <button onclick="window.abrirModalRegistroFirmaTrabajador('${t.id}')" class="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-[10px] font-bold transition cursor-pointer flex items-center gap-1 shadow-2xs" title="Firma Digital Base Registrada (Ley 527/1999) - Clic para ver o actualizar">
+                            <span>✍️</span>
+                            <span>Firma OK</span>
+                          </button>
+                        ` : `
+                          <button onclick="window.abrirModalRegistroFirmaTrabajador('${t.id}')" class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 rounded-lg text-[10px] font-bold transition cursor-pointer flex items-center gap-1 shadow-2xs" title="Registrar Firma Digital Base del Trabajador">
+                            <span>✍️</span>
+                            <span>Sin Firma</span>
+                          </button>
+                        `}
+
                         <button onclick="window.abrirModalAsignarEntregaEPP('${t.id}')" class="px-2 py-1 bg-amber-500/10 hover:bg-amber-500 hover:text-white text-amber-800 border border-amber-300 rounded-lg text-[10px] font-black transition cursor-pointer flex items-center gap-1 shadow-2xs" title="Asignar Dotación o EPP a ${escapeHtml(t.nombre)}">
                           <span>📦</span>
                           <span>Entregar EPP</span>
@@ -931,6 +953,46 @@ window.abrirModalCrearTrabajador = function(trabajadorId = null) {
               <input type="text" id="modal-trab-arl" value="${trabExistente?.arl || 'Positiva ARL'}" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-800">
             </div>
           </div>
+        </div>
+
+        <!-- Fila 7: Firma Digital Base del Trabajador -->
+        <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-[11px] font-bold text-slate-800 flex items-center gap-1.5">
+                <span>✍️</span> Firma Digital Base del Trabajador (Ley 527 de 1999)
+              </span>
+              <span class="text-[9.5px] text-slate-500">Custodiada en MinIO S3 para estampar en contratos, manuales y actas de EPP.</span>
+            </div>
+            ${trabExistente?.has_registered_signature ? `
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                ✓ Firma Registrada
+              </span>
+            ` : `
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                Sin Firma Registrada
+              </span>
+            `}
+          </div>
+
+          ${trabExistente ? `
+            <div class="flex items-center justify-between gap-3 pt-1">
+              ${trabExistente.has_registered_signature ? `
+                <div class="p-1.5 bg-white border border-slate-200 rounded-xl flex items-center gap-2">
+                  <img src="${trabExistente.signature_url || trabExistente.signature_svg}" alt="Firma" style="max-height: 38px; max-width: 130px; object-fit: contain;">
+                  <span class="text-[9px] font-mono text-slate-400">IP: ${trabExistente.signature_ip_address || '127.0.0.1'}</span>
+                </div>
+              ` : `
+                <span class="text-[10px] text-slate-400 italic">No se ha registrado trazo de firma digital para este colaborador.</span>
+              `}
+              <button type="button" onclick="window.abrirModalRegistroFirmaTrabajador('${trabExistente.id}')" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow-2xs">
+                <span>✍️</span>
+                <span>${trabExistente.has_registered_signature ? 'Actualizar Firma' : 'Registrar Firma Ahora'}</span>
+              </button>
+            </div>
+          ` : `
+            <p class="text-[10px] text-slate-400 italic">Podrás registrar la firma digital una vez guardada la ficha del trabajador.</p>
+          `}
         </div>
 
         <!-- Botones de Acción -->
@@ -2244,6 +2306,11 @@ window.generarPdfContratoTrabajador = function(trabajadorId) {
     f.tipo === 'CONTRATO' ||
     f.firmaBase64
   );
+  const firmaImagen = (firmaRegistrada ? (firmaRegistrada.firmaBase64 || firmaRegistrada.signature_image_file) : null) || 
+                      (trabajador.has_registered_signature ? (trabajador.signature_url || trabajador.signature_svg) : null);
+  const bogotaFirmaStr = firmaRegistrada?.fechaHoraISO || trabajador.signature_registered_bogota || new Date().toLocaleString('es-CO');
+  const ipFirmaStr = firmaRegistrada?.signer_ip || firmaRegistrada?.ipCliente || trabajador.signature_ip_address || '127.0.0.1';
+  const hashFirmaStr = firmaRegistrada?.hashDocumento || firmaRegistrada?.sha256_hash || trabajador.signature_sha256 || 'SHA-256';
 
   const win = window.open('', '_blank');
   win.document.write(`
@@ -2404,9 +2471,12 @@ window.generarPdfContratoTrabajador = function(trabajadorId) {
           </td>
           <td>
             <div style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 4px;">
-              ${firmaRegistrada ? `
-                <img src="${firmaRegistrada.firmaBase64}" alt="Firma ${trabajador.nombre}" style="max-height: 48px; max-width: 170px; object-fit: contain; margin-bottom: 2px;">
+              ${firmaImagen ? `
+                <img src="${firmaImagen}" alt="Firma ${trabajador.nombre}" style="max-height: 48px; max-width: 170px; object-fit: contain; margin-bottom: 2px;">
                 <div style="font-size: 7pt; font-family: monospace; color: #047857; font-weight: bold;">✓ FIRMA ELECTRÓNICA REGISTRADA (Ley 527/99)</div>
+                <div style="font-size: 5.5pt; color: #334155; font-family: monospace; margin-top: 1px; line-height: 1.35; max-width: 250px;">
+                  Firmado digitalmente el ${bogotaFirmaStr} | IP: ${ipFirmaStr} | Hash: ${hashFirmaStr} | Validez probatoria Ley 527 de 1999
+                </div>
               ` : `
                 <span style="font-size: 8pt; color: #94a3b8; font-style: italic;">[Firma autógrafa o digital del colaborador]</span>
               `}
@@ -3117,6 +3187,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
   const docSigs = store.getEmployeeDocumentSignatures ? store.getEmployeeDocumentSignatures(trabajador.id) : [];
   const reportesPeligro = store.getReportesPeligro(empresa.id).filter(r => r.trabajadorId === trabajador.id);
   const preoperacionales = store.getReportesPreoperacional(empresa.id).filter(p => p.trabajadorId === trabajador.id);
+  const folderCompleteness = store.calculateFolderCompleteness ? store.calculateFolderCompleteness(trabajador.id) : { isComplete: false, presentCount: 0, totalRequired: 5, percentage: 0, categoriesPresent: {} };
 
   // Inventario y Asignaciones
   const toolsInventory = store.getToolsInventory(empresa.id);
@@ -4260,6 +4331,89 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
               </div>
             </div>
 
+            <!-- GESTOR DE FIRMA DIGITAL Y HUELLA DE ACEPTACIÓN (LEY 527 DE 1999) -->
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-black uppercase tracking-wider text-teal-300 flex items-center gap-1.5">
+                  <span>✍️</span> Mi Firma Digital &amp; Huella de Aceptación
+                </h3>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${trabajador.has_registered_signature ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
+                  ${trabajador.has_registered_signature ? '✓ Firma Registrada' : '⚠️ Pendiente'}
+                </span>
+              </div>
+
+              ${trabajador.has_registered_signature ? `
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
+                  <div class="p-2 bg-white rounded-lg flex items-center justify-center">
+                    <img src="${trabajador.signature_url || trabajador.signature_svg}" alt="Mi Firma" style="max-height: 48px; max-width: 180px; object-fit: contain;">
+                  </div>
+                  <div class="text-[9.5px] font-mono text-slate-400 space-y-0.5">
+                    <p class="truncate"><strong class="text-slate-300">Hash SHA-256:</strong> ${trabajador.signature_sha256 || 'SHA-256'}</p>
+                    <p><strong class="text-slate-300">Registrada el:</strong> ${trabajador.signature_registered_bogota || new Date(trabajador.signature_registered_at).toLocaleString('es-CO')}</p>
+                    <p><strong class="text-slate-300">Dirección IP:</strong> ${trabajador.signature_ip_address || '127.0.0.1'}</p>
+                    <p class="truncate text-teal-400"><strong class="text-slate-300">MinIO S3:</strong> ${trabajador.signature_s3_key || `tenants/${empresa.id}/signatures/emp_${trabajador.id}.png`}</p>
+                  </div>
+                </div>
+              ` : `
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-[11px] text-slate-400">
+                  Aún no registras tu firma digital base. Al registrarla, podrás estamparla al instante en contratos, manuales de cargo y actas de dotación.
+                </div>
+              `}
+
+              <button 
+                type="button" 
+                onclick="window.abrirModalRegistroFirmaTrabajador('${trabajador.id}')"
+                class="w-full py-2 px-3 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+              >
+                <span>✍️</span>
+                <span>${trabajador.has_registered_signature ? 'Actualizar Mi Firma Digital' : 'Registrar Mi Firma Ahora'}</span>
+              </button>
+            </div>
+
+            <!-- EXPEDIENTE LABORAL DIGITAL (CARPETA DEL TRABAJADOR - DEC. 1072) -->
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+                  <span>📁</span> Mi Expediente Laboral Digital
+                </h3>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${folderCompleteness.isComplete ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
+                  ${folderCompleteness.isComplete ? '✓ Completo (5/5)' : `${folderCompleteness.presentCount}/5 Documentos`}
+                </span>
+              </div>
+
+              <!-- Mini semáforo -->
+              <div class="grid grid-cols-5 gap-1.5 text-center text-[9px]">
+                ${[
+                  { key: 'CEDULA_CIUDADANIA', label: 'Cédula', icon: '🪪' },
+                  { key: 'HOJA_DE_VIDA', label: 'HV', icon: '📄' },
+                  { key: 'CERTIFICACION_BANCARIA', label: 'Banco', icon: '🏦' },
+                  { key: 'EXAMEN_MEDICO_INGRESO', label: 'Médico', icon: '🩺' },
+                  { key: 'SEGURIDAD_SOCIAL', label: 'Seg. Social', icon: '🏥' }
+                ].map(cat => {
+                  const tiene = !!folderCompleteness.categoriesPresent[cat.key];
+                  return `
+                    <div class="p-1.5 rounded-xl border ${tiene ? 'bg-emerald-950/40 border-emerald-800 text-emerald-300' : 'bg-slate-900 border-slate-800 text-slate-500'}">
+                      <span class="block text-sm">${cat.icon}</span>
+                      <strong class="block truncate">${cat.label}</strong>
+                      <span class="text-[8px] font-bold">${tiene ? '✓ OK' : 'Pend.'}</span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+
+              <div class="flex items-center justify-between pt-1">
+                <span class="text-[10px] text-slate-400">Retención Legal: 20 Años</span>
+                <button 
+                  type="button" 
+                  onclick="window.abrirModalCarpetaTrabajador('${trabajador.id}')"
+                  class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-sm"
+                >
+                  <span>📂</span>
+                  <span>Abrir Mi Carpeta</span>
+                </button>
+              </div>
+            </div>
+
             <!-- Salud Ocupacional (Profesiograma Médico) -->
             <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2.5">
               <div class="flex items-center justify-between">
@@ -4824,8 +4978,41 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
               </span>
             </label>
 
+            <!-- Selector de Firma: Base Registrada vs Nuevo Trazo -->
+            ${(trabajador.has_registered_signature && (trabajador.signature_url || trabajador.signature_svg)) ? `
+              <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl space-y-2">
+                <span class="text-xs font-black text-indigo-950 uppercase flex items-center gap-1.5">
+                  <span>✍️</span> Método de Firma Digital:
+                </span>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <label class="flex items-center gap-2 p-2 bg-white rounded-xl border border-indigo-300 cursor-pointer hover:bg-indigo-50">
+                    <input type="radio" name="radio-doc-sig-method" value="registered" checked onchange="window.alternarMetodoFirmaModal(this.value)">
+                    <div>
+                      <strong class="text-indigo-900 block">Usar Firma Registrada</strong>
+                      <span class="text-[10px] text-slate-500">Almacenada en MinIO S3</span>
+                    </div>
+                  </label>
+                  <label class="flex items-center gap-2 p-2 bg-white rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+                    <input type="radio" name="radio-doc-sig-method" value="canvas" onchange="window.alternarMetodoFirmaModal(this.value)">
+                    <div>
+                      <strong class="text-slate-800 block">Trazar Nueva Firma</strong>
+                      <span class="text-[10px] text-slate-500">Dibujar en pantalla</span>
+                    </div>
+                  </label>
+                </div>
+                
+                <div id="contenedor-firma-base-preview" class="p-2.5 bg-white rounded-xl border border-indigo-100 flex items-center gap-3">
+                  <img src="${trabajador.signature_url || trabajador.signature_svg}" alt="Firma Registrada" style="max-height: 44px; max-width: 140px; object-fit: contain;">
+                  <div class="text-[10px] text-slate-600">
+                    <strong class="text-emerald-700">✓ Firma Digital Lista para Estampar</strong>
+                    <span class="block text-slate-400 font-mono">Registrada: ${trabajador.signature_registered_bogota || 'Vigente'}</span>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+
             <!-- Zona de Firma Táctil en Canvas -->
-            <div class="space-y-1.5">
+            <div id="contenedor-firma-canvas-block" class="space-y-1.5 ${(trabajador.has_registered_signature && (trabajador.signature_url || trabajador.signature_svg)) ? 'hidden' : ''}">
               <div class="flex items-center justify-between">
                 <span class="text-xs font-black text-slate-900 uppercase">✍️ Firma con tu Dedo o Puntero en Pantalla:</span>
                 <button type="button" id="btn-clear-doc-sig" class="text-[10px] text-rose-600 underline font-bold cursor-pointer">Limpiar Firma</button>
@@ -4881,9 +5068,16 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
         return;
       }
 
-      if (pad?.isEmpty()) {
-        alert("Por favor firma en el recuadro antes de confirmar.");
-        return;
+      let sigData = '';
+      const radioMethod = document.querySelector('input[name="radio-doc-sig-method"]:checked')?.value;
+      if (radioMethod === 'registered' && (trabajador.signature_url || trabajador.signature_svg)) {
+        sigData = trabajador.signature_url || trabajador.signature_svg;
+      } else {
+        if (!pad || pad.isEmpty()) {
+          alert("Por favor firma en el recuadro antes de confirmar.");
+          return;
+        }
+        sigData = pad.getDataUrl();
       }
 
       const btn = document.getElementById('btn-confirm-doc-sig');
@@ -4891,7 +5085,6 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
       btn.innerText = "Guardando firma y sellando en MinIO S3...";
 
       try {
-        const sigData = pad.getDataUrl();
         await store.submitWorkerDocumentSignature({
           worker_id: trabajador.id,
           employee_id: trabajador.id,
@@ -7223,4 +7416,625 @@ window.exportarAuditoriaManualesCsv = function() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+};
+
+// =============================================================================
+// MODAL: ALTERNAR MÉTODO DE FIRMA (REGISTRADA VS CANVAS)
+// =============================================================================
+window.alternarMetodoFirmaModal = function(metodo) {
+  const contBase = document.getElementById('contenedor-firma-base-preview');
+  const contCanvas = document.getElementById('contenedor-firma-canvas-block');
+  if (metodo === 'registered') {
+    if (contBase) contBase.classList.remove('hidden');
+    if (contCanvas) contCanvas.classList.add('hidden');
+  } else {
+    if (contBase) contBase.classList.add('hidden');
+    if (contCanvas) contCanvas.classList.remove('hidden');
+  }
+};
+
+// =============================================================================
+// EXPEDIENTE LABORAL DIGITAL (CARPETA DEL TRABAJADOR - CUMPLIMIENTO DEC. 1072)
+// Almacenamiento Centralizado por Categorías, MinIO S3 y Vinculación a Res. 0312
+// =============================================================================
+window.abrirModalCarpetaTrabajador = async function(trabajadorId) {
+  const trabajador = store.getTrabajadorPorId(trabajadorId);
+  if (!trabajador) {
+    alert("No se encontró el trabajador.");
+    return;
+  }
+  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva();
+
+  // Cargar documentos del expediente desde el servidor
+  await store.getWorkerFolderDocuments(trabajador.id, empresa.id);
+
+  const modalId = 'modal-carpeta-trabajador';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+
+  const CATEGORIAS_EXPEDIENTE = [
+    { key: 'CEDULA_CIUDADANIA', label: 'Cédula de Ciudadanía', icon: '🪪', desc: 'Copia legible de la cédula de ciudadanía o documento de identidad.' },
+    { key: 'HOJA_DE_VIDA', label: 'Hoja de Vida', icon: '📄', desc: 'Hoja de vida con soportes académicos y laborales verificados.' },
+    { key: 'CERTIFICACION_BANCARIA', label: 'Certificación Bancaria', icon: '🏦', desc: 'Certificado de cuenta bancaria para pago de nómina.' },
+    { key: 'EXAMEN_MEDICO_INGRESO', label: 'Certificado de Aptitud Médica (Ingreso)', icon: '🩺', desc: 'Certificado médico de aptitud ocupacional expedido por médico especialista en SST (Res. 2346/2007). Vincula a Estándar 3.1.4.' },
+    { key: 'AFILIACION_EPS', label: 'Certificado de Afiliación EPS', icon: '🏥', desc: 'Certificado de afiliación a Salud (EPS). Vincula a Estándar 1.1.3.' },
+    { key: 'AFILIACION_ARL', label: 'Certificado de Afiliación ARL', icon: '🛡️', desc: 'Certificado de afiliación a Riesgos Laborales (ARL). Vincula a Estándar 1.1.3.' },
+    { key: 'AFILIACION_PENSION', label: 'Certificado de Afiliación Pensión', icon: '🏛️', desc: 'Certificado de afiliación a Fondo de Pensiones (AFP). Vincula a Estándar 1.1.3.' },
+    { key: 'OTROS_SOPORTES', label: 'Otros Soportes (Contratos, Cursos, etc.)', icon: '📎', desc: 'Certificados de cursos, alturas, inducciones o soportes complementarios.' }
+  ];
+
+  function getCategoryInfo(catKey) {
+    return CATEGORIAS_EXPEDIENTE.find(c => c.key === catKey) || { key: catKey, label: catKey, icon: '📁', desc: '' };
+  }
+
+  function renderContenidoModal() {
+    const completeness = store.calculateFolderCompleteness(trabajador.id);
+    const docsActuales = (store.data.employee_folder_documents || []).filter(d => d.employee_id === trabajador.id || d.trabajadorId === trabajador.id);
+
+    return `
+      <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-4xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
+        
+        <!-- CABECERA -->
+        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-5 text-white flex-shrink-0">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-indigo-600/30 text-indigo-300 border border-indigo-400/40 flex items-center justify-center text-2xl font-black shadow-inner flex-shrink-0">
+                📁
+              </div>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-[9px] font-black uppercase tracking-wider bg-indigo-500/30 text-indigo-200 px-2.5 py-0.5 rounded-full border border-indigo-400/30">
+                    Expediente Laboral Digital • Dec. 1072 Art. 2.2.4.6.12
+                  </span>
+                  <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black ${completeness.isComplete ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
+                    ${completeness.isComplete ? '✓ Expediente Completo (5/5)' : `⚠️ Incompleto (${completeness.presentCount}/5)`}
+                  </span>
+                </div>
+                <h3 class="font-black text-base sm:text-lg text-white mt-1 leading-tight">
+                  Carpeta del Trabajador: ${escapeHtml(trabajador.nombre)}
+                </h3>
+                <p class="text-xs text-slate-300">
+                  C.C. <strong class="text-white font-mono">${trabajador.identificacion || trabajador.cedula}</strong> · Cargo: <strong class="text-white">${trabajador.cargo}</strong> · ${empresa.razonSocial}
+                </p>
+              </div>
+            </div>
+            <button onclick="document.getElementById('${modalId}').remove()" class="text-slate-400 hover:text-white text-xl font-bold p-1 cursor-pointer">✕</button>
+          </div>
+        </div>
+
+        <!-- CUERPO PRINCIPAL CON SCROLL -->
+        <div class="p-5 overflow-y-auto flex-1 space-y-4">
+          
+          <!-- SEMÁFORO Y PANEL DE COMPLETITUD DE 5 DOCUMENTOS LEGALES -->
+          <div class="p-4 rounded-2xl border ${completeness.isComplete ? 'bg-emerald-50/80 border-emerald-200' : 'bg-amber-50/80 border-amber-200'}">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-black uppercase tracking-wider ${completeness.isComplete ? 'text-emerald-950' : 'text-amber-950'} flex items-center gap-1.5">
+                <span>${completeness.isComplete ? '✅' : '📊'}</span>
+                <span>Semáforo de Requisitos Obligatorios SG-SST &amp; Laboral</span>
+              </span>
+              <span class="text-xs font-bold font-mono ${completeness.isComplete ? 'text-emerald-800' : 'text-amber-800'}">
+                ${completeness.presentCount} de 5 requeridos (${completeness.percentage}%)
+              </span>
+            </div>
+
+            <!-- Barra de Progreso -->
+            <div class="w-full h-2.5 bg-white rounded-full overflow-hidden border border-slate-200 mb-3">
+              <div class="h-full transition-all duration-500 rounded-full ${completeness.isComplete ? 'bg-emerald-500' : 'bg-amber-500'}" style="width: ${completeness.percentage}%;"></div>
+            </div>
+
+            <!-- Fichas de las 5 Categorías Obligatorias -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
+              ${[
+                { key: 'CEDULA_CIUDADANIA', label: 'Cédula', icon: '🪪' },
+                { key: 'HOJA_DE_VIDA', label: 'Hoja Vida', icon: '📄' },
+                { key: 'CERTIFICACION_BANCARIA', label: 'Banco', icon: '🏦' },
+                { key: 'EXAMEN_MEDICO_INGRESO', label: 'Examen Médico', icon: '🩺' },
+                { key: 'SEGURIDAD_SOCIAL', label: 'Seg. Social', icon: '🏥' }
+              ].map(cat => {
+                const tiene = !!completeness.categoriesPresent[cat.key];
+                return `
+                  <div class="p-2 rounded-xl border ${tiene ? 'bg-white border-emerald-300 text-emerald-900 shadow-2xs' : 'bg-white/60 border-amber-300 text-amber-800'} flex flex-col items-center">
+                    <span class="text-base mb-0.5">${cat.icon}</span>
+                    <strong class="text-[10px] font-bold block leading-tight">${cat.label}</strong>
+                    <span class="text-[8.5px] font-semibold mt-1 px-1.5 py-0.2 rounded ${tiene ? 'bg-emerald-100 text-emerald-800 font-bold' : 'bg-amber-100 text-amber-800'}">
+                      ${tiene ? '✓ Al Día' : '✕ Pendiente'}
+                    </span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- ADVERTENCIA LEGAL MÉDICA (RES. 2346 DE 2007) -->
+          <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-2xl flex items-start gap-2.5 text-xs text-blue-950">
+            <span class="text-lg flex-shrink-0">⚖️</span>
+            <div class="space-y-0.5 text-[11px] leading-relaxed">
+              <strong>Advertencia Legal de Confidencialidad (Resolución 2346 de 2007 &amp; Ley 1581 de 2012):</strong>
+              <p class="text-slate-700">
+                En el expediente laboral solo se deben custodiar <strong>Certificados de Aptitud Médica Ocupacional</strong> (Concepto Médico de Ingreso/Periódico emitido por médico con licencia en SST). <em>Queda expresamente prohibido almacenar historias clínicas completas</em> o datos sensibles no relacionados con el perfil de aptitud laboral.
+              </p>
+            </div>
+          </div>
+
+          <!-- FORMULARIO DE CARGA DE DOCUMENTOS (DRAG & DROP + INPUT) -->
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                <span>📤</span> Subir Nuevo Documento al Expediente
+              </h4>
+              <span class="text-[10px] font-mono text-slate-500">PDF, PNG, JPG (Hasta 15 MB)</span>
+            </div>
+
+            <form id="form-upload-folder-doc" class="space-y-3">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                
+                <!-- Selector de Categoría -->
+                <div>
+                  <label class="block text-[10.5px] font-bold text-slate-700 mb-1">Categoría Documental *</label>
+                  <select id="folder-upload-category" required class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-indigo-500">
+                    ${CATEGORIAS_EXPEDIENTE.map(c => `
+                      <option value="${c.key}">${c.icon} ${c.label}</option>
+                    `).join('')}
+                  </select>
+                </div>
+
+                <!-- Título Descriptivo -->
+                <div>
+                  <label class="block text-[10.5px] font-bold text-slate-700 mb-1">Título Descriptivo *</label>
+                  <input type="text" id="folder-upload-title" required placeholder="Ej. Certificado Médico de Ingreso 2026" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <!-- Fechas de Expedición y Vencimiento -->
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[10.5px] font-bold text-slate-700 mb-1">Expedición</label>
+                    <input type="date" id="folder-upload-issue-date" value="${new Date().toISOString().slice(0, 10)}" class="w-full px-2 py-1.5 bg-white border border-slate-300 rounded-xl text-[11px] font-semibold text-slate-800">
+                  </div>
+                  <div>
+                    <label class="block text-[10.5px] font-bold text-slate-700 mb-1" title="Para certificados que expiran">Vence</label>
+                    <input type="date" id="folder-upload-expiration-date" class="w-full px-2 py-1.5 bg-white border border-slate-300 rounded-xl text-[11px] font-semibold text-slate-800">
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Zona Drag & Drop -->
+              <div id="drop-zone-folder" class="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl p-4 text-center bg-white transition cursor-pointer">
+                <input type="file" id="folder-file-input" accept=".pdf,image/png,image/jpeg,image/jpg" class="hidden">
+                <div id="drop-zone-prompt" class="space-y-1">
+                  <span class="text-2xl block">📄</span>
+                  <p class="text-xs font-bold text-slate-700">Arrastra tu archivo aquí o <span class="text-indigo-600 underline">haz clic para examinar</span></p>
+                  <p class="text-[10px] text-slate-400">PDF, PNG o JPG • Cifrado y almacenado en MinIO S3 con retención legal de 20 años</p>
+                </div>
+                <div id="drop-zone-selected" class="hidden flex items-center justify-between p-2 bg-indigo-50 border border-indigo-200 rounded-xl text-xs text-indigo-950">
+                  <div class="flex items-center gap-2 overflow-hidden">
+                    <span>📎</span>
+                    <span id="selected-file-name" class="font-bold truncate max-w-xs">archivo.pdf</span>
+                    <span id="selected-file-size" class="text-[10px] text-slate-500 font-mono">0 KB</span>
+                  </div>
+                  <button type="button" id="btn-remove-selected-file" class="text-rose-600 hover:text-rose-800 text-xs font-bold px-2 py-1 cursor-pointer">✕ Quitar</button>
+                </div>
+              </div>
+
+              <div class="flex justify-end">
+                <button type="submit" id="btn-submit-folder-upload" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-black shadow-md transition cursor-pointer flex items-center gap-1.5">
+                  <span>☁️</span>
+                  <span>Subir y Custodiar en Expediente</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- LISTADO DE DOCUMENTOS EN EL EXPEDIENTE -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                <span>📑</span> Documentos Custodiados (${docsActuales.length})
+              </h4>
+              <span class="text-[10px] text-slate-500">Dec. 1072 Art. 2.2.4.6.13 (Retención 20 años)</span>
+            </div>
+
+            ${docsActuales.length === 0 ? `
+              <div class="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+                <span class="text-3xl block">📭</span>
+                <p class="text-xs font-bold text-slate-700">No hay documentos en este expediente laboral aún.</p>
+                <p class="text-[11px] text-slate-400">Utiliza el formulario superior para cargar la Cédula, Examen Médico u otros soportes.</p>
+              </div>
+            ` : `
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                ${docsActuales.map(doc => {
+                  const catInfo = getCategoryInfo(doc.document_category);
+                  const sizeKb = Math.round((doc.file_size_bytes || 0) / 1024);
+                  const sizeMb = (sizeKb / 1024).toFixed(1);
+                  const sizeStr = sizeKb > 1024 ? `${sizeMb} MB` : `${sizeKb} KB`;
+                  const fechaSubida = doc.created_at ? new Date(doc.created_at).toLocaleDateString('es-CO') : 'Reciente';
+
+                  return `
+                    <div class="p-3 bg-white rounded-2xl border border-slate-200 shadow-2xs hover:border-indigo-300 transition flex flex-col justify-between space-y-2">
+                      <div>
+                        <div class="flex items-start justify-between gap-2">
+                          <span class="px-2 py-0.5 rounded-md text-[9.5px] font-bold bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1">
+                            <span>${catInfo.icon}</span>
+                            <span>${catInfo.label}</span>
+                          </span>
+                          <span class="text-[9px] font-mono text-slate-400 font-medium">
+                            ${fechaSubida}
+                          </span>
+                        </div>
+
+                        <h5 class="font-bold text-xs text-slate-900 mt-1.5 leading-snug">
+                          ${escapeHtml(doc.document_title || doc.file_name)}
+                        </h5>
+                        <p class="text-[10px] font-mono text-slate-500 truncate" title="${escapeHtml(doc.file_name)}">
+                          📄 ${escapeHtml(doc.file_name)} · ${sizeStr}
+                        </p>
+
+                        ${doc.expiration_date ? `
+                          <div class="mt-1 flex items-center gap-1 text-[9.5px]">
+                            <span class="text-amber-700 font-bold">Vence: ${doc.expiration_date}</span>
+                          </div>
+                        ` : ''}
+                      </div>
+
+                      <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
+                        <span class="text-[8.5px] text-emerald-700 font-bold font-mono">
+                          ✓ MinIO S3 (20 Años)
+                        </span>
+                        
+                        <div class="flex items-center gap-1.5">
+                          <a 
+                            href="${doc.file_url}" 
+                            target="_blank" 
+                            download="${escapeHtml(doc.file_name)}"
+                            class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-700 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer"
+                            title="Descargar o abrir documento"
+                          >
+                            <span>👁️</span>
+                            <span>Ver</span>
+                          </a>
+
+                          <button 
+                            type="button" 
+                            onclick="window.eliminarDocumentoCarpetaConfirm('${doc.id}', '${trabajador.id}')"
+                            class="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                            title="Eliminar documento del expediente"
+                          >
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            `}
+          </div>
+
+        </div>
+
+        <!-- PIE DEL MODAL -->
+        <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between flex-shrink-0">
+          <span class="text-[10px] text-slate-500 font-mono">
+            Ruta S3: tenants/${empresa.id}/employees/${trabajador.id}/...
+          </span>
+          <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition cursor-pointer">
+            Cerrar Expediente
+          </button>
+        </div>
+
+      </div>
+    `;
+  }
+
+  modalEl.innerHTML = renderContenidoModal();
+  document.body.appendChild(modalEl);
+
+  function bindEventosUpload() {
+    const form = document.getElementById('form-upload-folder-doc');
+    const dropZone = document.getElementById('drop-zone-folder');
+    const fileInput = document.getElementById('folder-file-input');
+    const promptEl = document.getElementById('drop-zone-prompt');
+    const selectedEl = document.getElementById('drop-zone-selected');
+    const fileNameEl = document.getElementById('selected-file-name');
+    const fileSizeEl = document.getElementById('selected-file-size');
+    const removeBtn = document.getElementById('btn-remove-selected-file');
+    const titleInput = document.getElementById('folder-upload-title');
+    const categorySelect = document.getElementById('folder-upload-category');
+
+    let currentFile = null;
+
+    if (categorySelect && titleInput) {
+      categorySelect.onchange = () => {
+        const catInfo = getCategoryInfo(categorySelect.value);
+        if (!titleInput.value || CATEGORIAS_EXPEDIENTE.some(c => c.label === titleInput.value)) {
+          titleInput.value = catInfo.label;
+        }
+      };
+      const initialCat = getCategoryInfo(categorySelect.value);
+      if (initialCat) titleInput.value = initialCat.label;
+    }
+
+    if (dropZone && fileInput) {
+      dropZone.onclick = (e) => {
+        if (e.target.id === 'btn-remove-selected-file') return;
+        fileInput.click();
+      };
+
+      fileInput.onchange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+          setFile(e.target.files[0]);
+        }
+      };
+
+      dropZone.ondragover = (e) => {
+        e.preventDefault();
+        dropZone.classList.add('border-indigo-500', 'bg-indigo-50/50');
+      };
+      dropZone.ondragleave = () => {
+        dropZone.classList.remove('border-indigo-500', 'bg-indigo-50/50');
+      };
+      dropZone.ondrop = (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('border-indigo-500', 'bg-indigo-50/50');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          setFile(e.dataTransfer.files[0]);
+        }
+      };
+    }
+
+    function setFile(f) {
+      if (f.size > 15728640) {
+        alert("El archivo excede el tamaño máximo permitido de 15 MB.");
+        return;
+      }
+      currentFile = f;
+      fileNameEl.innerText = f.name;
+      const sizeKb = Math.round(f.size / 1024);
+      fileSizeEl.innerText = sizeKb > 1024 ? `${(sizeKb/1024).toFixed(1)} MB` : `${sizeKb} KB`;
+      promptEl.classList.add('hidden');
+      selectedEl.classList.remove('hidden');
+    }
+
+    if (removeBtn) {
+      removeBtn.onclick = (e) => {
+        e.stopPropagation();
+        currentFile = null;
+        fileInput.value = '';
+        promptEl.classList.remove('hidden');
+        selectedEl.classList.add('hidden');
+      };
+    }
+
+    if (form) {
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        if (!currentFile) {
+          alert("Por favor selecciona un archivo PDF o imagen para subir.");
+          return;
+        }
+
+        const submitBtn = document.getElementById('btn-submit-folder-upload');
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Cargando y asegurando en MinIO S3...";
+
+        try {
+          const reader = new FileReader();
+          reader.onload = async () => {
+            const dataUrl = reader.result;
+            const category = document.getElementById('folder-upload-category').value;
+            const title = document.getElementById('folder-upload-title').value.trim();
+            const issueDate = document.getElementById('folder-upload-issue-date')?.value || null;
+            const expirationDate = document.getElementById('folder-upload-expiration-date')?.value || null;
+
+            await store.uploadWorkerFolderDocument({
+              worker_id: trabajador.id,
+              employee_id: trabajador.id,
+              tenant_id: empresa.id,
+              document_category: category,
+              document_title: title,
+              file_name: currentFile.name,
+              data_url: dataUrl,
+              mime_type: currentFile.type || 'application/pdf',
+              issue_date: issueDate,
+              expiration_date: expirationDate
+            });
+
+            alert(`✓ Documento "${title}" cargado exitosamente en el expediente laboral.`);
+            
+            modalEl.innerHTML = renderContenidoModal();
+            bindEventosUpload();
+            if (typeof renderWorkerPortal === 'function') renderWorkerPortal();
+          };
+          reader.readAsDataURL(currentFile);
+        } catch (err) {
+          alert("Error al cargar documento: " + err.message);
+          submitBtn.disabled = false;
+          submitBtn.innerText = "☁️ Subir y Custodiar en Expediente";
+        }
+      };
+    }
+  }
+
+  bindEventosUpload();
+};
+
+window.eliminarDocumentoCarpetaConfirm = async function(docId, workerId) {
+  if (!confirm("¿Estás seguro de que deseas eliminar este documento del expediente laboral?\n\nEsta acción quitará el soporte documental digital.")) return;
+  try {
+    await store.deleteWorkerFolderDocument(docId, workerId);
+    alert("✓ Documento eliminado del expediente.");
+    const existing = document.getElementById('modal-carpeta-trabajador');
+    if (existing) {
+      window.abrirModalCarpetaTrabajador(workerId);
+    }
+    if (typeof renderWorkerPortal === 'function') renderWorkerPortal();
+  } catch (err) {
+    alert("Error al eliminar documento: " + err.message);
+  }
+};
+
+// =============================================================================
+// MODAL: GESTOR Y REPOSITORIO DE FIRMA DIGITAL DEL TRABAJADOR
+// Canvas Signature Pad táctil responsivo, SHA-256 y MinIO S3 (Ley 527 de 1999)
+// =============================================================================
+window.abrirModalRegistroFirmaTrabajador = function(trabajadorId) {
+  const trabajador = store.getTrabajadorPorId(trabajadorId);
+  if (!trabajador) {
+    alert("No se encontró el trabajador.");
+    return;
+  }
+  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva();
+
+  const modalId = 'modal-registro-firma-trabajador';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+
+  modalEl.innerHTML = `
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      
+      <!-- CABECERA -->
+      <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-5 text-white flex-shrink-0">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-600/30 text-indigo-300 border border-indigo-400/40 flex items-center justify-center text-2xl font-black shadow-inner flex-shrink-0">
+              ✍️
+            </div>
+            <div>
+              <span class="text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+                Firma Digital Base • Ley 527 de 1999
+              </span>
+              <h3 class="font-black text-base sm:text-lg text-white mt-1 leading-tight">
+                Gestor y Repositorio de Firma Digital
+              </h3>
+              <p class="text-xs text-slate-300">
+                ${escapeHtml(trabajador.nombre)} · C.C. <strong class="text-white font-mono">${trabajador.identificacion || trabajador.cedula}</strong>
+              </p>
+            </div>
+          </div>
+          <button onclick="document.getElementById('${modalId}').remove()" class="text-slate-400 hover:text-white text-xl font-bold p-1 cursor-pointer">✕</button>
+        </div>
+      </div>
+
+      <!-- CUERPO -->
+      <div class="p-5 overflow-y-auto flex-1 space-y-4">
+        
+        <!-- ESTADO ACTUAL DE FIRMA REGISTRADA -->
+        ${trabajador.has_registered_signature ? `
+          <div class="p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-black text-emerald-950 uppercase flex items-center gap-1.5">
+                <span>✓</span> Firma Digital Activa en MinIO S3
+              </span>
+              <span class="text-[9px] font-mono font-bold px-2 py-0.5 bg-emerald-200 text-emerald-900 rounded">
+                Ley 527/1999
+              </span>
+            </div>
+
+            <div class="p-3 bg-white border border-emerald-200 rounded-xl flex items-center justify-center">
+              <img src="${trabajador.signature_url || trabajador.signature_svg}" alt="Firma Registrada" style="max-height: 55px; max-width: 220px; object-fit: contain;">
+            </div>
+
+            <div class="text-[10px] font-mono text-slate-600 space-y-1">
+              <p class="truncate"><strong class="text-slate-900">Hash SHA-256:</strong> ${trabajador.signature_sha256 || 'SHA-256'}</p>
+              <p><strong class="text-slate-900">Fecha Bogotá (UTC-5):</strong> ${trabajador.signature_registered_bogota || new Date(trabajador.signature_registered_at).toLocaleString('es-CO')}</p>
+              <p><strong class="text-slate-900">IP de Registro:</strong> ${trabajador.signature_ip_address || '127.0.0.1'}</p>
+              <p class="truncate text-indigo-700"><strong class="text-slate-900">Ruta MinIO S3:</strong> ${trabajador.signature_s3_key || `tenants/${empresa.id}/signatures/emp_${trabajador.id}.png`}</p>
+            </div>
+          </div>
+        ` : `
+          <div class="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-2.5 text-xs text-amber-950">
+            <span class="text-xl flex-shrink-0">⚠️</span>
+            <div>
+              <strong>Sin Firma Registrada:</strong>
+              <p class="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
+                Este trabajador aún no tiene una firma digital base registrada. Dibuja el trazo a continuación para que pueda estamparse automáticamente en contratos, manuales de cargo y actas de EPP.
+              </p>
+            </div>
+          </div>
+        `}
+
+        <!-- CANVAS PARA DIBUJAR O ACTUALIZAR FIRMA -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-black text-slate-800 uppercase flex items-center gap-1.5">
+              <span>✍️</span> ${trabajador.has_registered_signature ? 'Trazar Nueva Firma (Actualizar):' : 'Estampa la Firma con el Dedo o Ratón:'}
+            </label>
+            <button type="button" id="btn-clear-base-sig" class="text-[10.5px] text-rose-600 underline font-bold cursor-pointer">
+              Limpiar Trazo
+            </button>
+          </div>
+
+          <div class="border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-50">
+            <canvas id="canvas-base-sig" class="signature-pad-canvas w-full h-40"></canvas>
+          </div>
+
+          <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[10px] text-slate-600 space-y-1">
+            <div class="flex items-center justify-between font-mono">
+              <span>Hora Legal Colombia: UTC-5</span>
+              <span>Cifrado SHA-256</span>
+            </div>
+            <p class="text-slate-500 leading-tight">
+              Al guardar, este trazo se almacena de forma inmutable en <code>tenants/${empresa.id}/signatures/emp_${trabajador.id}.png</code> para estamparse en los documentos oficiales conforme a la Ley 527 de 1999.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTONES -->
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2 flex-shrink-0">
+        <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer">
+          Cancelar
+        </button>
+
+        <button type="button" id="btn-save-base-sig" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black shadow-md transition cursor-pointer flex items-center gap-1.5">
+          <span>💾</span>
+          <span>Guardar y Validar Firma Digital</span>
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(modalEl);
+
+  const pad = setupSignaturePad('canvas-base-sig');
+  document.getElementById('btn-clear-base-sig')?.addEventListener('click', () => pad?.clear());
+
+  document.getElementById('btn-save-base-sig')?.addEventListener('click', async () => {
+    if (!pad || pad.isEmpty()) {
+      alert("Por favor traza la firma en el recuadro antes de guardar.");
+      return;
+    }
+
+    const btn = document.getElementById('btn-save-base-sig');
+    btn.disabled = true;
+    btn.innerText = "Guardando y sellando en MinIO S3...";
+
+    try {
+      const sigData = pad.getDataUrl();
+      await store.registerWorkerSignature({
+        worker_id: trabajador.id,
+        employee_id: trabajador.id,
+        tenant_id: empresa.id,
+        signature_svg: sigData
+      });
+
+      modalEl.remove();
+      alert("✓ ¡Firma digital base registrada exitosamente con validez jurídica (Ley 527 de 1999)!");
+      if (typeof renderWorkerPortal === 'function') renderWorkerPortal();
+    } catch (err) {
+      alert("Error al registrar firma: " + err.message);
+      btn.disabled = false;
+      btn.innerText = "💾 Guardar y Validar Firma Digital";
+    }
+  });
 };

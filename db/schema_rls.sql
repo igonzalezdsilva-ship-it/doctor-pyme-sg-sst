@@ -213,9 +213,21 @@ CREATE TABLE IF NOT EXISTS employees (
   eps VARCHAR(100),
   afp VARCHAR(100),
   arl VARCHAR(100),
+  signature_svg TEXT,
+  signature_s3_key VARCHAR(500),
+  signature_registered_at TIMESTAMP WITH TIME ZONE,
+  signature_ip_address VARCHAR(50),
+  has_registered_signature BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Migraciones seguras para employees (Firma Digital Base)
+ALTER TABLE employees ADD COLUMN IF NOT EXISTS signature_svg TEXT;
+ALTER TABLE employees ADD COLUMN IF NOT EXISTS signature_s3_key VARCHAR(500);
+ALTER TABLE employees ADD COLUMN IF NOT EXISTS signature_registered_at TIMESTAMP WITH TIME ZONE;
+ALTER TABLE employees ADD COLUMN IF NOT EXISTS signature_ip_address VARCHAR(50);
+ALTER TABLE employees ADD COLUMN IF NOT EXISTS has_registered_signature BOOLEAN DEFAULT FALSE;
 
 -- Matriz de Peligros y Valoración de Riesgos GTC 45 Conectada
 CREATE TABLE IF NOT EXISTS gtc45_risk_matrices (
@@ -446,13 +458,57 @@ CREATE TABLE IF NOT EXISTS employee_document_signatures (
 
 -- Migraciones para employee_document_signatures
 ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS manual_document_id UUID REFERENCES job_position_documents(id) ON DELETE SET NULL;
+ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS document_reference_id UUID;
 ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS assigned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
 ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS is_signed BOOLEAN DEFAULT FALSE;
 ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS signature_svg_or_base64 TEXT;
+ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS signature_snapshot_url TEXT;
 ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS sha256_hash VARCHAR(64);
 ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS signer_ip VARCHAR(50);
 ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS signer_user_agent TEXT;
 ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS pdf_s3_key TEXT;
+ALTER TABLE employee_document_signatures ADD COLUMN IF NOT EXISTS final_signed_pdf_s3_key TEXT;
+
+-- ------------------------------------------------------------------------------
+-- 10.1. EXPEDIENTE LABORAL DIGITAL (CARPETA DEL TRABAJADOR - CUMPLIMIENTO DEC. 1072)
+-- ------------------------------------------------------------------------------
+DO $$ BEGIN
+  CREATE TYPE folder_document_category_enum AS ENUM (
+    'CEDULA_CIUDADANIA',
+    'HOJA_DE_VIDA',
+    'CERTIFICACION_BANCARIA',
+    'EXAMEN_MEDICO_INGRESO',
+    'AFILIACION_EPS',
+    'AFILIACION_ARL',
+    'AFILIACION_PENSION',
+    'OTROS_SOPORTES'
+  );
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+CREATE TABLE IF NOT EXISTS employee_folder_documents (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  employee_id UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+  document_category folder_document_category_enum NOT NULL DEFAULT 'OTROS_SOPORTES',
+  document_title VARCHAR(255) NOT NULL,
+  file_name VARCHAR(255) NOT NULL,
+  file_size_bytes BIGINT DEFAULT 0,
+  mime_type VARCHAR(100) DEFAULT 'application/pdf',
+  file_s3_key VARCHAR(500) NOT NULL,
+  issue_date DATE,
+  expiration_date DATE,
+  uploaded_by_user_id UUID,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  retention_legal_until TIMESTAMP WITH TIME ZONE GENERATED ALWAYS AS (created_at + INTERVAL '20 years') STORED
+);
+
+CREATE INDEX IF NOT EXISTS idx_folder_docs_tenant ON employee_folder_documents(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_folder_docs_employee ON employee_folder_documents(employee_id);
+CREATE INDEX IF NOT EXISTS idx_folder_docs_category ON employee_folder_documents(document_category);
+
+ALTER TABLE employee_folder_documents ENABLE ROW LEVEL SECURITY;
+CREATE POLICY rls_employee_folder_documents_tenant ON employee_folder_documents
+  FOR ALL USING (tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid);
 
 -- Asignación y Socialización de Manual de Cargos al Trabajador
 CREATE TABLE IF NOT EXISTS employee_job_position_assignments (

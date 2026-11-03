@@ -1412,7 +1412,7 @@
         },
         "1.1.2.1": {
           "estado": "CUMPLE",
-          "justificacion": "Responsabilidades documentadas y firmadas las responsabilidades para la alta dirección.",
+          "justificacion": "Soportado con Manuales de Cargos, Responsabilidades y Funciones firmados digitalmente (Ley 527/1999) y socializados al personal.",
           "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
           "updatedAt": "2026-09-29T15:37:30.691Z"
         },
@@ -1436,13 +1436,13 @@
         },
         "1.1.2.5": {
           "estado": "CUMPLE",
-          "justificacion": "Responsabilidades de Trabajadores definidas",
+          "justificacion": "Soportado con Manuales de Cargos, Responsabilidades y Funciones firmados digitalmente (Ley 527/1999) y socializados al personal.",
           "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
           "updatedAt": "2026-09-29T15:53:19.163Z"
         },
         "1.1.2.6": {
           "estado": "CUMPLE",
-          "justificacion": "Evidencias y soportes de socialización a toda la organización",
+          "justificacion": "Soportado con Manuales de Cargos, Responsabilidades y Funciones firmados digitalmente (Ley 527/1999) y socializados al personal.",
           "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
           "updatedAt": "2026-09-29T16:00:36.747Z"
         },
@@ -1855,7 +1855,7 @@
         },
         "1.1.2.1": {
           "estado": "CUMPLE",
-          "justificacion": "Responsabilidades documentadas y firmadas las responsabilidades para la alta dirección.",
+          "justificacion": "Soportado con Manuales de Cargos, Responsabilidades y Funciones firmados digitalmente (Ley 527/1999) y socializados al personal.",
           "planAccion": "",
           "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
           "updatedAt": "2026-09-29T16:41:21.537Z"
@@ -1883,14 +1883,14 @@
         },
         "1.1.2.5": {
           "estado": "CUMPLE",
-          "justificacion": "Responsabilidades de Trabajadores definidas",
+          "justificacion": "Soportado con Manuales de Cargos, Responsabilidades y Funciones firmados digitalmente (Ley 527/1999) y socializados al personal.",
           "planAccion": "",
           "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
           "updatedAt": "2026-09-30T14:21:28.374Z"
         },
         "1.1.2.6": {
           "estado": "CUMPLE",
-          "justificacion": "Evidencias y soportes de socialización a toda la organización",
+          "justificacion": "Soportado con Manuales de Cargos, Responsabilidades y Funciones firmados digitalmente (Ley 527/1999) y socializados al personal.",
           "planAccion": "",
           "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
           "updatedAt": "2026-09-30T14:21:30.524Z"
@@ -2237,6 +2237,30 @@
     },
     "emp-1792009016839": {
       "2026": {
+        "3.1.4": {
+          "estado": "CUMPLE",
+          "cumple": true,
+          "justificacion": "Soportado con Certificado de Aptitud Médica Ocupacional (Ingreso) en Expediente Digital del Trabajador JOSE IVAN GONZALEZ MORA (Art. 2.2.4.6.12 Dec. 1072/2015).",
+          "archivoAdjunto": {
+            "id": "evid-emp-1792009016839-3.1.4-trab-1792616751329-medico-1793738631",
+            "nombre": "Certificado Médico - JOSE IVAN GONZALEZ MORA",
+            "url": "/uploads/folder_emp-1792009016839_trab-1792616751329_EXAMEN_MEDICO_INGRESO_20261103_154351_certificado_aptitud_ingreso.pdf",
+            "tipo": "application/pdf",
+            "tamanio": 22
+          }
+        },
+        "1.1.3": {
+          "estado": "CUMPLE",
+          "cumple": true,
+          "justificacion": "Soportado con Certificado de Afiliación a EPS en el Expediente Laboral Digital del Trabajador JOSE IVAN GONZALEZ MORA.",
+          "archivoAdjunto": {
+            "id": "evid-emp-1792009016839-1.1.3-trab-1792616751329-AFILIACION_EPS-1793738631",
+            "nombre": "Afiliación EPS - JOSE IVAN GONZALEZ MORA",
+            "url": "/uploads/folder_emp-1792009016839_trab-1792616751329_AFILIACION_EPS_20261103_154351_afiliacion_eps_sura.pdf",
+            "tipo": "application/pdf",
+            "tamanio": 22
+          }
+        }
       }
     },
     "emp-1792010387578": {
@@ -2548,6 +2572,44 @@
       "fechaCargue": "2026-11-03T15:24:00-05:00",
       "anio": "2026",
       "origen": "MÓDULO OFICIAL TALENTO HUMANO Y SG-SST (RES. 0312 ESTÁNDAR 1.1.2)"
+    },
+    {
+      "id": "evid-emp-1792009016839-3.1.4-trab-1792616751329-medico-1793738631",
+      "companyId": "emp-1792009016839",
+      "tenant_id": "emp-1792009016839",
+      "numeral": "3.1.4",
+      "nombre": "CERTIFICADO DE APTITUD MÉDICA OCUPACIONAL (INGRESO) - JOSE IVAN GONZALEZ MORA [Expediente Laboral]",
+      "titulo": "Evaluación Médica Ocupacional de Ingreso - JOSE IVAN GONZALEZ MORA",
+      "tipo": "application/pdf",
+      "tamanio": 22,
+      "url": "/uploads/folder_emp-1792009016839_trab-1792616751329_EXAMEN_MEDICO_INGRESO_20261103_154351_certificado_aptitud_ingreso.pdf",
+      "file_s3_key": "tenants/emp-1792009016839/employees/trab-1792616751329/EXAMEN_MEDICO_INGRESO/certificado_aptitud_ingreso.pdf",
+      "trabajadorId": "trab-1792616751329",
+      "trabajadorNombre": "JOSE IVAN GONZALEZ MORA",
+      "cargo": "Representante Legal",
+      "fecha": "2026-11-03T15:43:51-05:00",
+      "fechaCargue": "2026-11-03T15:43:51-05:00",
+      "anio": "2026",
+      "origen": "EXPEDIENTE LABORAL DIGITAL (CUMPLIMIENTO RES. 0312 ESTÁNDAR 3.1.4 / DEC. 1072)"
+    },
+    {
+      "id": "evid-emp-1792009016839-1.1.3-trab-1792616751329-AFILIACION_EPS-1793738631",
+      "companyId": "emp-1792009016839",
+      "tenant_id": "emp-1792009016839",
+      "numeral": "1.1.3",
+      "nombre": "CERTIFICADO DE AFILIACIÓN A EPS - JOSE IVAN GONZALEZ MORA [Expediente Laboral]",
+      "titulo": "Afiliación Seguridad Social EPS - JOSE IVAN GONZALEZ MORA",
+      "tipo": "application/pdf",
+      "tamanio": 22,
+      "url": "/uploads/folder_emp-1792009016839_trab-1792616751329_AFILIACION_EPS_20261103_154351_afiliacion_eps_sura.pdf",
+      "file_s3_key": "tenants/emp-1792009016839/employees/trab-1792616751329/AFILIACION_EPS/afiliacion_eps_sura.pdf",
+      "trabajadorId": "trab-1792616751329",
+      "trabajadorNombre": "JOSE IVAN GONZALEZ MORA",
+      "cargo": "Representante Legal",
+      "fecha": "2026-11-03T15:43:51-05:00",
+      "fechaCargue": "2026-11-03T15:43:51-05:00",
+      "anio": "2026",
+      "origen": "EXPEDIENTE LABORAL DIGITAL (CUMPLIMIENTO RES. 0312 ESTÁNDAR 1.1.3)"
     }
   ],
   "trabajadores": [
@@ -2577,7 +2639,15 @@
       ],
       "estadoPreaviso": "Pendiente",
       "empresaId": "emp-1792009016839",
-      "pin": "4889"
+      "pin": "4889",
+      "has_registered_signature": true,
+      "signature_svg": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+      "signature_s3_key": "tenants/emp-1792009016839/signatures/emp_trab-1792616751329.png",
+      "signature_url": "/uploads/sig_base_emp_emp-1792009016839_trab-1792616751329.png",
+      "signature_registered_at": "2026-11-03T15:43:51-05:00",
+      "signature_registered_bogota": "03/11/2026 a las 15:43:51 (Hora Legal Colombia UTC-5)",
+      "signature_ip_address": "127.0.0.1",
+      "signature_sha256": "1d57a1c5d3613987a8b5984f3894c169d9d524a0567846dfc3b770c1a6508519"
     },
     {
       "identificacion": "1048660141",
@@ -2604,7 +2674,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-0-6byf",
-      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh"
+      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh",
+      "has_registered_signature": false
     },
     {
       "identificacion": "1031151917",
@@ -2635,7 +2706,8 @@
       "talla_camisa": "M",
       "talla_pantalon": "32",
       "talla_calzado": "40",
-      "talla_guantes": "9"
+      "talla_guantes": "9",
+      "has_registered_signature": false
     },
     {
       "identificacion": "1007103589",
@@ -2662,7 +2734,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-2-t7ak",
-      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh"
+      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh",
+      "has_registered_signature": false
     },
     {
       "identificacion": "1002299424",
@@ -2689,7 +2762,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-3-xj2n",
-      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh"
+      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh",
+      "has_registered_signature": false
     },
     {
       "identificacion": "1030527451",
@@ -2716,7 +2790,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-4-p60v",
-      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh"
+      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh",
+      "has_registered_signature": false
     },
     {
       "identificacion": "1049349313",
@@ -2743,7 +2818,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-5-m0u0",
-      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh"
+      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh",
+      "has_registered_signature": false
     },
     {
       "identificacion": "1005683390",
@@ -2770,7 +2846,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-6-29p3",
-      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh"
+      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh",
+      "has_registered_signature": false
     },
     {
       "identificacion": "1031127667",
@@ -2797,7 +2874,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-7-abpl",
-      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh"
+      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh",
+      "has_registered_signature": false
     },
     {
       "identificacion": "1005676395",
@@ -2824,7 +2902,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-8-f86l",
-      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh"
+      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh",
+      "has_registered_signature": false
     },
     {
       "identificacion": "1049347896",
@@ -2851,7 +2930,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-9-a4ly",
-      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh"
+      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh",
+      "has_registered_signature": false
     },
     {
       "identificacion": "1049346601",
@@ -2878,7 +2958,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-10-szc0",
-      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh"
+      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh",
+      "has_registered_signature": false
     },
     {
       "identificacion": "17676618",
@@ -2905,7 +2986,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-11-npui",
-      "job_position_id": "jp-emp-1790438946268-1793387006810-s1h"
+      "job_position_id": "jp-emp-1790438946268-1793387006810-s1h",
+      "has_registered_signature": false
     },
     {
       "identificacion": "1048660139",
@@ -2932,7 +3014,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-12-tedn",
-      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh"
+      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh",
+      "has_registered_signature": false
     },
     {
       "identificacion": "1024492906",
@@ -2959,7 +3042,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-13-9fs6",
-      "job_position_id": "jp-emp-1790438946268-1793204750749-2g9"
+      "job_position_id": "jp-emp-1790438946268-1793204750749-2g9",
+      "has_registered_signature": false
     },
     {
       "identificacion": "16191075",
@@ -2986,7 +3070,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-14-subv",
-      "job_position_id": "jp-emp-1790438946268-1793387006810-s1h"
+      "job_position_id": "jp-emp-1790438946268-1793387006810-s1h",
+      "has_registered_signature": false
     },
     {
       "identificacion": "1049346883",
@@ -3013,7 +3098,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-15-5tt7",
-      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh"
+      "job_position_id": "jp-emp-1790438946268-1793195899369-bdh",
+      "has_registered_signature": false
     },
     {
       "identificacion": "4107251",
@@ -3040,7 +3126,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-17-xjv3",
-      "job_position_id": "jp-emp-1790438946268-1793387006810-s1h"
+      "job_position_id": "jp-emp-1790438946268-1793387006810-s1h",
+      "has_registered_signature": false
     },
     {
       "identificacion": "80372571",
@@ -3067,7 +3154,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-18-9fxm",
-      "job_position_id": "jp-emp-1790438946268-1793387006810-s1h"
+      "job_position_id": "jp-emp-1790438946268-1793387006810-s1h",
+      "has_registered_signature": false
     },
     {
       "identificacion": "52858403",
@@ -3094,7 +3182,8 @@
       "arl": "Positiva ARL",
       "updatedAt": "2026-10-30T19:24:06.887Z",
       "id": "trab-1793388246887-19-lr8a",
-      "job_position_id": "jp-emp-1790438946268-1793387809361-vt3"
+      "job_position_id": "jp-emp-1790438946268-1793387809361-vt3",
+      "has_registered_signature": false
     },
     {
       "id": "trab-1793497109434",
@@ -3120,7 +3209,8 @@
       "prorrogas": [
 
       ],
-      "estadoPreaviso": "Pendiente"
+      "estadoPreaviso": "Pendiente",
+      "has_registered_signature": false
     },
     {
       "id": "trab-1793733974262",
@@ -3146,7 +3236,8 @@
       "prorrogas": [
 
       ],
-      "estadoPreaviso": "Pendiente"
+      "estadoPreaviso": "Pendiente",
+      "has_registered_signature": false
     }
   ],
   "capacitaciones": [
@@ -7307,10 +7398,10 @@
       "companyId": "emp-1792009016839",
       "perfil": {
         "objetivo": "Diseñar, implementar, auditar y controlar el Sistema de Gestión de Seguridad y Salud en el Trabajo (SG-SST) bajo el Dec. 1072 de 2015, garantizando el estricto cumplimiento de los estándares normativos para tareas de alto riesgo: Trabajo en Alturas (Res. 4272 de 2021) y Espacios Confinados (Res. 0491 de 2020) en intervenciones de cubiertas y tanques.",
-        "educacion": "Profesional o Tecnólogo en Seguridad y Salud en el Trabajo con Licencia SST Vigente",
-        "experiencia": "2 años liderando la implementación del SG-SST (Res. 0312)",
+        "educacion": "Profesional",
+        "experiencia": "1 año de experiencia",
         "formacionSST": "Inducción general en SG-SST, Curso 50h SST (si aplica), Protocolo de EPP, Plan de Emergencias y Reporte de Peligros.",
-        "competencias": "Compromiso con el autocuidado, disciplina operacional, trabajo en equipo, orientación a la calidad y comunicación efectiva.",
+        "competencias": "Trabajo en equipo, seguridad industrial, compromiso",
         "examenesMedicos": "Énfasis osteomuscular, agudeza visual, audiometría tonal ocupacional y valoración médica general."
       },
       "manualFunciones": {
@@ -7358,15 +7449,6 @@
         "frecuenciaReposicion": "Dotación legal cada 4 meses (30 abril, 31 agosto, 20 diciembre - Art. 230 CST) y reposición inmediata de EPP por deterioro o desgaste."
       },
       "anexoContractual": {
-        "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
-        "notificacionRiesgos": "Peligro Psicosocial (gestión administrativa) • Peligro Biomecánico (pantallas de visualización) • Peligro Locativo en inspecciones de campo",
-        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
-        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
-        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
-        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
-        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
-        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
-        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico.",
         "clausula1_objeto": "EL EMPLEADOR contrata los servicios personales de EL TRABAJADOR para desempeñar el cargo de Coordinador SST, ejecutando con diligencia, lealtad y subordinación las funciones inherentes al puesto conforme al Manual de Funciones, Perfil de Cargo y directrices técnicas de la empresa en el marco de su objeto social.",
         "clausula2_duracion": "El presente contrato se pacta por el término pactado / duración de la obra o labor encomendada. La relación laboral terminará válidamente por culminación de la labor, mutuo acuerdo o unilateralmente con justa causa conforme al Artículo 62 del Código Sustantivo del Trabajo (CST), sin lugar a indemnización.",
         "clausula3_salario": "EL EMPLEADOR pagará a EL TRABAJADOR como remuneración mensual o quincenal por la prestación de sus servicios la suma estipulada en dinero legal colombiano, sirviendo de base para la liquidación de prestaciones sociales legales y aportes a Seguridad Social Integral.",
@@ -7375,7 +7457,16 @@
         "clausula6_culpa_exclusiva": "Si ocurre un accidente de trabajo derivado de la imprudencia temeraria, desatención voluntaria, violación de los Procedimientos de Trabajo Seguro o desacato de órdenes directas de SST por parte del trabajador, dicho evento se considerará por CULPA EXCLUSIVA DEL TRABAJADOR, exonerando al empleador de responsabilidad civil ordinaria de perjuicios (Art. 216 CST).",
         "clausula7_seguridad_social": "EL EMPLEADOR afiliará y mantendrá al día las cotizaciones de EL TRABAJADOR al Sistema de Seguridad Social Integral: Salud (EPS), Pensión (AFP) y Riesgos Laborales (ARL), garantizando la cobertura de contingencias comunes y profesionales conforme a la Ley 100 de 1993 y Decreto 1072 de 2015.",
         "clausula8_elementos_herramientas": "EL EMPLEADOR suministrará las herramientas, equipos y elementos requeridos para la labor, los cuales son propiedad de la empresa y se entregan bajo inventario y custodia. En caso de portabilidad o traslado fuera del centro de trabajo, el trabajador responderá por su debido cuidado, reporte de fallas y restitución inmediata.",
-        "clausula9_domicilio_firmas": "Las partes fijan como domicilio contractual la ciudad de ejecución de labores y manifiestan que este documento contiene la totalidad de los acuerdos vinculantes. Las partes firman en señal de expresa conformidad en dos ejemplares de igual tenor."
+        "clausula9_domicilio_firmas": "Las partes fijan como domicilio contractual la ciudad de ejecución de labores y manifiestan que este documento contiene la totalidad de los acuerdos vinculantes. Las partes firman en señal de expresa conformidad en dos ejemplares de igual tenor.",
+        "notificacionRiesgos": "Peligro Psicosocial (gestión administrativa) • Peligro Biomecánico (pantallas de visualización) • Peligro Locativo en inspecciones de campo",
+        "clausulaPrincipal": "El TRABAJADOR declara conocer la Política de SST, los peligros prioritarios de su puesto (GTC 45) y se obliga al uso permanente de los EPP y cumplimiento de los Procedimientos de Trabajo Seguro (PTS).",
+        "regimenSancionatorio": "El incumplimiento grave de las normas e instrucciones del SG-SST faculta al empleador para dar por terminado el contrato con justa causa conforme al Art. 62 del CST y Art. 91 del Decreto 1295 de 1994.",
+        "usoEpp": "El TRABAJADOR se obliga al uso permanente, adecuado y obligatorio de los Elementos de Protección Personal (EPP) y prendas de dotación suministrados por el empleador (Res. 2400 de 1979 y Art. 230 del CST). Asimismo, se obliga a inspeccionarlos antes de cada uso y reportar de inmediato cualquier deterioro para su reposición inmediata.",
+        "cumplimientoPts": "El TRABAJADOR se compromete a acatar estrictamente los Procedimientos de Trabajo Seguro (PTS), directrices operativas y protocolos técnicos de la empresa. Queda terminantemente prohibido omitir pasos de seguridad, deshabilitar guardas o protecciones, o ejecutar tareas de alto riesgo sin el correspondiente Permiso de Trabajo y lista de chequeo.",
+        "reporteIncidentes": "El TRABAJADOR asume la obligación ineludible de reportar inmediatamente a su jefe directo y al responsable del SG-SST todo incidente o accidente de trabajo acaecido, antes de finalizar el turno laboral (Decreto 1295 de 1994), así como cualquier condición o acto inseguro detectado en las instalaciones de la empresa.",
+        "capacitaciones": "El TRABAJADOR participará obligatoriamente en todas las jornadas de inducción, reinducción, entrenamientos, capacitaciones y simulacros de emergencia programados por la empresa dentro del Plan Anual de Trabajo y Capacitación en SST (Dec. 1072 de 2015 Art. 2.2.4.6.11).",
+        "examenesMedicos": "El TRABAJADOR se compromete a comparecer puntualmente a las evaluaciones médicas ocupacionales (ingreso, periódicas, posincapacidad y egreso) de acuerdo con el Profesiograma institucional (Res. 2346 de 2007) y a acatar las recomendaciones preventivas emitidas por medicina laboral.",
+        "politicaSustancias": "Queda estrictamente prohibido presentarse al trabajo bajo los efectos del alcohol, drogas o sustancias psicoactivas, así como su introducción, porte o consumo en las instalaciones o vehículos de la empresa. El TRABAJADOR autoriza la realización de pruebas preventivas de alcoholimetría y tamizaje toxicológico."
       },
       "contratoModelo": {
         "tipoSugerido": "Término Indefinido",
@@ -7428,7 +7519,7 @@
         ]
       },
       "id": "cargo-cfg-1792613206275",
-      "updatedAt": "2026-10-21T21:04:50.109Z"
+      "updatedAt": "2026-11-03T20:30:44.340Z"
     },
     {
       "cargo": "Gerente General",
@@ -12000,36 +12091,25 @@
         "Protección Auditiva"
       ],
       "is_active": true,
-      "updatedAt": "2026-10-21T21:04:46.359Z",
-      "createdAt": "2026-10-21T21:04:19.982Z",
-      "department": "Seguridad y Salud en el Trabajo (SST)",
-      "parent_job_position_title": "Jefe Inmediato / Coordinador Operativo",
-      "job_objective": "Liderar y responder por la adecuada gestión y continuidad de los procesos asignados al puesto de Coordinador SST.",
+      "updatedAt": "2026-11-03T20:31:56.535Z",
+      "createdAt": "2026-11-03T20:31:56.535Z",
+      "department": "Operaciones y Producción",
+      "parent_job_position_title": "Jefe Inmediato / Coordinador de Área",
+      "job_objective": "Diseñar, implementar, auditar y controlar el Sistema de Gestión de Seguridad y Salud en el Trabajo (SG-SST) bajo el Dec. 1072 de 2015, garantizando el estricto cumplimiento de los estándares normativos para tareas de alto riesgo: Trabajo en Alturas (Res. 4272 de 2021) y Espacios Confinados (Res. 0491 de 2020) en intervenciones de cubiertas y tanques.",
       "personality_skills": [
         "Liderazgo y comunicación asertiva",
         "Disciplina operacional y autocuidado",
-        "Capacidad de análisis y resolución de problemas",
-        "Trabajo en equipo y adaptabilidad",
-        "Orientación a la calidad y mejora continua"
+        "Resolución de problemas técnicos",
+        "Trabajo en equipo y adaptabilidad"
       ],
       "operational_functions": [
-        "Ejecutar las labores diarias asignadas al puesto de Coordinador SST cumpliendo con los estándares técnicos y de calidad establecidos.",
-        "Inspeccionar el estado de las herramientas, máquinas y equipos asignados antes de iniciar las operaciones.",
-        "Mantener el orden, la limpieza y la organización estricta en su área o puesto de trabajo.",
-        "Notificar de inmediato cualquier falla, avería o condición anómala en la maquinaria o procesos.",
-        "Participar en los inventarios, relevos de turno y diligenciamiento de planillas de control operativo."
+
       ],
       "sst_responsibilities": [
-        "Procurar el cuidado integral de su salud física y mental en el desarrollo de sus actividades laborales.",
-        "Suministrar información clara, veraz y completa sobre su estado de salud al empleador o área de SST.",
-        "Cumplir a cabalidad las normas, reglamentos, instrucciones y procedimientos del SG-SST de la empresa.",
-        "Informar de manera oportuna sobre los peligros y riesgos latentes detectados en su sitio de trabajo.",
-        "Participar activamente en las actividades de capacitación, entrenamiento y simulacros de emergencia programados.",
-        "Participar y contribuir activamente al cumplimiento de los objetivos y metas del SG-SST (Dec. 1072/2015 Art. 2.2.4.6.10).",
-        "Usar permanentemente y cuidar los Elementos de Protección Personal (EPP) suministrados por la empresa."
+
       ],
-      "authority_scope": "Autoridad técnica y operacional en su puesto de trabajo. Coordinación directa de labores encomendadas, gestión de recursos operativos y custodia de maquinaria, herramientas e insumos asignados.",
-      "suspension_faculty": "Facultad expresa y obligatoria para suspender de forma inmediata cualquier labor o actividad en caso de constatar un riesgo grave o inminente para la vida o la salud, o ante la ausencia o deterioro de Elementos de Protección Personal (EPP), notificando de inmediato a la jefatura de SST."
+      "authority_scope": "Autoridad técnica y operacional en su puesto de trabajo y custodia de herramientas/equipos asignados.",
+      "suspension_faculty": "Facultad expresa y obligatoria para suspender de forma inmediata cualquier labor o actividad en caso de constatar un riesgo grave o inminente para la vida o la salud, o ante la falta de EPP."
     },
     {
       "id": "jp-emp-1792009016839-1792616545419-470",
@@ -14644,7 +14724,7 @@
       "ultimoIngreso": "2026-10-31T21:00:00.000Z"
     }
   ],
-  "updatedAt": "2026-11-03T14:50:01-05:00",
+  "updatedAt": "2026-11-03T15:31:56-05:00",
   "master_standard_templates": [
     {
       "id": "tpl-1-1-1-1",
@@ -16242,6 +16322,26 @@
       "signer_user_agent": "curl/8.7.1",
       "pdf_s3_key": "doctorpyme-storage/tenants/emp-1790438946268/manuals/trab-1793388246887-1-1x94_MANUAL_DE_CARGO_signed.pdf",
       "legal_retention_years": 20
+    },
+    {
+      "id": "sig-reg-1793738631-9531",
+      "tenant_id": "emp-1792009016839",
+      "companyId": "emp-1792009016839",
+      "employee_id": "trab-1792616751329",
+      "trabajadorId": "trab-1792616751329",
+      "document_type": "REGISTRO_FIRMA_BASE",
+      "document_title": "Registro y Depósito de Firma Digital Base",
+      "is_signed": true,
+      "signed_at": "2026-11-03T15:43:51-05:00",
+      "bogota_timestamp": "03/11/2026 a las 15:43:51 (Hora Legal Colombia UTC-5)",
+      "signature_image_file": "/uploads/sig_base_emp_emp-1792009016839_trab-1792616751329.png",
+      "signature_svg_or_base64": "/uploads/sig_base_emp_emp-1792009016839_trab-1792616751329.png",
+      "signature_sha256": "1d57a1c5d3613987a8b5984f3894c169d9d524a0567846dfc3b770c1a6508519",
+      "sha256_hash": "1d57a1c5d3613987a8b5984f3894c169d9d524a0567846dfc3b770c1a6508519",
+      "signer_ip": "127.0.0.1",
+      "signer_user_agent": "Python-urllib/3.9",
+      "pdf_s3_key": "tenants/emp-1792009016839/signatures/emp_trab-1792616751329.png",
+      "legal_traceability_legend": "Firmado digitalmente el 03/11/2026 a las 15:43:51 (Hora Legal Colombia UTC-5) | IP: 127.0.0.1 | Hash: 1d57a1c5d3613987a8b5984f3894c169d9d524a0567846dfc3b770c1a6508519 | Validez probatoria Ley 527 de 1999"
     }
   ],
   "worker_sst_reports": [
@@ -18061,6 +18161,46 @@
       "pdf_s3_key": "doctorpyme-storage/tenants/emp-1790438946268/manuals/trab-1793388246887-1-1x94_MANUAL_DE_CARGO_signed.pdf",
       "created_at": "2026-11-03T15:24:00-05:00",
       "updated_at": "2026-11-03T15:24:00-05:00"
+    }
+  ],
+  "employee_folder_documents": [
+    {
+      "id": "fdoc-1793738631-3293",
+      "tenant_id": "emp-1792009016839",
+      "companyId": "emp-1792009016839",
+      "employee_id": "trab-1792616751329",
+      "trabajadorId": "trab-1792616751329",
+      "document_category": "EXAMEN_MEDICO_INGRESO",
+      "document_title": "Certificado Médico de Ingreso y Aptitud Laboral",
+      "file_name": "certificado_aptitud_ingreso.pdf",
+      "file_size_bytes": 22,
+      "mime_type": "application/pdf",
+      "file_url": "/uploads/folder_emp-1792009016839_trab-1792616751329_EXAMEN_MEDICO_INGRESO_20261103_154351_certificado_aptitud_ingreso.pdf",
+      "file_s3_key": "tenants/emp-1792009016839/employees/trab-1792616751329/EXAMEN_MEDICO_INGRESO/certificado_aptitud_ingreso.pdf",
+      "issue_date": "2026-10-21",
+      "expiration_date": "2027-10-21",
+      "uploaded_by_user_id": "admin",
+      "created_at": "2026-11-03T15:43:51-05:00",
+      "retention_legal_until": "2046-10-29T15:43:51-05:00"
+    },
+    {
+      "id": "fdoc-1793738631-8087",
+      "tenant_id": "emp-1792009016839",
+      "companyId": "emp-1792009016839",
+      "employee_id": "trab-1792616751329",
+      "trabajadorId": "trab-1792616751329",
+      "document_category": "AFILIACION_EPS",
+      "document_title": "Certificado Afiliación EPS Sura",
+      "file_name": "afiliacion_eps_sura.pdf",
+      "file_size_bytes": 22,
+      "mime_type": "application/pdf",
+      "file_url": "/uploads/folder_emp-1792009016839_trab-1792616751329_AFILIACION_EPS_20261103_154351_afiliacion_eps_sura.pdf",
+      "file_s3_key": "tenants/emp-1792009016839/employees/trab-1792616751329/AFILIACION_EPS/afiliacion_eps_sura.pdf",
+      "issue_date": "2026-10-21",
+      "expiration_date": null,
+      "uploaded_by_user_id": "admin",
+      "created_at": "2026-11-03T15:43:51-05:00",
+      "retention_legal_until": "2046-10-29T15:43:51-05:00"
     }
   ]
 }

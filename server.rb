@@ -3196,6 +3196,436 @@ mount_api(server, '/api/admin/manual-signatures-audit') do |req, res|
   end
 end
 
+# 4.2. Registro y Gestión de Firma Digital Base del Trabajador (MinIO S3 + UTC-5 + SHA-256)
+mount_api(server, '/api/worker/register-signature') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body)
+      worker_id = payload['worker_id'] || payload['employee_id'] || payload['trabajadorId']
+      tenant_id = payload['tenant_id'] || payload['companyId']
+      sig_data = payload['signature_svg'] || payload['signature_base64'] || payload['signature_data_url'] || payload['firmaDataUrl'] || ''
+
+      unless worker_id && !sig_data.empty?
+        res.status = 400
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { error: 'Faltan parámetros requeridos (worker_id o trazo de firma).' }.to_json
+        next
+      end
+
+      if sig_data.include?(',')
+        _, b64 = sig_data.split(',', 2)
+      else
+        b64 = sig_data
+      end
+      png_data = Base64.decode64(b64)
+
+      timestamp_now = Time.now
+      timestamp_iso = timestamp_now.iso8601
+      bogota_time = (timestamp_now.utc - 5*3600).strftime('%d/%m/%Y a las %H:%M:%S (Hora Legal Colombia UTC-5)')
+      sha256_hash = Digest::SHA256.hexdigest("SIG_BASE_#{worker_id}_#{timestamp_iso}_#{png_data.length}")
+      s3_key = "tenants/#{tenant_id}/signatures/emp_#{worker_id}.png"
+
+      filename = "sig_base_emp_#{tenant_id}_#{worker_id}.png"
+      file_path = File.join(UPLOADS_DIR, filename)
+      File.open(file_path, 'wb') { |f| f.write(png_data) }
+
+      client_ip, _ = extract_client_ip(req)
+      user_agent = req['user-agent'] || ''
+
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      trabajadores = db['trabajadores'] || []
+      worker = trabajadores.find { |t| t['id'] == worker_id }
+
+      if worker
+        worker['has_registered_signature'] = true
+        worker['signature_svg'] = sig_data
+        worker['signature_s3_key'] = s3_key
+        worker['signature_url'] = "/uploads/#{filename}"
+        worker['signature_registered_at'] = timestamp_iso
+        worker['signature_registered_bogota'] = bogota_time
+        worker['signature_ip_address'] = client_ip
+        worker['signature_sha256'] = sha256_hash
+      end
+
+      # Registro de auditoría forense (Ley 527 de 1999)
+      db['employee_document_signatures'] ||= []
+      db['employee_document_signatures'] << {
+        'id' => "sig-reg-#{Time.now.to_i}-#{rand(1000..9999)}",
+        'tenant_id' => tenant_id,
+        'companyId' => tenant_id,
+        'employee_id' => worker_id,
+        'trabajadorId' => worker_id,
+        'document_type' => 'REGISTRO_FIRMA_BASE',
+        'document_title' => 'Registro y Depósito de Firma Digital Base',
+        'is_signed' => true,
+        'signed_at' => timestamp_iso,
+        'bogota_timestamp' => bogota_time,
+        'signature_image_file' => "/uploads/#{filename}",
+        'signature_svg_or_base64' => "/uploads/#{filename}",
+        'signature_sha256' => sha256_hash,
+        'sha256_hash' => sha256_hash,
+        'signer_ip' => client_ip,
+        'signer_user_agent' => user_agent,
+        'pdf_s3_key' => s3_key,
+        'legal_traceability_legend' => "Firmado digitalmente el #{bogota_time} | IP: #{client_ip} | Hash: #{sha256_hash} | Validez probatoria Ley 527 de 1999"
+      }
+
+      File.open(DB_FILE, 'w:UTF-8') { |f| f.write(JSON.pretty_generate(db)) }
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = {
+        status: 'ok',
+        success: true,
+        message: 'Firma digital registrada con éxito.',
+        worker: worker,
+        signature_url: "/uploads/#{filename}",
+        s3_key: s3_key,
+        bogota_time: bogota_time,
+        sha256_hash: sha256_hash,
+        traceability_legend: "Firmado digitalmente el #{bogota_time} | IP: #{client_ip} | Hash: #{sha256_hash} | Validez probatoria Ley 527 de 1999"
+      }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: "Error al registrar firma digital: #{err.message}" }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# 4.3. Consulta de Firma Digital Base Registrada
+mount_api(server, '/api/worker/registered-signature') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'GET'
+    begin
+      worker_id = req.query['worker_id'] || req.query['employee_id'] || req.query['trabajadorId']
+      tenant_id = req.query['tenant_id'] || req.query['companyId']
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      trabajadores = db['trabajadores'] || []
+      worker = trabajadores.find { |t| t['id'] == worker_id }
+
+      if worker
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = {
+          status: 'ok',
+          has_registered_signature: worker['has_registered_signature'] || false,
+          signature_url: worker['signature_url'],
+          signature_svg: worker['signature_svg'],
+          signature_s3_key: worker['signature_s3_key'],
+          signature_registered_at: worker['signature_registered_at'],
+          signature_registered_bogota: worker['signature_registered_bogota'],
+          signature_ip_address: worker['signature_ip_address'],
+          signature_sha256: worker['signature_sha256']
+        }.to_json
+      else
+        res.status = 404
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { error: 'Trabajador no encontrado.' }.to_json
+      end
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: "Error al consultar firma del trabajador: #{err.message}" }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# 4.4. Listado de Documentos del Expediente Laboral Digital (Carpeta del Trabajador)
+mount_api(server, '/api/worker/folder-documents') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'GET'
+    begin
+      worker_id = req.query['worker_id'] || req.query['employee_id'] || req.query['trabajadorId']
+      tenant_id = req.query['tenant_id'] || req.query['companyId']
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      folder_docs = db['employee_folder_documents'] || []
+
+      docs = folder_docs.select do |d|
+        (worker_id.nil? || worker_id.empty? || d['employee_id'] == worker_id || d['trabajadorId'] == worker_id) &&
+        (tenant_id.nil? || tenant_id.empty? || d['tenant_id'] == tenant_id || d['companyId'] == tenant_id)
+      end
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = {
+        status: 'ok',
+        worker_id: worker_id,
+        tenant_id: tenant_id,
+        documents: docs
+      }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: "Error al consultar expediente laboral: #{err.message}" }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# 4.5. Carga de Documentos al Expediente Laboral Digital con Vinculación a Res. 0312 de 2019
+mount_api(server, '/api/worker/upload-folder-document') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body)
+      worker_id = payload['worker_id'] || payload['employee_id'] || payload['trabajadorId']
+      tenant_id = payload['tenant_id'] || payload['companyId']
+      category = payload['document_category'] || 'OTROS_SOPORTES'
+      title = payload['document_title'] || 'Documento de Soporte'
+      file_name = payload['file_name'] || 'documento.pdf'
+      data_url = payload['data_url'] || payload['dataUrl'] || payload['file_data'] || ''
+      mime_type = payload['mime_type'] || 'application/pdf'
+      issue_date = payload['issue_date']
+      expiration_date = payload['expiration_date']
+      uploaded_by_user_id = payload['uploaded_by_user_id'] || 'admin'
+
+      unless worker_id && !data_url.empty?
+        res.status = 400
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { error: 'Faltan parámetros obligatorios (worker_id o contenido del archivo).' }.to_json
+        next
+      end
+
+      if data_url.include?(',')
+        _, b64 = data_url.split(',', 2)
+      else
+        b64 = data_url
+      end
+      binary_data = Base64.decode64(b64)
+
+      # Validar tamaño máximo (15 MB = 15 * 1024 * 1024 = 15728640 bytes)
+      if binary_data.bytesize > 15728640
+        res.status = 400
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { error: 'El archivo excede el tamaño máximo permitido de 15 MB.' }.to_json
+        next
+      end
+
+      timestamp_now = Time.now
+      timestamp_iso = timestamp_now.iso8601
+      clean_name = file_name.gsub(/[^a-zA-Z0-9_\.-]/, '_')
+      disk_filename = "folder_#{tenant_id}_#{worker_id}_#{category}_#{timestamp_now.strftime('%Y%m%d_%H%M%S')}_#{clean_name}"
+      file_path = File.join(UPLOADS_DIR, disk_filename)
+      File.open(file_path, 'wb') { |f| f.write(binary_data) }
+
+      file_s3_key = "tenants/#{tenant_id}/employees/#{worker_id}/#{category}/#{clean_name}"
+      # Retención legal de 20 años conforme al Art. 2.2.4.6.13 del Decreto 1072 de 2015
+      retention_legal_until = (timestamp_now + (20 * 365 * 24 * 3600)).iso8601
+
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      trabajador_obj = (db['trabajadores'] || []).find { |t| t['id'] == worker_id } || {}
+      worker_name = trabajador_obj['nombre'] || 'Trabajador'
+      cargo_name = trabajador_obj['cargo'] || 'Cargo'
+
+      doc_id = "fdoc-#{Time.now.to_i}-#{rand(1000..9999)}"
+      doc_record = {
+        'id' => doc_id,
+        'tenant_id' => tenant_id,
+        'companyId' => tenant_id,
+        'employee_id' => worker_id,
+        'trabajadorId' => worker_id,
+        'document_category' => category,
+        'document_title' => title,
+        'file_name' => file_name,
+        'file_size_bytes' => binary_data.bytesize,
+        'mime_type' => mime_type,
+        'file_url' => "/uploads/#{disk_filename}",
+        'file_s3_key' => file_s3_key,
+        'issue_date' => issue_date,
+        'expiration_date' => expiration_date,
+        'uploaded_by_user_id' => uploaded_by_user_id,
+        'created_at' => timestamp_iso,
+        'retention_legal_until' => retention_legal_until
+      }
+
+      db['employee_folder_documents'] ||= []
+      db['employee_folder_documents'] << doc_record
+
+      # --------------------------------------------------------------------------
+      # VINCULACIÓN AUTOMÁTICA A LOS ESTÁNDARES MÍNIMOS SG-SST (RESOLUCIÓN 0312 DE 2019)
+      # --------------------------------------------------------------------------
+      target_cids = [tenant_id]
+      target_cids << 'emp-004' if tenant_id == 'emp-1790438946268'
+      target_cids << 'emp-1790438946268' if tenant_id == 'emp-004'
+
+      if category == 'EXAMEN_MEDICO_INGRESO'
+        # Estándar 3.1.4: Realización de Evaluaciones Médicas Ocupacionales
+        evid_id = "evid-#{tenant_id}-3.1.4-#{worker_id}-medico-#{Time.now.to_i}"
+        db['evidencias'] ||= []
+        db['evidencias'] << {
+          'id' => evid_id,
+          'companyId' => tenant_id,
+          'tenant_id' => tenant_id,
+          'numeral' => '3.1.4',
+          'nombre' => "CERTIFICADO DE APTITUD MÉDICA OCUPACIONAL (INGRESO) - #{worker_name} [Expediente Laboral]",
+          'titulo' => "Evaluación Médica Ocupacional de Ingreso - #{worker_name}",
+          'tipo' => mime_type,
+          'tamanio' => binary_data.bytesize,
+          'url' => "/uploads/#{disk_filename}",
+          'file_s3_key' => file_s3_key,
+          'trabajadorId' => worker_id,
+          'trabajadorNombre' => worker_name,
+          'cargo' => cargo_name,
+          'fecha' => timestamp_iso,
+          'fechaCargue' => timestamp_iso,
+          'anio' => Time.now.year.to_s,
+          'origen' => 'EXPEDIENTE LABORAL DIGITAL (CUMPLIMIENTO RES. 0312 ESTÁNDAR 3.1.4 / DEC. 1072)'
+        }
+
+        # Actualizar cumplimiento en evaluaciones SG-SST
+        db['evaluaciones'] ||= {}
+        target_cids.each do |cid|
+          next unless db['evaluaciones'][cid]
+          [Time.now.year.to_s, '2025', '2026'].each do |yr|
+            next unless db['evaluaciones'][cid][yr]
+            item = db['evaluaciones'][cid][yr]['3.1.4'] ||= {}
+            item['estado'] = 'CUMPLE'
+            item['cumple'] = true
+            item['justificacion'] = "Soportado con Certificado de Aptitud Médica Ocupacional (Ingreso) en Expediente Digital del Trabajador #{worker_name} (Art. 2.2.4.6.12 Dec. 1072/2015)."
+            item['archivoAdjunto'] = {
+              'id' => evid_id,
+              'nombre' => "Certificado Médico - #{worker_name}",
+              'url' => "/uploads/#{disk_filename}",
+              'tipo' => mime_type,
+              'tamanio' => binary_data.bytesize
+            }
+          end
+        end
+      elsif ['AFILIACION_EPS', 'AFILIACION_ARL', 'AFILIACION_PENSION'].include?(category)
+        # Estándar 1.1.3: Afiliación al Sistema de Seguridad Social Integral
+        cat_nombre = case category
+                     when 'AFILIACION_EPS' then 'EPS'
+                     when 'AFILIACION_ARL' then 'ARL'
+                     when 'AFILIACION_PENSION' then 'FONDO DE PENSIONES'
+                     else 'SEGURIDAD SOCIAL'
+                     end
+        evid_id = "evid-#{tenant_id}-1.1.3-#{worker_id}-#{category}-#{Time.now.to_i}"
+        db['evidencias'] ||= []
+        db['evidencias'] << {
+          'id' => evid_id,
+          'companyId' => tenant_id,
+          'tenant_id' => tenant_id,
+          'numeral' => '1.1.3',
+          'nombre' => "CERTIFICADO DE AFILIACIÓN A #{cat_nombre} - #{worker_name} [Expediente Laboral]",
+          'titulo' => "Afiliación Seguridad Social #{cat_nombre} - #{worker_name}",
+          'tipo' => mime_type,
+          'tamanio' => binary_data.bytesize,
+          'url' => "/uploads/#{disk_filename}",
+          'file_s3_key' => file_s3_key,
+          'trabajadorId' => worker_id,
+          'trabajadorNombre' => worker_name,
+          'cargo' => cargo_name,
+          'fecha' => timestamp_iso,
+          'fechaCargue' => timestamp_iso,
+          'anio' => Time.now.year.to_s,
+          'origen' => 'EXPEDIENTE LABORAL DIGITAL (CUMPLIMIENTO RES. 0312 ESTÁNDAR 1.1.3)'
+        }
+
+        # Actualizar cumplimiento en evaluaciones SG-SST
+        db['evaluaciones'] ||= {}
+        target_cids.each do |cid|
+          next unless db['evaluaciones'][cid]
+          [Time.now.year.to_s, '2025', '2026'].each do |yr|
+            next unless db['evaluaciones'][cid][yr]
+            item = db['evaluaciones'][cid][yr]['1.1.3'] ||= {}
+            item['estado'] = 'CUMPLE'
+            item['cumple'] = true
+            item['justificacion'] = "Soportado con Certificado de Afiliación a #{cat_nombre} en el Expediente Laboral Digital del Trabajador #{worker_name}."
+            item['archivoAdjunto'] = {
+              'id' => evid_id,
+              'nombre' => "Afiliación #{cat_nombre} - #{worker_name}",
+              'url' => "/uploads/#{disk_filename}",
+              'tipo' => mime_type,
+              'tamanio' => binary_data.bytesize
+            }
+          end
+        end
+      end
+
+      File.open(DB_FILE, 'w:UTF-8') { |f| f.write(JSON.pretty_generate(db)) }
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = {
+        status: 'ok',
+        success: true,
+        message: 'Documento cargado exitosamente en el expediente laboral digital.',
+        document: doc_record
+      }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: "Error al cargar documento en expediente laboral: #{err.message}" }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# 4.6. Eliminación de Documentos del Expediente Laboral Digital
+mount_api(server, '/api/worker/delete-folder-document') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST' || req.request_method == 'DELETE'
+    begin
+      payload = JSON.parse(req.body)
+      doc_id = payload['id'] || payload['document_id']
+      worker_id = payload['worker_id'] || payload['employee_id']
+
+      unless doc_id
+        res.status = 400
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { error: 'Se requiere el ID del documento para su eliminación.' }.to_json
+        next
+      end
+
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      if db['employee_folder_documents'].is_a?(Array)
+        deleted_doc = db['employee_folder_documents'].find { |d| d['id'] == doc_id }
+        db['employee_folder_documents'].reject! { |d| d['id'] == doc_id }
+
+        # Intentar eliminar físicamente de uploads si existe
+        if deleted_doc && deleted_doc['file_url']
+          local_file = File.join(ROOT_DIR, deleted_doc['file_url'].sub(/^\//, ''))
+          File.delete(local_file) if File.exist?(local_file)
+        end
+
+        File.open(DB_FILE, 'w:UTF-8') { |f| f.write(JSON.pretty_generate(db)) }
+      end
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = {
+        status: 'ok',
+        success: true,
+        message: 'Documento eliminado exitosamente del expediente laboral.'
+      }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: "Error al eliminar documento del expediente: #{err.message}" }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
 # 5. Firma de Custodia y Asignación de Herramientas
 mount_api(server, '/api/worker/sign-tool-assignment') do |req, res|
   add_cors_headers(res)

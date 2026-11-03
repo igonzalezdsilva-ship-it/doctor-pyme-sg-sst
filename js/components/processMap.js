@@ -3330,20 +3330,17 @@ window.imprimirManualDeCargo = function(cargoId, trabajadorId = null) {
 
           <!-- BLOQUE DEL TRABAJADOR TITULAR -->
           <td style="width: 36%; text-align: center; vertical-align: bottom; padding: 0 10px; border-left: 1px dashed #cbd5e1;">
-            ${sigFound ? `
+            ${(sigFound || (trabajador && trabajador.has_registered_signature)) ? `
               <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 6px; margin-bottom: 6px;">
-                <img src="${sigFound.signature_image_file || sigFound.firmaDataUrl}" alt="Firma Trabajador" style="max-height: 48px; margin: 0 auto; display: block;">
+                <img src="${(sigFound ? (sigFound.signature_image_file || sigFound.firmaDataUrl) : (trabajador.signature_url || trabajador.signature_svg))}" alt="Firma Trabajador" style="max-height: 48px; margin: 0 auto; display: block;">
                 <div style="font-size: 7.5pt; font-weight: bold; color: #15803d; margin-top: 2px;">
                   ✓ FIRMA DIGITALIZADA INMUTABLE (LEY 527/1999)
                 </div>
-                <div style="font-size: 6.5pt; font-family: monospace; color: #334155; word-break: break-all;">
-                  SHA-256: ${sigFound.signature_sha256 || sigFound.sha256_hash || 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}
+                <div style="font-size: 6.5pt; font-family: monospace; color: #1e293b; line-height: 1.35; margin-top: 2px;">
+                  Firmado digitalmente el ${sigFound?.bogota_timestamp || trabajador.signature_registered_bogota || new Date().toLocaleString('es-CO')} | IP: ${sigFound?.signer_ip || sigFound?.client_ip || trabajador.signature_ip_address || '127.0.0.1'} | Hash: ${(sigFound?.signature_sha256 || sigFound?.sha256_hash || trabajador.signature_sha256 || 'SHA-256')} | Validez probatoria Ley 527 de 1999
                 </div>
-                <div style="font-size: 6.5pt; color: #475569;">
-                  Fecha Bogotá: ${sigFound.bogota_timestamp || new Date(sigFound.signed_at).toLocaleString('es-CO')}
-                </div>
-                <div style="font-size: 6.5pt; color: #64748b; font-family: monospace;">
-                  S3: ${sigFound.pdf_s3_key || `doctorpyme-storage/tenants/${empresa.id}/manuals/${trabajador?.id}_MANUAL_DE_CARGO_signed.pdf`}
+                <div style="font-size: 6pt; color: #64748b; font-family: monospace; margin-top: 1px;">
+                  S3: ${sigFound?.pdf_s3_key || trabajador.signature_s3_key || `doctorpyme-storage/tenants/${empresa.id}/manuals/${trabajador?.id}_MANUAL_DE_CARGO_signed.pdf`}
                 </div>
               </div>
             ` : `
@@ -3354,7 +3351,7 @@ window.imprimirManualDeCargo = function(cargoId, trabajadorId = null) {
               C.C. ${trabajador ? (trabajador.identificacion || trabajador.cedula || '__________________') : '__________________'} • Recibido y Aceptado
             </span><br>
             <span style="font-size: 7pt; color: #94a3b8;">
-              ${sigFound ? 'Documento Socializado & Vigente' : 'Pendiente por Socializar y Firmar'}
+              ${(sigFound || (trabajador && trabajador.has_registered_signature)) ? 'Documento Socializado & Vigente' : 'Pendiente por Socializar y Firmar'}
             </span>
           </td>
         </tr>
