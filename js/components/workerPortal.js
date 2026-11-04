@@ -41,6 +41,21 @@ function slugify(text) {
     .replace(/^_+|_+$/g, '');
 }
 
+export function obtenerUrlFirmaTrabajador(trab) {
+  if (!trab) return '';
+  // Si tiene el trazo Base64 en memoria (data:image/...), mostrarlo directamente para cero latencia y evitar caché del navegador
+  if (trab.signature_svg && String(trab.signature_svg).startsWith('data:image')) {
+    return trab.signature_svg;
+  }
+  // Si tiene URL de archivo guardado, agregar timestamp/hash de cache-busting
+  if (trab.signature_url) {
+    const sep = trab.signature_url.includes('?') ? '&' : '?';
+    const buster = trab.signature_sha256 ? trab.signature_sha256.substring(0, 10) : (trab.signature_registered_at ? Date.parse(trab.signature_registered_at) : Date.now());
+    return `${trab.signature_url}${sep}_t=${buster}`;
+  }
+  return trab.signature_svg || '';
+}
+
 function clasificarFuente(url) {
   const u = (url || '').toLowerCase();
   if (u.includes('docs.google.com/document')) {
@@ -979,7 +994,7 @@ window.abrirModalCrearTrabajador = function(trabajadorId = null) {
             <div class="flex items-center justify-between gap-3 pt-1">
               ${trabExistente.has_registered_signature ? `
                 <div class="p-1.5 bg-white border border-slate-200 rounded-xl flex items-center gap-2">
-                  <img src="${trabExistente.signature_url || trabExistente.signature_svg}" alt="Firma" style="max-height: 38px; max-width: 130px; object-fit: contain;">
+                  <img src="${obtenerUrlFirmaTrabajador(trabExistente)}" alt="Firma" style="max-height: 38px; max-width: 130px; object-fit: contain;">
                   <span class="text-[9px] font-mono text-slate-400">IP: ${trabExistente.signature_ip_address || '127.0.0.1'}</span>
                 </div>
               ` : `
@@ -2731,7 +2746,7 @@ window.generarPdfContratoTrabajador = function(trabajadorId) {
     f.firmaBase64
   );
   const firmaImagen = (firmaRegistrada ? (firmaRegistrada.firmaBase64 || firmaRegistrada.signature_image_file) : null) || 
-                      (trabajador.has_registered_signature ? (trabajador.signature_url || trabajador.signature_svg) : null);
+                      (trabajador.has_registered_signature ? obtenerUrlFirmaTrabajador(trabajador) : null);
   const bogotaFirmaStr = firmaRegistrada?.fechaHoraISO || trabajador.signature_registered_bogota || new Date().toLocaleString('es-CO');
   const ipFirmaStr = firmaRegistrada?.signer_ip || firmaRegistrada?.ipCliente || trabajador.signature_ip_address || '127.0.0.1';
   const hashFirmaStr = firmaRegistrada?.hashDocumento || firmaRegistrada?.sha256_hash || trabajador.signature_sha256 || 'SHA-256';
@@ -3534,6 +3549,16 @@ function abrirModalOnboardingComplianceGate(trabajador, empresa) {
 function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = false) {
   // Activar modo app móvil nativa para ocultar menús laterales y cabecera de escritorio
   document.body.classList.add('mobile-app-mode');
+
+  // Asegurar obtención del trabajador más reciente y completo en memoria
+  const idBuscada = trabajador?.id || trabajador?.trabajadorId;
+  if (idBuscada) {
+    const fullTrab = store.getTrabajadorPorId(idBuscada);
+    if (fullTrab) trabajador = fullTrab;
+  }
+  if (trabajador && !trabajador.id && trabajador.trabajadorId) {
+    trabajador.id = trabajador.trabajadorId;
+  }
 
   const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva() || {
     id: 'emp-1790438946268',
@@ -4708,7 +4733,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
               ${trabajador.has_registered_signature ? `
                 <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
                   <div class="p-2 bg-white rounded-lg flex items-center justify-center">
-                    <img src="${trabajador.signature_url || trabajador.signature_svg}" alt="Mi Firma" style="max-height: 48px; max-width: 180px; object-fit: contain;">
+                    <img src="${obtenerUrlFirmaTrabajador(trabajador)}" alt="Mi Firma" style="max-height: 48px; max-width: 180px; object-fit: contain;">
                   </div>
                   <div class="text-[9.5px] font-mono text-slate-400 space-y-0.5">
                     <p class="truncate"><strong class="text-slate-300">Hash SHA-256:</strong> ${trabajador.signature_sha256 || 'SHA-256'}</p>
@@ -5365,7 +5390,7 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
                 </div>
                 
                 <div id="contenedor-firma-base-preview" class="p-2.5 bg-white rounded-xl border border-indigo-100 flex items-center gap-3">
-                  <img src="${trabajador.signature_url || trabajador.signature_svg}" alt="Firma Registrada" style="max-height: 44px; max-width: 140px; object-fit: contain;">
+                  <img src="${obtenerUrlFirmaTrabajador(trabajador)}" alt="Firma Registrada" style="max-height: 44px; max-width: 140px; object-fit: contain;">
                   <div class="text-[10px] text-slate-600">
                     <strong class="text-emerald-700">✓ Firma Digital Lista para Estampar</strong>
                     <span class="block text-slate-400 font-mono">Registrada: ${trabajador.signature_registered_bogota || 'Vigente'}</span>
@@ -5434,7 +5459,7 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
       let sigData = '';
       const radioMethod = document.querySelector('input[name="radio-doc-sig-method"]:checked')?.value;
       if (radioMethod === 'registered' && (trabajador.signature_url || trabajador.signature_svg)) {
-        sigData = trabajador.signature_url || trabajador.signature_svg;
+        sigData = trabajador.signature_svg || trabajador.signature_url;
       } else {
         if (!pad || pad.isEmpty()) {
           alert("Por favor firma en el recuadro antes de confirmar.");
@@ -8203,12 +8228,16 @@ window.eliminarDocumentoCarpetaConfirm = async function(docId, workerId) {
 // Canvas Signature Pad táctil responsivo, SHA-256 y MinIO S3 (Ley 527 de 1999)
 // =============================================================================
 window.abrirModalRegistroFirmaTrabajador = function(trabajadorId, callbackOnSuccess = null) {
-  const trabajador = store.getTrabajadorPorId(trabajadorId);
+  const trabajador = store.getTrabajadorPorId(trabajadorId) || (auth.isWorker() ? auth.getUser() : null);
   if (!trabajador) {
     alert("No se encontró el trabajador.");
     return;
   }
-  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva();
+  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva() || {
+    id: 'emp-1790438946268',
+    razonSocial: 'LADRILLOS OCHOA LTDA',
+    nit: '830124631'
+  };
 
   const modalId = 'modal-registro-firma-trabajador';
   const existing = document.getElementById(modalId);
@@ -8260,12 +8289,12 @@ window.abrirModalRegistroFirmaTrabajador = function(trabajadorId, callbackOnSucc
             </div>
 
             <div class="p-3 bg-white border border-emerald-200 rounded-xl flex items-center justify-center">
-              <img src="${trabajador.signature_url || trabajador.signature_svg}" alt="Firma Registrada" style="max-height: 55px; max-width: 220px; object-fit: contain;">
+              <img id="img-preview-firma-actual" src="${obtenerUrlFirmaTrabajador(trabajador)}" alt="Firma Registrada" style="max-height: 55px; max-width: 220px; object-fit: contain;">
             </div>
 
             <div class="text-[10px] font-mono text-slate-600 space-y-1">
               <p class="truncate"><strong class="text-slate-900">Hash SHA-256:</strong> ${trabajador.signature_sha256 || 'SHA-256'}</p>
-              <p><strong class="text-slate-900">Fecha Bogotá (UTC-5):</strong> ${trabajador.signature_registered_bogota || new Date(trabajador.signature_registered_at).toLocaleString('es-CO')}</p>
+              <p><strong class="text-slate-900">Fecha Bogotá (UTC-5):</strong> ${trabajador.signature_registered_bogota || (trabajador.signature_registered_at ? new Date(trabajador.signature_registered_at).toLocaleString('es-CO') : 'Registrada')}</p>
               <p><strong class="text-slate-900">IP de Registro:</strong> ${trabajador.signature_ip_address || '127.0.0.1'}</p>
               <p class="truncate text-indigo-700"><strong class="text-slate-900">Ruta MinIO S3:</strong> ${trabajador.signature_s3_key || `tenants/${empresa.id}/signatures/emp_${trabajador.id}.png`}</p>
             </div>
@@ -8276,25 +8305,66 @@ window.abrirModalRegistroFirmaTrabajador = function(trabajadorId, callbackOnSucc
             <div>
               <strong>Sin Firma Registrada:</strong>
               <p class="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
-                Este trabajador aún no tiene una firma digital base registrada. Dibuja el trazo a continuación para que pueda estamparse automáticamente en contratos, manuales de cargo y actas de EPP.
+                Este trabajador aún no tiene una firma digital base registrada. Traza el trazo o sube una imagen a continuación para que pueda estamparse automáticamente en contratos, manuales de cargo y actas de EPP.
               </p>
             </div>
           </div>
         `}
 
-        <!-- CANVAS PARA DIBUJAR O ACTUALIZAR FIRMA -->
-        <div class="space-y-2">
+        <!-- SELECTOR DE MÉTODO: TRAZAR O SUBIR ARCHIVO -->
+        <div class="space-y-3">
           <div class="flex items-center justify-between">
             <label class="text-xs font-black text-slate-800 uppercase flex items-center gap-1.5">
-              <span>✍️</span> ${trabajador.has_registered_signature ? 'Trazar Nueva Firma (Actualizar):' : 'Estampa la Firma con el Dedo o Ratón:'}
+              <span>✍️</span> ${trabajador.has_registered_signature ? 'Actualizar Firma Digital:' : 'Registrar Firma Digital:'}
             </label>
-            <button type="button" id="btn-clear-base-sig" class="text-[10.5px] text-rose-600 underline font-bold cursor-pointer">
-              Limpiar Trazo
+          </div>
+
+          <div class="flex p-1 bg-slate-100 rounded-xl gap-1 border border-slate-200">
+            <button type="button" id="tab-sig-modo-trazo" class="flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-indigo-900 shadow-xs cursor-pointer">
+              <span>✍️</span> Trazar en Pantalla
+            </button>
+            <button type="button" id="tab-sig-modo-archivo" class="flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer">
+              <span>📁</span> Cargar Archivo de Firma
             </button>
           </div>
 
-          <div class="border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-50">
-            <canvas id="canvas-base-sig" class="signature-pad-canvas w-full h-40"></canvas>
+          <!-- PANEL 1: CANVAS PARA TRAZAR -->
+          <div id="panel-sig-modo-trazo" class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] text-slate-500 font-medium">Firma con el dedo en tu celular o con el puntero del ratón:</span>
+              <button type="button" id="btn-clear-base-sig" class="text-[10.5px] text-rose-600 underline font-bold cursor-pointer">
+                Limpiar Trazo
+              </button>
+            </div>
+            <div class="border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-50">
+              <canvas id="canvas-base-sig" class="signature-pad-canvas w-full h-40"></canvas>
+            </div>
+          </div>
+
+          <!-- PANEL 2: CARGAR ARCHIVO DE IMAGEN -->
+          <div id="panel-sig-modo-archivo" class="hidden space-y-2">
+            <label id="dropzone-worker-sig" class="flex flex-col items-center justify-center p-5 border-2 border-dashed border-indigo-300 hover:border-indigo-500 hover:bg-indigo-50/40 rounded-2xl cursor-pointer bg-slate-50 transition text-center group">
+              <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl mb-2 group-hover:scale-105 transition">
+                📤
+              </div>
+              <span class="text-xs text-indigo-700 font-bold" id="texto-dropzone-worker-sig">Seleccionar imagen o foto de la firma</span>
+              <span class="text-[10px] text-slate-400 mt-0.5">PNG, JPG, SVG o WebP (Fondo transparente o blanco)</span>
+              <input type="file" id="file-worker-sig-upload" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="hidden">
+            </label>
+
+            <div id="preview-worker-sig-upload-box" class="hidden p-3 bg-white border border-indigo-200 rounded-xl space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold text-emerald-700 flex items-center gap-1">
+                  <span>✓</span> Imagen de firma cargada lista para validación
+                </span>
+                <button type="button" id="btn-quitar-sig-upload" class="text-[10px] text-rose-600 underline font-bold cursor-pointer">
+                  Cambiar imagen
+                </button>
+              </div>
+              <div class="p-2 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-100">
+                <img id="preview-worker-sig-upload-img" src="" alt="Vista previa de firma" style="max-height: 80px; max-width: 100%; object-fit: contain;">
+              </div>
+            </div>
           </div>
 
           <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[10px] text-slate-600 space-y-1">
@@ -8327,12 +8397,82 @@ window.abrirModalRegistroFirmaTrabajador = function(trabajadorId, callbackOnSucc
 
   document.body.appendChild(modalEl);
 
+  let uploadedSigDataUrl = null;
   const pad = setupSignaturePad('canvas-base-sig');
-  document.getElementById('btn-clear-base-sig')?.addEventListener('click', () => pad?.clear());
+
+  // Conmutador de pestañas
+  const tabTrazo = document.getElementById('tab-sig-modo-trazo');
+  const tabArchivo = document.getElementById('tab-sig-modo-archivo');
+  const panelTrazo = document.getElementById('panel-sig-modo-trazo');
+  const panelArchivo = document.getElementById('panel-sig-modo-archivo');
+
+  tabTrazo?.addEventListener('click', () => {
+    tabTrazo.className = 'flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-indigo-900 shadow-xs cursor-pointer';
+    tabArchivo.className = 'flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer';
+    panelTrazo.classList.remove('hidden');
+    panelArchivo.classList.add('hidden');
+  });
+
+  tabArchivo?.addEventListener('click', () => {
+    tabArchivo.className = 'flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-indigo-900 shadow-xs cursor-pointer';
+    tabTrazo.className = 'flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer';
+    panelArchivo.classList.remove('hidden');
+    panelTrazo.classList.add('hidden');
+  });
+
+  // Manejador de subida de archivo
+  const fileInput = document.getElementById('file-worker-sig-upload');
+  const dropzone = document.getElementById('dropzone-worker-sig');
+  const previewBox = document.getElementById('preview-worker-sig-upload-box');
+  const previewImg = document.getElementById('preview-worker-sig-upload-img');
+  const btnQuitarUpload = document.getElementById('btn-quitar-sig-upload');
+
+  const processUploadedFile = (file) => {
+    if (!file || !file.type.startsWith('image/')) {
+      alert("Por favor selecciona un archivo de imagen válido (PNG, JPG, SVG o WebP).");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      uploadedSigDataUrl = e.target.result;
+      if (previewImg) previewImg.src = uploadedSigDataUrl;
+      previewBox?.classList.remove('hidden');
+      dropzone?.classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  fileInput?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (file) processUploadedFile(file);
+  });
+
+  btnQuitarUpload?.addEventListener('click', () => {
+    uploadedSigDataUrl = null;
+    if (fileInput) fileInput.value = '';
+    if (previewImg) previewImg.src = '';
+    previewBox?.classList.add('hidden');
+    dropzone?.classList.remove('hidden');
+  });
+
+  document.getElementById('btn-clear-base-sig')?.addEventListener('click', () => {
+    pad?.clear();
+  });
 
   document.getElementById('btn-save-base-sig')?.addEventListener('click', async () => {
-    if (!pad || pad.isEmpty()) {
-      alert("Por favor traza la firma en el recuadro antes de guardar.");
+    let sigData = null;
+    const esModoArchivo = !panelArchivo?.classList.contains('hidden');
+
+    if (esModoArchivo && uploadedSigDataUrl) {
+      sigData = uploadedSigDataUrl;
+    } else if (pad && !pad.isEmpty()) {
+      sigData = pad.getDataUrl();
+    } else if (uploadedSigDataUrl) {
+      sigData = uploadedSigDataUrl;
+    }
+
+    if (!sigData) {
+      alert("Por favor traza tu firma en el recuadro o carga un archivo de imagen antes de guardar.");
       return;
     }
 
@@ -8341,16 +8481,24 @@ window.abrirModalRegistroFirmaTrabajador = function(trabajadorId, callbackOnSucc
     btn.innerText = "Guardando y sellando en MinIO S3...";
 
     try {
-      const sigData = pad.getDataUrl();
-      await store.registerWorkerSignature({
+      const res = await store.registerWorkerSignature({
         worker_id: trabajador.id,
         employee_id: trabajador.id,
         tenant_id: empresa.id,
         signature_svg: sigData
       });
 
+      // Actualizar datos del trabajador en caliente
+      trabajador.has_registered_signature = true;
+      trabajador.signature_svg = sigData;
+      trabajador.signature_url = res.signature_url;
+      trabajador.signature_sha256 = res.sha256_hash;
+      trabajador.signature_registered_at = res.worker?.signature_registered_at || new Date().toISOString();
+      trabajador.signature_registered_bogota = res.bogota_time;
+      trabajador.signature_ip_address = res.worker?.signature_ip_address || '127.0.0.1';
+
       modalEl.remove();
-      alert("✓ ¡Firma digital base registrada exitosamente con validez jurídica (Ley 527 de 1999)!");
+      alert("✓ ¡Firma digital base actualizada exitosamente con validez jurídica (Ley 527 de 1999)!");
       if (typeof callbackOnSuccess === 'function') {
         try { callbackOnSuccess(); } catch (cbErr) { console.warn("Error en callback tras firma:", cbErr); }
       }

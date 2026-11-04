@@ -4830,9 +4830,27 @@ class Store {
           trab.signature_svg = payload.signature_svg;
           trab.signature_s3_key = data.s3_key || `tenants/${payload.tenant_id}/signatures/emp_${workerId}.png`;
           trab.signature_url = data.signature_url;
-          trab.signature_registered_at = new Date().toISOString();
+          trab.signature_registered_at = data.worker?.signature_registered_at || new Date().toISOString();
           trab.signature_registered_bogota = data.bogota_time;
           trab.signature_sha256 = data.sha256_hash;
+          trab.signature_ip_address = data.worker?.signature_ip_address || '127.0.0.1';
+        }
+      }
+
+      // Sincronizar sesión si el usuario actual es este trabajador
+      if (typeof auth !== 'undefined' && auth && auth.session) {
+        const sWid = auth.session.trabajadorId || auth.session.id;
+        if (sWid === workerId) {
+          auth.session.has_registered_signature = true;
+          auth.session.signature_svg = payload.signature_svg;
+          auth.session.signature_url = data.signature_url;
+          auth.session.signature_s3_key = data.s3_key;
+          auth.session.signature_registered_at = data.worker?.signature_registered_at || new Date().toISOString();
+          auth.session.signature_registered_bogota = data.bogota_time;
+          auth.session.signature_sha256 = data.sha256_hash;
+          try {
+            localStorage.setItem('DOCTOR_PYME_AUTH_SESSION', JSON.stringify(auth.session));
+          } catch (_) {}
         }
       }
 

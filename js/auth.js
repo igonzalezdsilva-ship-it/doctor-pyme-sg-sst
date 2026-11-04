@@ -75,6 +75,15 @@ class Auth {
   }
 
   getUser() {
+    if (this.session && (this.session.rol === 'Trabajador' || this.session.tipo === 'trabajador')) {
+      const wid = this.session.trabajadorId || this.session.id;
+      if (wid && typeof store !== 'undefined' && store.getTrabajadorPorId) {
+        const fullTrab = store.getTrabajadorPorId(wid);
+        if (fullTrab) {
+          return { ...this.session, ...fullTrab, id: fullTrab.id, trabajadorId: fullTrab.id };
+        }
+      }
+    }
     return this.session;
   }
 

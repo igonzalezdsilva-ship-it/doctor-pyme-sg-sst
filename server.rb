@@ -3234,6 +3234,8 @@ mount_api(server, '/api/worker/register-signature') do |req, res|
       file_path = File.join(UPLOADS_DIR, filename)
       File.open(file_path, 'wb') { |f| f.write(png_data) }
 
+      sig_url_versioned = "/uploads/#{filename}?v=#{timestamp_now.to_i}"
+
       client_ip, _ = extract_client_ip(req)
       user_agent = req['user-agent'] || ''
 
@@ -3245,7 +3247,7 @@ mount_api(server, '/api/worker/register-signature') do |req, res|
         worker['has_registered_signature'] = true
         worker['signature_svg'] = sig_data
         worker['signature_s3_key'] = s3_key
-        worker['signature_url'] = "/uploads/#{filename}"
+        worker['signature_url'] = sig_url_versioned
         worker['signature_registered_at'] = timestamp_iso
         worker['signature_registered_bogota'] = bogota_time
         worker['signature_ip_address'] = client_ip
@@ -3265,8 +3267,8 @@ mount_api(server, '/api/worker/register-signature') do |req, res|
         'is_signed' => true,
         'signed_at' => timestamp_iso,
         'bogota_timestamp' => bogota_time,
-        'signature_image_file' => "/uploads/#{filename}",
-        'signature_svg_or_base64' => "/uploads/#{filename}",
+        'signature_image_file' => sig_url_versioned,
+        'signature_svg_or_base64' => sig_data,
         'signature_sha256' => sha256_hash,
         'sha256_hash' => sha256_hash,
         'signer_ip' => client_ip,
@@ -3283,7 +3285,8 @@ mount_api(server, '/api/worker/register-signature') do |req, res|
         success: true,
         message: 'Firma digital registrada con éxito.',
         worker: worker,
-        signature_url: "/uploads/#{filename}",
+        signature_url: sig_url_versioned,
+        signature_svg: sig_data,
         s3_key: s3_key,
         bogota_time: bogota_time,
         sha256_hash: sha256_hash,
