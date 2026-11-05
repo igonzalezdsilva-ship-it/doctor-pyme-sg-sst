@@ -143,17 +143,27 @@ body.mobile-app-mode {
   overscroll-behavior-y: contain;
 }
 
+/* Ocultar únicamente el menú lateral y la cabecera del panel administrativo de escritorio */
 body.mobile-app-mode aside,
-body.mobile-app-mode header {
+body.mobile-app-mode header:not(.worker-mobile-header) {
   display: none !important;
+}
+
+/* El encabezado móvil del trabajador siempre debe ser visible con soporte de safe-area notch */
+body.mobile-app-mode header.worker-mobile-header {
+  display: block !important;
+  padding-top: max(env(safe-area-inset-top, 0px), 14px) !important;
 }
 
 body.mobile-app-mode #app-root {
   display: flex !important;
   flex-direction: column !important;
   width: 100vw !important;
-  height: 100vh !important;
+  height: 100% !important;
+  height: 100dvh !important;
+  min-height: -webkit-fill-available;
   overflow: hidden !important;
+  box-sizing: border-box;
 }
 
 body.mobile-app-mode main {
@@ -162,7 +172,7 @@ body.mobile-app-mode main {
   width: 100% !important;
   max-width: 100% !important;
   height: 100% !important;
-  background-color: #f1f5f9;
+  background-color: #0f172a;
 }
 
 body.mobile-app-mode #main-content {

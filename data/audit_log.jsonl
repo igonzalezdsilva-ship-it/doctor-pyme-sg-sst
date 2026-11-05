@@ -482,3 +482,5 @@
 {"timestamp":"2026-11-03T18:59:45-05:00","action":"SAVE_DATABASE","bytes":3795743,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
 {"timestamp":"2026-11-03T19:19:31-05:00","action":"SAVE_DATABASE","bytes":3792655,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}
 {"timestamp":"2026-11-05T10:19:47-05:00","action":"WORKER_APP_LOGIN","worker_id":"trab-1793733974262","worker_name":"DILAN ARLEY ARIAS TOLOZA","company_id":"emp-1792009016839","ip":"127.0.0.1"}
+{"timestamp":"2026-11-05T10:27:25-05:00","action":"WORKER_APP_LOGIN","worker_id":"trab-1792616751329","worker_name":"JOSE IVAN GONZALEZ MORA","company_id":"emp-1792009016839","ip":"127.0.0.1"}
+{"timestamp":"2026-11-05T10:27:25-05:00","action":"SAVE_DATABASE","bytes":3792655,"totalEmpresas":4,"totalEvaluaciones":284,"empresaActiva":"LADRILLOS OCHOA LTDA","backupGenerado":true}

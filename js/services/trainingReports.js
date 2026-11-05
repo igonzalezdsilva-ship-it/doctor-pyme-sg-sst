@@ -12,18 +12,126 @@ function abrirVentanaImpresion(tituloDoc, htmlBody) {
     return;
   }
 
+  const cleanDocTitle = (tituloDoc || 'Documento_SST').replace(/"/g, '&quot;');
+  const fileDownloadName = (tituloDoc || 'Documento_SST').replace(/[^a-zA-Z0-9_-]/g, '_');
+
   printWin.document.open();
   printWin.document.write(`
     <!DOCTYPE html>
     <html lang="es">
     <head>
       <meta charset="UTF-8">
-      <title>${tituloDoc}</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+      <title>${cleanDocTitle}</title>
+      
+      <!-- Motor de Descarga de PDF Directo (html2pdf) -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
       <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 25px 35px; color: #0f172a; background: #ffffff; line-height: 1.45; font-size: 10pt; }
-        .no-print { text-align: right; margin-bottom: 15px; }
-        .btn-print { padding: 9px 20px; background: #3730a3; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
-        .btn-print:hover { background: #312e81; }
+        :root {
+          --sat: env(safe-area-inset-top, 0px);
+          --sab: env(safe-area-inset-bottom, 0px);
+        }
+        * { box-sizing: border-box; }
+        body { 
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+          padding: calc(max(var(--sat), 12px) + 56px) 20px max(var(--sab), 24px) 20px; 
+          color: #0f172a; 
+          background: #f8fafc; 
+          line-height: 1.45; 
+          font-size: 10pt; 
+          margin: 0;
+        }
+
+        /* BARRA SUPERIOR FIJA ADAPTADA A NOTCH Y DYNAMIC ISLAND (iOS / Android / Desktop) */
+        .doc-control-bar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 999999;
+          background: #0b1a2d;
+          color: #ffffff;
+          padding-top: max(var(--sat), 12px);
+          padding-bottom: 10px;
+          padding-left: 14px;
+          padding-right: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+          border-bottom: 1px solid #1e293b;
+        }
+        .btn-back {
+          padding: 8px 14px;
+          background: #1e293b;
+          color: #f1f5f9;
+          border: 1px solid #334155;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 12px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          transition: background 0.15s ease;
+          touch-action: manipulation;
+        }
+        .btn-back:hover, .btn-back:active { background: #334155; color: #ffffff; }
+        
+        .doc-bar-actions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .btn-download {
+          padding: 8px 14px;
+          background: #0d9488;
+          color: #ffffff;
+          border: none;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 12px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: 0 2px 6px rgba(13, 148, 136, 0.35);
+          transition: background 0.15s ease;
+          touch-action: manipulation;
+        }
+        .btn-download:hover, .btn-download:active { background: #0f766e; }
+        .btn-download:disabled { opacity: 0.6; cursor: wait; }
+
+        .btn-print { 
+          padding: 8px 14px; 
+          background: #4338ca; 
+          color: white; 
+          border: none; 
+          border-radius: 10px; 
+          font-weight: 700; 
+          cursor: pointer; 
+          font-size: 12px; 
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          box-shadow: 0 2px 6px rgba(67, 56, 202, 0.3); 
+          transition: background 0.15s ease;
+          touch-action: manipulation;
+        }
+        .btn-print:hover, .btn-print:active { background: #3730a3; }
+
+        .doc-wrapper {
+          max-width: 860px;
+          margin: 0 auto;
+          background: #ffffff;
+          padding: 30px;
+          border-radius: 14px;
+          box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+          border: 1px solid #e2e8f0;
+        }
+
         .header-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; border: 2px solid #0f172a; }
         .header-table td { padding: 8px 12px; border: 1px solid #0f172a; vertical-align: middle; }
         .doc-title { font-size: 12pt; font-weight: 900; text-align: center; color: #0f172a; text-transform: uppercase; margin: 0; line-height: 1.25; }
@@ -45,18 +153,106 @@ function abrirVentanaImpresion(tituloDoc, htmlBody) {
         .badge-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
         .badge-info { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
         .forensic-stamp { background: #f8fafc; border: 1px dashed #94a3b8; border-radius: 6px; padding: 8px 12px; font-family: monospace; font-size: 7.5pt; color: #334155; margin-top: 10px; }
+        
+        @media (max-width: 640px) {
+          body { padding-left: 10px; padding-right: 10px; }
+          .doc-wrapper { padding: 14px 10px; border-radius: 8px; }
+          .grid-2, .grid-3 { grid-template-columns: 1fr; }
+          .header-table td { padding: 6px 8px; }
+          .doc-title { font-size: 10pt; }
+        }
+
         @media print {
-          body { padding: 0; }
-          .no-print { display: none; }
-          @page { margin: 1.2cm; size: letter; }
+          body { padding: 0 !important; background: #ffffff !important; }
+          .no-print, .doc-control-bar { display: none !important; }
+          .doc-wrapper { max-width: 100% !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+          @page { margin: 1cm; size: letter; }
         }
       </style>
     </head>
     <body>
-      <div class="no-print">
-        <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Guardar en PDF</button>
+      <!-- BARRA DE CONTROL MÓVIL: REGRESAR / DESCARGAR PDF / IMPRIMIR -->
+      <div class="doc-control-bar no-print">
+        <button type="button" class="btn-back" onclick="regresarAlPortal()">
+          <span>←</span>
+          <span>Volver al Portal</span>
+        </button>
+
+        <div class="doc-bar-actions">
+          <button type="button" id="btn-descargar-pdf" class="btn-download" onclick="descargarDocumentoPDF()">
+            <span>📥</span>
+            <span>Descargar PDF</span>
+          </button>
+          <button type="button" class="btn-print" onclick="window.print()">
+            <span>🖨️</span>
+            <span>Imprimir</span>
+          </button>
+        </div>
       </div>
-      ${htmlBody}
+
+      <!-- CONTENEDOR PRINCIPAL DEL DOCUMENTO -->
+      <div class="doc-wrapper">
+        <div id="documento-imprimible">
+          ${htmlBody}
+        </div>
+      </div>
+
+      <script>
+        // Función universal de regreso (cierra ventana o hace history back si se abrió en la misma vista)
+        function regresarAlPortal() {
+          if (window.opener && !window.opener.closed) {
+            window.close();
+          } else if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = './app.html';
+          }
+        }
+
+        // Descarga de archivo PDF real usando html2pdf con fallback
+        function descargarDocumentoPDF() {
+          const btn = document.getElementById('btn-descargar-pdf');
+          const originalContent = btn ? btn.innerHTML : '';
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳ Generando PDF...</span>';
+          }
+
+          const element = document.getElementById('documento-imprimible');
+          const cleanName = '${fileDownloadName}' + '.pdf';
+
+          if (typeof html2pdf !== 'undefined' && element) {
+            const opt = {
+              margin: [10, 10, 10, 10],
+              filename: cleanName,
+              image: { type: 'jpeg', quality: 0.98 },
+              html2canvas: { scale: 2, useCORS: true, logging: false },
+              jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(function() {
+              if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<span>✓ ¡Descargado!</span>';
+                setTimeout(function() { btn.innerHTML = originalContent; }, 2500);
+              }
+            }).catch(function(err) {
+              console.warn('Fallo html2pdf, recurriendo a diálogo de impresión:', err);
+              if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+              }
+              window.print();
+            });
+          } else {
+            if (btn) {
+              btn.disabled = false;
+              btn.innerHTML = originalContent;
+            }
+            window.print();
+          }
+        }
+      </script>
     </body>
     </html>
   `);

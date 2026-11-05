@@ -3703,7 +3703,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
       <!-- =================================================================== -->
       <!-- ENCABEZADO SUPERIOR COMPACTO (MOBILE-FIRST HEADER)                   -->
       <!-- =================================================================== -->
-      <header class="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800/80 px-4 py-3 sticky top-0 z-30 shadow-md">
+      <header class="worker-mobile-header bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800/80 px-4 pb-3 sticky top-0 z-30 shadow-md" style="padding-top: max(env(safe-area-inset-top, 0px), 14px);">
         <div class="max-w-lg mx-auto flex items-center justify-between gap-3">
           
           <!-- Identificación de la Empresa y Trabajador -->
@@ -8699,31 +8699,154 @@ window.imprimirCarneDigital = function() {
   const card = document.getElementById('print-carne-card');
   if (!card) return;
 
-  const win = window.open('', '_blank', 'width=450,height=650');
+  const win = window.open('', '_blank', 'width=520,height=750,menubar=no,toolbar=no,status=no');
+  if (!win) {
+    alert("Por favor habilita las ventanas emergentes (popups) para visualizar e imprimir el Carné SST.");
+    return;
+  }
+
+  win.document.open();
   win.document.write(`
     <!DOCTYPE html>
     <html lang="es">
     <head>
       <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
       <title>Carné de Identificación SST</title>
       <script src="https://cdn.tailwindcss.com"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
       <style>
-        @page { size: 85mm 120mm; margin: 4mm; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: white; padding: 0; margin: 0; }
+        :root {
+          --sat: env(safe-area-inset-top, 0px);
+          --sab: env(safe-area-inset-bottom, 0px);
+        }
+        @page { size: 85mm 125mm; margin: 3mm; }
+        * { box-sizing: border-box; }
+        body { 
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+          background: #0f172a; 
+          padding: calc(max(var(--sat), 12px) + 54px) 14px max(var(--sab), 20px) 14px; 
+          margin: 0; 
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-start;
+        }
+
+        .carne-control-bar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 999999;
+          background: #0b1a2d;
+          padding-top: max(var(--sat), 12px);
+          padding-bottom: 10px;
+          padding-left: 12px;
+          padding-right: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-bottom: 1px solid #1e293b;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+        }
+
+        .btn-bar-action {
+          padding: 8px 12px;
+          border-radius: 10px;
+          font-size: 11px;
+          font-weight: 700;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          border: none;
+          touch-action: manipulation;
+        }
+
         @media print {
-          body { background: transparent; }
-          .no-print { display: none !important; }
+          body { background: transparent !important; padding: 0 !important; }
+          .no-print, .carne-control-bar { display: none !important; }
         }
       </style>
     </head>
-    <body class="flex items-center justify-center p-2">
-      <div style="width: 85mm; max-width: 85mm;">
+    <body>
+      <!-- BARRA DE CONTROL MÓVIL SUPERIOR -->
+      <div class="carne-control-bar no-print">
+        <button type="button" onclick="regresarAlPortal()" class="btn-bar-action" style="background:#1e293b; color:#f1f5f9; border:1px solid #334155;">
+          <span>←</span>
+          <span>Volver</span>
+        </button>
+
+        <div style="display:flex; align-items:center; gap:6px;">
+          <button type="button" id="btn-descargar-carne" onclick="descargarCarnePDF()" class="btn-bar-action" style="background:#0d9488; color:#ffffff;">
+            <span>📥</span>
+            <span>Descargar PDF</span>
+          </button>
+          <button type="button" onclick="window.print()" class="btn-bar-action" style="background:#4338ca; color:#ffffff;">
+            <span>🖨️</span>
+            <span>Imprimir</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- CARNÉ EN TAMAÑO ESTÁNDAR PVC -->
+      <div id="carne-imprimible" style="width: 85mm; max-width: 100%;">
         ${card.outerHTML}
       </div>
+
       <script>
-        window.onload = function() {
-          setTimeout(function() { window.print(); }, 400);
-        };
+        function regresarAlPortal() {
+          if (window.opener && !window.opener.closed) {
+            window.close();
+          } else if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = './app.html';
+          }
+        }
+
+        function descargarCarnePDF() {
+          const btn = document.getElementById('btn-descargar-carne');
+          const prevText = btn ? btn.innerHTML : '';
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳ Generando...</span>';
+          }
+
+          const element = document.getElementById('carne-imprimible');
+          if (typeof html2pdf !== 'undefined' && element) {
+            const opt = {
+              margin: [4, 4, 4, 4],
+              filename: 'Carne_Digital_SST.pdf',
+              image: { type: 'jpeg', quality: 0.98 },
+              html2canvas: { scale: 2, useCORS: true, logging: false },
+              jsPDF: { unit: 'mm', format: [85, 130], orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(function() {
+              if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<span>✓ ¡Guardado!</span>';
+                setTimeout(function() { btn.innerHTML = prevText; }, 2500);
+              }
+            }).catch(function(err) {
+              console.warn('Fallo html2pdf:', err);
+              if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = prevText;
+              }
+              window.print();
+            });
+          } else {
+            if (btn) {
+              btn.disabled = false;
+              btn.innerHTML = prevText;
+            }
+            window.print();
+          }
+        }
       </script>
     </body>
     </html>

@@ -40,20 +40,26 @@
   <!-- Estilos Personalizados e Impresión -->
   <link rel="stylesheet" href="./css/styles.css">
   <style>
-    /* Safe areas para notch y barras de navegación móviles */
-    body {
-      padding-top: env(safe-area-inset-top, 0px);
-      padding-bottom: env(safe-area-inset-bottom, 0px);
+    /* Safe areas para notch y barras de navegación móviles (iOS / Android) */
+    :root {
+      --sat: env(safe-area-inset-top, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #0b1a2d;
     }
     .safe-bottom-nav {
-      padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+      padding-bottom: calc(0.6rem + var(--sab)) !important;
     }
   </style>
 </head>
 <body class="h-full bg-slate-950 text-slate-100 mobile-app-mode select-none">
 
-  <!-- BANNER DE ESTADO OFFLINE (SIN CONEXIÓN) -->
-  <div id="banner-offline-mode" class="hidden fixed top-0 left-0 right-0 z-50 bg-amber-500 text-slate-950 text-[11px] font-black py-1.5 px-3 text-center shadow-lg flex items-center justify-center gap-2">
+  <!-- BANNER DE ESTADO OFFLINE (SIN CONEXIÓN) CON PADDING PARA NOTCH -->
+  <div id="banner-offline-mode" class="hidden fixed top-0 left-0 right-0 z-50 bg-amber-500 text-slate-950 text-[11px] font-black pb-2 px-3 text-center shadow-lg flex items-center justify-center gap-2" style="padding-top: max(env(safe-area-inset-top, 0px), 8px);">
     <span>⚠️</span>
     <span>Modo Sin Conexión a Internet. Tus inspecciones y reportes se guardarán localmente.</span>
   </div>
@@ -203,10 +209,10 @@
     // Formulario de Login Móvil exclusivo para Trabajadores (NIT + Cédula + PIN)
     function renderLoginMovil(container) {
       container.innerHTML = `
-        <div class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col justify-between p-5 sm:p-8 animate-fadeIn">
+        <div class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col justify-between p-5 sm:p-8 animate-fadeIn" style="padding-top: max(env(safe-area-inset-top, 0px), 20px); padding-bottom: max(env(safe-area-inset-bottom, 0px), 20px);">
           
-          <!-- Encabezado con Logo -->
-          <div class="flex flex-col items-center pt-4">
+          <!-- Encabezado con Logo con resguardo para Dynamic Island / Notch -->
+          <div class="flex flex-col items-center pt-2">
             <div class="w-16 h-16 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center mb-3 shadow-lg shadow-teal-500/15">
               <img src="./assets/app-icon.png" alt="Doctor Pyme" class="w-11 h-11 object-contain rounded-xl">
             </div>

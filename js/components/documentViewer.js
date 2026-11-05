@@ -93,45 +93,52 @@ function ensureModalExists() {
   if (document.getElementById('modal-visor-documento')) return;
 
   const modalHtml = `
-    <div id="modal-visor-documento" class="fixed inset-0 bg-slate-950/90 hidden items-center justify-center z-50 p-2 sm:p-4 transition-all">
-      <div class="bg-white rounded-2xl max-w-5xl w-full h-[92vh] flex flex-col shadow-2xl border border-slate-700/30 overflow-hidden transform transition-all animate-fadeIn">
+    <div id="modal-visor-documento" class="fixed inset-0 bg-slate-950/95 hidden items-center justify-center z-50 p-2 sm:p-4 transition-all" style="padding-top: max(env(safe-area-inset-top, 0px), 14px); padding-bottom: max(env(safe-area-inset-bottom, 0px), 14px);">
+      <div class="bg-white rounded-3xl max-w-5xl w-full h-[94vh] flex flex-col shadow-2xl border border-slate-700/40 overflow-hidden transform transition-all animate-fadeIn">
         
-        <!-- Cabecera Superior del Visor de Documentos -->
-        <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-900 text-white flex-shrink-0">
-          <div class="flex items-center gap-3 overflow-hidden mr-2">
-            <span id="doc-visor-icono" class="text-xl p-2 bg-slate-800 rounded-xl flex-shrink-0">📄</span>
+        <!-- Cabecera Superior del Visor de Documentos (Mobile-First y Safe Area) -->
+        <div class="px-4 py-3 border-b border-slate-800 flex items-center justify-between bg-slate-900 text-white flex-shrink-0 gap-2">
+          
+          <div class="flex items-center gap-2 overflow-hidden mr-1">
+            <!-- Botón Destacado de Regresar -->
+            <button onclick="window.cerrarVisorDocumento()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition border border-slate-700 flex-shrink-0 cursor-pointer shadow-sm" title="Volver atrás">
+              <span class="text-sm font-bold">←</span>
+              <span>Volver</span>
+            </button>
+
+            <span id="doc-visor-icono" class="text-lg p-1.5 bg-slate-800 rounded-xl flex-shrink-0 hidden xs:inline-block">📄</span>
             <div class="overflow-hidden">
-              <div class="flex items-center gap-2">
-                <h3 id="doc-visor-nombre" class="font-bold text-sm sm:text-base text-white truncate max-w-md" title="Nombre del documento">
+              <div class="flex items-center gap-1.5">
+                <h3 id="doc-visor-nombre" class="font-bold text-xs sm:text-sm text-white truncate max-w-[150px] sm:max-w-md" title="Nombre del documento">
                   documento.pdf
                 </h3>
-                <span id="doc-visor-badge-tipo" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex-shrink-0">
+                <span id="doc-visor-badge-tipo" class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex-shrink-0">
                   PDF
                 </span>
-                <span id="doc-visor-badge-numeral" class="hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex-shrink-0">
+                <span id="doc-visor-badge-numeral" class="hidden sm:inline-block text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex-shrink-0">
                   1.1.1.1
                 </span>
               </div>
-              <p id="doc-visor-subtitulo" class="text-[11px] text-slate-400 mt-0.5 truncate">
+              <p id="doc-visor-subtitulo" class="text-[10px] text-slate-400 mt-0.5 truncate hidden sm:block">
                 Evidencia de cumplimiento SG-SST
               </p>
             </div>
           </div>
           
           <!-- Botones de Acción en Cabecera -->
-          <div class="flex items-center gap-2 flex-shrink-0">
-            <button id="doc-visor-btn-abrir-pestana" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition" title="Abrir en pestaña nueva del navegador (pantalla completa)">
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button id="doc-visor-btn-abrir-pestana" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold flex items-center gap-1 transition" title="Abrir en pestaña nueva del navegador">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
               <span class="hidden md:inline">Nueva Pestaña</span>
             </button>
 
-            <a id="doc-visor-btn-descargar" href="#" download="evidencia.pdf" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm" title="Descargar copia del archivo">
+            <a id="doc-visor-btn-descargar" href="#" download="evidencia.pdf" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm cursor-pointer" title="Descargar copia del archivo">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-              <span class="hidden sm:inline">Descargar</span>
+              <span>Descargar</span>
             </a>
 
-            <button onclick="window.cerrarVisorDocumento()" class="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition" title="Cerrar vista previa (Esc)">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <button onclick="window.cerrarVisorDocumento()" class="p-1.5 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition cursor-pointer" title="Cerrar vista previa">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
           </div>
         </div>
