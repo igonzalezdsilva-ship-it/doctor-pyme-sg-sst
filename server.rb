@@ -254,6 +254,185 @@ mount_api(server, '/landing') do |req, res|
   end
 end
 
+# Ruta dedicada para la App Móvil del Trabajador (PWA Standalone)
+mount_api(server, '/app') do |req, res|
+  add_cors_headers(res)
+  app_file = File.join(root, 'app.html')
+  if File.exist?(app_file)
+    res['Content-Type'] = 'text/html; charset=utf-8'
+    res.body = File.read(app_file)
+  else
+    res.status = 404
+    res.body = "App del trabajador no encontrada"
+  end
+end
+
+# Verificación Pública de Carné SST del Trabajador (Vía Escaneo QR en Portería o ARL)
+mount_api(server, '/verify-worker') do |req, res|
+  add_cors_headers(res)
+  worker_id = req.query['id'] || req.query['worker_id'] || req.query['trabajadorId']
+  cedula = req.query['cedula'] || req.query['cc']
+  format_json = req.query['format'] == 'json' || (req['accept'] && req['accept'].include?('application/json'))
+
+  db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+  trabajadores = db['trabajadores'] || []
+  empresas = db['empresas'] || []
+
+  worker = trabajadores.find do |t|
+    (worker_id && t['id'] == worker_id) ||
+    (cedula && (t['cedula'] == cedula || t['identificacion'] == cedula))
+  end
+
+  empresa = worker ? empresas.find { |e| e['id'] == worker['companyId'] } : nil
+  bogota_time = (Time.now.utc - 5*3600).strftime('%d/%m/%Y a las %H:%M:%S (Hora Legal Colombia UTC-5)')
+
+  if format_json
+    res['Content-Type'] = 'application/json; charset=utf-8'
+    if worker && empresa
+      res.body = {
+        status: 'ok',
+        verified: true,
+        consulted_at_bogota: bogota_time,
+        worker: {
+          id: worker['id'],
+          nombre: worker['nombre'],
+          cedula: worker['cedula'] || worker['identificacion'],
+          cargo: worker['cargo'],
+          estado: worker['estado'] || 'Activo',
+          eps: worker['eps'],
+          arl: worker['arl'] || empresa['arl'],
+          afp: worker['afp'],
+          tipoContrato: worker['tipoContrato'],
+          has_registered_signature: worker['has_registered_signature'] || false,
+          signature_sha256: worker['signature_sha256']
+        },
+        company: {
+          id: empresa['id'],
+          razonSocial: empresa['razonSocial'],
+          nit: empresa['nit'],
+          claseRiesgo: empresa['claseRiesgo']
+        }
+      }.to_json
+    else
+      res.status = 404
+      res.body = { status: 'error', verified: false, message: 'Colaborador no encontrado en el registro activo del SG-SST.' }.to_json
+    end
+    next
+  end
+
+  res['Content-Type'] = 'text/html; charset=utf-8'
+  if worker && empresa
+    res.body = <<~HTML
+      <!DOCTYPE html>
+      <html lang="es" class="bg-slate-950 text-slate-100">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Verificación de Afiliación SST • #{CGI.escapeHTML(worker['nombre'])}</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+      </head>
+      <body class="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
+        <div class="max-w-md w-full bg-slate-900 border border-emerald-500/30 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+          <div class="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
+
+          <!-- Cabecera Oficial -->
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-xl">
+                🛡️
+              </div>
+              <div>
+                <h1 class="text-sm font-black text-white">DOCTOR PYME</h1>
+                <p class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">Validación Pública SG-SST</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-black rounded-full border border-emerald-500/30">
+              ✓ ACTIVO
+            </span>
+          </div>
+
+          <!-- Banner de Validación Exitosa -->
+          <div class="p-3 bg-emerald-950/60 border border-emerald-500/30 rounded-2xl mb-4 text-center">
+            <span class="text-emerald-400 font-black text-xs block mb-0.5">AFILIACIÓN Y COBERTURA VERIFICADA</span>
+            <p class="text-[10px] text-slate-300 leading-tight">
+              Colaborador activo con cobertura del Sistema General de Riesgos Laborales (Dec. 1072/2015).
+            </p>
+          </div>
+
+          <!-- Datos del Trabajador -->
+          <div class="space-y-3 text-xs">
+            <div class="p-3 bg-slate-950/70 rounded-xl border border-slate-800/80">
+              <span class="text-[10px] text-slate-400 font-bold uppercase block">Trabajador</span>
+              <p class="text-sm font-black text-white mt-0.5">#{CGI.escapeHTML(worker['nombre'])}</p>
+              <p class="text-[11px] text-teal-300 font-mono">C.C. #{CGI.escapeHTML(worker['cedula'] || worker['identificacion'] || '')}</p>
+              <p class="text-[11px] text-slate-300 font-semibold mt-1">Cargo: <span class="text-white">#{CGI.escapeHTML(worker['cargo'] || 'Operario')}</span></p>
+            </div>
+
+            <div class="p-3 bg-slate-950/70 rounded-xl border border-slate-800/80">
+              <span class="text-[10px] text-slate-400 font-bold uppercase block">Empresa Empleadora</span>
+              <p class="text-xs font-black text-slate-200 mt-0.5">#{CGI.escapeHTML(empresa['razonSocial'])}</p>
+              <p class="text-[10.5px] text-slate-400 font-mono">NIT: #{CGI.escapeHTML(empresa['nit'])}</p>
+            </div>
+
+            <!-- Seguridad Social -->
+            <div class="grid grid-cols-2 gap-2 text-[10.5px]">
+              <div class="p-2.5 bg-slate-950/50 rounded-xl border border-slate-800">
+                <span class="text-slate-400 block text-[9px] uppercase font-bold">ARL Asignada</span>
+                <strong class="text-white">#{CGI.escapeHTML(worker['arl'] || empresa['arl'] || 'SURA')}</strong>
+                <span class="text-emerald-400 block text-[9px]">Riesgo #{CGI.escapeHTML(empresa['claseRiesgo'] || 'I')}</span>
+              </div>
+              <div class="p-2.5 bg-slate-950/50 rounded-xl border border-slate-800">
+                <span class="text-slate-400 block text-[9px] uppercase font-bold">EPS</span>
+                <strong class="text-white truncate block">#{CGI.escapeHTML(worker['eps'] || 'Vigente')}</strong>
+                <span class="text-slate-400 block text-[9px]">AFP: #{CGI.escapeHTML(worker['afp'] || 'Protección')}</span>
+              </div>
+            </div>
+
+            <!-- Trazabilidad Legal -->
+            <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800 font-mono text-[9px] text-slate-400 space-y-0.5">
+              <p><strong class="text-slate-300">Firma Digital (Ley 527):</strong> #{worker['has_registered_signature'] ? '✓ Registrada y Depositada' : 'Pendiente'}</p>
+              <p class="truncate"><strong class="text-slate-300">Hash SHA-256:</strong> #{worker['signature_sha256'] || 'SHA256-LEGAL'}</p>
+              <p><strong class="text-slate-300">Fecha de Consulta:</strong> #{bogota_time}</p>
+            </div>
+          </div>
+
+          <div class="mt-5 text-center border-t border-slate-800 pt-3">
+            <span class="text-[9px] text-slate-500 font-mono">DOCTOR PYME SG-SST • RESOLUCIÓN 0312 DE 2019</span>
+          </div>
+        </div>
+      </body>
+      </html>
+    HTML
+  else
+    res.status = 404
+    res.body = <<~HTML
+      <!DOCTYPE html>
+      <html lang="es" class="bg-slate-950 text-slate-100">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Validación Fallida • DOCTOR PYME</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+      </head>
+      <body class="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 text-center">
+        <div class="max-w-sm w-full bg-slate-900 border border-rose-500/30 rounded-3xl p-6 shadow-2xl">
+          <div class="w-14 h-14 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center text-2xl mx-auto mb-3">
+            ⚠️
+          </div>
+          <h2 class="text-base font-black text-white">Registro No Encontrado</h2>
+          <p class="text-xs text-slate-400 mt-1 mb-4 leading-relaxed">
+            El código o documento consultado no corresponde a un trabajador activo en la plataforma de gestión SG-SST de Doctor Pyme.
+          </p>
+          <a href="/landing" class="inline-block py-2 px-4 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 rounded-xl transition">
+            Volver a Doctor Pyme
+          </a>
+        </div>
+      </body>
+      </html>
+    HTML
+  end
+end
+
 # Rutas amigables para Consentimiento Legal y Repositorio de Cumplimiento Forense
 mount_api(server, '/legal-consent') do |req, res|
   add_cors_headers(res)

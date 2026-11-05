@@ -3890,6 +3890,22 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
             <div class="space-y-2">
               <h3 class="text-xs font-black uppercase tracking-wider text-slate-400">Acciones del Turno</h3>
 
+              <!-- 🪪 CARNÉ DIGITAL SST DEL TRABAJADOR -->
+              <button 
+                type="button" 
+                onclick="window.abrirModalCarneDigital('${trabajador.id}')"
+                class="w-full py-3 px-4 bg-gradient-to-r from-teal-700 via-emerald-700 to-teal-800 hover:from-teal-600 hover:to-emerald-600 text-white rounded-2xl font-black text-xs shadow-lg shadow-teal-950/40 flex items-center justify-between transition cursor-pointer active:scale-98 border border-teal-500/30"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="text-xl">🪪</span>
+                  <div class="text-left">
+                    <span class="block">Mi Carné Digital SST &amp; Código QR</span>
+                    <span class="text-[10px] font-normal text-teal-200 block">Validación oficial de ARL y aptitud para porterías</span>
+                  </div>
+                </div>
+                <span class="px-2.5 py-1 bg-white/20 rounded-xl text-[10px] font-bold">Ver Carné ➔</span>
+              </button>
+
               <button 
                 type="button" 
                 onclick="window.cambiarTabMovil('elearning')"
@@ -4718,6 +4734,22 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
                 <div><span class="text-slate-400">Ingreso:</span> <strong class="text-white">${trabajador.fechaContrato || trabajador.fechaIngreso || 'Vigente'}</strong></div>
               </div>
             </div>
+
+            <!-- ACCESO DIRECTO AL CARNÉ DIGITAL SST CON QR -->
+            <button 
+              type="button" 
+              onclick="window.abrirModalCarneDigital('${trabajador.id}')"
+              class="w-full py-3 px-4 bg-gradient-to-r from-teal-600 via-emerald-600 to-teal-700 hover:from-teal-500 hover:to-emerald-500 text-white rounded-2xl text-xs font-black shadow-lg shadow-teal-500/20 flex items-center justify-between transition cursor-pointer active:scale-98 border border-teal-400/30"
+            >
+              <div class="flex items-center gap-2.5">
+                <span class="text-xl">🪪</span>
+                <div class="text-left">
+                  <span class="block text-xs font-black text-white">Mi Carné Digital SST &amp; Código QR</span>
+                  <span class="block text-[10px] text-teal-200 font-medium">Validación oficial para porterías, ARL e inspección</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 bg-white/20 rounded-xl text-[10px] font-bold">Ver Carné ➔</span>
+            </button>
 
             <!-- GESTOR DE FIRMA DIGITAL Y HUELLA DE ACEPTACIÓN (LEY 527 DE 1999) -->
             <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
@@ -8509,4 +8541,192 @@ window.abrirModalRegistroFirmaTrabajador = function(trabajadorId, callbackOnSucc
       btn.innerText = "💾 Guardar y Validar Firma Digital";
     }
   });
+};
+
+// =============================================================================
+// MODAL: CARNÉ DIGITAL OCUPACIONAL DEL TRABAJADOR & CÓDIGO QR
+// Estándar PVC de identificación legal con verificación pública (Dec. 1072 & Res. 0312)
+// =============================================================================
+window.abrirModalCarneDigital = function(trabajadorId) {
+  const trabajador = store.getTrabajadorPorId(trabajadorId) || (auth.isWorker() ? auth.getUser() : null);
+  if (!trabajador) {
+    alert("No se encontró la información del colaborador.");
+    return;
+  }
+  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva() || {
+    id: 'emp-001',
+    razonSocial: 'DOCTOR PYME SG-SST',
+    nit: '901.000.000-1',
+    arl: 'SURA',
+    claseRiesgo: 'I'
+  };
+
+  const modalId = 'modal-carne-digital-trabajador';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  const originUrl = window.location.origin;
+  const targetVerifyUrl = `${originUrl}/verify-worker?id=${encodeURIComponent(trabajador.id)}&cedula=${encodeURIComponent(trabajador.identificacion || trabajador.cedula || '')}`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=3&data=${encodeURIComponent(targetVerifyUrl)}`;
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+
+  modalEl.innerHTML = `
+    <div class="bg-slate-900 rounded-3xl shadow-2xl border border-teal-500/30 w-full max-w-sm overflow-hidden my-auto flex flex-col">
+      
+      <!-- CABECERA MODAL -->
+      <div class="p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between text-white">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🪪</span>
+          <div>
+            <h3 class="text-sm font-black text-white">Carné de Identificación Ocupacional</h3>
+            <p class="text-[9.5px] text-teal-400 font-mono">SG-SST • Res. 0312 &amp; Dec. 1072</p>
+          </div>
+        </div>
+        <button onclick="document.getElementById('${modalId}').remove()" class="text-slate-400 hover:text-white text-xl font-bold p-1 cursor-pointer">✕</button>
+      </div>
+
+      <!-- CUERPO: TARJETA PVC TIPO BADGE -->
+      <div class="p-4 overflow-y-auto max-h-[80vh] space-y-4">
+        
+        <div id="print-carne-card" class="bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-teal-500/40 rounded-3xl p-5 shadow-2xl relative overflow-hidden text-white">
+          <!-- Decoración de fondo -->
+          <div class="absolute -top-12 -right-12 w-32 h-32 bg-teal-500/15 rounded-full blur-2xl pointer-events-none"></div>
+          <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-emerald-500/15 rounded-full blur-2xl pointer-events-none"></div>
+
+          <!-- Banda Superior Corporativa -->
+          <div class="flex items-center justify-between border-b border-teal-500/30 pb-3 mb-3">
+            <div class="flex items-center gap-2">
+              <img src="./assets/app-icon.png" alt="Doctor Pyme" class="w-8 h-8 rounded-xl object-contain border border-teal-400/40">
+              <div>
+                <span class="text-[10px] font-black text-white tracking-wider block">DOCTOR PYME</span>
+                <span class="text-[8px] text-emerald-400 font-bold block uppercase">SG-SST COLOMBIA</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-[9px] font-mono font-black text-slate-300 block truncate max-w-[150px]">${escapeHtml(empresa.razonSocial)}</span>
+              <span class="text-[8px] font-mono text-teal-300 block">NIT: ${escapeHtml(empresa.nit)}</span>
+            </div>
+          </div>
+
+          <!-- Datos Principales y Foto -->
+          <div class="flex items-center gap-3.5 mb-3.5">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center text-2xl font-black shadow-lg border-2 border-teal-300/40 flex-shrink-0">
+              ${escapeHtml(trabajador.nombre.substring(0, 2).toUpperCase())}
+            </div>
+            <div class="min-w-0 flex-1">
+              <h2 class="text-sm font-black text-white leading-tight uppercase truncate">${escapeHtml(trabajador.nombre)}</h2>
+              <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 truncate max-w-full">
+                ${escapeHtml(trabajador.cargo)}
+              </span>
+              <p class="text-[10px] text-teal-300 font-mono mt-0.5">
+                C.C. <strong>${escapeHtml(trabajador.identificacion || trabajador.cedula)}</strong>
+              </p>
+            </div>
+          </div>
+
+          <!-- Grilla de Afiliación a Seguridad Social -->
+          <div class="grid grid-cols-2 gap-2 text-[9.5px] bg-slate-900/90 p-3 rounded-2xl border border-slate-800 mb-3.5">
+            <div>
+              <span class="text-slate-400 block text-[8px] uppercase font-bold">ARL Asignada</span>
+              <strong class="text-white block truncate">${escapeHtml(trabajador.arl || empresa.arl || 'SURA')}</strong>
+              <span class="text-emerald-400 text-[8.5px] font-bold">Riesgo ${escapeHtml(empresa.claseRiesgo || 'I')}</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[8px] uppercase font-bold">EPS Integral</span>
+              <strong class="text-white block truncate">${escapeHtml(trabajador.eps || 'Sura EPS')}</strong>
+              <span class="text-slate-400 text-[8.5px]">AFP: ${escapeHtml(trabajador.afp || 'Porvenir')}</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[8px] uppercase font-bold">Tipo de Sangre</span>
+              <strong class="text-emerald-300">${escapeHtml(trabajador.rh || 'O+')}</strong>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[8px] uppercase font-bold">Aptitud Laboral</span>
+              <strong class="text-teal-300 font-bold">✓ APTO SST</strong>
+            </div>
+          </div>
+
+          <!-- Código QR Dinámico de Validación Pública -->
+          <div class="bg-white rounded-2xl p-3 flex items-center gap-3 text-slate-900 border border-slate-200 shadow-md">
+            <img src="${qrCodeUrl}" alt="Código QR de Verificación" class="w-20 h-20 object-contain rounded-lg flex-shrink-0 bg-slate-50 p-1 border border-slate-200">
+            <div class="text-[9px] leading-tight flex-1">
+              <strong class="text-teal-900 text-[10px] block font-black">VALIDACIÓN EN PORTERÍA Y ARL</strong>
+              <p class="text-slate-600 mt-0.5">
+                Escanea con la cámara de cualquier teléfono para validar afiliación activa y vigencia de capacitaciones en tiempo real.
+              </p>
+              <span class="text-[8px] font-mono text-slate-400 block mt-1">ID: ${escapeHtml(trabajador.id)}</span>
+            </div>
+          </div>
+
+          <!-- Pie del Carné -->
+          <div class="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-[8px] font-mono text-slate-400">
+            <span>Dec. 1072/2015 &amp; Res. 0312</span>
+            <span>Validez Probatoria Ley 527</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTONES DE ACCIÓN -->
+      <div class="p-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between gap-2">
+        <button 
+          type="button" 
+          onclick="window.imprimirCarneDigital()" 
+          class="flex-1 py-2.5 px-3 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-black shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer"
+        >
+          <span>🖨️</span>
+          <span>Imprimir / Guardar PDF</span>
+        </button>
+        <button 
+          type="button" 
+          onclick="document.getElementById('${modalId}').remove()" 
+          class="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition cursor-pointer"
+        >
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(modalEl);
+};
+
+window.imprimirCarneDigital = function() {
+  const card = document.getElementById('print-carne-card');
+  if (!card) return;
+
+  const win = window.open('', '_blank', 'width=450,height=650');
+  win.document.write(`
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <title>Carné de Identificación SST</title>
+      <script src="https://cdn.tailwindcss.com"></script>
+      <style>
+        @page { size: 85mm 120mm; margin: 4mm; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: white; padding: 0; margin: 0; }
+        @media print {
+          body { background: transparent; }
+          .no-print { display: none !important; }
+        }
+      </style>
+    </head>
+    <body class="flex items-center justify-center p-2">
+      <div style="width: 85mm; max-width: 85mm;">
+        ${card.outerHTML}
+      </div>
+      <script>
+        window.onload = function() {
+          setTimeout(function() { window.print(); }, 400);
+        };
+      </script>
+    </body>
+    </html>
+  `);
+  win.document.close();
 };

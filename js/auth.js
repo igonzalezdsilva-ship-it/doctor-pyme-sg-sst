@@ -312,6 +312,10 @@ class Auth {
     };
   }
 
+  loginWorkerByPin(nit, cedula, pin) {
+    return this.workerLogin(nit, cedula, pin);
+  }
+
   async workerLogin(nit, cedula, pin) {
     try {
       const res = await fetch('/api/worker/auth', {
@@ -325,6 +329,7 @@ class Auth {
       }
 
       this.session = {
+        ...data.worker,
         trabajadorId: data.worker.id,
         cedula: data.worker.cedula || data.worker.identificacion,
         nombre: data.worker.nombre,
@@ -334,12 +339,28 @@ class Auth {
         empresaId: data.company.id,
         company: data.company,
         has_signed_onboarding: data.has_signed_onboarding,
+        has_registered_signature: data.worker.has_registered_signature || false,
+        signature_svg: data.worker.signature_svg || null,
+        signature_url: data.worker.signature_url || null,
+        signature_sha256: data.worker.signature_sha256 || null,
+        signature_registered_at: data.worker.signature_registered_at || null,
+        signature_registered_bogota: data.worker.signature_registered_bogota || null,
         token: data.token,
         rol: 'Trabajador',
         esSuperAdmin: false,
         tipo: 'trabajador',
         loginAt: new Date().toISOString()
       };
+
+      if (typeof store !== 'undefined' && store && Array.isArray(store.data?.trabajadores)) {
+        const idx = store.data.trabajadores.findIndex(t => t.id === data.worker.id);
+        if (idx !== -1) {
+          store.data.trabajadores[idx] = { ...store.data.trabajadores[idx], ...data.worker };
+        } else {
+          store.data.trabajadores.push(data.worker);
+        }
+        store.saveToStorage();
+      }
 
       storage.setItem(AUTH_KEY, JSON.stringify(this.session));
       storage.removeItem('DOCTOR_PYME_LOGGED_OUT');

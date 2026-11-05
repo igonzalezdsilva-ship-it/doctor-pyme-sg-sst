@@ -5114,7 +5114,67 @@ class Store {
     }
   }
 
+  enqueueOfflineAction(type, payload) {
+    try {
+      const q = JSON.parse(localStorage.getItem('DOCTOR_PYME_OFFLINE_QUEUE_V1') || '[]');
+      q.push({ id: `off-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, type, payload, queuedAt: new Date().toISOString() });
+      localStorage.setItem('DOCTOR_PYME_OFFLINE_QUEUE_V1', JSON.stringify(q));
+    } catch (_) {}
+  }
+
+  async flushOfflineQueue() {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) return;
+    let q = [];
+    try {
+      q = JSON.parse(localStorage.getItem('DOCTOR_PYME_OFFLINE_QUEUE_V1') || '[]');
+    } catch (_) { return; }
+    if (!Array.isArray(q) || q.length === 0) return;
+
+    console.log(`[Store] Sincronizando ${q.length} registros offline con el servidor...`);
+    const pendientes = [];
+    for (const item of q) {
+      try {
+        if (item.type === 'PREOPERACIONAL') {
+          await fetch('/api/worker/submit-preoperational', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(item.payload)
+          });
+        } else if (item.type === 'REPORTE_PELIGRO') {
+          await fetch('/api/worker/report-hazard', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(item.payload)
+          });
+        } else if (item.type === 'EPP_DELIVERY') {
+          await fetch('/api/worker/sign-epp-delivery', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(item.payload)
+          });
+        }
+      } catch (err) {
+        pendientes.push(item);
+      }
+    }
+    localStorage.setItem('DOCTOR_PYME_OFFLINE_QUEUE_V1', JSON.stringify(pendientes));
+  }
+
   async submitWorkerPreoperational(payload) {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      this.enqueueOfflineAction('PREOPERACIONAL', payload);
+      const offlineReport = {
+        id: `preop-off-${Date.now()}`,
+        status: 'PENDIENTE_SINCRONIZAR',
+        ...payload,
+        created_at: new Date().toISOString()
+      };
+      if (!Array.isArray(this.data.reportesPreoperacional)) this.data.reportesPreoperacional = [];
+      this.data.reportesPreoperacional.unshift(offlineReport);
+      this.saveToStorage();
+      this.notify();
+      return { status: 'offline', success: true, offline: true, report: offlineReport, message: 'Guardado offline en tu celular. Se sincronizará automáticamente al detectar conexión.' };
+    }
     try {
       const res = await fetch('/api/worker/submit-preoperational', {
         method: 'POST',
@@ -5133,12 +5193,27 @@ class Store {
       }
       return data;
     } catch (err) {
-      console.error('Error submitWorkerPreoperational:', err);
-      throw err;
+      console.warn('Fallo de red, guardando preoperacional en cola offline:', err);
+      this.enqueueOfflineAction('PREOPERACIONAL', payload);
+      return { status: 'offline', success: true, offline: true, message: 'Guardado offline en tu celular. Se sincronizará automáticamente al detectar conexión.' };
     }
   }
 
   async submitWorkerEppDelivery(payload) {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      this.enqueueOfflineAction('EPP_DELIVERY', payload);
+      const offlineDelivery = {
+        id: `epp-off-${Date.now()}`,
+        status: 'PENDIENTE_SINCRONIZAR',
+        ...payload,
+        created_at: new Date().toISOString()
+      };
+      if (!Array.isArray(this.data.epp_deliveries)) this.data.epp_deliveries = [];
+      this.data.epp_deliveries.unshift(offlineDelivery);
+      this.saveToStorage();
+      this.notify();
+      return { status: 'offline', success: true, offline: true, delivery: offlineDelivery, message: 'Guardado offline en tu celular.' };
+    }
     try {
       const res = await fetch('/api/worker/sign-epp-delivery', {
         method: 'POST',
@@ -5155,12 +5230,30 @@ class Store {
       }
       return data;
     } catch (err) {
-      console.error('Error submitWorkerEppDelivery:', err);
-      throw err;
+      console.warn('Fallo de red, guardando entrega de EPP en cola offline:', err);
+      this.enqueueOfflineAction('EPP_DELIVERY', payload);
+      return { status: 'offline', success: true, offline: true, message: 'Guardado offline en tu celular.' };
     }
   }
 
   async submitWorkerHazardReport(payload) {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      this.enqueueOfflineAction('REPORTE_PELIGRO', payload);
+      const offlineHazard = {
+        id: `haz-off-${Date.now()}`,
+        status: 'Pendiente_Revision',
+        ...payload,
+        reported_at: new Date().toISOString(),
+        created_at: new Date().toISOString()
+      };
+      if (!Array.isArray(this.data.worker_sst_reports)) this.data.worker_sst_reports = [];
+      this.data.worker_sst_reports.unshift(offlineHazard);
+      if (!Array.isArray(this.data.reportesPeligro)) this.data.reportesPeligro = [];
+      this.data.reportesPeligro.unshift(offlineHazard);
+      this.saveToStorage();
+      this.notify();
+      return { status: 'offline', success: true, offline: true, report: offlineHazard, message: 'Reporte guardado offline en tu celular. Se sincronizará automáticamente al detectar conexión.' };
+    }
     try {
       const res = await fetch('/api/worker/report-hazard', {
         method: 'POST',
@@ -5179,8 +5272,9 @@ class Store {
       }
       return data;
     } catch (err) {
-      console.error('Error submitWorkerHazardReport:', err);
-      throw err;
+      console.warn('Fallo de red, guardando reporte de peligro en cola offline:', err);
+      this.enqueueOfflineAction('REPORTE_PELIGRO', payload);
+      return { status: 'offline', success: true, offline: true, message: 'Reporte guardado offline en tu celular. Se sincronizará automáticamente al detectar conexión.' };
     }
   }
 

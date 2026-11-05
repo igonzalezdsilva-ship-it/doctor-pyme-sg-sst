@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Doctor Pyme | App Móvil del Trabajador SST</title>
+  
+  <!-- Favicon y Soporte PWA (Instalable en Móvil) -->
+  <link rel="icon" type="image/png" href="./assets/favicon.png">
+  <link rel="apple-touch-icon" href="./assets/app-icon.png">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="alternate" type="application/manifest+json" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0b1a2d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Doctor Pyme">
+
+  <!-- Tailwind CSS CDN con Paleta Corporativa Doctor Pyme -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0b1a2d',
+              'navy-dark': '#060d17',
+              teal: '#0d9488',
+              'teal-light': '#14b8a6',
+              emerald: '#10b981',
+              'emerald-light': '#34d399',
+              cyan: '#06b6d4',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  
+  <!-- Estilos Personalizados e Impresión -->
+  <link rel="stylesheet" href="./css/styles.css">
+  <style>
+    /* Safe areas para notch y barras de navegación móviles */
+    body {
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    .safe-bottom-nav {
+      padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+    }
+  </style>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 mobile-app-mode select-none">
+
+  <!-- BANNER DE ESTADO OFFLINE (SIN CONEXIÓN) -->
+  <div id="banner-offline-mode" class="hidden fixed top-0 left-0 right-0 z-50 bg-amber-500 text-slate-950 text-[11px] font-black py-1.5 px-3 text-center shadow-lg flex items-center justify-center gap-2">
+    <span>⚠️</span>
+    <span>Modo Sin Conexión a Internet. Tus inspecciones y reportes se guardarán localmente.</span>
+  </div>
+
+  <!-- CONTENEDOR PRINCIPAL DE LA APP MÓVIL -->
+  <div id="app-root" class="h-full flex flex-col overflow-hidden w-full">
+    <main class="flex-1 overflow-y-auto w-full bg-slate-900" style="padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));">
+      <div id="main-content" class="w-full min-h-full">
+        <!-- Pantalla de Carga / Splash inicial -->
+        <div id="splash-loading" class="min-h-screen flex flex-col items-center justify-center p-6 text-center">
+          <div class="w-20 h-20 rounded-3xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center mb-4 shadow-xl shadow-teal-500/10 animate-pulse">
+            <img src="./assets/app-icon.png" alt="Doctor Pyme" class="w-14 h-14 object-contain rounded-2xl">
+          </div>
+          <h1 class="text-xl font-black text-white tracking-tight">DOCTOR PYME</h1>
+          <p class="text-xs text-emerald-400 font-bold uppercase tracking-wider mt-0.5">Portal del Trabajador SST</p>
+          <div class="mt-6 flex items-center gap-2 text-slate-400 text-xs font-medium">
+            <svg class="animate-spin h-4 w-4 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Cargando tu puesto de trabajo...</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- SCRIPT BOOTSTRAP DE LA APLICACIÓN MÓVIL -->
+  <script type="module">
+    import { auth } from './js/auth.js';
+    import { store } from './js/store.js';
+    import { renderWorkerPortal } from './js/components/workerPortal.js';
+
+    // 1. Registro del Service Worker para PWA y Caché Offline
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          console.log('[PWA Trabajador] Service Worker activo:', reg.scope);
+        }).catch((err) => {
+          console.warn('[PWA Trabajador] Registro SW falló:', err);
+        });
+      });
+    }
+
+    // Exponer sincronizador offline conectado al store
+    window.sincronizarColaOffline = async function() {
+      try {
+        await store.flushOfflineQueue();
+      } catch (err) {
+        console.warn('[PWA] Error sincronizando cola offline:', err);
+      }
+    };
+
+    // 2. Control de Conectividad Online / Offline
+    function actualizarEstadoRed() {
+      const banner = document.getElementById('banner-offline-mode');
+      if (banner) {
+        if (!navigator.onLine) {
+          banner.classList.remove('hidden');
+        } else {
+          banner.classList.add('hidden');
+          // Disparar sincronización si existen reportes pendientes
+          if (window.sincronizarColaOffline) {
+            window.sincronizarColaOffline();
+          }
+        }
+      }
+    }
+    window.addEventListener('online', actualizarEstadoRed);
+    window.addEventListener('offline', actualizarEstadoRed);
+
+    // 3. Soporte para Instalación PWA (Agregar a pantalla principal)
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      window.deferredWorkerInstallPrompt = e;
+      const btnInstall = document.getElementById('btn-pwa-install-pill');
+      if (btnInstall) btnInstall.classList.remove('hidden');
+    });
+
+    window.instalarPwaOperario = async function() {
+      if (deferredPrompt || window.deferredWorkerInstallPrompt) {
+        const p = deferredPrompt || window.deferredWorkerInstallPrompt;
+        p.prompt();
+        const choice = await p.userChoice;
+        console.log('Opción de instalación elegida:', choice.outcome);
+        deferredPrompt = null;
+        window.deferredWorkerInstallPrompt = null;
+        const btnInstall = document.getElementById('btn-pwa-install-pill');
+        if (btnInstall) btnInstall.classList.add('hidden');
+      } else {
+        alert("Para instalar Doctor Pyme en tu pantalla de inicio:\n\n• En Android (Chrome): Toca el menú (⋮) y selecciona 'Instalar aplicación' o 'Agregar a la pantalla principal'.\n• En iPhone (Safari): Toca el botón Compartir y elige 'Agregar al inicio'.");
+      }
+    };
+
+    // 4. Inicialización y Renderizado
+    async function iniciarAppMovil() {
+      actualizarEstadoRed();
+
+      // Cargar almacén de datos
+      try {
+        await store.init();
+      } catch (err) {
+        console.warn('Error inicializando store:', err);
+      }
+
+      const container = document.getElementById('main-content');
+      if (!container) return;
+
+      // Si el usuario no está autenticado o no es un trabajador
+      if (!auth.isAuthenticated()) {
+        renderLoginMovil(container);
+        return;
+      }
+
+      // Si es un trabajador autenticado, renderizar directo su portal
+      if (auth.isWorker()) {
+        renderWorkerPortal();
+        return;
+      }
+
+      // Si es un Administrador que abrió app.html para probar
+      if (auth.isAdmin() || auth.isCompanyAdmin() || auth.isSuperAdmin()) {
+        const user = auth.getUser();
+        renderWorkerPortal();
+        
+        // Agregar banner superior de aviso para Administradores
+        const topBanner = document.createElement('div');
+        topBanner.className = 'bg-indigo-900/90 text-white p-2.5 text-xs flex items-center justify-between border-b border-indigo-700/50 sticky top-0 z-50';
+        topBanner.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span>🛠️</span>
+            <span><strong>Sesión Admin:</strong> ${escapeHtml(user.nombre)}</span>
+          </div>
+          <a href="./index.html" class="px-2.5 py-1 bg-indigo-700 hover:bg-indigo-600 rounded-lg text-[10px] font-bold text-white transition">
+            Volver a Consola Web →
+          </a>
+        `;
+        document.body.prepend(topBanner);
+        return;
+      }
+
+      renderLoginMovil(container);
+    }
+
+    // Formulario de Login Móvil exclusivo para Trabajadores (NIT + Cédula + PIN)
+    function renderLoginMovil(container) {
+      container.innerHTML = `
+        <div class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col justify-between p-5 sm:p-8 animate-fadeIn">
+          
+          <!-- Encabezado con Logo -->
+          <div class="flex flex-col items-center pt-4">
+            <div class="w-16 h-16 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center mb-3 shadow-lg shadow-teal-500/15">
+              <img src="./assets/app-icon.png" alt="Doctor Pyme" class="w-11 h-11 object-contain rounded-xl">
+            </div>
+            <h1 class="text-xl font-black text-white tracking-tight">DOCTOR PYME</h1>
+            <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Portal Móvil del Trabajador</p>
+            <p class="text-[9px] text-slate-400">SG-SST • Decreto 1072 &amp; Res. 0312</p>
+          </div>
+
+          <!-- Tarjeta de Ingreso con PIN -->
+          <div class="bg-white rounded-3xl p-6 shadow-2xl border border-slate-200 text-slate-900 my-auto max-w-sm w-full mx-auto">
+            <div class="mb-4 text-center">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200 mb-1">
+                <span>📲</span> Ingreso Rápido
+              </span>
+              <h2 class="text-base font-black text-slate-900">Acceso del Operario</h2>
+              <p class="text-[11px] text-slate-500 leading-tight mt-0.5">Ingresa con tu NIT, cédula y PIN de 4 dígitos.</p>
+            </div>
+
+            <form id="form-mobile-worker-login" class="space-y-3.5">
+              <div id="mobile-login-error" class="hidden p-2.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 font-semibold leading-relaxed"></div>
+
+              <div>
+                <label class="block text-[10.5px] font-bold text-slate-700 uppercase mb-1">NIT de tu Empresa</label>
+                <div class="relative">
+                  <input type="text" id="m-login-nit" required inputmode="numeric" placeholder="ej: 830124631" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-800 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                  <span class="absolute left-3 top-2.5 text-sm pointer-events-none">🏢</span>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10.5px] font-bold text-slate-700 uppercase mb-1">Cédula de Ciudadanía</label>
+                <div class="relative">
+                  <input type="text" id="m-login-cedula" required inputmode="numeric" placeholder="ej: 1033716997" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-800 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                  <span class="absolute left-3 top-2.5 text-sm pointer-events-none">🪪</span>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="block text-[10.5px] font-bold text-slate-700 uppercase">PIN de 4 Dígitos</label>
+                  <span class="text-[9.5px] text-slate-400 font-medium">Últimos 4 dígitos de tu cédula</span>
+                </div>
+                <div class="relative">
+                  <input type="password" id="m-login-pin" required maxlength="10" inputmode="numeric" placeholder="••••" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base font-mono tracking-widest text-center text-slate-800 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                  <span class="absolute left-3 top-2.5 text-sm pointer-events-none">🔑</span>
+                </div>
+              </div>
+
+              <button type="submit" id="btn-submit-m-login" class="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 active:scale-98 text-white rounded-xl text-xs font-black shadow-lg shadow-teal-600/25 transition flex items-center justify-center gap-2 cursor-pointer mt-2">
+                <span>Ingresar a Mi Puesto SST</span>
+                <span>📲</span>
+              </button>
+            </form>
+
+            <div class="mt-4 pt-3 border-t border-slate-100 text-center">
+              <button type="button" onclick="window.instalarPwaOperario()" id="btn-pwa-install-pill" class="text-[11px] font-bold text-teal-700 hover:text-teal-900 flex items-center justify-center gap-1.5 mx-auto cursor-pointer">
+                <span>⭐</span>
+                <span>Instalar App en este Celular</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Pie de página con enlace a consola administrativa -->
+          <div class="text-center pb-2">
+            <a href="./index.html" class="text-[11px] text-slate-400 hover:text-slate-200 underline font-medium">
+              ¿Eres Administrador o Asesor SST? Ir al panel de escritorio →
+            </a>
+          </div>
+
+        </div>
+      `;
+
+      // Manejador del submit de login
+      const form = document.getElementById('form-mobile-worker-login');
+      form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const nit = document.getElementById('m-login-nit')?.value.trim();
+        const cedula = document.getElementById('m-login-cedula')?.value.trim();
+        const pin = document.getElementById('m-login-pin')?.value.trim();
+        const errBox = document.getElementById('mobile-login-error');
+        const btn = document.getElementById('btn-submit-m-login');
+
+        if (!nit || !cedula || !pin) {
+          if (errBox) {
+            errBox.innerText = 'Por favor completa todos los campos (NIT, Cédula y PIN).';
+            errBox.classList.remove('hidden');
+          }
+          return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = 'Verificando credenciales...';
+
+        try {
+          const res = await (auth.loginWorkerByPin ? auth.loginWorkerByPin(nit, cedula, pin) : auth.workerLogin(nit, cedula, pin));
+          if (res.ok) {
+            renderWorkerPortal();
+          } else {
+            if (errBox) {
+              errBox.innerText = res.error || 'Credenciales incorrectas.';
+              errBox.classList.remove('hidden');
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<span>Ingresar a Mi Puesto SST</span><span>📲</span>';
+          }
+        } catch (err) {
+          if (errBox) {
+            errBox.innerText = 'Error de conexión: ' + err.message;
+            errBox.classList.remove('hidden');
+          }
+          btn.disabled = false;
+          btn.innerHTML = '<span>Ingresar a Mi Puesto SST</span><span>📲</span>';
+        }
+      });
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Inicializar app
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', iniciarAppMovil);
+    } else {
+      iniciarAppMovil();
+    }
+  </script>
+</body>
+</html>
