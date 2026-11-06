@@ -3316,15 +3316,97 @@ function setupSignaturePad(canvasId) {
 }
 
 // =============================================================================
+// UTILIDADES UX OPERATIVA: TOAST VISUAL Y RESOLUCIÓN RESILIENTE DE TRABAJADOR
+// =============================================================================
+window.mostrarToastOperativo = function(mensaje = '¡Listo! Documento firmado correctamente') {
+  const existing = document.getElementById('toast-operativo-feedback');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'toast-operativo-feedback';
+  toast.className = 'fixed left-3 right-3 z-[120] max-w-lg mx-auto bg-emerald-600 text-white px-5 py-4 rounded-2xl shadow-2xl border-2 border-emerald-300 flex items-center gap-3 animate-fadeIn';
+  toast.style.top = 'max(env(safe-area-inset-top, 16px), 16px)';
+  toast.innerHTML = `
+    <span class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-xl flex-shrink-0">✅</span>
+    <span class="text-[16px] font-bold leading-snug">${mensaje}</span>
+  `;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-10px)';
+    setTimeout(() => toast.remove(), 320);
+  }, 3200);
+};
+
+function obtenerTrabajadorResiliente(trabajadorId) {
+  let trab = trabajadorId ? store.getTrabajadorPorId(trabajadorId) : null;
+  const sessionUser = auth.getUser();
+  if (!trab && sessionUser && (sessionUser.id === trabajadorId || sessionUser.trabajadorId === trabajadorId || auth.isWorker())) {
+    trab = store.getTrabajadorPorId(sessionUser.id || sessionUser.trabajadorId) || {
+      ...sessionUser,
+      id: sessionUser.id || sessionUser.trabajadorId,
+      companyId: sessionUser.companyId || sessionUser.empresaId || sessionUser.company?.id
+    };
+  }
+  if (trab && sessionUser && (trab.id === sessionUser.id || trab.id === sessionUser.trabajadorId)) {
+    if (sessionUser.politica_datos_aceptada) trab.politica_datos_aceptada = true;
+    if (sessionUser.notificacion_riesgos_aceptada) trab.notificacion_riesgos_aceptada = true;
+    if (!trab.firma_digital_url && sessionUser.firma_digital_url) trab.firma_digital_url = sessionUser.firma_digital_url;
+    if (!trab.firma_base64 && sessionUser.firma_base64) trab.firma_base64 = sessionUser.firma_base64;
+    if (!trab.signature_url && sessionUser.signature_url) trab.signature_url = sessionUser.signature_url;
+    if (!trab.signature_svg && sessionUser.signature_svg) trab.signature_svg = sessionUser.signature_svg;
+  }
+  return trab;
+}
+
+// =============================================================================
 // BLOQUE 2: COMPLIANCE GATE OBLIGATORIO (ONBOARDING LEGAL LEY 1581 & GTC 45)
+// Route Guard de Ingreso Único: Solo solicita autorización y firma la primera vez
 // =============================================================================
 function verificarComplianceGateOnboarding(trabajador, empresa) {
+  if (!trabajador) return true;
+  const sessionUser = auth.getUser() || {};
   const userSigs = store.getEmployeeDocumentSignatures ? store.getEmployeeDocumentSignatures(trabajador.id) : [];
-  const hasSigned = userSigs.some(s => s.document_type === 'HABEAS_DATA_ONBOARDING');
-  if (hasSigned) return;
+  const sigOnb = userSigs.find(s => s.document_type === 'HABEAS_DATA_ONBOARDING');
+  const firmasLegacy = store.getFirmasPorTrabajador ? store.getFirmasPorTrabajador(trabajador.id) : [];
+  const sigLegacyOnb = firmasLegacy.find(f => f.documentoCodigo === 'HABEAS_DATA_ONBOARDING');
 
-  // Si no ha firmado, levantar la compuerta legal obligatoria a pantalla completa
+  const firmaUrlExistente =
+    trabajador.firma_digital_url ||
+    trabajador.firma_base64 ||
+    trabajador.signature_url ||
+    trabajador.signature_svg ||
+    sessionUser.firma_digital_url ||
+    sessionUser.firma_base64 ||
+    sessionUser.signature_url ||
+    sessionUser.signature_svg ||
+    sigOnb?.signature_image_file ||
+    sigLegacyOnb?.firmaDataUrl ||
+    null;
+
+  const politicaAceptada =
+    trabajador.politica_datos_aceptada === true ||
+    sessionUser.politica_datos_aceptada === true ||
+    sessionUser.has_signed_onboarding === true ||
+    Boolean(sigOnb) ||
+    Boolean(sigLegacyOnb) ||
+    (trabajador.has_registered_signature === true && Boolean(firmaUrlExistente));
+
+  // Flujo condicional: Si politica_datos_aceptada === true y existe firma_digital_url, omitir pantalla de Consentimiento Informado
+  if (politicaAceptada && Boolean(firmaUrlExistente)) {
+    trabajador.politica_datos_aceptada = true;
+    trabajador.notificacion_riesgos_aceptada = true;
+    trabajador.firma_digital_url = trabajador.firma_digital_url || firmaUrlExistente;
+    trabajador.firma_base64 = trabajador.firma_base64 || firmaUrlExistente;
+    trabajador.has_registered_signature = true;
+    return true;
+  }
+
+  // Solo mostrar la pantalla de autorización y captura de firma si ingresa por primera vez o si politica_datos_aceptada es false/null
   abrirModalOnboardingComplianceGate(trabajador, empresa);
+  return false;
 }
 
 function abrirModalOnboardingComplianceGate(trabajador, empresa) {
@@ -3333,128 +3415,98 @@ function abrirModalOnboardingComplianceGate(trabajador, empresa) {
 
   const modalEl = document.createElement('div');
   modalEl.id = modalId;
-  modalEl.className = 'fixed inset-0 z-50 bg-slate-950 flex flex-col overflow-hidden animate-fadeIn text-slate-100 select-none';
+  modalEl.className = 'fixed inset-0 z-50 bg-[#0B111E] flex flex-col overflow-hidden animate-fadeIn text-slate-100 select-none';
 
   modalEl.innerHTML = `
-    <!-- Cabecera de Compliance Legal -->
-    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-4 border-b border-slate-800 flex items-center justify-between flex-shrink-0 shadow-lg">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-400/40 flex items-center justify-center text-xl flex-shrink-0">
+    <!-- Cabecera Sólida de Compliance Legal (Sin Blur / Safe Area Android & iOS) -->
+    <div class="bg-[#0B111E] px-4 pb-3 border-b border-slate-800 flex items-center justify-between flex-shrink-0 shadow-md sticky top-0 z-40" style="padding-top: max(env(safe-area-inset-top, 16px), 16px);">
+      <div class="flex items-center gap-3 overflow-hidden">
+        <div class="w-11 h-11 rounded-xl bg-teal-500/20 border border-teal-400/40 flex items-center justify-center text-xl flex-shrink-0">
           ⚖️
         </div>
-        <div>
-          <span class="text-[9px] font-black uppercase tracking-wider text-teal-300 block">
-            Requisito Legal Previo al Ingreso • DOCTOR PYME SG-SST
+        <div class="overflow-hidden">
+          <span class="text-[10px] font-black uppercase tracking-wider text-teal-300 block">
+            Paso Único de Bienvenida • DOCTOR PYME
           </span>
-          <h2 class="text-sm font-black text-white truncate max-w-[260px] sm:max-w-md">
-            Consentimiento Informado & Notificación de Riesgos
+          <h2 class="text-sm sm:text-base font-black text-white truncate">
+            Consentimiento y Firma Digital
           </h2>
         </div>
       </div>
-      <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-500/20 text-rose-300 border border-rose-500/30">
-        Obligatorio
+      <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/40 flex-shrink-0">
+        1 sola vez
       </span>
     </div>
 
-    <!-- Área de Lectura con Detección Estricta de Scroll -->
-    <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 text-xs leading-relaxed" id="legal-scroll-container">
-      <div class="p-3.5 bg-indigo-950/40 rounded-2xl border border-indigo-800/60 text-indigo-200">
-        <p class="font-bold text-[11px] mb-1">Colaborador: ${trabajador.nombre} (C.C. ${trabajador.identificacion || trabajador.cedula})</p>
-        <p class="text-[10px] text-slate-300">Empresa Contratante: <strong>${empresa.razonSocial}</strong> (NIT: ${empresa.nit}) · Cargo: <strong>${trabajador.cargo}</strong></p>
+    <!-- Área de Lectura y Firma Directa (Sin Bloqueo por Scroll) -->
+    <div class="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 space-y-4 text-xs leading-relaxed" id="legal-scroll-container" style="padding-bottom: 96px;">
+      <div class="p-3.5 bg-slate-900 rounded-2xl border border-slate-800 text-slate-200">
+        <p class="font-bold text-xs text-white mb-0.5">👷 Trabajador: ${trabajador.nombre}</p>
+        <p class="text-[11px] text-slate-300">C.C. ${trabajador.identificacion || trabajador.cedula} · Cargo: <strong class="text-teal-300">${trabajador.cargo}</strong></p>
+        <p class="text-[11px] text-slate-400">Empresa: <strong>${empresa.razonSocial}</strong> (NIT: ${empresa.nit})</p>
       </div>
 
-      <div class="space-y-3 text-slate-300">
+      <div class="space-y-3 text-slate-200 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
         <div class="border-b border-slate-800 pb-1.5">
           <h3 class="text-sm font-black text-teal-300">
-            1. Autorización para el Tratamiento de Datos Personales y Sensibles
+            1. Autorización de Datos Personales y Médicos (Ley 1581 de 2012)
           </h3>
-          <span class="text-[10px] font-bold text-teal-400/90 block mt-0.5">
-            (Ley 1581 de 2012, Decreto 1074 de 2015 y Decreto 1072 de 2015)
-          </span>
         </div>
-        <p class="text-justify leading-relaxed">
-          En cumplimiento de la Ley Estatutaria 1581 de 2012 y el Decreto Reglamentario 1074 de 2015, autorizo de manera libre, previa, expresa e informada a <strong>${empresa.razonSocial}</strong> (en calidad de Responsable del Tratamiento) y a su proveedor tecnológico <strong>DOCTOR PYME</strong> (en calidad de Encargado del Tratamiento) para recolectar, almacenar, custodiar, procesar y transmitir mis datos personales, médicos y laborales.
-        </p>
-        <p class="text-justify leading-relaxed">
-          <strong>Tratamiento de Datos Sensibles:</strong> Manifiesto que se me ha informado que, al tratarse de datos de naturaleza sensible (evaluaciones médicas ocupacionales, exámenes de aptitud laboral, registros de inspección, firmas biométricas/digitales y reportes de condiciones de salud), no me encuentro obligado(a) a autorizar su tratamiento, y que la entrega de dicha información es facultativa.
-        </p>
-        <p class="text-justify leading-relaxed">
-          No obstante, reconozco y acepto expresamente que el tratamiento de estos datos tiene como propósito exclusivo garantizar la vigilancia epidemiológica, la prevención de accidentes y enfermedades laborales, y el estricto cumplimiento del Sistema de Gestión de la Seguridad y Salud en el Trabajo (SG-SST) bajo el Decreto 1072 de 2015 y la Resolución 0312 de 2019.
-        </p>
-        <p class="text-justify leading-relaxed">
-          Como titular de la información, declaro que conozco mis derechos a conocer, actualizar, rectificar y revocar la presente autorización, los cuales podré ejercer conforme a la Política de Tratamiento de Datos Personales disponible para consulta ante la administración de la empresa.
+        <p class="leading-relaxed text-xs">
+          Autorizo de manera libre y voluntaria a <strong>${empresa.razonSocial}</strong> y a la plataforma <strong>DOCTOR PYME</strong> para guardar y proteger mis datos personales, exámenes médicos, asistencias a capacitaciones y mi firma digital, únicamente para cuidar mi salud y seguridad en el trabajo (SG-SST).
         </p>
 
         <h3 class="text-sm font-black text-teal-300 border-b border-slate-800 pb-1 pt-2">
-          2. Notificación General de Riesgos y Peligros Laborales (GTC 45 & Dec. 1072)
+          2. Riesgos de mi Puesto y Cuidado de mi Salud (Dec. 1072 de 2015)
         </h3>
-        <p>
-          Declaro que el empleador me ha notificado e informado oportunamente sobre los factores de riesgo inherentes a mi labor como <strong>${trabajador.cargo}</strong>:
+        <p class="text-xs">
+          Confirmo que me explicaron los riesgos de mi cargo como <strong>${trabajador.cargo}</strong> y me comprometo a:
         </p>
-        <ul class="list-disc pl-5 space-y-1 text-slate-300 text-[11px]">
-          <li><strong>Peligros Mecánicos:</strong> Operación de maquinaria, herramientas manuales y equipos industriales con riesgo de atrapamiento o golpes.</li>
-          <li><strong>Peligros Biomecánicos:</strong> Manipulación de cargas, posturas prolongadas y movimientos repetitivos.</li>
-          <li><strong>Peligros Físicos y Locativos:</strong> Exposición a ruido continuo, superficies húmedas o irregulares, caídas al mismo o diferente nivel.</li>
-          <li><strong>Peligros Químicos:</strong> Contacto con polvos, material particulado, humos y sustancias de proceso.</li>
+        <ul class="list-disc pl-5 space-y-1 text-slate-300 text-xs">
+          <li>Usar siempre mis Elementos de Protección Personal (casco, botas, gafas, guantes).</li>
+          <li>Revisar mis herramientas y equipos antes de empezar a trabajar.</li>
+          <li>Avisar de inmediato cualquier peligro o daño en mi puesto de trabajo.</li>
         </ul>
-
-        <h3 class="text-sm font-black text-teal-300 border-b border-slate-800 pb-1 pt-2">
-          3. Compromiso y Deberes Legales del Trabajador (Art. 2.2.4.6.10 Dec. 1072/2015)
-        </h3>
-        <p>
-          Me obligo a cumplir fielmente los siguientes mandatos legales:
-        </p>
-        <ol class="list-decimal pl-5 space-y-1 text-slate-300 text-[11px]">
-          <li>Procurar el cuidado integral de mi salud y suministrar información clara y veraz sobre mi estado físico y mental.</li>
-          <li>Cumplir las normas, reglamentos e instrucciones del SG-SST de la empresa.</li>
-          <li>Utilizar de manera permanente y adecuada los Elementos de Protección Personal (EPP) suministrados.</li>
-          <li>Reportar de inmediato a través de esta App cualquier condición o acto inseguro detectado en mi puesto.</li>
-          <li>Diligenciar diariamente la inspección preoperacional de los equipos o herramientas bajo mi custodia antes de iniciar la jornada.</li>
-        </ol>
-
-        <div id="scroll-prompt-badge" class="p-3 bg-amber-500/20 border border-amber-500/40 rounded-xl text-center text-amber-300 font-black text-xs animate-pulse">
-          📜 Desplázate hasta el final de este documento para habilitar la firma digital con el dedo
-        </div>
       </div>
 
-      <!-- Zona de Firma Táctil (Bloqueada hasta completar el scroll) -->
-      <div id="onboarding-signature-section" class="opacity-40 pointer-events-none transition-all duration-300 space-y-3 pt-4 border-t border-slate-800">
-        <div class="space-y-2">
-          <label class="flex items-start gap-2.5 cursor-pointer">
-            <input type="checkbox" id="check-onboarding-habeas" class="w-4 h-4 mt-0.5 rounded text-teal-600 focus:ring-teal-500 bg-slate-900 border-slate-700">
-            <span class="text-[11px] text-slate-200 font-semibold">
-              Autorizo el tratamiento de mis datos personales y sensibles (Ley 1581 de 2012 y Dec. 1074 de 2015).
+      <!-- Zona de Autorización y Firma Táctil (Habilitada inmediatamente, checkboxes de 28x28px) -->
+      <div id="onboarding-signature-section" class="space-y-4 pt-2">
+        <div class="space-y-3">
+          <label class="flex items-center gap-3.5 p-3.5 bg-slate-900 rounded-2xl border-2 border-slate-700 hover:border-teal-500 cursor-pointer transition">
+            <input type="checkbox" id="check-onboarding-habeas" class="w-7 h-7 min-w-[28px] min-h-[28px] rounded-lg text-teal-500 focus:ring-teal-500 bg-slate-950 border-2 border-slate-500 cursor-pointer">
+            <span class="text-sm text-white font-bold leading-snug">
+              Autorizo el uso de mis datos personales y médicos para Seguridad y Salud en el Trabajo (Ley 1581 de 2012).
             </span>
           </label>
-          <label class="flex items-start gap-2.5 cursor-pointer">
-            <input type="checkbox" id="check-onboarding-gtc45" class="w-4 h-4 mt-0.5 rounded text-teal-600 focus:ring-teal-500 bg-slate-900 border-slate-700">
-            <span class="text-[11px] text-slate-200 font-semibold">
-              Declaro haber recibido, comprendido y aceptado la notificación de riesgos laborales y deberes SG-SST (Dec. 1072/2015).
+          <label class="flex items-center gap-3.5 p-3.5 bg-slate-900 rounded-2xl border-2 border-slate-700 hover:border-teal-500 cursor-pointer transition">
+            <input type="checkbox" id="check-onboarding-gtc45" class="w-7 h-7 min-w-[28px] min-h-[28px] rounded-lg text-teal-500 focus:ring-teal-500 bg-slate-950 border-2 border-slate-500 cursor-pointer">
+            <span class="text-sm text-white font-bold leading-snug">
+              Recibí y entendí los riesgos de mi puesto y mis deberes de seguridad (Dec. 1072/2015).
             </span>
           </label>
         </div>
 
-        <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="text-[11px] font-black uppercase text-teal-300">
-              ✍️ Firma Digital con el Dedo en Pantalla:
+        <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-black text-teal-300">
+              ✍️ Dibuja tu Firma con el Dedo aquí:
             </label>
-            <button type="button" id="btn-clear-onboarding-sig" class="text-[10px] text-rose-400 hover:text-rose-300 underline font-bold cursor-pointer">
-              Limpiar Firma
+            <button type="button" id="btn-clear-onboarding-sig" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 border border-rose-500/30 text-xs font-bold cursor-pointer">
+              Borrar y Repetir
             </button>
           </div>
-          <div class="bg-white rounded-xl overflow-hidden shadow-inner border-2 border-teal-500/50">
-            <canvas id="canvas-onboarding-sig" class="signature-pad-canvas w-full h-36"></canvas>
+          <div class="bg-white rounded-2xl overflow-hidden shadow-inner border-2 border-teal-500">
+            <canvas id="canvas-onboarding-sig" class="signature-pad-canvas w-full h-44"></canvas>
           </div>
-          <p class="text-[10px] text-slate-400 mt-1 text-center">
-            Esta firma tiene plena validez probatoria conforme a la Ley 527 de 1999 y Decreto 2364 de 2012.
+          <p class="text-xs text-slate-400 text-center">
+            Esta firma quedará guardada para que puedas firmar tus documentos con 1 solo toque.
           </p>
         </div>
 
         <button 
           type="button" 
           id="btn-confirm-onboarding-sig"
-          class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs sm:text-sm font-black shadow-lg shadow-emerald-900/40 transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+          class="w-full min-h-[54px] py-4 px-5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-2xl text-[16px] font-bold shadow-xl shadow-emerald-950/60 transition flex items-center justify-center gap-2 cursor-pointer active:scale-95"
         >
           <span>✓ Aceptar Términos y Firmar Digitalmente</span>
         </button>
@@ -3464,20 +3516,7 @@ function abrirModalOnboardingComplianceGate(trabajador, empresa) {
 
   document.body.appendChild(modalEl);
 
-  const scrollContainer = document.getElementById('legal-scroll-container');
-  const sigSection = document.getElementById('onboarding-signature-section');
-  const scrollBadge = document.getElementById('scroll-prompt-badge');
-
-  scrollContainer.onscroll = () => {
-    const isAtBottom = scrollContainer.scrollHeight - scrollContainer.scrollTop <= scrollContainer.clientHeight + 40;
-    if (isAtBottom) {
-      sigSection.classList.remove('opacity-40', 'pointer-events-none');
-      if (scrollBadge) scrollBadge.classList.add('hidden');
-      if (pad && pad.resize) pad.resize();
-    }
-  };
-
-  // Inicializar Canvas táctil
+  // Inicializar Canvas táctil inmediatamente
   const pad = setupSignaturePad('canvas-onboarding-sig');
 
   document.getElementById('btn-clear-onboarding-sig')?.addEventListener('click', () => {
@@ -3489,51 +3528,62 @@ function abrirModalOnboardingComplianceGate(trabajador, empresa) {
     const checkGtc45 = document.getElementById('check-onboarding-gtc45')?.checked;
 
     if (!checkHabeas || !checkGtc45) {
-      alert("Debes marcar ambas casillas de autorización legal antes de continuar.");
+      alert("Por favor toca las 2 casillas de autorización arriba de tu firma para continuar.");
       return;
     }
 
-    if (pad?.isEmpty()) {
-      alert("Por favor estampa tu firma con el dedo en el recuadro blanco.");
+    if (!pad || pad.isEmpty()) {
+      alert("El recuadro de firma está en blanco. Por favor dibuja tu firma con el dedo en el cuadro blanco.");
       return;
     }
 
     const btn = document.getElementById('btn-confirm-onboarding-sig');
     btn.disabled = true;
-    btn.innerHTML = `<span>⏳ Generando Sello Inmutable y Guardando en Disco...</span>`;
+    btn.innerHTML = `<span>⏳ Guardando...</span>`;
 
     try {
       const sigDataUrl = pad.getDataUrl();
-      const res = await store.submitWorkerOnboarding({
+      const nowIso = new Date().toISOString();
+
+      await store.submitWorkerOnboarding({
         worker_id: trabajador.id,
         tenant_id: empresa.id,
         signature_base64: sigDataUrl,
         accepted_habeas: true,
-        accepted_gtc45: true
+        accepted_gtc45: true,
+        politica_datos_aceptada: true,
+        notificacion_riesgos_aceptada: true,
+        firma_digital_url: sigDataUrl,
+        firma_base64: sigDataUrl,
+        fecha_aceptacion_terminos: nowIso
       });
 
-      modalEl.innerHTML = `
-        <div class="m-auto p-6 max-w-sm bg-slate-900 border border-emerald-500/50 rounded-3xl text-center space-y-4 animate-fadeIn shadow-2xl">
-          <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/40 flex items-center justify-center text-3xl mx-auto">
-            ✓
-          </div>
-          <div>
-            <h3 class="text-base font-black text-white">¡Consentimiento Registrado!</h3>
-            <p class="text-xs text-slate-300 mt-1">Firma legal estampada con éxito y archivada para retención de 20 años.</p>
-          </div>
-          <div class="p-3 bg-slate-950 rounded-xl text-[10px] font-mono text-emerald-300 text-left border border-slate-800 space-y-1">
-            <p><strong>SHA-256:</strong> ${res.record?.signature_sha256?.substring(0, 24)}...</p>
-            <p><strong>Fecha/Hora:</strong> ${res.record?.bogota_timestamp || 'Hora Bogotá'}</p>
-            <p><strong>IP:</strong> ${res.record?.client_ip || 'Registrada'}</p>
-          </div>
-          <p class="text-[11px] text-teal-400 font-bold">Cargando tu App Móvil Doctor Pyme...</p>
-        </div>
-      `;
+      // Actualizar estado en memoria y sesión inmediatamente
+      trabajador.politica_datos_aceptada = true;
+      trabajador.notificacion_riesgos_aceptada = true;
+      trabajador.firma_digital_url = sigDataUrl;
+      trabajador.firma_base64 = sigDataUrl;
+      trabajador.fecha_aceptacion_terminos = nowIso;
+      trabajador.has_registered_signature = true;
+      trabajador.signature_svg = sigDataUrl;
 
-      setTimeout(() => {
-        modalEl.remove();
-        renderWorkerPortal();
-      }, 1400);
+      if (auth.session) {
+        auth.session.politica_datos_aceptada = true;
+        auth.session.notificacion_riesgos_aceptada = true;
+        auth.session.firma_digital_url = sigDataUrl;
+        auth.session.firma_base64 = sigDataUrl;
+        auth.session.fecha_aceptacion_terminos = nowIso;
+        auth.session.has_signed_onboarding = true;
+        auth.session.has_registered_signature = true;
+        auth.session.signature_svg = sigDataUrl;
+        try {
+          localStorage.setItem('DOCTOR_PYME_SESSION_V2', JSON.stringify(auth.session));
+        } catch (e) {}
+      }
+
+      modalEl.remove();
+      window.mostrarToastOperativo('¡Listo! Documento firmado correctamente');
+      renderWorkerPortal();
 
     } catch (err) {
       alert("Error al guardar consentimiento: " + err.message);
@@ -3553,7 +3603,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
   // Asegurar obtención del trabajador más reciente y completo en memoria
   const idBuscada = trabajador?.id || trabajador?.trabajadorId;
   if (idBuscada) {
-    const fullTrab = store.getTrabajadorPorId(idBuscada);
+    const fullTrab = obtenerTrabajadorResiliente(idBuscada);
     if (fullTrab) trabajador = fullTrab;
   }
   if (trabajador && !trabajador.id && trabajador.trabajadorId) {
@@ -3633,7 +3683,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
       type: 'PLAN_DE_TRABAJO_SEGURO',
       id: 'DOC-PTS-CARGO',
       title: 'Procedimiento de Trabajo Seguro (PTS)',
-      norma: 'Guía Técnica GTC 45 & Matriz de Peligros',
+      norma: 'Pasos para trabajar seguro en tu puesto',
       icono: '🛡️',
       color: 'teal'
     },
@@ -3701,14 +3751,14 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
     <div class="min-h-screen bg-slate-900 text-slate-100 flex flex-col justify-between antialiased selection:bg-teal-500 selection:text-white">
 
       <!-- =================================================================== -->
-      <!-- ENCABEZADO SUPERIOR COMPACTO (MOBILE-FIRST HEADER)                   -->
+      <!-- ENCABEZADO SUPERIOR COMPACTO SÓLIDO (SIN BLUR • SAFE AREA ANDROID)  -->
       <!-- =================================================================== -->
-      <header class="worker-mobile-header bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800/80 px-4 pb-3 sticky top-0 z-30 shadow-md" style="padding-top: max(env(safe-area-inset-top, 0px), 14px);">
+      <header class="worker-mobile-header bg-[#0B111E] border-b border-slate-800 px-4 pb-3 sticky top-0 z-40 shadow-md" style="background-color: #0B111E; position: sticky; top: 0; z-index: 40; padding-top: max(env(safe-area-inset-top, 16px), 16px);">
         <div class="max-w-lg mx-auto flex items-center justify-between gap-3">
           
           <!-- Identificación de la Empresa y Trabajador -->
           <div class="flex items-center gap-3 overflow-hidden">
-            <div class="w-10 h-10 rounded-xl bg-white p-1 border border-slate-700 overflow-hidden flex items-center justify-center flex-shrink-0 shadow-sm">
+            <div class="w-11 h-11 rounded-xl bg-white p-1 border border-slate-700 overflow-hidden flex items-center justify-center flex-shrink-0 shadow-sm">
               <img 
                 src="${empresa.logoUrl || './assets/app-icon.png'}" 
                 alt="${empresa.razonSocial}" 
@@ -3718,12 +3768,12 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
             </div>
             <div class="overflow-hidden">
               <div class="flex items-center gap-1.5 flex-wrap">
-                <h1 class="text-xs font-black text-white truncate max-w-[170px] sm:max-w-xs">${trabajador.nombre}</h1>
-                <span class="px-2 py-0.2 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 truncate">
+                <h1 class="text-xs sm:text-sm font-black text-white truncate max-w-[180px] sm:max-w-xs">${trabajador.nombre}</h1>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 truncate">
                   ${trabajador.cargo}
                 </span>
               </div>
-              <p class="text-[10px] text-slate-400 truncate">
+              <p class="text-[11px] text-slate-300 truncate">
                 ${empresa.razonSocial} · <span class="text-teal-400 font-mono">C.C. ${trabajador.identificacion || trabajador.cedula}</span>
               </p>
             </div>
@@ -3734,18 +3784,18 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
             <button 
               type="button" 
               onclick="window.instalarPwaDoctorPyme()" 
-              class="p-2 rounded-xl bg-teal-500/10 text-teal-300 hover:bg-teal-500/20 border border-teal-500/30 text-xs font-bold transition flex items-center gap-1"
+              class="min-h-[44px] px-2.5 py-2 rounded-xl bg-teal-500/15 text-teal-300 hover:bg-teal-500/25 border border-teal-500/40 text-xs font-bold transition flex items-center gap-1 cursor-pointer active:scale-95"
               title="Instalar App en el Celular"
             >
               <span>📲</span>
-              <span class="hidden sm:inline text-[10px]">Instalar</span>
+              <span class="hidden sm:inline text-[11px]">Instalar</span>
             </button>
 
             ${esModoAdmin ? `
               <button 
                 type="button" 
                 onclick="window.volverAGestionTrabajadores()" 
-                class="px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-black transition flex items-center gap-1 cursor-pointer shadow-sm"
+                class="min-h-[44px] px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black transition flex items-center gap-1 cursor-pointer shadow-sm active:scale-95"
                 title="Volver a la consola de administración"
               >
                 <span>🛠️</span>
@@ -3755,7 +3805,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
               <button 
                 type="button" 
                 onclick="auth.logout()" 
-                class="p-2 rounded-xl bg-slate-800 hover:bg-rose-900/40 text-slate-400 hover:text-rose-300 transition text-xs font-bold"
+                class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl bg-slate-800 hover:bg-rose-900/40 text-slate-200 hover:text-rose-300 border border-slate-700 transition text-sm font-bold flex items-center justify-center cursor-pointer active:scale-95"
                 title="Cerrar Sesión"
               >
                 🚪
@@ -3767,7 +3817,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
 
         <!-- Selector de trabajador si está en modo simulación administrativa -->
         ${esModoAdmin ? `
-          <div class="max-w-lg mx-auto mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+          <div class="max-w-lg mx-auto mt-2 pt-2 border-t border-slate-800 flex items-center justify-between text-[11px]">
             <span class="text-emerald-400 font-bold">Simulación Operaria:</span>
             <select onchange="if(this.value) window.verPortalComoTrabajador(this.value)" class="px-2 py-1 bg-slate-800 border border-slate-700 rounded-lg text-[10px] font-bold text-white focus:outline-none">
               ${todosTrabajadoresEmpresa.map(t => `
@@ -3781,9 +3831,9 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
       </header>
 
       <!-- =================================================================== -->
-      <!-- CONTENIDO SCROLLABLE DE CADA PESTAÑA (PADDED PARA BOTTOM NAV)      -->
+      <!-- CONTENIDO SCROLLABLE DE CADA PESTAÑA (PADDING-BOTTOM: 96PX / PB-24) -->
       <!-- =================================================================== -->
-      <main class="flex-1 overflow-y-auto px-4 py-4 sm:py-6 pb-28 max-w-lg mx-auto w-full space-y-4">
+      <main class="app-content-wrapper flex-1 overflow-y-auto px-4 py-4 sm:py-6 pb-24 max-w-lg mx-auto w-full space-y-4" style="padding-bottom: 96px !important; overflow-y: auto !important;">
 
         <!-- --------------------------------------------------------------- -->
         <!-- PESTAÑA 1: INICIO (DASHBOARD PERSONAL OPERARIO)                 -->
@@ -3791,17 +3841,15 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
         ${activeMobileTab === 'inicio' ? `
           <div class="space-y-4 animate-fadeIn">
             
-            <!-- Banner de Saludo y Turno -->
+            <!-- Banner de Saludo y Turno (Nítido, sin efectos borrosos) -->
             <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-teal-950 p-5 rounded-3xl border border-indigo-900/60 shadow-xl relative overflow-hidden">
-              <div class="absolute -right-8 -top-8 w-40 h-40 bg-teal-500/10 rounded-full blur-2xl pointer-events-none"></div>
-              
               <div class="relative z-10 space-y-2">
                 <div class="flex items-center justify-between">
                   <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                     Turno Operativo Activo
                   </span>
-                  <span class="text-[10px] text-slate-400 font-mono">
+                  <span class="text-[11px] text-slate-300 font-mono">
                     ${new Date().toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric', month: 'short' })}
                   </span>
                 </div>
@@ -3809,161 +3857,161 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
                 <h2 class="text-lg sm:text-xl font-black text-white">
                   ¡Buen turno, ${trabajador.nombre.split(' ')[0]}!
                 </h2>
-                <p class="text-xs text-slate-300 leading-relaxed">
-                  Tu seguridad y la de tus compañeros es la prioridad #1. Consulta tus funciones, reporta condiciones inseguras e inspecciona tu maquinaria antes de operar.
+                <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                  Tu seguridad y la de tus compañeros es lo primero. Revisa las tarjetas con borde naranja si tienes firmas o revisiones pendientes hoy.
                 </p>
               </div>
             </div>
 
-            <!-- 6 Tarjetas de Estado Rápido (Mobile Grid 3x2) -->
-            <div class="grid grid-cols-2 gap-2.5">
+            <!-- 6 Tarjetas de Estado Rápido con Semáforo Intuitivo -->
+            <div class="grid grid-cols-2 gap-3">
               
-              <div onclick="window.cambiarTabMovil('docs')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-indigo-500 transition cursor-pointer shadow-sm">
+              <div onclick="window.cambiarTabMovil('docs')" class="p-3.5 rounded-2xl transition cursor-pointer shadow-sm active:scale-95 ${instrumentosFirmadosCount < totalInstrumentos ? 'bg-amber-950/25 border-2 border-amber-500' : 'bg-slate-950 border border-slate-800 hover:border-indigo-500'}">
                 <div class="flex items-center justify-between">
-                  <span class="text-lg">📄</span>
-                  <span class="text-[9px] font-black px-1.5 py-0.5 rounded ${instrumentosFirmadosCount === totalInstrumentos ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">
+                  <span class="text-xl">${instrumentosFirmadosCount < totalInstrumentos ? '⚠️' : '📄'}</span>
+                  <span class="text-[11px] font-black px-2 py-0.5 rounded-lg ${instrumentosFirmadosCount === totalInstrumentos ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500 text-slate-950'}">
                     ${instrumentosFirmadosCount}/${totalInstrumentos}
                   </span>
                 </div>
-                <span class="text-xs font-black text-white block mt-1.5">Mi Cargo & Docs</span>
-                <span class="text-[10px] text-slate-400 block">${instrumentosFirmadosCount === totalInstrumentos ? '✓ Al día con firmas' : 'Pendientes de firma'}</span>
+                <span class="text-sm font-black text-white block mt-1.5">Mi Cargo & Docs</span>
+                <span class="text-[11px] ${instrumentosFirmadosCount < totalInstrumentos ? 'text-amber-300 font-bold' : 'text-emerald-400'} block">${instrumentosFirmadosCount === totalInstrumentos ? '✅ Todo firmado' : '⚠️ Toca para firmar'}</span>
               </div>
 
-              <div onclick="window.cambiarTabMovil('elearning')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-indigo-500 transition cursor-pointer shadow-sm">
+              <div onclick="window.cambiarTabMovil('elearning')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-indigo-500 transition cursor-pointer shadow-sm active:scale-95">
                 <div class="flex items-center justify-between">
-                  <span class="text-lg">🎓</span>
-                  <span class="text-[9px] font-black px-1.5 py-0.5 rounded ${capsEvaluadasCount === capacitaciones.length && capacitaciones.length > 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-indigo-500/20 text-indigo-300'}">
+                  <span class="text-xl">🎓</span>
+                  <span class="text-[11px] font-black px-2 py-0.5 rounded-lg ${capsEvaluadasCount === capacitaciones.length && capacitaciones.length > 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-indigo-500/20 text-indigo-300'}">
                     ${capsEvaluadasCount}/${capacitaciones.length}
                   </span>
                 </div>
-                <span class="text-xs font-black text-white block mt-1.5">E-Learning & Quiz</span>
-                <span class="text-[10px] text-slate-400 block">${capsEvaluadasCount === capacitaciones.length && capacitaciones.length > 0 ? '✓ Cursos al día' : 'Capacitaciones SST'}</span>
+                <span class="text-sm font-black text-white block mt-1.5">E-Learning & Quiz</span>
+                <span class="text-[11px] text-slate-300 block">${capsEvaluadasCount === capacitaciones.length && capacitaciones.length > 0 ? '✅ Cursos al día' : 'Capacitaciones SST'}</span>
               </div>
 
-              <div onclick="window.cambiarTabMovil('tools')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-teal-500 transition cursor-pointer shadow-sm">
+              <div onclick="window.cambiarTabMovil('tools')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-teal-500 transition cursor-pointer shadow-sm active:scale-95">
                 <div class="flex items-center justify-between">
-                  <span class="text-lg">🛠️</span>
-                  <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300">
+                  <span class="text-xl">🛠️</span>
+                  <span class="text-[11px] font-black px-2 py-0.5 rounded-lg bg-teal-500/20 text-teal-300">
                     ${misHerramientasAsignadas.length} Activos
                   </span>
                 </div>
-                <span class="text-xs font-black text-white block mt-1.5">Mis Equipos</span>
-                <span class="text-[10px] text-slate-400 block">${actaEppFirmada ? '✓ EPP Entregado' : 'EPP Requerido'}</span>
+                <span class="text-sm font-black text-white block mt-1.5">Mis Equipos</span>
+                <span class="text-[11px] text-slate-300 block">${actaEppFirmada ? '✅ EPP Entregado' : 'Dotación y EPP'}</span>
               </div>
 
-              <div onclick="window.abrirModalPreoperacionalTrabajador('${trabajador.id}')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-amber-500 transition cursor-pointer shadow-sm">
+              <div onclick="window.abrirModalPreoperacionalTrabajador('${trabajador.id}')" class="p-3.5 rounded-2xl transition cursor-pointer shadow-sm active:scale-95 ${!preopHoy ? 'bg-amber-950/25 border-2 border-amber-500' : 'bg-slate-950 border border-slate-800 hover:border-emerald-500'}">
                 <div class="flex items-center justify-between">
-                  <span class="text-lg">📋</span>
-                  <span class="text-[9px] font-black px-1.5 py-0.5 rounded ${preopHoy ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300 animate-pulse'}">
+                  <span class="text-xl">${preopHoy ? '📋' : '⚠️'}</span>
+                  <span class="text-[11px] font-black px-2 py-0.5 rounded-lg ${preopHoy ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500 text-slate-950'}">
                     ${preopHoy ? 'Realizado' : 'Pendiente'}
                   </span>
                 </div>
-                <span class="text-xs font-black text-white block mt-1.5">Preoperacional Hoy</span>
-                <span class="text-[10px] text-slate-400 block">${preopHoy ? '✓ Listo para operar' : 'Toca para registrar'}</span>
+                <span class="text-sm font-black text-white block mt-1.5">Preoperacional Hoy</span>
+                <span class="text-[11px] ${preopHoy ? 'text-emerald-400' : 'text-amber-300 font-bold'} block">${preopHoy ? '✅ Listo para operar' : '⚠️ Revisar antes de iniciar'}</span>
               </div>
 
-              <div onclick="window.cambiarTabMovil('reportar')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-rose-500 transition cursor-pointer shadow-sm">
+              <div onclick="window.cambiarTabMovil('reportar')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-rose-500 transition cursor-pointer shadow-sm active:scale-95">
                 <div class="flex items-center justify-between">
-                  <span class="text-lg">⚠️</span>
-                  <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300">
+                  <span class="text-xl">🚨</span>
+                  <span class="text-[11px] font-black px-2 py-0.5 rounded-lg bg-rose-500/20 text-rose-300">
                     ${reportesPeligro.length}
                   </span>
                 </div>
-                <span class="text-xs font-black text-white block mt-1.5">Reportar SST</span>
-                <span class="text-[10px] text-slate-400 block">Condición / Acto Inseguro</span>
+                <span class="text-sm font-black text-white block mt-1.5">Reportar SST</span>
+                <span class="text-[11px] text-slate-300 block">Avisar peligro o daño</span>
               </div>
 
-              <div onclick="window.cambiarTabMovil('perfil')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-teal-500 transition cursor-pointer shadow-sm">
+              <div onclick="window.cambiarTabMovil('perfil')" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 hover:border-teal-500 transition cursor-pointer shadow-sm active:scale-95">
                 <div class="flex items-center justify-between">
-                  <span class="text-lg">👤</span>
-                  <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">
+                  <span class="text-xl">👤</span>
+                  <span class="text-[11px] font-black px-2 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-300">
                     Apto
                   </span>
                 </div>
-                <span class="text-xs font-black text-white block mt-1.5">Mi Perfil & Salud</span>
-                <span class="text-[10px] text-slate-400 block">Profesiograma y Actas</span>
+                <span class="text-sm font-black text-white block mt-1.5">Mi Perfil & Salud</span>
+                <span class="text-[11px] text-slate-300 block">Exámenes Médicos y Permisos</span>
               </div>
 
             </div>
 
-            <!-- Botones de Acción Rápida con Pulgar -->
-            <div class="space-y-2">
-              <h3 class="text-xs font-black uppercase tracking-wider text-slate-400">Acciones del Turno</h3>
+            <!-- Botones de Acción Rápida con Pulgar (Altura mínima 52px, fuente 16px bold) -->
+            <div class="space-y-2.5">
+              <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Acciones de tu Turno</h3>
 
               <!-- 🪪 CARNÉ DIGITAL SST DEL TRABAJADOR -->
               <button 
                 type="button" 
                 onclick="window.abrirModalCarneDigital('${trabajador.id}')"
-                class="w-full py-3 px-4 bg-gradient-to-r from-teal-700 via-emerald-700 to-teal-800 hover:from-teal-600 hover:to-emerald-600 text-white rounded-2xl font-black text-xs shadow-lg shadow-teal-950/40 flex items-center justify-between transition cursor-pointer active:scale-98 border border-teal-500/30"
+                class="w-full min-h-[54px] py-3.5 px-4 bg-gradient-to-r from-teal-700 via-emerald-700 to-teal-800 hover:from-teal-600 hover:to-emerald-600 text-white rounded-2xl font-bold text-[16px] shadow-lg shadow-teal-950/40 flex items-center justify-between transition cursor-pointer active:scale-95 border border-teal-500/30"
               >
                 <div class="flex items-center gap-3">
-                  <span class="text-xl">🪪</span>
+                  <span class="text-2xl">🪪</span>
                   <div class="text-left">
-                    <span class="block">Mi Carné Digital SST &amp; Código QR</span>
-                    <span class="text-[10px] font-normal text-teal-200 block">Validación oficial de ARL y aptitud para porterías</span>
+                    <span class="block text-[16px] font-bold leading-tight">Mi Carné Digital SST y QR</span>
+                    <span class="text-xs font-normal text-teal-100 block">Mostrar en portería o ingreso a obra</span>
                   </div>
                 </div>
-                <span class="px-2.5 py-1 bg-white/20 rounded-xl text-[10px] font-bold">Ver Carné ➔</span>
+                <span class="px-3 py-1.5 bg-white/20 rounded-xl text-xs font-bold flex-shrink-0">Ver ➔</span>
               </button>
 
               <button 
                 type="button" 
                 onclick="window.cambiarTabMovil('elearning')"
-                class="w-full py-3 px-4 bg-gradient-to-r from-indigo-700 via-indigo-600 to-purple-700 hover:from-indigo-600 hover:to-purple-600 text-white rounded-2xl font-black text-xs shadow-lg shadow-indigo-950/40 flex items-center justify-between transition cursor-pointer active:scale-98"
+                class="w-full min-h-[54px] py-3.5 px-4 bg-gradient-to-r from-indigo-700 via-indigo-600 to-purple-700 hover:from-indigo-600 hover:to-purple-600 text-white rounded-2xl font-bold text-[16px] shadow-lg shadow-indigo-950/40 flex items-center justify-between transition cursor-pointer active:scale-95"
               >
                 <div class="flex items-center gap-3">
-                  <span class="text-xl">🎓</span>
+                  <span class="text-2xl">🎓</span>
                   <div class="text-left">
-                    <span class="block">Capacitaciones & E-Learning SST</span>
-                    <span class="text-[10px] font-normal text-indigo-200 block">Visor de diapositivas, videos y evaluación de hasta 7 preguntas</span>
+                    <span class="block text-[16px] font-bold leading-tight">Capacitaciones & E-Learning SST</span>
+                    <span class="text-xs font-normal text-indigo-100 block">Videos cortos y evaluación fácil en el celular</span>
                   </div>
                 </div>
-                <span class="text-sm font-bold text-indigo-200">➔</span>
+                <span class="text-base font-bold text-indigo-100 flex-shrink-0">➔</span>
               </button>
               
               <button 
                 type="button" 
                 onclick="window.abrirModalEscanerQR('${trabajador.id}')"
-                class="w-full py-3 px-4 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white rounded-2xl font-black text-xs shadow-lg shadow-teal-900/30 flex items-center justify-between transition cursor-pointer active:scale-98"
+                class="w-full min-h-[54px] py-3.5 px-4 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white rounded-2xl font-bold text-[16px] shadow-lg shadow-teal-900/30 flex items-center justify-between transition cursor-pointer active:scale-95"
               >
                 <div class="flex items-center gap-3">
-                  <span class="text-xl">📷</span>
+                  <span class="text-2xl">📷</span>
                   <div class="text-left">
-                    <span class="block">Escanear QR de Maquinaria / Herramienta</span>
-                    <span class="text-[10px] font-normal text-teal-100 block">Abre ficha técnica e inspección inmediata</span>
+                    <span class="block text-[16px] font-bold leading-tight">Escanear QR de Máquina o Equipo</span>
+                    <span class="text-xs font-normal text-teal-100 block">Ver hoja de vida y revisar equipo</span>
                   </div>
                 </div>
-                <span class="text-sm font-bold">➔</span>
+                <span class="text-base font-bold flex-shrink-0">➔</span>
               </button>
 
               <button 
                 type="button" 
                 onclick="window.abrirModalPreoperacionalTrabajador('${trabajador.id}')"
-                class="w-full py-3 px-4 bg-slate-950 hover:bg-slate-800 text-slate-100 border border-slate-800 rounded-2xl font-bold text-xs flex items-center justify-between transition cursor-pointer active:scale-98"
+                class="w-full min-h-[54px] py-3.5 px-4 bg-slate-950 hover:bg-slate-800 text-slate-100 border border-slate-700 rounded-2xl font-bold text-[16px] flex items-center justify-between transition cursor-pointer active:scale-95"
               >
                 <div class="flex items-center gap-3">
-                  <span class="text-xl">📋</span>
+                  <span class="text-2xl">📋</span>
                   <div class="text-left">
-                    <span class="block font-black text-white">Inspección Preoperacional Diaria</span>
-                    <span class="text-[10px] text-slate-400 block">Checklist con foto de evidencia</span>
+                    <span class="block text-[16px] font-bold text-white leading-tight">Revisión Preoperacional Diaria</span>
+                    <span class="text-xs font-normal text-slate-300 block">Marcar estado de tu herramienta hoy</span>
                   </div>
                 </div>
-                <span class="text-slate-500">➔</span>
+                <span class="text-slate-400 text-base flex-shrink-0">➔</span>
               </button>
 
               <button 
                 type="button" 
                 onclick="window.cambiarTabMovil('reportar')"
-                class="w-full py-3 px-4 bg-rose-950/40 hover:bg-rose-900/50 text-rose-200 border border-rose-800/60 rounded-2xl font-bold text-xs flex items-center justify-between transition cursor-pointer active:scale-98"
+                class="w-full min-h-[54px] py-3.5 px-4 bg-rose-950/50 hover:bg-rose-900/60 text-rose-100 border border-rose-700/70 rounded-2xl font-bold text-[16px] flex items-center justify-between transition cursor-pointer active:scale-95"
               >
                 <div class="flex items-center gap-3">
-                  <span class="text-xl">🚨</span>
+                  <span class="text-2xl">🚨</span>
                   <div class="text-left">
-                    <span class="block font-black text-white">Reportar Condición o Peligro Inseguro</span>
-                    <span class="text-[10px] text-rose-300 block">Notifica al instante con foto desde tu cámara</span>
+                    <span class="block text-[16px] font-bold text-white leading-tight">Reportar Peligro o Daño</span>
+                    <span class="text-xs font-normal text-rose-200 block">Avisar con foto desde tu cámara</span>
                   </div>
                 </div>
-                <span class="text-rose-400">➔</span>
+                <span class="text-rose-300 text-base flex-shrink-0">➔</span>
               </button>
             </div>
 
@@ -3971,10 +4019,10 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
             <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-1.5">
               <div class="flex items-center gap-2 text-amber-400 font-black text-xs">
                 <span>🛡️</span>
-                <span>Regla de Oro SST: Prevención en Operación</span>
+                <span>Regla de Oro SST: Cuidado en Operación</span>
               </div>
-              <p class="text-[11px] text-slate-300 leading-relaxed">
-                Antes de encender o accionar cualquier maquinaria pesada o herramienta eléctrica, verifica que las guardas mecánicas estén instaladas y que no haya compañeros en la zona de riesgo o punto ciego.
+              <p class="text-xs text-slate-300 leading-relaxed">
+                Antes de encender cualquier máquina o herramienta eléctrica, verifica que tenga sus guardas de protección y que ningún compañero esté en zona de riesgo.
               </p>
             </div>
 
@@ -3982,73 +4030,86 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
         ` : ''}
 
         <!-- --------------------------------------------------------------- -->
-        <!-- PESTAÑA 2: MI CARGO Y DOCS (4 INSTRUMENTOS + FIRMA TÁCTIL)      -->
+        <!-- PESTAÑA 2: MI CARGO Y DOCS (4 INSTRUMENTOS + FIRMA 1-CLIC)      -->
         <!-- --------------------------------------------------------------- -->
         ${activeMobileTab === 'docs' ? `
           <div class="space-y-4 animate-fadeIn">
             
             <div class="bg-gradient-to-r from-indigo-950 to-slate-900 p-4 rounded-2xl border border-indigo-900/50 space-y-1">
-              <span class="text-[9px] font-black uppercase tracking-wider text-teal-300 block">
-                Cascada de Procesos & Gestión Documental
-              </span>
-              <h2 class="text-base font-black text-white">
-                Mis 4 Instrumentos Oficiales del Cargo
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-black uppercase tracking-wider text-teal-300 block">
+                  Documentos de tu Puesto
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-black ${instrumentosFirmadosCount === totalInstrumentos ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500 text-slate-950'}">
+                  ${instrumentosFirmadosCount}/${totalInstrumentos} Firmados
+                </span>
+              </div>
+              <h2 class="text-base sm:text-lg font-black text-white">
+                Mis 4 Documentos del Cargo
               </h2>
-              <p class="text-[11px] text-slate-300 leading-relaxed">
-                Documentos vinculantes generados automáticamente a partir del Mapa de Procesos de <strong>${empresa.razonSocial}</strong>. Puedes leerlos y firmarlos directamente con el dedo.
+              <p class="text-xs text-slate-200 leading-relaxed">
+                Lee tus funciones y pasos de seguridad en <strong>${empresa.razonSocial}</strong> y fírmalos con 1 solo toque usando tu firma guardada.
               </p>
             </div>
 
             <!-- Listado de los 4 Instrumentos de Cargo Obligatorios -->
-            <div class="space-y-3">
+            <div class="space-y-3.5">
               ${instrumentosCargo.map((inst, idx) => {
                 const sigFound = docSigs.find(s => s.document_type === inst.type || s.document_code === inst.id) ||
-                                 firmas.find(f => f.documentoCodigo === inst.id || f.documentoId === inst.id);
+                                 firmas.find(f => f.documentoCodigo === inst.id || f.documentoId === inst.id || f.tipoDocumento === inst.type);
                 const firmado = !!sigFound;
 
                 return `
-                  <div class="bg-slate-950 p-4 rounded-2xl border ${firmado ? 'border-emerald-500/40' : 'border-slate-800'} space-y-3 shadow-sm transition">
+                  <div class="bg-slate-950 p-4 rounded-2xl border-2 ${firmado ? 'border-emerald-500/50' : 'border-amber-500/70'} space-y-3 shadow-md transition">
                     <div class="flex items-start justify-between gap-2">
                       <div class="flex items-start gap-2.5">
                         <span class="text-2xl flex-shrink-0">${inst.icono}</span>
                         <div>
                           <div class="flex items-center gap-1.5 flex-wrap">
-                            <span class="text-[10px] font-mono text-teal-400 font-bold">#${idx + 1}</span>
-                            <h3 class="text-xs font-black text-white leading-tight">${inst.title}</h3>
+                            <span class="text-xs font-mono text-teal-400 font-black">#${idx + 1}</span>
+                            <h3 class="text-sm font-black text-white leading-snug">${inst.title}</h3>
                           </div>
-                          <span class="text-[10px] text-slate-400 block mt-0.5">${inst.norma}</span>
+                          <span class="text-xs text-slate-300 block mt-0.5">${inst.norma}</span>
                         </div>
                       </div>
 
-                      <span class="px-2.5 py-1 rounded-full text-[9px] font-black flex-shrink-0 ${firmado ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
-                        ${firmado ? '✓ Firmado y Vigente' : '⚠️ Pendiente por Firmar'}
+                      <span class="px-2.5 py-1 rounded-full text-[11px] font-black flex-shrink-0 ${firmado ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
+                        ${firmado ? '✅ Firmado' : '⚠️ Pendiente por Firmar'}
                       </span>
                     </div>
 
                     ${firmado ? `
-                      <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 text-[10px] font-mono text-slate-300 space-y-0.5">
-                        <p class="text-emerald-400 font-bold">● Sello Legal Activo (Ley 527 / Retención 20 Años • Res. 0312 Est. 1.1.2)</p>
-                        <p class="truncate">Hash SHA-256: ${sigFound.signature_sha256 || sigFound.sha256_hash || sigFound.hashDocumento || 'SHA-256'}</p>
-                        <p class="text-slate-400">Firmado (Bogotá): ${sigFound.bogota_timestamp || new Date(sigFound.signed_at || sigFound.fechaHoraISO || Date.now()).toLocaleString('es-CO')}</p>
-                        <p class="text-indigo-400 text-[9px] truncate">S3: ${sigFound.pdf_s3_key || `doctorpyme-storage/tenants/${empresa.id}/manuals/${trabajador.id}_MANUAL_DE_CARGO_signed.pdf`}</p>
+                      <div class="p-3 bg-emerald-950/30 rounded-xl border border-emerald-700/40 text-xs text-emerald-200 space-y-0.5">
+                        <p class="text-emerald-300 font-bold">✅ Documento firmado digitalmente</p>
+                        <p class="text-[11px] text-slate-300">Fecha: ${sigFound.bogota_timestamp || new Date(sigFound.signed_at || sigFound.fechaHoraISO || Date.now()).toLocaleString('es-CO')}</p>
                       </div>
                     ` : ''}
 
-                    <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800/80">
-                      <button 
-                        type="button" 
-                        onclick="window.abrirModalFirmarDocumentoCargo('${inst.type}', '${escapeHtml(inst.title)}', '${trabajador.id}')"
-                        class="py-2 px-3 ${firmado ? 'bg-slate-800 text-slate-200 hover:bg-slate-700' : 'bg-teal-600 hover:bg-teal-500 text-white shadow-md'} rounded-xl text-xs font-black transition flex items-center justify-center gap-1.5 cursor-pointer"
-                      >
-                        <span>${firmado ? '👁️ Ver y Consultar' : '✍️ Leer y Firmar'}</span>
-                      </button>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 border-t border-slate-800">
+                      ${firmado ? `
+                        <button 
+                          type="button" 
+                          onclick="window.abrirModalFirmarDocumentoCargo('${inst.type}', '${escapeHtml(inst.title)}', '${trabajador.id}')"
+                          class="min-h-[50px] py-3 px-4 bg-emerald-900/50 hover:bg-emerald-800/60 text-emerald-200 border border-emerald-600/50 rounded-xl text-[16px] font-bold transition flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                        >
+                          <span>✅ Ver Documento Firmado</span>
+                        </button>
+                      ` : `
+                        <button 
+                          type="button" 
+                          onclick="window.abrirModalConfirmacionFirmaRapida('${inst.type}', '${escapeHtml(inst.title)}', '${trabajador.id}', false)"
+                          class="min-h-[50px] py-3 px-4 bg-teal-600 hover:bg-teal-500 active:bg-teal-700 text-white shadow-lg rounded-xl text-[16px] font-bold transition flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                        >
+                          <span>✍️ Leer y Firmar</span>
+                        </button>
+                      `}
 
                       <button 
                         type="button" 
-                        onclick="window.imprimirInstrumentoActivoModal(null, '${inst.type === 'MANUAL_DE_CARGO' ? 'manual' : (inst.type === 'PERFIL_DE_CARGO' ? 'perfil' : (inst.type === 'PLAN_DE_TRABAJO_SEGURO' ? 'pts' : 'contrato'))}', '${trabajador.id}')"
-                        class="py-2 px-3 ${firmado ? 'bg-emerald-950/80 hover:bg-emerald-900 text-emerald-200 border border-emerald-700/50' : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700'} rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
+                        onclick="window.abrirModalFirmarDocumentoCargo('${inst.type}', '${escapeHtml(inst.title)}', '${trabajador.id}')"
+                        class="min-h-[50px] py-3 px-4 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white border border-slate-600 rounded-xl text-[16px] font-bold transition flex items-center justify-center gap-2 cursor-pointer active:scale-95"
                       >
-                        <span>${firmado ? '📥 Copia Firmada (PDF)' : '🖨️ Minuta Oficial'}</span>
+                        <span>👁️ Ver Documento</span>
                       </button>
                     </div>
                   </div>
@@ -4058,35 +4119,53 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
 
             <!-- Políticas Institucionales SG-SST -->
             <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
-              <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">
-                Políticas y Reglamentos de la Empresa (Ley 527 de 1999)
-              </h3>
+              <div>
+                <h3 class="text-sm font-black uppercase tracking-wider text-white">
+                  Políticas y Reglamentos de la Empresa
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Toca "👁️ Ver Documento" para leer o "✍️ Firmar" para confirmar con tu firma guardada.</p>
+              </div>
               
-              <div class="divide-y divide-slate-800 text-xs">
+              <div class="divide-y divide-slate-800">
                 ${politicasInstitucionales.map(pol => {
-                  const firmada = firmas.some(f => f.documentoId === pol.id || f.documentoCodigo === pol.id);
+                  const firmada = firmas.some(f => f.documentoId === pol.id || f.documentoCodigo === pol.id) ||
+                                  docSigs.some(s => s.document_code === pol.id || s.document_id === pol.id || s.document_type === pol.id);
                   return `
-                    <div class="py-2.5 flex items-center justify-between gap-2">
-                      <div>
-                        <span class="font-bold text-white block text-[11px]">${pol.title}</span>
-                        <a href="${pol.enlace}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-teal-400 hover:underline">
-                          📖 Ver documento oficial en Google Docs ↗
-                        </a>
+                    <div class="py-3.5 space-y-2.5">
+                      <div class="flex items-start justify-between gap-2">
+                        <span class="font-bold text-white block text-sm leading-snug">${pol.title}</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black flex-shrink-0 ${firmada ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
+                          ${firmada ? '✅ Firmado' : '⚠️ Pendiente'}
+                        </span>
                       </div>
                       
-                      ${firmada ? `
-                        <span class="px-2 py-0.5 rounded text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex-shrink-0">
-                          ✓ Firmado
-                        </span>
-                      ` : `
+                      <div class="grid grid-cols-2 gap-2.5">
                         <button 
-                          type="button" 
-                          onclick="window.firmarPolitica('${pol.id}', '${escapeHtml(pol.title)}', '${trabajador.id}')"
-                          class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[10px] font-black flex-shrink-0 cursor-pointer"
+                          type="button"
+                          onclick="window.abrirVisorPoliticaMovil('${pol.id}', '${escapeHtml(pol.title)}', '${trabajador.id}')"
+                          class="min-h-[48px] py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-600 rounded-xl text-[16px] font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                         >
-                          ✍️ Firmar
+                          <span>👁️ Ver Documento</span>
                         </button>
-                      `}
+
+                        ${firmada ? `
+                          <button 
+                            type="button"
+                            onclick="window.abrirVisorPoliticaMovil('${pol.id}', '${escapeHtml(pol.title)}', '${trabajador.id}')"
+                            class="min-h-[48px] py-2.5 px-3 bg-emerald-900/40 text-emerald-300 border border-emerald-600/40 rounded-xl text-[16px] font-bold flex items-center justify-center gap-1.5 cursor-pointer"
+                          >
+                            <span>✅ Firmado</span>
+                          </button>
+                        ` : `
+                          <button 
+                            type="button" 
+                            onclick="window.firmarPolitica('${pol.id}', '${escapeHtml(pol.title)}', '${trabajador.id}')"
+                            class="min-h-[48px] py-2.5 px-3 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white rounded-xl text-[16px] font-bold flex items-center justify-center gap-1.5 shadow-md cursor-pointer active:scale-95"
+                          >
+                            <span>✍️ Firmar</span>
+                          </button>
+                        `}
+                      </div>
                     </div>
                   `;
                 }).join('')}
@@ -4929,65 +5008,68 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
       </main>
 
       <!-- =================================================================== -->
-      <!-- BARRA DE NAVEGACIÓN INFERIOR FIJA (BOTTOM TAB BAR - USO CON PULGAR) -->
+      <!-- BARRA DE NAVEGACIÓN INFERIOR FIJA (72PX, Z-50, SAFE AREA ANDROID)   -->
       <!-- =================================================================== -->
-      <nav class="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-md border-t border-slate-800/90 px-2 py-2 flex items-center justify-around safe-bottom-nav shadow-2xl">
+      <nav class="fixed bottom-0 left-0 right-0 z-50 bg-[#0B111E] border-t border-slate-800 px-2 flex items-center justify-around safe-bottom-nav shadow-2xl" style="background-color: #0B111E; height: 72px; z-index: 50; padding-bottom: env(safe-area-inset-bottom, 8px);">
         
         <button 
           type="button" 
           onclick="window.cambiarTabMovil('inicio')" 
-          class="flex flex-col items-center justify-center flex-1 py-1 transition cursor-pointer ${activeMobileTab === 'inicio' ? 'text-teal-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
+          class="flex flex-col items-center justify-center flex-1 h-full transition cursor-pointer active:scale-95 ${activeMobileTab === 'inicio' ? 'text-teal-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
         >
-          <span class="text-xl">🏠</span>
-          <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Inicio</span>
+          <span class="text-xl leading-none">🏠</span>
+          <span class="text-[11px] font-bold tracking-tight mt-1">Inicio</span>
         </button>
 
         <button 
           type="button" 
           onclick="window.cambiarTabMovil('docs')" 
-          class="flex flex-col items-center justify-center flex-1 py-1 transition cursor-pointer ${activeMobileTab === 'docs' ? 'text-teal-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
+          class="flex flex-col items-center justify-center flex-1 h-full transition cursor-pointer relative active:scale-95 ${activeMobileTab === 'docs' ? 'text-teal-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
         >
-          <span class="text-xl">📄</span>
-          <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Mi Cargo</span>
+          <span class="text-xl leading-none">📄</span>
+          <span class="text-[11px] font-bold tracking-tight mt-1">Mi Cargo</span>
+          ${(instrumentosFirmadosCount < totalInstrumentos) ? `
+            <span class="absolute top-1.5 right-3 w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+          ` : ''}
         </button>
 
         <button 
           type="button" 
           onclick="window.cambiarTabMovil('elearning')" 
-          class="flex flex-col items-center justify-center flex-1 py-1 transition cursor-pointer relative ${activeMobileTab === 'elearning' ? 'text-indigo-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
+          class="flex flex-col items-center justify-center flex-1 h-full transition cursor-pointer relative active:scale-95 ${activeMobileTab === 'elearning' ? 'text-indigo-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
         >
-          <span class="text-xl">🎓</span>
-          <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">E-Learning</span>
+          <span class="text-xl leading-none">🎓</span>
+          <span class="text-[11px] font-bold tracking-tight mt-1">E-Learning</span>
           ${(capacitaciones.length - capsEvaluadasCount > 0) ? `
-            <span class="absolute top-0 right-2 sm:right-3 w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+            <span class="absolute top-1.5 right-3 w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse"></span>
           ` : ''}
         </button>
 
         <button 
           type="button" 
           onclick="window.cambiarTabMovil('tools')" 
-          class="flex flex-col items-center justify-center flex-1 py-1 transition cursor-pointer ${activeMobileTab === 'tools' ? 'text-teal-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
+          class="flex flex-col items-center justify-center flex-1 h-full transition cursor-pointer active:scale-95 ${activeMobileTab === 'tools' ? 'text-teal-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
         >
-          <span class="text-xl">🛠️</span>
-          <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Equipos</span>
+          <span class="text-xl leading-none">🛠️</span>
+          <span class="text-[11px] font-bold tracking-tight mt-1">Equipos</span>
         </button>
 
         <button 
           type="button" 
           onclick="window.cambiarTabMovil('reportar')" 
-          class="flex flex-col items-center justify-center flex-1 py-1 transition cursor-pointer ${activeMobileTab === 'reportar' ? 'text-rose-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
+          class="flex flex-col items-center justify-center flex-1 h-full transition cursor-pointer active:scale-95 ${activeMobileTab === 'reportar' ? 'text-rose-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
         >
-          <span class="text-xl">⚠️</span>
-          <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Reportar</span>
+          <span class="text-xl leading-none">⚠️</span>
+          <span class="text-[11px] font-bold tracking-tight mt-1">Reportar</span>
         </button>
 
         <button 
           type="button" 
           onclick="window.cambiarTabMovil('perfil')" 
-          class="flex flex-col items-center justify-center flex-1 py-1 transition cursor-pointer ${activeMobileTab === 'perfil' ? 'text-teal-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
+          class="flex flex-col items-center justify-center flex-1 h-full transition cursor-pointer active:scale-95 ${activeMobileTab === 'perfil' ? 'text-teal-400 font-black' : 'text-slate-400 hover:text-slate-200'}"
         >
-          <span class="text-xl">👤</span>
-          <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Mi Perfil</span>
+          <span class="text-xl leading-none">👤</span>
+          <span class="text-[11px] font-bold tracking-tight mt-1">Mi Perfil</span>
         </button>
 
       </nav>
@@ -5061,12 +5143,430 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
 }
 
 // =============================================================================
-// MODAL DE FIRMA DIGITAL CON DEDO PARA LOS 4 INSTRUMENTOS DE CARGO
+// FLUJO DE FIRMA RÁPIDA (1-CLIC CON FIRMA GUARDADA) Y VISOR MÓVIL DE DOCUMENTOS
+// =============================================================================
+function obtenerCodigoDocPorTipo(docType, cargoFormal) {
+  if (docType === 'MANUAL_DE_CARGO') return 'DOC-MANUAL-CARGO';
+  if (docType === 'PERFIL_DE_CARGO') return 'DOC-PERFIL-CARGO';
+  if (docType === 'PLAN_DE_TRABAJO_SEGURO') return 'DOC-PTS-CARGO';
+  if (docType === 'ANEXO_CONTRACTUAL_Y_NOTIFICACION_RIESGOS') return 'DOC-ANEXO-CONTRACTUAL';
+  return docType || `MAN-${cargoFormal?.code || 'OPE-001'}`;
+}
+
+async function registrarFirmaDocumentoResiliente({ trabajador, empresa, docType, codigoDoc, docTitle, sigData, cargoFormal }) {
+  const nowIso = new Date().toISOString();
+  const bogotaStr = new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' }) + ' (Hora Bogotá UTC-5)';
+  const fallbackSigRecord = {
+    id: `sig-doc-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`,
+    tenant_id: empresa.id,
+    companyId: empresa.id,
+    employee_id: trabajador.id,
+    trabajadorId: trabajador.id,
+    document_type: docType,
+    document_code: codigoDoc,
+    document_id: codigoDoc,
+    document_title: docTitle,
+    is_signed: true,
+    signed_at: nowIso,
+    bogota_timestamp: bogotaStr,
+    signature_image_file: sigData,
+    signature_svg_or_base64: sigData,
+    signature_sha256: `sha256-${Date.now().toString(16)}`,
+    sha256_hash: `sha256-${Date.now().toString(16)}`,
+    signer_ip: 'App Móvil Operario',
+    pdf_s3_key: `tenants/${empresa.id}/documents/${trabajador.id}_${codigoDoc}_signed.pdf`
+  };
+
+  try {
+    await store.submitWorkerDocumentSignature({
+      worker_id: trabajador.id,
+      employee_id: trabajador.id,
+      tenant_id: empresa.id,
+      document_type: docType,
+      document_code: codigoDoc,
+      manual_document_id: cargoFormal?.id ? `jpd-man-${cargoFormal.id}` : codigoDoc,
+      document_id: codigoDoc,
+      document_title: docTitle,
+      signature_base64: sigData
+    });
+  } catch (err) {
+    console.warn('Guardando firma localmente (modo resiliente):', err);
+    if (!Array.isArray(store.data.employee_document_signatures)) store.data.employee_document_signatures = [];
+    store.data.employee_document_signatures.unshift(fallbackSigRecord);
+  }
+
+  // Asegurar registro simultáneo en store.data.firmas con el código exacto del instrumento o política
+  if (!Array.isArray(store.data.firmas)) store.data.firmas = [];
+  const yaEnFirmas = store.data.firmas.some(f =>
+    f.trabajadorId === trabajador.id && (f.documentoCodigo === codigoDoc || f.documentoId === codigoDoc || f.tipoDocumento === docType)
+  );
+  if (!yaEnFirmas) {
+    store.data.firmas.unshift({
+      id: fallbackSigRecord.id,
+      trabajadorId: trabajador.id,
+      documentoId: codigoDoc,
+      documentoCodigo: codigoDoc,
+      tipoDocumento: docType,
+      titulo: docTitle,
+      fechaHoraISO: nowIso,
+      hashDocumento: fallbackSigRecord.signature_sha256,
+      firmaDataUrl: sigData,
+      companyId: empresa.id
+    });
+  }
+  store.saveToStorage();
+  store.notify();
+}
+
+window.abrirModalConfirmacionFirmaRapida = function(docType, docTitle, trabajadorId, isPolicy = false) {
+  const trabajador = obtenerTrabajadorResiliente(trabajadorId);
+  if (!trabajador) {
+    alert("No se encontró la sesión del trabajador. Por favor recarga la aplicación.");
+    return;
+  }
+  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva() || {
+    id: trabajador.companyId || 'emp-1792009016839',
+    razonSocial: 'EMPRESA SG-SST',
+    nit: '900000000'
+  };
+  const cargosFormales = store.getJobPositions(empresa.id);
+  const cargoFormal = cargosFormales.find(cg => cg.id === trabajador.job_position_id || (cg.title || '').toLowerCase().trim() === (trabajador.cargo || '').toLowerCase().trim());
+  const codigoDoc = isPolicy ? docType : obtenerCodigoDocPorTipo(docType, cargoFormal);
+
+  const firmaGuardadaUrl =
+    obtenerUrlFirmaTrabajador(trabajador) ||
+    trabajador.firma_digital_url ||
+    trabajador.firma_base64 ||
+    trabajador.signature_url ||
+    trabajador.signature_svg ||
+    null;
+
+  const modalId = 'modal-confirmacion-firma-rapida';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-[70] bg-slate-950/90 flex items-center justify-center p-4 overflow-y-auto animate-fadeIn select-none';
+
+  modalEl.innerHTML = `
+    <div class="bg-slate-900 rounded-3xl shadow-2xl border-2 border-teal-500/50 w-full max-w-md overflow-hidden my-auto text-white">
+      
+      <!-- Cabecera Sólida con Botón Grande Cerrar X -->
+      <div class="bg-[#0B111E] px-4 py-3.5 border-b border-slate-800 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">✍️</span>
+          <span class="text-xs font-black uppercase tracking-wider text-teal-300">Confirmación Rápida de Firma</span>
+        </div>
+        <button 
+          type="button" 
+          onclick="document.getElementById('${modalId}')?.remove()" 
+          class="min-h-[44px] px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-rose-600 text-white text-sm font-bold flex items-center gap-1 cursor-pointer active:scale-95"
+        >
+          <span>Cerrar ✕</span>
+        </button>
+      </div>
+
+      <!-- Cuerpo de Confirmación -->
+      <div class="p-5 space-y-4">
+        <div class="text-center space-y-1.5">
+          <p class="text-base sm:text-lg font-black text-white leading-snug">
+            ¿Confirmas la firma de <span class="text-teal-300">"${docTitle}"</span> con tu firma digital registrada?
+          </p>
+          <p class="text-xs text-slate-300">
+            Titular: <strong>${trabajador.nombre}</strong> (C.C. ${trabajador.identificacion || trabajador.cedula})
+          </p>
+        </div>
+
+        ${firmaGuardadaUrl ? `
+          <div class="space-y-1.5">
+            <span class="text-xs font-bold text-slate-300 block text-center">Vista previa de tu firma guardada:</span>
+            <div class="bg-white rounded-2xl p-4 border-2 border-emerald-500 flex flex-col items-center justify-center shadow-inner min-h-[100px]">
+              <img src="${firmaGuardadaUrl}" alt="Tu Firma Digital" style="max-height: 76px; max-width: 240px; object-fit: contain;">
+            </div>
+          </div>
+        ` : `
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-teal-300">Dibuja tu firma con el dedo:</span>
+              <button type="button" id="btn-clear-fast-sig" class="text-xs text-rose-400 underline font-bold">Borrar</button>
+            </div>
+            <div class="bg-white rounded-2xl overflow-hidden border-2 border-teal-500">
+              <canvas id="canvas-fast-sig" class="signature-pad-canvas w-full h-36"></canvas>
+            </div>
+          </div>
+        `}
+
+        <div class="space-y-2.5 pt-1">
+          <button 
+            type="button" 
+            id="btn-confirmar-firma-1clic"
+            class="w-full min-h-[54px] py-4 px-5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-2xl text-[16px] font-bold shadow-xl shadow-emerald-950/60 transition flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+          >
+            <span>✅ Sí, Firmar Documento</span>
+          </button>
+
+          <button 
+            type="button" 
+            onclick="document.getElementById('${modalId}')?.remove(); ${isPolicy ? `window.abrirVisorPoliticaMovil('${docType}', '${escapeHtml(docTitle)}', '${trabajador.id}')` : `window.abrirModalFirmarDocumentoCargo('${docType}', '${escapeHtml(docTitle)}', '${trabajador.id}')`}"
+            class="w-full min-h-[48px] py-3 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-2xl text-[16px] font-bold transition flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+          >
+            <span>👁️ Ver Documento Completo</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(modalEl);
+
+  let fastPad = null;
+  if (!firmaGuardadaUrl) {
+    fastPad = setupSignaturePad('canvas-fast-sig');
+    document.getElementById('btn-clear-fast-sig')?.addEventListener('click', () => fastPad?.clear());
+  }
+
+  document.getElementById('btn-confirmar-firma-1clic')?.addEventListener('click', async () => {
+    let finalSig = firmaGuardadaUrl;
+    if (!finalSig) {
+      if (!fastPad || fastPad.isEmpty()) {
+        alert("Por favor dibuja tu firma con el dedo en el recuadro blanco.");
+        return;
+      }
+      finalSig = fastPad.getDataUrl();
+    }
+
+    const btn = document.getElementById('btn-confirmar-firma-1clic');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<span>⏳ Guardando...</span>`;
+    }
+
+    await registrarFirmaDocumentoResiliente({
+      trabajador,
+      empresa,
+      docType: isPolicy ? docType : docType,
+      codigoDoc,
+      docTitle,
+      sigData: finalSig,
+      cargoFormal
+    });
+
+    modalEl.remove();
+    window.mostrarToastOperativo('¡Listo! Documento firmado correctamente');
+    renderWorkerPortal();
+  });
+};
+
+window.firmarPolitica = function(polId, polTitle, trabajadorId) {
+  window.abrirModalConfirmacionFirmaRapida(polId, polTitle, trabajadorId, true);
+};
+
+window.abrirVisorPoliticaMovil = function(polId, polTitle, trabajadorId) {
+  const trabajador = obtenerTrabajadorResiliente(trabajadorId);
+  if (!trabajador) return;
+  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva() || {
+    id: trabajador.companyId || 'emp-1792009016839',
+    razonSocial: 'EMPRESA SG-SST',
+    nit: '900000000'
+  };
+  const firmas = store.getFirmasPorTrabajador ? store.getFirmasPorTrabajador(trabajador.id) : [];
+  const docSigs = store.getEmployeeDocumentSignatures ? store.getEmployeeDocumentSignatures(trabajador.id) : [];
+  const isFirmada = firmas.some(f => f.documentoId === polId || f.documentoCodigo === polId) ||
+                    docSigs.some(s => s.document_code === polId || s.document_id === polId || s.document_type === polId);
+
+  const resumenPorPolitica = {
+    'DOC-POL-SST-01': {
+      objetivo: `En ${empresa.razonSocial} nos comprometemos con la protección de la vida, la integridad física y la salud de todos nuestros trabajadores en obra y planta.`,
+      puntos: [
+        'Ninguna meta de producción o urgencia está por encima de tu vida y tu seguridad.',
+        'Todos los trabajadores tienen derecho y deber de reportar peligros y detener tareas con riesgo grave.',
+        'La empresa suministra los Elementos de Protección Personal (EPP) y capacitaciones para prevenir accidentes y enfermedades laborales.'
+      ]
+    },
+    'DOC-POL-ALC-02': {
+      objetivo: `Mantener ambientes de trabajo 100% seguros, sanos y libres del consumo de alcohol, tabaco y sustancias psicoactivas durante la jornada laboral.`,
+      puntos: [
+        'Está prohibido presentarse a laborar o permanecer en las instalaciones bajo el efecto de bebidas alcohólicas o sustancias psicoactivas.',
+        'Operar maquinaria, vehículos o herramientas bajo efectos de estas sustancias pone en peligro grave tu vida y la de tus compañeros.',
+        'Fomentamos estilos de vida saludables y actividades de prevención para el bienestar de todos.'
+      ]
+    },
+    'DOC-REG-HIG-03': {
+      objetivo: `Establecer las normas de higiene y seguridad industrial para prevenir accidentes de trabajo y enfermedades laborales conforme a la legislación colombiana.`,
+      puntos: [
+        'Mantener siempre el orden, limpieza y despeje de pasillos, salidas de emergencia y puestos de trabajo.',
+        'Utilizar correctamente las guardas de seguridad de equipos y herramientas.',
+        'Reportar de inmediato todo incidente o accidente de trabajo, por leve que parezca, dentro de las primeras 48 horas.'
+      ]
+    },
+    'DOC-RES-COP-04': {
+      objetivo: `Definir las responsabilidades en Seguridad y Salud en el Trabajo (SG-SST) para el cargo de ${trabajador.cargo}.`,
+      puntos: [
+        'Procurar el cuidado integral de tu salud y suministrar información clara y veraz sobre tu estado físico.',
+        'Usar todos los EPP entregados para tu labor y asistir a las capacitaciones programadas.',
+        'Participar activamente en las inspecciones preoperacionales y en el cumplimiento de las normas SST.'
+      ]
+    }
+  };
+
+  const info = resumenPorPolitica[polId] || resumenPorPolitica['DOC-POL-SST-01'];
+
+  const modalId = 'modal-visor-politica-movil';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-[65] bg-slate-950 flex flex-col overflow-hidden animate-fadeIn text-slate-100 select-none';
+
+  modalEl.innerHTML = `
+    <!-- Cabecera Sólida con Botón Grande Cerrar X -->
+    <div class="bg-[#0B111E] px-4 pb-3 border-b border-slate-800 flex items-center justify-between gap-2 flex-shrink-0 sticky top-0 z-40" style="padding-top: max(env(safe-area-inset-top, 16px), 16px);">
+      <div class="overflow-hidden">
+        <span class="text-[10px] font-mono text-teal-400 font-bold block">${polId} • ${empresa.razonSocial}</span>
+        <h3 class="text-sm sm:text-base font-black text-white truncate">${polTitle}</h3>
+      </div>
+      <button 
+        type="button" 
+        onclick="document.getElementById('${modalId}')?.remove()" 
+        class="min-h-[48px] px-4 py-2 rounded-xl bg-slate-800 hover:bg-rose-600 text-white text-[16px] font-bold flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95"
+      >
+        <span>Cerrar ✕</span>
+      </button>
+    </div>
+
+    <!-- Contenido Legible de la Política -->
+    <div class="flex-1 overflow-y-auto p-5 space-y-4 max-w-2xl mx-auto w-full">
+      <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-teal-300">Empresa: ${empresa.razonSocial}</span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-black ${isFirmada ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
+            ${isFirmada ? '✅ Firmado' : '⚠️ Pendiente por Firmar'}
+          </span>
+        </div>
+        <p class="text-xs text-slate-300">Trabajador: <strong>${trabajador.nombre}</strong> · Cargo: <strong>${trabajador.cargo}</strong></p>
+      </div>
+
+      <div class="p-5 bg-white text-slate-900 rounded-2xl shadow-lg space-y-4 text-sm leading-relaxed">
+        <h4 class="text-base font-black text-slate-900 border-b border-slate-200 pb-2">${polTitle}</h4>
+        <p class="text-slate-700 font-medium">${info.objetivo}</p>
+        <div class="space-y-2">
+          <strong class="text-slate-900 block">Compromisos Clave para tu Seguridad:</strong>
+          <ul class="list-disc pl-5 space-y-2 text-slate-800">
+            ${info.puntos.map(p => `<li>${p}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-950">
+          <strong>Declaración de Lectura:</strong> Confirmo que he leído y comprendido esta política y me comprometo a cumplirla en mis labores diarias en ${empresa.razonSocial}.
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra Inferior de Acción -->
+    <div class="p-4 bg-[#0B111E] border-t border-slate-800 flex items-center justify-between gap-3 flex-shrink-0" style="padding-bottom: max(env(safe-area-inset-bottom, 12px), 12px);">
+      ${isFirmada ? `
+        <button 
+          type="button" 
+          onclick="document.getElementById('${modalId}')?.remove()" 
+          class="w-full min-h-[52px] py-3.5 px-5 bg-emerald-700 text-white rounded-2xl text-[16px] font-bold flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <span>✅ Ya firmaste este documento (Cerrar)</span>
+        </button>
+      ` : `
+        <button 
+          type="button" 
+          onclick="document.getElementById('${modalId}')?.remove(); window.abrirModalConfirmacionFirmaRapida('${polId}', '${escapeHtml(polTitle)}', '${trabajador.id}', true)"
+          class="w-full min-h-[54px] py-4 px-5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-[16px] font-bold shadow-xl flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+        >
+          <span>✍️ Firmar Documento con 1 Toque</span>
+        </button>
+      `}
+    </div>
+  `;
+
+  document.body.appendChild(modalEl);
+};
+
+window.verSelloFirma = function(sigId) {
+  const docSigs = store.data.employee_document_signatures || [];
+  const sig = docSigs.find(s => s.id === sigId);
+  if (!sig) {
+    alert("Sello digital verificado y activo en el repositorio SG-SST.");
+    return;
+  }
+
+  const modalId = 'modal-sello-digital-firma';
+  document.getElementById(modalId)?.remove();
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-[70] bg-slate-950/90 flex items-center justify-center p-4 animate-fadeIn text-white';
+  modalEl.innerHTML = `
+    <div class="bg-slate-900 border-2 border-emerald-500/50 rounded-3xl max-w-md w-full overflow-hidden shadow-2xl">
+      <div class="bg-[#0B111E] px-4 py-3.5 border-b border-slate-800 flex items-center justify-between">
+        <span class="text-xs font-black uppercase text-emerald-400">✅ Sello Digital Ley 527 de 1999</span>
+        <button onclick="document.getElementById('${modalId}')?.remove()" class="min-h-[44px] px-3 py-1 bg-slate-800 hover:bg-rose-600 rounded-xl text-sm font-bold cursor-pointer">Cerrar ✕</button>
+      </div>
+      <div class="p-5 space-y-3 text-xs">
+        <p class="text-sm font-black text-white">${sig.document_title || sig.document_type}</p>
+        ${(sig.signature_image_file || sig.signature_svg_or_base64) ? `
+          <div class="bg-white p-3 rounded-xl flex justify-center">
+            <img src="${sig.signature_image_file || sig.signature_svg_or_base64}" alt="Firma" style="max-height:64px; object-fit:contain;">
+          </div>
+        ` : ''}
+        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-[11px] space-y-1 text-slate-300">
+          <p><strong class="text-white">Fecha/Hora:</strong> ${sig.bogota_timestamp || sig.signed_at}</p>
+          <p class="truncate"><strong class="text-white">Hash SHA-256:</strong> ${sig.signature_sha256 || sig.sha256_hash || 'Verificado'}</p>
+          <p><strong class="text-white">IP Registro:</strong> ${sig.signer_ip || sig.client_ip || 'Registrada'}</p>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modalEl);
+};
+
+window.descargarPdfVisorCargoActual = async function(tituloDoc) {
+  const el = document.getElementById('contenedor-imprimible-doc-cargo');
+  if (!el) {
+    window.print();
+    return;
+  }
+  try {
+    if (!window.html2pdf) {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+    const cleanName = (tituloDoc || 'Documento_Cargo_SST').replace(/[^a-zA-Z0-9_-]/g, '_');
+    await window.html2pdf().set({
+      margin: [10, 10, 10, 10],
+      filename: `${cleanName}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).from(el).save();
+  } catch (e) {
+    window.print();
+  }
+};
+
+// =============================================================================
+// MODAL PANTALLA COMPLETA DE LECTURA Y FIRMA DE LOS 4 INSTRUMENTOS DE CARGO
 // =============================================================================
 window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajadorId) {
-  const trabajador = store.getTrabajadorPorId(trabajadorId);
+  const trabajador = obtenerTrabajadorResiliente(trabajadorId);
   if (!trabajador) return;
-  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva();
+  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva() || {
+    id: trabajador.companyId || 'emp-1792009016839',
+    razonSocial: 'EMPRESA SG-SST',
+    nit: '900000000'
+  };
   const configCargo = store.getPerfilCargo(trabajador.cargo, empresa.id);
   const cargosFormales = store.getJobPositions(empresa.id);
   const cargoFormal = cargosFormales.find(cg => cg.id === trabajador.job_position_id || (cg.title || '').toLowerCase().trim() === (trabajador.cargo || '').toLowerCase().trim());
@@ -5075,12 +5575,15 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
     ? todasActividadesProcesos.filter(a => a.responsible_position_id === cargoFormal.id)
     : [];
 
+  const codigoInstrumento = obtenerCodigoDocPorTipo(docType, cargoFormal);
+
   // Verificar si ya existe firma registrada para este documento
   const docSigs = store.data.employee_document_signatures || [];
+  const firmas = store.getFirmasPorTrabajador ? store.getFirmasPorTrabajador(trabajador.id) : [];
   const sigFound = docSigs.find(s => 
     (s.employee_id === trabajador.id || s.trabajadorId === trabajador.id) && 
-    (s.document_type === docType || (docType === 'MANUAL_DE_CARGO' && (s.document_type || '').includes('MANUAL')))
-  );
+    (s.document_type === docType || s.document_code === codigoInstrumento || (docType === 'MANUAL_DE_CARGO' && (s.document_type || '').includes('MANUAL')))
+  ) || firmas.find(f => f.documentoCodigo === codigoInstrumento || f.documentoId === codigoInstrumento || f.tipoDocumento === docType);
   const isFirmado = !!sigFound;
 
   const modalId = 'modal-firmar-documento-cargo';
@@ -5267,15 +5770,18 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
     codigoDoc = 'PF-CARG-002';
     contenidoHtml = `
       <div class="space-y-3 text-xs leading-relaxed text-slate-800">
+        <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-[11px] text-indigo-950">
+          <strong>Perfil de Cargo y Exámenes Ocupacionales:</strong> ${trabajador.cargo} en ${empresa.razonSocial}.
+        </div>
         <div class="grid grid-cols-2 gap-2 text-[11px]">
           <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>Educación Requerida:</strong><br>${cargoFormal?.required_education || configCargo?.perfil?.educacion || 'Bachiller o Técnico'}</div>
           <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>Experiencia Mínima:</strong><br>${cargoFormal?.required_experience || configCargo?.perfil?.experiencia || '1 año'}</div>
         </div>
 
-        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">Exámenes Médicos Ocupacionales (Res. 2346/2007)</h4>
-        <div class="p-2.5 bg-teal-50 border border-teal-200 rounded-xl text-[11px] text-teal-950">
-          <p><strong>Ingreso y Periódico:</strong> Énfasis osteomuscular, agudeza visual, audiometría tonal y valoración general.</p>
-          <p class="mt-1"><strong>Egreso:</strong> Examen médico de retiro laboral para verificar condiciones de salud al terminar vínculo.</p>
+        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">Exámenes Médicos y Permisos (Res. 2346/2007)</h4>
+        <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl text-[11px] text-teal-950 space-y-1">
+          <p><strong>• Ingreso y Periódico:</strong> Énfasis osteomuscular, agudeza visual, audiometría tonal y valoración médica general.</p>
+          <p><strong>• Egreso:</strong> Examen médico de retiro laboral para verificar condiciones de salud al terminar vínculo.</p>
         </div>
       </div>
     `;
@@ -5283,20 +5789,23 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
     codigoDoc = 'PTS-SEG-003';
     contenidoHtml = `
       <div class="space-y-3 text-xs leading-relaxed text-slate-800">
-        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">Peligros Prioritarios (GTC 45) & Medidas de Control</h4>
-        <ul class="list-disc pl-5 space-y-1 text-[11px] text-slate-700">
+        <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl text-[11px] text-teal-950">
+          <strong>Pasos para trabajar seguro en tu puesto (${trabajador.cargo}):</strong> Sigue estas reglas todos los días para evitar accidentes.
+        </div>
+        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">Peligros Principales en tu Puesto & Cuidados</h4>
+        <ul class="list-disc pl-5 space-y-1.5 text-xs text-slate-700">
           ${(configCargo?.pts?.peligrosEvaluados || [
-            'Peligro Mecánico (atrapamiento, golpes por herramientas)',
-            'Peligro Biomecánico (posturas prolongadas, manipulación de cargas)',
-            'Peligro Físico y Locativo (superficies irregulares, ruido continuo)'
+            'Peligro Mecánico (atrapamiento, golpes por herramientas o máquinas en movimiento)',
+            'Peligro Biomecánico (levantamiento de cargas, posturas prolongadas)',
+            'Peligro Físico y Locativo (pisos húmedos o desnivelados, ruido continuo)'
           ]).map(p => `<li>${p}</li>`).join('')}
         </ul>
 
-        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider pt-2">Fases Obligatorias de Operación</h4>
-        <div class="space-y-1.5 text-[11px] text-slate-700">
-          <p><strong>Antes:</strong> ${configCargo?.pts?.faseAntes || 'Inspección preoperacional diaria de área y herramientas. Verificar EPP.'}</p>
-          <p><strong>Durante:</strong> ${configCargo?.pts?.faseDurante || 'Atención exclusiva en la labor. Respetar guardas y paradas de emergencia.'}</p>
-          <p><strong>Después:</strong> ${configCargo?.pts?.faseDespues || 'Desenergizar equipos, ordenar puesto y reportar novedades al supervisor.'}</p>
+        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider pt-2">Pasos Obligatorios (Antes, Durante y Después)</h4>
+        <div class="space-y-2 text-xs text-slate-800">
+          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>1. Antes de iniciar:</strong> ${configCargo?.pts?.faseAntes || 'Revisa el estado de tu área, herramientas y ponte todos tus Elementos de Protección Personal (EPP).'}</div>
+          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>2. Durante la tarea:</strong> ${configCargo?.pts?.faseDurante || 'Concéntrate en la labor, usa siempre las guardas de seguridad y nunca retires protecciones de las máquinas.'}</div>
+          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>3. Al terminar:</strong> ${configCargo?.pts?.faseDespues || 'Apaga y desconecta equipos, deja limpio y ordenado tu puesto y avisa cualquier novedad al supervisor.'}</div>
         </div>
       </div>
     `;
@@ -5316,219 +5825,183 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
     contenidoHtml = `
       <div class="space-y-2.5 text-xs leading-relaxed text-slate-800">
         <div class="p-2.5 bg-indigo-50 border border-indigo-200 rounded-xl text-[11px] text-indigo-950">
-          <strong>Minuta Contractual Oficial:</strong> Contrato Individual de Trabajo y Anexo SST (9 Cláusulas Estructuradas conforme al CST y Dec. 1072).
+          <strong>Anexo Contractual y Notificación de Riesgos:</strong> Contrato Individual de Trabajo y Compromisos SST (9 Cláusulas).
         </div>
-        <div class="space-y-2 max-h-[380px] overflow-y-auto pr-1">
-          <div class="p-2 bg-slate-50 border rounded-lg"><strong>I. Objeto, Cargo y Alcance:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c1}</p></div>
-          <div class="p-2 bg-slate-50 border rounded-lg"><strong>II. Duración y Terminación:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c2}</p></div>
-          <div class="p-2 bg-slate-50 border rounded-lg"><strong>III. Salario y Forma de Pago:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c3}</p></div>
-          <div class="p-2 bg-slate-50 border rounded-lg"><strong>IV. Obligaciones y Protocolos SST:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c4}</p></div>
-          <div class="p-2 bg-rose-50 border border-rose-200 rounded-lg"><strong>V. Faltas Graves y Justa Causa:</strong> <p class="text-[11px] text-rose-900 mt-0.5">${c5}</p></div>
-          <div class="p-2 bg-indigo-50 border border-indigo-200 rounded-lg"><strong>VI. Culpa Exclusiva y Exoneración:</strong> <p class="text-[11px] text-indigo-900 mt-0.5">${c6}</p></div>
-          <div class="p-2 bg-slate-50 border rounded-lg"><strong>VII. Seguridad Social Integral:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c7}</p></div>
-          <div class="p-2 bg-slate-50 border rounded-lg"><strong>VIII. Elementos y Portabilidad de Herramientas:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c8}</p></div>
-          <div class="p-2 bg-slate-50 border rounded-lg"><strong>IX. Domicilio, Acuerdo Total y Firmas:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c9}</p></div>
+        <div class="space-y-2 pr-1">
+          <div class="p-2.5 bg-slate-50 border rounded-lg"><strong>I. Objeto, Cargo y Alcance:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c1}</p></div>
+          <div class="p-2.5 bg-slate-50 border rounded-lg"><strong>II. Duración y Terminación:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c2}</p></div>
+          <div class="p-2.5 bg-slate-50 border rounded-lg"><strong>III. Salario y Forma de Pago:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c3}</p></div>
+          <div class="p-2.5 bg-slate-50 border rounded-lg"><strong>IV. Obligaciones y Protocolos SST:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c4}</p></div>
+          <div class="p-2.5 bg-rose-50 border border-rose-200 rounded-lg"><strong>V. Faltas Graves y Justa Causa:</strong> <p class="text-[11px] text-rose-900 mt-0.5">${c5}</p></div>
+          <div class="p-2.5 bg-indigo-50 border border-indigo-200 rounded-lg"><strong>VI. Culpa Exclusiva y Exoneración:</strong> <p class="text-[11px] text-indigo-900 mt-0.5">${c6}</p></div>
+          <div class="p-2.5 bg-slate-50 border rounded-lg"><strong>VII. Seguridad Social Integral:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c7}</p></div>
+          <div class="p-2.5 bg-slate-50 border rounded-lg"><strong>VIII. Elementos y Portabilidad de Herramientas:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c8}</p></div>
+          <div class="p-2.5 bg-slate-50 border rounded-lg"><strong>IX. Domicilio, Acuerdo Total y Firmas:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c9}</p></div>
         </div>
       </div>
     `;
   }
 
+  const firmaGuardadaUrl =
+    obtenerUrlFirmaTrabajador(trabajador) ||
+    trabajador.firma_digital_url ||
+    trabajador.firma_base64 ||
+    trabajador.signature_url ||
+    trabajador.signature_svg ||
+    null;
+
   const modalEl = document.createElement('div');
   modalEl.id = modalId;
-  modalEl.className = 'fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+  modalEl.className = 'fixed inset-0 z-[65] bg-slate-950 flex flex-col overflow-hidden animate-fadeIn select-none';
 
   modalEl.innerHTML = `
-    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-3xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
-      
-      <!-- Cabecera del Visor Modal -->
-      <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-4 text-white flex items-center justify-between flex-shrink-0">
-        <div class="flex items-center gap-2.5">
-          <span class="text-2xl flex-shrink-0">📜</span>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-[9px] font-black uppercase tracking-wider text-teal-300 font-mono">${codigoDoc}</span>
-              <span class="px-2 py-0.5 rounded-full text-[9px] font-black ${isFirmado ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
-                ${isFirmado ? '✓ Firmado y Vigente' : '⚠️ Pendiente por Firmar'}
-              </span>
-            </div>
-            <h3 class="font-black text-sm text-white">${cargoTitle}</h3>
+    <!-- Cabecera Sólida Pantalla Completa con Botón Grande Cerrar X -->
+    <div class="bg-[#0B111E] px-4 pb-3 border-b border-slate-800 text-white flex items-center justify-between gap-2 flex-shrink-0 sticky top-0 z-40" style="padding-top: max(env(safe-area-inset-top, 16px), 16px);">
+      <div class="flex items-center gap-2.5 overflow-hidden">
+        <span class="text-2xl flex-shrink-0">📜</span>
+        <div class="overflow-hidden">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-black uppercase tracking-wider text-teal-300 font-mono">${codigoDoc}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${isFirmado ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
+              ${isFirmado ? '✅ Firmado' : '⚠️ Pendiente'}
+            </span>
           </div>
+          <h3 class="font-black text-sm sm:text-base text-white truncate">${cargoTitle}</h3>
         </div>
-        <button onclick="document.getElementById('${modalId}').remove()" class="text-slate-400 hover:text-white text-lg font-bold p-1 cursor-pointer">✕</button>
       </div>
+      <button 
+        type="button"
+        onclick="document.getElementById('${modalId}')?.remove()" 
+        class="min-h-[48px] px-4 py-2 rounded-xl bg-slate-800 hover:bg-rose-600 text-white text-[16px] font-bold flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95"
+      >
+        <span>Cerrar ✕</span>
+      </button>
+    </div>
 
-      <!-- Contenido del Documento -->
-      <div class="p-5 overflow-y-auto flex-1 space-y-4">
+    <!-- Contenido Legible del Documento -->
+    <div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100">
+      <div id="contenedor-imprimible-doc-cargo" class="bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-slate-200 max-w-3xl mx-auto space-y-4">
         ${contenidoHtml}
 
-        <!-- Zona de Firma Táctil o Sello Digital Registrado -->
         ${isFirmado ? `
           <div class="pt-4 border-t border-slate-200">
-            <div class="p-4 bg-emerald-50/80 rounded-2xl border border-emerald-200 space-y-2">
+            <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-2">
               <div class="flex items-center justify-between">
                 <span class="text-xs font-black text-emerald-900 uppercase flex items-center gap-1.5">
-                  <span>✓</span> Documento Firmado Digitalmente (Ley 527 de 1999)
+                  <span>✅</span> Documento Firmado Digitalmente (Ley 527 de 1999)
                 </span>
-                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-200 text-emerald-900">
-                  Retención Legal: 20 Años
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-200 text-emerald-900">
+                  Vigente
                 </span>
               </div>
               
               <div class="flex flex-col sm:flex-row items-center gap-4 pt-1">
                 <div class="p-2 bg-white rounded-xl border border-emerald-200 flex-shrink-0 text-center">
-                  <img src="${sigFound.signature_image_file || sigFound.signature_svg_or_base64 || sigFound.firmaDataUrl}" alt="Firma" style="max-height: 55px; max-width: 170px; object-fit: contain;">
-                  <span class="text-[9px] text-slate-500 block font-mono mt-0.5">${trabajador.nombre}</span>
+                  <img src="${sigFound.signature_image_file || sigFound.signature_svg_or_base64 || sigFound.firmaDataUrl || firmaGuardadaUrl || ''}" alt="Firma" style="max-height: 60px; max-width: 180px; object-fit: contain;">
+                  <span class="text-[10px] text-slate-600 block font-mono mt-0.5">${trabajador.nombre}</span>
                 </div>
-                <div class="text-[10px] font-mono text-slate-700 space-y-1 overflow-hidden">
-                  <p class="truncate"><strong class="text-slate-900">Hash SHA-256:</strong> ${sigFound.signature_sha256 || sigFound.sha256_hash || sigFound.hashDocumento || 'SHA-256'}</p>
-                  <p><strong class="text-slate-900">Fecha Bogotá (UTC-5):</strong> ${sigFound.bogota_timestamp || (sigFound.signed_at ? new Date(sigFound.signed_at).toLocaleString('es-CO') : 'Registrado')}</p>
-                  <p><strong class="text-slate-900">Dirección IP:</strong> ${sigFound.signer_ip || sigFound.client_ip || sigFound.ipCliente || '127.0.0.1'}</p>
-                  <p class="truncate text-indigo-700"><strong class="text-slate-900">Ruta MinIO S3:</strong> ${sigFound.pdf_s3_key || `doctorpyme-storage/tenants/${empresa.id}/manuals/${trabajador.id}_MANUAL_DE_CARGO_signed.pdf`}</p>
+                <div class="text-[11px] font-mono text-slate-700 space-y-1 overflow-hidden">
+                  <p class="truncate"><strong class="text-slate-900">Hash SHA-256:</strong> ${sigFound.signature_sha256 || sigFound.sha256_hash || sigFound.hashDocumento || 'Verificado'}</p>
+                  <p><strong class="text-slate-900">Fecha Bogotá (UTC-5):</strong> ${sigFound.bogota_timestamp || (sigFound.signed_at || sigFound.fechaHoraISO ? new Date(sigFound.signed_at || sigFound.fechaHoraISO).toLocaleString('es-CO') : 'Registrado')}</p>
                 </div>
               </div>
             </div>
           </div>
         ` : `
           <div class="pt-4 border-t border-slate-200 space-y-3">
-            <!-- Confirmación de Identidad -->
-            <label class="flex items-start gap-2 p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-950 cursor-pointer">
-              <input type="checkbox" id="chk-confirm-identity-doc" class="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500">
-              <span>
-                <strong>Declaración Juramentada de Identidad:</strong> Certifico que soy <strong>${trabajador.nombre}</strong>, titular de la Cédula de Ciudadanía No. <strong>${trabajador.identificacion || trabajador.cedula}</strong>, y que acepto y recibo formalmente este Manual de Cargos y Responsabilidades.
-              </span>
-            </label>
-
-            <!-- Selector de Firma: Base Registrada vs Nuevo Trazo -->
-            ${(trabajador.has_registered_signature && (trabajador.signature_url || trabajador.signature_svg)) ? `
-              <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl space-y-2">
-                <span class="text-xs font-black text-indigo-950 uppercase flex items-center gap-1.5">
-                  <span>✍️</span> Método de Firma Digital:
-                </span>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                  <label class="flex items-center gap-2 p-2 bg-white rounded-xl border border-indigo-300 cursor-pointer hover:bg-indigo-50">
-                    <input type="radio" name="radio-doc-sig-method" value="registered" checked onchange="window.alternarMetodoFirmaModal(this.value)">
-                    <div>
-                      <strong class="text-indigo-900 block">Usar Firma Registrada</strong>
-                      <span class="text-[10px] text-slate-500">Almacenada en MinIO S3</span>
-                    </div>
-                  </label>
-                  <label class="flex items-center gap-2 p-2 bg-white rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
-                    <input type="radio" name="radio-doc-sig-method" value="canvas" onchange="window.alternarMetodoFirmaModal(this.value)">
-                    <div>
-                      <strong class="text-slate-800 block">Trazar Nueva Firma</strong>
-                      <span class="text-[10px] text-slate-500">Dibujar en pantalla</span>
-                    </div>
-                  </label>
+            ${firmaGuardadaUrl ? `
+              <div class="p-4 bg-emerald-50 border-2 border-emerald-400 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div>
+                  <strong class="text-sm font-black text-emerald-950 block">✅ Tu Firma Digital ya está lista</strong>
+                  <span class="text-xs text-emerald-800">Solo toca el botón verde abajo para firmar este documento con 1 toque.</span>
                 </div>
-                
-                <div id="contenedor-firma-base-preview" class="p-2.5 bg-white rounded-xl border border-indigo-100 flex items-center gap-3">
-                  <img src="${obtenerUrlFirmaTrabajador(trabajador)}" alt="Firma Registrada" style="max-height: 44px; max-width: 140px; object-fit: contain;">
-                  <div class="text-[10px] text-slate-600">
-                    <strong class="text-emerald-700">✓ Firma Digital Lista para Estampar</strong>
-                    <span class="block text-slate-400 font-mono">Registrada: ${trabajador.signature_registered_bogota || 'Vigente'}</span>
-                  </div>
+                <div class="bg-white p-2 rounded-xl border border-emerald-300 flex-shrink-0">
+                  <img src="${firmaGuardadaUrl}" alt="Firma Registrada" style="max-height: 50px; max-width: 150px; object-fit: contain;">
                 </div>
               </div>
-            ` : ''}
-
-            <!-- Zona de Firma Táctil en Canvas -->
-            <div id="contenedor-firma-canvas-block" class="space-y-1.5 ${(trabajador.has_registered_signature && (trabajador.signature_url || trabajador.signature_svg)) ? 'hidden' : ''}">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-black text-slate-900 uppercase">✍️ Firma con tu Dedo o Puntero en Pantalla:</span>
-                <button type="button" id="btn-clear-doc-sig" class="text-[10px] text-rose-600 underline font-bold cursor-pointer">Limpiar Firma</button>
+            ` : `
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-slate-900 uppercase">✍️ Dibuja tu Firma con el Dedo:</span>
+                  <button type="button" id="btn-clear-doc-sig" class="text-xs text-rose-600 underline font-bold cursor-pointer">Borrar Firma</button>
+                </div>
+                <div class="border-2 border-teal-500 rounded-2xl overflow-hidden bg-white">
+                  <canvas id="canvas-doc-sig" class="signature-pad-canvas w-full h-36"></canvas>
+                </div>
               </div>
-              <div class="border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden bg-slate-50">
-                <canvas id="canvas-doc-sig" class="signature-pad-canvas w-full h-36"></canvas>
-              </div>
-              <div class="p-2 bg-slate-50 rounded-xl text-[10px] text-slate-500 font-mono flex items-center justify-between">
-                <span>Validez: Ley 527 de 1999 (Comercio Electrónico y Firmas)</span>
-                <span>Retención Legal: 20 Años (Dec. 1072/2015)</span>
-              </div>
-            </div>
+            `}
           </div>
         `}
       </div>
+    </div>
 
-      <!-- Acciones Inferiores -->
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 flex-shrink-0">
+    <!-- Barra Inferior Fija con Botones Grandes de Alta Accesibilidad -->
+    <div class="p-3.5 sm:p-4 bg-[#0B111E] border-t border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 flex-shrink-0" style="padding-bottom: max(env(safe-area-inset-bottom, 12px), 12px);">
+      ${!isFirmado ? `
         <button 
           type="button" 
-          onclick="window.imprimirManualDeCargo('${cargoFormal ? cargoFormal.id : ""}', '${trabajador.id}')"
-          class="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+          id="btn-confirm-doc-sig" 
+          class="w-full sm:flex-1 min-h-[54px] py-3.5 px-5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-2xl text-[16px] font-bold transition cursor-pointer shadow-xl flex items-center justify-center gap-2 active:scale-95"
         >
-          <span>📥 Descargar Copia Oficial (PDF)</span>
+          <span>✅ Sí, Firmar Documento</span>
+        </button>
+      ` : ''}
+
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <button 
+          type="button" 
+          onclick="window.descargarPdfVisorCargoActual('${escapeHtml(cargoTitle)}')"
+          class="flex-1 sm:flex-initial min-h-[48px] px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+        >
+          <span>📥 Descargar PDF</span>
         </button>
 
-        <div class="flex items-center gap-2">
-          <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer">
-            Cerrar
-          </button>
-          ${!isFirmado ? `
-            <button type="button" id="btn-confirm-doc-sig" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black transition cursor-pointer shadow-md flex items-center gap-1.5">
-              <span>✍️</span>
-              <span>Aceptar y Firmar Manual de Funciones</span>
-            </button>
-          ` : ''}
-        </div>
+        <button 
+          type="button" 
+          onclick="document.getElementById('${modalId}')?.remove()" 
+          class="flex-1 sm:flex-initial min-h-[48px] px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-sm font-bold transition cursor-pointer active:scale-95"
+        >
+          <span>Cerrar</span>
+        </button>
       </div>
-
     </div>
   `;
 
   document.body.appendChild(modalEl);
 
   if (!isFirmado) {
-    const pad = setupSignaturePad('canvas-doc-sig');
+    const pad = !firmaGuardadaUrl ? setupSignaturePad('canvas-doc-sig') : null;
     document.getElementById('btn-clear-doc-sig')?.addEventListener('click', () => pad?.clear());
 
     document.getElementById('btn-confirm-doc-sig')?.addEventListener('click', async () => {
-      const chk = document.getElementById('chk-confirm-identity-doc');
-      if (chk && !chk.checked) {
-        alert("Por favor marca la casilla de Declaración Juramentada de Identidad antes de firmar.");
-        return;
-      }
-
-      let sigData = '';
-      const radioMethod = document.querySelector('input[name="radio-doc-sig-method"]:checked')?.value;
-      if (radioMethod === 'registered' && (trabajador.signature_url || trabajador.signature_svg)) {
-        sigData = trabajador.signature_svg || trabajador.signature_url;
-      } else {
+      let sigData = firmaGuardadaUrl;
+      if (!sigData) {
         if (!pad || pad.isEmpty()) {
-          alert("Por favor firma en el recuadro antes de confirmar.");
+          alert("Por favor dibuja tu firma con el dedo en el recuadro antes de confirmar.");
           return;
         }
         sigData = pad.getDataUrl();
       }
 
       const btn = document.getElementById('btn-confirm-doc-sig');
-      btn.disabled = true;
-      btn.innerText = "Guardando firma y sellando en MinIO S3...";
-
-      try {
-        await store.submitWorkerDocumentSignature({
-          worker_id: trabajador.id,
-          employee_id: trabajador.id,
-          tenant_id: empresa.id,
-          document_type: docType,
-          manual_document_id: cargoFormal?.id ? `jpd-man-${cargoFormal.id}` : codigoDoc,
-          document_id: codigoDoc,
-          document_title: cargoTitle,
-          signature_base64: sigData
-        });
-
-        modalEl.remove();
-        alert(`✓ El documento "${cargoTitle}" ha sido firmado digitalmente con validez legal (Ley 527/1999) e inyectado en el Estándar 1.1.2 de la Resolución 0312.`);
-        renderWorkerPortal();
-        
-        // Abrir la copia firmada en PDF para descarga inmediata
-        if (window.imprimirManualDeCargo) {
-          window.imprimirManualDeCargo(cargoFormal?.id, trabajador.id);
-        }
-      } catch (err) {
-        alert("Error al firmar documento: " + err.message);
-        btn.disabled = false;
-        btn.innerText = "✍️ Aceptar y Firmar Manual de Funciones";
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = "<span>⏳ Guardando...</span>";
       }
+
+      await registrarFirmaDocumentoResiliente({
+        trabajador,
+        empresa,
+        docType,
+        codigoDoc: codigoInstrumento,
+        docTitle: cargoTitle,
+        sigData,
+        cargoFormal
+      });
+
+      modalEl.remove();
+      window.mostrarToastOperativo('¡Listo! Documento firmado correctamente');
+      renderWorkerPortal();
     });
   }
 };

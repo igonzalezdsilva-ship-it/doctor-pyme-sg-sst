@@ -2947,12 +2947,22 @@ mount_api(server, '/api/worker/auth') do |req, res|
         next
       end
 
-      # Verificar si ya firmó onboarding legal
+      # Verificar si ya firmó onboarding legal y sincronizar campos de persistencia de ingreso único
       onboarding_sigs = (db['employee_document_signatures'] || []).select do |s|
         (s['employee_id'] == trabajador['id'] || s['trabajadorId'] == trabajador['id']) &&
         s['document_type'] == 'HABEAS_DATA_ONBOARDING'
       end
-      has_signed_onboarding = onboarding_sigs.any?
+
+      if onboarding_sigs.any? || (trabajador['has_registered_signature'] == true && (trabajador['signature_url'] || trabajador['signature_svg']))
+        first_onb = onboarding_sigs.last
+        trabajador['politica_datos_aceptada'] = true if trabajador['politica_datos_aceptada'].nil?
+        trabajador['notificacion_riesgos_aceptada'] = true if trabajador['notificacion_riesgos_aceptada'].nil?
+        trabajador['firma_digital_url'] ||= trabajador['signature_url'] || (first_onb ? first_onb['signature_image_file'] : nil) || trabajador['signature_svg']
+        trabajador['firma_base64'] ||= trabajador['signature_svg'] || trabajador['signature_url'] || (first_onb ? first_onb['signature_image_file'] : nil)
+        trabajador['fecha_aceptacion_terminos'] ||= (first_onb ? first_onb['signed_at'] : nil) || trabajador['signature_registered_at'] || Time.now.iso8601
+      end
+
+      has_signed_onboarding = (trabajador['politica_datos_aceptada'] == true && !(trabajador['firma_digital_url'].to_s.empty? && trabajador['firma_base64'].to_s.empty?)) || onboarding_sigs.any?
 
       # Crear token de sesión
       session_token = "dp_worker_#{SecureRandom.hex(16)}"
@@ -3056,6 +3066,28 @@ mount_api(server, '/api/worker/sign-onboarding') do |req, res|
       }
 
       db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      sig_url_versioned = "/uploads/#{filename}?v=#{timestamp_now.to_i}"
+      s3_key = "tenants/#{tenant_id}/signatures/emp_#{worker_id}.png"
+
+      # Persistir estado de Ingreso Único y Firma Base en el registro del trabajador
+      trabajadores = db['trabajadores'] || []
+      worker = trabajadores.find { |t| t['id'] == worker_id }
+      if worker
+        worker['politica_datos_aceptada'] = true
+        worker['notificacion_riesgos_aceptada'] = true
+        worker['firma_digital_url'] = sig_url_versioned
+        worker['firma_base64'] = sig_data
+        worker['fecha_aceptacion_terminos'] = timestamp_iso
+        worker['has_registered_signature'] = true
+        worker['signature_svg'] = sig_data
+        worker['signature_s3_key'] = s3_key
+        worker['signature_url'] = sig_url_versioned
+        worker['signature_registered_at'] = timestamp_iso
+        worker['signature_registered_bogota'] = bogota_time
+        worker['signature_ip_address'] = client_ip
+        worker['signature_sha256'] = sha256_hash
+      end
+
       db['employee_document_signatures'] ||= []
       db['employee_document_signatures'] << sig_record
 
@@ -3078,7 +3110,7 @@ mount_api(server, '/api/worker/sign-onboarding') do |req, res|
         'fechaHoraISO' => timestamp_iso,
         'ipCliente' => client_ip,
         'hashDocumento' => sha256_hash,
-        'firmaDataUrl' => "/uploads/#{filename}",
+        'firmaDataUrl' => sig_url_versioned,
         'companyId' => tenant_id
       }
 
@@ -3097,7 +3129,7 @@ mount_api(server, '/api/worker/sign-onboarding') do |req, res|
       File.open(AUDIT_FILE, 'a:UTF-8') { |af| af.puts(audit_entry.to_json) } rescue nil
 
       res['Content-Type'] = 'application/json; charset=utf-8'
-      res.body = { status: 'ok', record: sig_record }.to_json
+      res.body = { status: 'ok', record: sig_record, worker: worker }.to_json
     rescue => err
       res.status = 500
       res['Content-Type'] = 'application/json; charset=utf-8'
@@ -3427,6 +3459,11 @@ mount_api(server, '/api/worker/register-signature') do |req, res|
         worker['signature_svg'] = sig_data
         worker['signature_s3_key'] = s3_key
         worker['signature_url'] = sig_url_versioned
+        worker['firma_digital_url'] = sig_url_versioned
+        worker['firma_base64'] = sig_data
+        worker['politica_datos_aceptada'] = true if worker['politica_datos_aceptada'].nil?
+        worker['notificacion_riesgos_aceptada'] = true if worker['notificacion_riesgos_aceptada'].nil?
+        worker['fecha_aceptacion_terminos'] ||= timestamp_iso
         worker['signature_registered_at'] = timestamp_iso
         worker['signature_registered_bogota'] = bogota_time
         worker['signature_ip_address'] = client_ip

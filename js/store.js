@@ -923,6 +923,7 @@ class Store {
           if (!Array.isArray(this.data.job_position_epp_matrix)) this.data.job_position_epp_matrix = [];
           if (!Array.isArray(this.data.epp_dotacion_deliveries)) this.data.epp_dotacion_deliveries = [];
           if (!Array.isArray(this.data.epp_dotacion_delivery_items)) this.data.epp_dotacion_delivery_items = [];
+          if (!Array.isArray(this.data.employee_document_signatures)) this.data.employee_document_signatures = [];
           if (!Array.isArray(this.data.super_admins)) {
             this.data.super_admins = [
               {
@@ -1273,6 +1274,7 @@ class Store {
           if (!Array.isArray(this.data.job_position_epp_matrix)) this.data.job_position_epp_matrix = [];
           if (!Array.isArray(this.data.epp_dotacion_deliveries)) this.data.epp_dotacion_deliveries = [];
           if (!Array.isArray(this.data.epp_dotacion_delivery_items)) this.data.epp_dotacion_delivery_items = [];
+          if (!Array.isArray(this.data.employee_document_signatures)) this.data.employee_document_signatures = [];
           if (!Array.isArray(this.data.super_admins)) {
             this.data.super_admins = [
               {
@@ -4709,12 +4711,58 @@ class Store {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Error al firmar consentimiento onboarding');
+
+      const nowIso = data.record?.signed_at || new Date().toISOString();
+      const sigUrl = data.worker?.firma_digital_url || data.record?.signature_image_file || payload.signature_base64;
+      const sigB64 = payload.signature_base64 || sigUrl;
+
       if (data.record) {
         if (!Array.isArray(this.data.employee_document_signatures)) this.data.employee_document_signatures = [];
         this.data.employee_document_signatures.unshift(data.record);
-        this.saveToStorage();
-        this.notify();
       }
+
+      // Sincronizar de forma persistente en el registro del trabajador y en la sesión activa
+      if (Array.isArray(this.data.trabajadores)) {
+        const wIdx = this.data.trabajadores.findIndex(t => t && t.id === payload.worker_id);
+        if (wIdx !== -1) {
+          this.data.trabajadores[wIdx] = {
+            ...this.data.trabajadores[wIdx],
+            ...(data.worker || {}),
+            politica_datos_aceptada: true,
+            notificacion_riesgos_aceptada: true,
+            firma_digital_url: sigUrl,
+            firma_base64: sigB64,
+            fecha_aceptacion_terminos: nowIso,
+            has_registered_signature: true,
+            signature_url: sigUrl,
+            signature_svg: sigB64
+          };
+        }
+      }
+
+      try {
+        const rawSession = localStorage.getItem('DOCTOR_PYME_SESSION_V2');
+        if (rawSession) {
+          const parsedSession = JSON.parse(rawSession);
+          if (parsedSession && (parsedSession.id === payload.worker_id || parsedSession.trabajadorId === payload.worker_id)) {
+            parsedSession.politica_datos_aceptada = true;
+            parsedSession.notificacion_riesgos_aceptada = true;
+            parsedSession.firma_digital_url = sigUrl;
+            parsedSession.firma_base64 = sigB64;
+            parsedSession.fecha_aceptacion_terminos = nowIso;
+            parsedSession.has_signed_onboarding = true;
+            parsedSession.has_registered_signature = true;
+            parsedSession.signature_url = sigUrl;
+            parsedSession.signature_svg = sigB64;
+            localStorage.setItem('DOCTOR_PYME_SESSION_V2', JSON.stringify(parsedSession));
+          }
+        }
+      } catch (e) {
+        console.warn('Error sincronizando sesión de onboarding:', e);
+      }
+
+      this.saveToStorage();
+      this.notify();
       return data;
     } catch (err) {
       console.error('Error submitWorkerOnboarding:', err);

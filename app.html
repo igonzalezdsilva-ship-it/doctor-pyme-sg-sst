@@ -42,17 +42,24 @@
   <style>
     /* Safe areas para notch y barras de navegación móviles (iOS / Android) */
     :root {
-      --sat: env(safe-area-inset-top, 0px);
-      --sab: env(safe-area-inset-bottom, 0px);
+      --sat: env(safe-area-inset-top, 16px);
+      --sab: env(safe-area-inset-bottom, 8px);
     }
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      background-color: #0b1a2d;
+      background-color: #0B111E;
     }
     .safe-bottom-nav {
-      padding-bottom: calc(0.6rem + var(--sab)) !important;
+      background-color: #0B111E !important;
+      height: 72px !important;
+      z-index: 50 !important;
+      padding-bottom: env(safe-area-inset-bottom, 8px) !important;
+    }
+    .app-content-wrapper {
+      padding-bottom: 96px !important;
+      overflow-y: auto !important;
     }
   </style>
 </head>
@@ -160,9 +167,15 @@
     async function iniciarAppMovil() {
       actualizarEstadoRed();
 
-      // Cargar almacén de datos
+      // Cargar almacén de datos y sincronizar estado reciente del servidor
       try {
         await store.init();
+        if (navigator.onLine && typeof store.sincronizarConServidorFisico === 'function') {
+          await Promise.race([
+            store.sincronizarConServidorFisico(),
+            new Promise(resolve => setTimeout(resolve, 2500))
+          ]);
+        }
       } catch (err) {
         console.warn('Error inicializando store:', err);
       }

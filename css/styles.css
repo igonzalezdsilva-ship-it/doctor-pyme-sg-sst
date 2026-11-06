@@ -149,10 +149,17 @@ body.mobile-app-mode header:not(.worker-mobile-header) {
   display: none !important;
 }
 
-/* El encabezado móvil del trabajador siempre debe ser visible con soporte de safe-area notch */
-body.mobile-app-mode header.worker-mobile-header {
+/* El encabezado móvil del trabajador siempre debe ser visible, sólido y nítido (sin blur) con soporte de safe-area Android/iOS */
+body.mobile-app-mode header.worker-mobile-header,
+header.worker-mobile-header {
   display: block !important;
-  padding-top: max(env(safe-area-inset-top, 0px), 14px) !important;
+  background-color: #0B111E !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 40 !important;
+  padding-top: max(env(safe-area-inset-top, 16px), 16px) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 body.mobile-app-mode #app-root {
@@ -166,18 +173,33 @@ body.mobile-app-mode #app-root {
   box-sizing: border-box;
 }
 
-body.mobile-app-mode main {
+body.mobile-app-mode #app-root > main {
   padding: 0 !important;
   margin: 0 !important;
   width: 100% !important;
   max-width: 100% !important;
   height: 100% !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
   background-color: #0f172a;
+}
+
+.app-content-wrapper,
+body.mobile-app-mode main.app-content-wrapper {
+  padding-bottom: 96px !important;
+  overflow-y: auto !important;
+}
+
+.safe-bottom-nav {
+  background-color: #0B111E !important;
+  height: 72px !important;
+  z-index: 50 !important;
+  padding-bottom: env(safe-area-inset-bottom, 8px) !important;
 }
 
 body.mobile-app-mode #main-content {
   max-width: 100% !important;
-  height: 100% !important;
+  min-height: 100% !important;
 }
 
 /* Canvas de Firma Táctil Optimizado para Celular y Escritorio */
