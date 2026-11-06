@@ -37,8 +37,8 @@
     };
   </script>
   
-  <!-- Estilos Personalizados e Impresión -->
-  <link rel="stylesheet" href="./css/styles.css">
+  <!-- Estilos Personalizados e Impresión (Cache-busting v=2.1) -->
+  <link rel="stylesheet" href="./css/styles.css?v=2.1">
   <style>
     /* Safe areas para notch y barras de navegación móviles (iOS / Android) */
     :root {
@@ -94,20 +94,50 @@
     </main>
   </div>
 
-  <!-- SCRIPT BOOTSTRAP DE LA APLICACIÓN MÓVIL -->
+  <!-- SCRIPT BOOTSTRAP DE LA APLICACIÓN MÓVIL (Versionado v=2.1) -->
   <script type="module">
-    import { auth } from './js/auth.js';
-    import { store } from './js/store.js';
-    import { renderWorkerPortal } from './js/components/workerPortal.js';
+    import { auth } from './js/auth.js?v=2.1';
+    import { store } from './js/store.js?v=2.1';
+    import { renderWorkerPortal } from './js/components/workerPortal.js?v=2.1';
 
-    // 1. Registro del Service Worker para PWA y Caché Offline
+    // Función global para forzar recarga limpia y purga de caché
+    window.forzarActualizacionApp = async function() {
+      try {
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k => caches.delete(k)));
+        }
+        if ('serviceWorker' in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          for (const reg of regs) {
+            await reg.unregister();
+          }
+        }
+      } catch (e) {
+        console.warn('Error purgando cachés:', e);
+      }
+      window.location.href = window.location.pathname + '?v=' + Date.now();
+    };
+
+    // 1. Registro del Service Worker para PWA con detección inmediata de actualización
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').then((reg) => {
-          console.log('[PWA Trabajador] Service Worker activo:', reg.scope);
+        navigator.serviceWorker.register('./sw.js?v=2.1').then((reg) => {
+          console.log('[PWA Trabajador v2.1] Service Worker activo:', reg.scope);
+          // Forzar chequeo de actualización contra el servidor
+          reg.update();
         }).catch((err) => {
           console.warn('[PWA Trabajador] Registro SW falló:', err);
         });
+      });
+
+      // Recarga suave automática si un nuevo Service Worker toma el control
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
       });
     }
 

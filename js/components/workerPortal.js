@@ -3779,8 +3779,18 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
             </div>
           </div>
 
-          <!-- Acciones de Cabecera (Instalar PWA, Simulación / Salir) -->
+          <!-- Acciones de Cabecera (Actualizar, Instalar PWA, Simulación / Salir) -->
           <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button 
+              type="button" 
+              onclick="if(window.forzarActualizacionApp) { window.forzarActualizacionApp(); } else { window.location.reload(true); }" 
+              class="min-h-[44px] px-2.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-300 border border-slate-700 text-xs font-bold transition flex items-center gap-1 cursor-pointer active:scale-95"
+              title="Recargar última versión del servidor"
+            >
+              <span>🔄</span>
+              <span class="text-[11px] font-bold">Actualizar</span>
+            </button>
+
             <button 
               type="button" 
               onclick="window.instalarPwaDoctorPyme()" 

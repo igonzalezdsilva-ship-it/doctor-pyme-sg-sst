@@ -3,7 +3,7 @@
 // Cache-First para estáticos, Network-First para APIs y soporte Offline en campo
 // =============================================================================
 
-const CACHE_NAME = 'doctor-pyme-worker-v1.2';
+const CACHE_NAME = 'doctor-pyme-worker-v2.1';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -27,26 +27,27 @@ const ASSETS_TO_CACHE = [
   './js/services/trainingReports.js'
 ];
 
-// Instalación: Precargar shell de la aplicación
+// Instalación: Precargar shell de la aplicación y omitir espera
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Precargando shell de la aplicación móvil...');
+      console.log('[SW v2.1] Precargando shell de la aplicación móvil...');
       return cache.addAll(ASSETS_TO_CACHE).catch((err) => {
-        console.warn('[SW] Algún recurso no se pudo precargar:', err);
+        console.warn('[SW v2.1] Precarga parcial:', err);
       });
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
-// Activación: Limpieza de versiones obsoletas de caché
+// Activación: Limpieza total de versiones obsoletas y tomar control inmediato
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
-            console.log('[SW] Eliminando caché previa:', key);
+            console.log('[SW v2.1] Purgando caché obsoleta:', key);
             return caches.delete(key);
           }
         })
@@ -55,22 +56,21 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Interceptor de peticiones HTTP
+// Interceptor HTTP: Network-First (Garantiza ver actualizaciones de inmediato si hay internet)
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // 1. Peticiones a API del servidor: Network-First
+  // 1. Peticiones API: Network-First con fallback a offline
   if (url.pathname.startsWith('/api/') || req.method !== 'GET') {
     event.respondWith(
       fetch(req).catch(() => {
-        // Fallback offline para peticiones de lectura API
         if (req.method === 'GET') {
           return caches.match(req);
         }
         return new Response(JSON.stringify({ 
           offline: true, 
-          error: 'Sin conexión a internet. Los datos se guardarán localmente para sincronización posterior.' 
+          error: 'Sin conexión a internet. Tus registros se sincronizarán al recuperar señal.' 
         }), {
           status: 503,
           headers: { 'Content-Type': 'application/json' }
@@ -80,18 +80,17 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Recursos estáticos locales: Stale-While-Revalidate
+  // 2. Recursos de la aplicación (HTML, JS, CSS, assets): Network-First
+  // Consulta primero al servidor para obtener la última versión; si no hay red, sirve de caché
   event.respondWith(
-    caches.match(req).then((cachedResponse) => {
-      const fetchPromise = fetch(req).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, responseToCache));
-        }
-        return networkResponse;
-      }).catch(() => cachedResponse);
-
-      return cachedResponse || fetchPromise;
+    fetch(req).then((networkResponse) => {
+      if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(req, responseToCache));
+      }
+      return networkResponse;
+    }).catch(() => {
+      return caches.match(req);
     })
   );
 });
