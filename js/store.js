@@ -1499,9 +1499,12 @@ class Store {
         if (!this.data.updatedAt) {
           this.data.updatedAt = new Date().toISOString();
         }
+        const authHeaders = (typeof window !== 'undefined' && window.auth && window.auth.getAuthHeaders)
+          ? window.auth.getAuthHeaders({ 'Content-Type': 'application/json' })
+          : { 'Content-Type': 'application/json' };
         const resp = await fetch(this.getApiUrl('/save'), {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: authHeaders,
           body: JSON.stringify(this.data)
         });
         if (resp.ok) {

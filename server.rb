@@ -1139,31 +1139,35 @@ mount_api(server, '/api/upload_evidence') do |req, res|
         binary_data = Base64.decode64(data_url)
       end
 
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      tenant_id = resolve_authorized_tenant!(req, payload, db)
+      company_id = tenant_id
+
       # Nombre de archivo seguro
       clean_name = nombre.gsub(/[^a-zA-Z0-9_\.-]/, '_')
       timestamp = Time.now.strftime('%Y%m%d_%H%M%S')
       unique_id = "evid-#{company_id}-#{numeral}-#{Time.now.to_i}-#{rand(1000..9999)}"
-      disk_filename = "#{timestamp}_#{numeral.gsub('.', '_')}_#{clean_name}"
-      file_path = File.join(UPLOADS_DIR, disk_filename)
-
-      File.open(file_path, 'wb') { |f| f.write(binary_data) }
+      
+      # Almacenamiento Aislado por Inquilino (Bloque 5 MinIO S3)
+      s3_relative_key = "tenants/#{company_id}/evidencias/#{numeral.gsub('.', '_')}/#{timestamp}_#{clean_name}"
+      url_path, s3_key = save_tenant_isolated_file(s3_relative_key, binary_data)
 
       # Registrar en base de datos física
-      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       db['evidencias'] ||= []
       
       b64_data_uri = (data_url.to_s.start_with?('data:') ? data_url : "data:#{tipo};base64,#{Base64.strict_encode64(binary_data)}")
-      url_path = "/uploads/#{disk_filename}"
 
       evidencia_record = {
         'id' => unique_id,
         'companyId' => company_id,
+        'tenant_id' => company_id,
         'numeral' => numeral,
         'anio' => anio,
         'nombre' => nombre,
         'tamanio' => binary_data.bytesize,
         'tipo' => tipo,
         'url' => url_path,
+        's3_key' => s3_key,
         'dataUrl' => b64_data_uri,
         'fechaCargue' => Time.now.iso8601
       }
@@ -1399,29 +1403,34 @@ mount_api(server, '/api/upload_diagram') do |req, res|
         binary_data = Base64.decode64(data_url)
       end
 
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      tenant_id = resolve_authorized_tenant!(req, payload, db)
+      company_id = tenant_id
+
       clean_name = nombre.gsub(/[^a-zA-Z0-9_\.-]/, '_')
       timestamp = Time.now.strftime('%Y%m%d_%H%M%S')
       ext = File.extname(clean_name)
       ext = '.png' if ext.empty?
-      disk_filename = "#{timestamp}_diag_#{company_id}_#{tipo}#{ext}"
-      file_path = File.join(UPLOADS_DIR, disk_filename)
+      
+      # Almacenamiento Aislado por Inquilino (Bloque 5 MinIO S3)
+      s3_relative_key = "tenants/#{company_id}/diagramas/#{tipo}_#{timestamp}#{ext}"
+      url_path, s3_key = save_tenant_isolated_file(s3_relative_key, binary_data)
 
-      File.open(file_path, 'wb') { |f| f.write(binary_data) }
-
-      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       db['diagramas'] ||= {}
       db['diagramas'][company_id] ||= {}
 
       diag_record = {
         'id' => "diag-#{company_id}-#{tipo}",
         'companyId' => company_id,
+        'tenant_id' => company_id,
         'numeral' => "__DIAGRAMA_#{tipo.upcase}__",
         'tipoDiagrama' => tipo,
         'nombre' => nombre,
         'tamanio' => binary_data.bytesize,
         'tipo' => mime_type,
-        'url' => "/uploads/#{disk_filename}",
-        'dataUrl' => "/uploads/#{disk_filename}",
+        'url' => url_path,
+        's3_key' => s3_key,
+        'dataUrl' => url_path,
         'esOficial' => true,
         'fechaCargue' => Time.now.iso8601
       }

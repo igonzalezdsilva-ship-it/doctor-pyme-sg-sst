@@ -950,6 +950,65 @@ CREATE TABLE IF NOT EXISTS examenes_medicos (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- 13.10. Tabla Operativa: BUDGET_ITEMS (Presupuesto Anual SG-SST - Res. 0312 Estándar 1.1.2)
+CREATE TABLE IF NOT EXISTS budget_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  year INTEGER NOT NULL DEFAULT EXTRACT(YEAR FROM CURRENT_DATE),
+  codigo VARCHAR(60) NOT NULL,
+  nombre VARCHAR(255) NOT NULL,
+  categoria VARCHAR(100) NOT NULL,
+  mes VARCHAR(30),
+  valor_presupuestado NUMERIC(15,2) NOT NULL DEFAULT 0,
+  valor_ejecutado NUMERIC(15,2) NOT NULL DEFAULT 0,
+  factura_numero VARCHAR(100),
+  proveedor VARCHAR(255),
+  factura_url TEXT,
+  factura_s3_key TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 13.11. Tabla Operativa: EQUIPMENT_TECHNICAL_SHEETS (Ficha Técnica y PTS del Activo)
+CREATE TABLE IF NOT EXISTS equipment_technical_sheets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  tool_id UUID NOT NULL REFERENCES tools_inventory(id) ON DELETE CASCADE,
+  technical_procedure TEXT,
+  pts_procedure TEXT,
+  loto_protocol TEXT,
+  required_epp TEXT[] DEFAULT '{}',
+  hazards_gtc45 JSONB DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT uq_tenant_equipment_sheet UNIQUE (tenant_id, tool_id)
+);
+
+-- 13.12. Tabla Operativa: MAINTENANCE_EXECUTIONS (Cierre Técnico y Actas de Mantenimiento con 5 Soportes)
+CREATE TABLE IF NOT EXISTS maintenance_executions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  tool_id UUID NOT NULL REFERENCES tools_inventory(id) ON DELETE CASCADE,
+  actividad VARCHAR(255) NOT NULL,
+  tipo VARCHAR(50) NOT NULL DEFAULT 'Preventivo',
+  fecha_programada DATE NOT NULL,
+  fecha_ejecucion TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  pts_signed BOOLEAN NOT NULL DEFAULT true,
+  technician_name VARCHAR(255) NOT NULL,
+  technician_id_number VARCHAR(50),
+  technician_signature_url TEXT,
+  photo_before_s3_key TEXT,
+  photo_during_s3_key TEXT,
+  photo_after_s3_key TEXT,
+  report_before TEXT,
+  report_during TEXT,
+  report_after TEXT,
+  acta_pdf_s3_key TEXT,
+  sha256_hash VARCHAR(64) NOT NULL,
+  next_maintenance_date DATE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- ------------------------------------------------------------------------------
 -- 13.10. EXCEPCIÓN: TABLAS DE CATÁLOGO GLOBAL DE NORMATIVIDAD COLOMBIANA
 --        (Sin tenant_id o con tenant_id IS NULL para plantillas globales de solo lectura)
@@ -996,7 +1055,7 @@ CREATE INDEX IF NOT EXISTS idx_reportes_ci_tenant_estado ON reportes_condiciones
 CREATE INDEX IF NOT EXISTS idx_capacitaciones_tenant_activo ON capacitaciones_elearning(tenant_id, activo);
 CREATE INDEX IF NOT EXISTS idx_examenes_tenant_worker ON examenes_medicos(tenant_id, worker_id);
 
--- Índices compuestos adicionales en tablas operativas Process-Driven
+-- Índices compuestos adicionales en tablas operativas Process-Driven y de negocio
 CREATE INDEX IF NOT EXISTS idx_employees_tenant_doc ON employees(tenant_id, document_number);
 CREATE INDEX IF NOT EXISTS idx_job_positions_tenant_code ON job_positions(tenant_id, code);
 CREATE INDEX IF NOT EXISTS idx_job_pos_docs_tenant_pos ON job_position_documents(tenant_id, job_position_id);
@@ -1004,6 +1063,10 @@ CREATE INDEX IF NOT EXISTS idx_emp_doc_sigs_tenant_emp ON employee_document_sign
 CREATE INDEX IF NOT EXISTS idx_tools_int_log_tenant_emp ON tools_interventions_log(tenant_id, employee_id);
 CREATE INDEX IF NOT EXISTS idx_epp_deliv_tenant_emp ON epp_deliveries(tenant_id, employee_id);
 CREATE INDEX IF NOT EXISTS idx_worker_sst_rep_tenant_emp ON worker_sst_reports(tenant_id, employee_id);
+CREATE INDEX IF NOT EXISTS idx_budget_items_tenant_year ON budget_items(tenant_id, year);
+CREATE INDEX IF NOT EXISTS idx_equip_tech_sheets_tenant_tool ON equipment_technical_sheets(tenant_id, tool_id);
+CREATE INDEX IF NOT EXISTS idx_maint_exec_tenant_tool ON maintenance_executions(tenant_id, tool_id);
+CREATE INDEX IF NOT EXISTS idx_maint_exec_tenant_fecha ON maintenance_executions(tenant_id, fecha_programada);
 
 -- ==============================================================================
 -- 14. BLOQUE 3: ACTIVACIÓN DE ROW-LEVEL SECURITY (RLS) Y FORZADO ESTRICTO
@@ -1025,6 +1088,9 @@ BEGIN
       'reportes_condiciones_inseguras',
       'capacitaciones_elearning',
       'examenes_medicos',
+      'budget_items',
+      'equipment_technical_sheets',
+      'maintenance_executions',
       -- Tablas operativas Process-Driven y de soporte
       'process_maps',
       'job_positions',
