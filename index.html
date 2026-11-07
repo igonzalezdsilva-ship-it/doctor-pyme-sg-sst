@@ -40,8 +40,8 @@
     };
   </script>
   
-  <!-- Estilos Personalizados e Impresión (v=2.3) -->
-  <link rel="stylesheet" href="./css/styles.css?v=2.4">
+  <!-- Estilos Personalizados e Impresión (v=2.5) -->
+  <link rel="stylesheet" href="./css/styles.css?v=2.5">
 </head>
 <body class="h-full">
 
@@ -51,9 +51,9 @@
     <!-- SIDEBAR LATERAL (BLOQUE 1: ORDEN ESTRICTO Y CINTA COLAPSABLE) -->
     <aside id="app-sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 z-30 shadow-xl border-r border-slate-800 no-print transition-all duration-300">
       <!-- Logotipo de Doctor Pyme y Botón Toggle Colapsable -->
-      <div class="p-4 border-b border-slate-800 flex items-center justify-between gap-2 bg-slate-950/40">
-        <div class="flex items-center gap-3 overflow-hidden">
-          <img src="./assets/app-icon.png" alt="Doctor Pyme" class="w-10 h-10 object-contain rounded-xl shadow-md shadow-teal-500/20 flex-shrink-0">
+      <div id="sidebar-header" class="sidebar-header p-4 border-b border-slate-800 flex items-center justify-between gap-2 bg-slate-950/40">
+        <div id="sidebar-logo-container" class="sidebar-logo-container flex items-center gap-3 overflow-hidden cursor-pointer" title="Doctor Pyme">
+          <img id="sidebar-logo-img" src="./assets/app-icon.png" alt="Doctor Pyme" class="sidebar-logo-img w-11 h-11 object-contain rounded-xl shadow-md shadow-teal-500/25 flex-shrink-0">
           <div class="sidebar-text overflow-hidden">
             <h1 class="text-sm font-black text-white tracking-tight truncate">
               DOCTOR PYME
@@ -62,7 +62,7 @@
             <p class="text-[8px] text-teal-300 font-medium tracking-wide truncate">Salud, Seguridad y Ambiente</p>
           </div>
         </div>
-        <button id="btn-toggle-sidebar" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition flex-shrink-0" title="Contraer / Expandir Menú">
+        <button id="btn-toggle-sidebar" class="btn-toggle-sidebar p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition flex-shrink-0 cursor-pointer" title="Contraer / Expandir Menú">
           <svg id="sidebar-toggle-icon" class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>
         </button>
       </div>
@@ -181,8 +181,8 @@
       </nav>
 
       <!-- Perfil de Usuario y Cerrar Sesión -->
-      <div class="p-3 bg-slate-950/60 border-t border-slate-800">
-        <div class="flex items-center justify-between gap-2 mb-2 px-1">
+      <div class="sidebar-footer p-3 bg-slate-950/60 border-t border-slate-800">
+        <div class="sidebar-footer-user flex items-center justify-between gap-2 mb-2 px-1">
           <div class="flex items-center gap-2 overflow-hidden">
             <div class="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
               DP

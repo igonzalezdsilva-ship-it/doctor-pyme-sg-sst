@@ -175,9 +175,14 @@ export function actualizarSelectorCabecera() {
   const sidebarLinkEmpresas = document.querySelector('aside a.nav-link[href="#empresas"]');
   if (sidebarLinkEmpresas) {
     const svgIcon = sidebarLinkEmpresas.querySelector('svg');
+    const labelTitle = esSuperAdmin ? 'Empresas Clientes' : '1. Empresa';
+    sidebarLinkEmpresas.setAttribute('data-title', labelTitle);
     sidebarLinkEmpresas.innerHTML = '';
     if (svgIcon) sidebarLinkEmpresas.appendChild(svgIcon);
-    sidebarLinkEmpresas.appendChild(document.createTextNode(esSuperAdmin ? ' Empresas Clientes' : ' Mi Empresa'));
+    const spanText = document.createElement('span');
+    spanText.className = 'sidebar-text truncate';
+    spanText.textContent = labelTitle;
+    sidebarLinkEmpresas.appendChild(spanText);
   }
 
   const sidebarLinkRepoLegal = document.querySelector('aside a.nav-link[href="#repositorio-legal"]');
@@ -431,22 +436,36 @@ async function initApp() {
   // Control de Cinta Colapsable de Menú Lateral (Bloque 1)
   const appSidebar = document.getElementById('app-sidebar');
   const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+  const sidebarLogoContainer = document.getElementById('sidebar-logo-container');
+
   if (appSidebar && btnToggleSidebar) {
+    const applySidebarState = (collapsed) => {
+      appSidebar.classList.toggle('sidebar-collapsed', collapsed);
+      const icon = btnToggleSidebar.querySelector('svg');
+      if (icon) icon.classList.toggle('rotate-180', collapsed);
+      btnToggleSidebar.title = collapsed ? "Expandir Menú" : "Contraer Menú";
+    };
+
     const isCollapsedSaved = localStorage.getItem('DOCTOR_PYME_SIDEBAR_COLLAPSED') === 'true';
     if (isCollapsedSaved) {
-      appSidebar.classList.add('sidebar-collapsed');
-      const icon = btnToggleSidebar.querySelector('svg');
-      if (icon) icon.classList.add('rotate-180');
+      applySidebarState(true);
     }
 
-    btnToggleSidebar.addEventListener('click', () => {
-      const isCollapsed = appSidebar.classList.toggle('sidebar-collapsed');
+    btnToggleSidebar.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isCollapsed = !appSidebar.classList.contains('sidebar-collapsed');
+      applySidebarState(isCollapsed);
       localStorage.setItem('DOCTOR_PYME_SIDEBAR_COLLAPSED', isCollapsed ? 'true' : 'false');
-      const icon = btnToggleSidebar.querySelector('svg');
-      if (icon) {
-        icon.classList.toggle('rotate-180', isCollapsed);
-      }
     });
+
+    if (sidebarLogoContainer) {
+      sidebarLogoContainer.addEventListener('click', () => {
+        if (appSidebar.classList.contains('sidebar-collapsed')) {
+          applySidebarState(false);
+          localStorage.setItem('DOCTOR_PYME_SIDEBAR_COLLAPSED', 'false');
+        }
+      });
+    }
   }
 
   // Banner y Control de Modo Demostración (Bloque 4)
