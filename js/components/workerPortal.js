@@ -1341,14 +1341,28 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
         <!-- Selector de Cargo y Pestañas de Instrumentos -->
         <div class="bg-slate-50 p-3.5 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3 flex-shrink-0">
           
-          <!-- Selector de Cargo -->
-          <div class="flex items-center gap-2 flex-1 max-w-xs">
-            <label class="text-xs font-bold text-slate-600 whitespace-nowrap">Cargo:</label>
-            <select id="modal-inst-select-cargo" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500">
+          <!-- Combobox Buscador Predictivo de Cargo (Bloque 5) -->
+          <div class="relative flex-1 max-w-sm">
+            <label class="text-[10px] font-black uppercase text-slate-500 block mb-1">Buscar o Seleccionar Cargo:</label>
+            <div class="relative">
+              <input 
+                type="text" 
+                id="modal-inst-search-cargo" 
+                value="${cargoActivo}" 
+                placeholder="🔍 Escribe para buscar cargo..." 
+                class="w-full px-3 py-1.5 pl-8 pr-7 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 shadow-2xs"
+                autocomplete="off"
+              >
+              <span class="absolute left-2.5 top-2 text-slate-400 text-xs">💼</span>
+              <button type="button" id="btn-toggle-cargo-dropdown" class="absolute right-2 top-2 text-slate-400 hover:text-slate-700 text-xs cursor-pointer">▼</button>
+            </div>
+            <div id="modal-inst-cargo-dropdown" class="hidden absolute top-full left-0 right-0 mt-1 max-h-52 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl z-50 divide-y divide-slate-100 text-xs font-bold">
               ${cargosEmpresa.map(c => `
-                <option value="${c}" ${c === cargoActivo ? 'selected' : ''}>${c}</option>
+                <div class="p-2.5 hover:bg-indigo-50 hover:text-indigo-900 cursor-pointer transition item-cargo-option ${c === cargoActivo ? 'bg-indigo-50 text-indigo-800 font-black' : 'text-slate-700'}" data-cargo="${c}">
+                  ${c}
+                </div>
               `).join('')}
-            </select>
+            </div>
           </div>
 
           <!-- Pestañas de los 6 Documentos del Cargo + Contrato -->
@@ -1954,13 +1968,49 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
       </div>
     `;
 
-    // Listeners reactivos
-    const selectCargo = document.getElementById('modal-inst-select-cargo');
-    if (selectCargo) {
-      selectCargo.onchange = (e) => {
-        cargoActivo = e.target.value;
-        renderModalContent();
-      };
+    // Listeners reactivos para Combobox Predictivo de Cargos (Bloque 5)
+    const inputSearchCargo = document.getElementById('modal-inst-search-cargo');
+    const dropdownCargo = document.getElementById('modal-inst-cargo-dropdown');
+    const btnToggleDropdown = document.getElementById('btn-toggle-cargo-dropdown');
+
+    if (inputSearchCargo && dropdownCargo) {
+      inputSearchCargo.addEventListener('focus', () => {
+        dropdownCargo.classList.remove('hidden');
+      });
+
+      btnToggleDropdown?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownCargo.classList.toggle('hidden');
+      });
+
+      inputSearchCargo.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        dropdownCargo.classList.remove('hidden');
+        const items = dropdownCargo.querySelectorAll('.item-cargo-option');
+        items.forEach(it => {
+          const text = (it.dataset.cargo || '').toLowerCase();
+          if (!query || text.includes(query)) {
+            it.classList.remove('hidden');
+          } else {
+            it.classList.add('hidden');
+          }
+        });
+      });
+
+      dropdownCargo.querySelectorAll('.item-cargo-option').forEach(it => {
+        it.addEventListener('click', () => {
+          cargoActivo = it.dataset.cargo;
+          dropdownCargo.classList.add('hidden');
+          renderModalContent();
+        });
+      });
+
+      // Cerrar dropdown al hacer clic fuera
+      document.addEventListener('click', (e) => {
+        if (!inputSearchCargo.contains(e.target) && !dropdownCargo.contains(e.target) && !btnToggleDropdown?.contains(e.target)) {
+          dropdownCargo.classList.add('hidden');
+        }
+      }, { once: true });
     }
 
     document.getElementById('tab-inst-contrato')?.addEventListener('click', () => { instrumentoActivo = 'contrato'; renderModalContent(); });
@@ -2231,10 +2281,98 @@ window.generarPdfCartaPreaviso = function(trabajadorId) {
     <html lang="es">
     <head>
       <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
       <title>Carta de Preaviso de No Renovación - ${trabajador.nombre}</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
       <style>
-        @page { size: letter; margin: 20mm; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #0f172a; margin: 0; padding: 25px; font-size: 11px; line-height: 1.6; }
+        :root {
+          --sat: max(env(safe-area-inset-top, 0px), 44px);
+          --sab: max(env(safe-area-inset-bottom, 0px), 16px);
+        }
+        * { box-sizing: border-box; }
+        @page { size: letter; margin: 15mm; }
+        body { 
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+          color: #0f172a; 
+          background: #f8fafc; 
+          margin: 0; 
+          padding: calc(var(--sat) + 58px) 16px max(var(--sab), 24px) 16px; 
+          font-size: 10pt; 
+          line-height: 1.6; 
+        }
+
+        .doc-control-bar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 999999;
+          background: #0b1a2d;
+          color: #ffffff;
+          padding-top: var(--sat);
+          padding-bottom: 12px;
+          padding-left: 14px;
+          padding-right: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+          border-bottom: 1px solid #1e293b;
+        }
+        .btn-back {
+          padding: 8px 14px;
+          background: #1e293b;
+          color: #f1f5f9;
+          border: 1px solid #334155;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 12px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          touch-action: manipulation;
+        }
+        .btn-download {
+          padding: 8px 14px;
+          background: #0d9488;
+          color: #ffffff;
+          border: none;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 12px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: 0 2px 6px rgba(13, 148, 136, 0.35);
+          touch-action: manipulation;
+        }
+        .btn-print { 
+          padding: 8px 14px; 
+          background: #4338ca; 
+          color: white; 
+          border: none; 
+          border-radius: 10px; 
+          font-weight: 700; 
+          cursor: pointer; 
+          font-size: 12px; 
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          touch-action: manipulation;
+        }
+
+        .doc-wrapper {
+          max-width: 860px;
+          margin: 0 auto;
+          background: #ffffff;
+          padding: 30px;
+          border-radius: 14px;
+          box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+          border: 1px solid #e2e8f0;
+        }
         .header { text-align: left; border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 20px; }
         h1 { margin: 0; font-size: 14px; text-transform: uppercase; color: #0f172a; font-weight: 900; }
         .meta-empresa { font-size: 10px; color: #64748b; }
@@ -2245,17 +2383,40 @@ window.generarPdfCartaPreaviso = function(trabajadorId) {
         .sig-table { width: 100%; border-collapse: collapse; margin-top: 50px; }
         .sig-table td { width: 50%; vertical-align: top; padding: 0 20px; }
         .sig-line { border-top: 1px solid #334155; margin-bottom: 6px; }
-        @media print { body { padding: 0; } .no-print { display: none; } }
+
+        @media (max-width: 640px) {
+          body { padding-left: 8px; padding-right: 8px; }
+          .doc-wrapper { padding: 16px 12px; border-radius: 8px; }
+          .sig-table td { display: block; width: 100%; padding: 10px 0; }
+        }
+        @media print { 
+          body { padding: 0 !important; background: #ffffff !important; } 
+          .no-print, .doc-control-bar { display: none !important; } 
+          .doc-wrapper { max-width: 100% !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+        }
       </style>
     </head>
     <body>
-      <div class="no-print" style="text-align: right; margin-bottom: 15px;">
-        <button onclick="window.print()" style="padding: 9px 20px; background: #0f172a; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;">
-          🖨️ Imprimir Carta / Guardar como PDF
+      <div class="doc-control-bar no-print">
+        <button type="button" class="btn-back" onclick="regresarAlPortal()">
+          <span>←</span>
+          <span>Volver al Portal</span>
         </button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" id="btn-descargar-pdf" class="btn-download" onclick="descargarDocumentoPDF()">
+            <span>📥</span>
+            <span>Descargar PDF</span>
+          </button>
+          <button type="button" class="btn-print" onclick="window.print()">
+            <span>🖨️</span>
+            <span>Imprimir</span>
+          </button>
+        </div>
       </div>
 
-      <div class="header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 20px; gap: 15px;">
+      <div class="doc-wrapper">
+        <div id="documento-imprimible">
+          <div class="header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 20px; gap: 15px;">
         <div>
           <strong style="font-size: 15px; color: #0f172a;">${empresa.razonSocial}</strong>
           <div class="meta-empresa">NIT: ${empresa.nit} • Dirección de Talento Humano & Seguridad Social</div>
@@ -2327,6 +2488,98 @@ window.generarPdfCartaPreaviso = function(trabajadorId) {
       <div style="margin-top: 35px; border-top: 1px solid #cbd5e1; padding-top: 6px; font-size: 8px; color: #94a3b8; text-align: center;">
         DOCTOR PYME SG-SST • Certificado de Evidencia de Preaviso Laboral • Validez Código Sustantivo del Trabajo
       </div>
+        </div>
+      </div>
+
+      <script>
+        function regresarAlPortal() {
+          if (window.opener && !window.opener.closed) {
+            window.close();
+          } else if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = './app.html';
+          }
+        }
+
+        async function descargarDocumentoPDF() {
+          const btn = document.getElementById('btn-descargar-pdf');
+          const originalContent = btn ? btn.innerHTML : '';
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳ Generando PDF...</span>';
+          }
+
+          const element = document.getElementById('documento-imprimible');
+          const cleanName = 'Preaviso_${trabajador.nombre.replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf';
+
+          if (typeof html2pdf !== 'undefined' && element) {
+            const opt = {
+              margin: [10, 10, 10, 10],
+              filename: cleanName,
+              image: { type: 'jpeg', quality: 0.98 },
+              html2canvas: { scale: 2, useCORS: true, logging: false },
+              jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+            };
+
+            try {
+              const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+              const pdfFile = new File([pdfBlob], cleanName, { type: 'application/pdf' });
+
+              if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                try {
+                  await navigator.share({
+                    files: [pdfFile],
+                    title: 'Carta de Preaviso de No Renovación',
+                    text: 'Documento Legal DOCTOR PYME'
+                  });
+                  if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>✓ ¡Guardado!</span>';
+                    setTimeout(() => { btn.innerHTML = originalContent; }, 2500);
+                  }
+                  return;
+                } catch (shareErr) {
+                  if (shareErr.name === 'AbortError') {
+                    if (btn) { btn.disabled = false; btn.innerHTML = originalContent; }
+                    return;
+                  }
+                }
+              }
+
+              const blobUrl = URL.createObjectURL(pdfBlob);
+              const a = document.createElement('a');
+              a.href = blobUrl;
+              a.download = cleanName;
+              document.body.appendChild(a);
+              a.click();
+              setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(blobUrl);
+              }, 1500);
+
+              if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<span>✓ ¡Descargado!</span>';
+                setTimeout(() => { btn.innerHTML = originalContent; }, 2500);
+              }
+            } catch (err) {
+              console.warn('Fallo html2pdf blob:', err);
+              if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+              }
+              window.print();
+            }
+          } else {
+            if (btn) {
+              btn.disabled = false;
+              btn.innerHTML = originalContent;
+            }
+            window.print();
+          }
+        }
+      </script>
     </body>
     </html>
   `);
@@ -2704,6 +2957,253 @@ window.abrirModalAdministrarCargos = function(cargoInicial = null) {
 // GENERADORES OFICIALES DE PDF (CONTRATO, PERFIL, MANUAL, PTS)
 // =============================================================================
 
+// =============================================================================
+// MOTOR UNIVERSAL DE VISUALIZACIÓN E IMPRESIÓN RESPONSIVE CON SAFE-AREAS Y DESCARGA DIRECTA PDF
+// =============================================================================
+function abrirVentanaDocumentoPortal({ titulo, filename, bodyHtml, cssExtra = '' }) {
+  const win = window.open('', '_blank', 'width=980,height=920,menubar=no,toolbar=no,status=no');
+  if (!win) {
+    alert("Por favor habilita las ventanas emergentes (popups) para visualizar e imprimir el documento oficial.");
+    return;
+  }
+  const cleanDocTitle = (titulo || 'Documento_SST').replace(/"/g, '&quot;');
+  const fileDownloadName = (filename || titulo || 'Documento_SST').replace(/[^a-zA-Z0-9_-]/g, '_');
+
+  win.document.open();
+  win.document.write(`<!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+      <title>${cleanDocTitle}</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+      <style>
+        :root {
+          --sat: max(env(safe-area-inset-top, 0px), 44px);
+          --sab: max(env(safe-area-inset-bottom, 0px), 16px);
+        }
+        * { box-sizing: border-box; }
+        @page { size: letter; margin: 12mm 15mm; }
+        body { 
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+          color: #0f172a; 
+          background: #f8fafc; 
+          margin: 0; 
+          padding: calc(var(--sat) + 58px) 16px max(var(--sab), 24px) 16px; 
+          font-size: 9pt; 
+          line-height: 1.5; 
+        }
+
+        .doc-control-bar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 999999;
+          background: #0b1a2d;
+          color: #ffffff;
+          padding-top: var(--sat);
+          padding-bottom: 12px;
+          padding-left: 14px;
+          padding-right: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+          border-bottom: 1px solid #1e293b;
+        }
+        .btn-back {
+          padding: 8px 14px;
+          background: #1e293b;
+          color: #f1f5f9;
+          border: 1px solid #334155;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 12px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          touch-action: manipulation;
+        }
+        .btn-back:hover, .btn-back:active { background: #334155; color: #ffffff; }
+
+        .btn-download {
+          padding: 8px 14px;
+          background: #0d9488;
+          color: #ffffff;
+          border: none;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 12px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: 0 2px 6px rgba(13, 148, 136, 0.35);
+          touch-action: manipulation;
+        }
+        .btn-download:hover, .btn-download:active { background: #0f766e; }
+        .btn-download:disabled { opacity: 0.6; cursor: wait; }
+
+        .btn-print { 
+          padding: 8px 14px; 
+          background: #4338ca; 
+          color: white; 
+          border: none; 
+          border-radius: 10px; 
+          font-weight: 700; 
+          cursor: pointer; 
+          font-size: 12px; 
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          touch-action: manipulation;
+        }
+        .btn-print:hover, .btn-print:active { background: #3730a3; }
+
+        .doc-wrapper {
+          max-width: 860px;
+          margin: 0 auto;
+          background: #ffffff;
+          padding: 26px 22px;
+          border-radius: 14px;
+          box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+          border: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 640px) {
+          body { padding-left: 8px; padding-right: 8px; }
+          .doc-wrapper { padding: 16px 10px; border-radius: 8px; }
+        }
+        @media print { 
+          body { padding: 0 !important; background: #ffffff !important; } 
+          .no-print, .doc-control-bar { display: none !important; } 
+          .doc-wrapper { max-width: 100% !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+        }
+        ${cssExtra}
+      </style>
+    </head>
+    <body>
+      <div class="doc-control-bar no-print">
+        <button type="button" class="btn-back" onclick="regresarAlPortal()">
+          <span>←</span>
+          <span>Volver al Portal</span>
+        </button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" id="btn-descargar-pdf" class="btn-download" onclick="descargarDocumentoPDF()">
+            <span>📥</span>
+            <span>Descargar PDF</span>
+          </button>
+          <button type="button" class="btn-print" onclick="window.print()">
+            <span>🖨️</span>
+            <span>Imprimir</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="doc-wrapper">
+        <div id="documento-imprimible">
+          ${bodyHtml}
+        </div>
+      </div>
+
+      <script>
+        function regresarAlPortal() {
+          if (window.opener && !window.opener.closed) {
+            window.close();
+          } else if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = './app.html';
+          }
+        }
+
+        async function descargarDocumentoPDF() {
+          const btn = document.getElementById('btn-descargar-pdf');
+          const originalContent = btn ? btn.innerHTML : '';
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳ Generando PDF...</span>';
+          }
+
+          const element = document.getElementById('documento-imprimible');
+          const cleanDocTitle = '${cleanDocTitle}';
+          const cleanName = '${fileDownloadName}' + '.pdf';
+
+          if (typeof html2pdf !== 'undefined' && element) {
+            const opt = {
+              margin: [8, 8, 8, 8],
+              filename: cleanName,
+              image: { type: 'jpeg', quality: 0.98 },
+              html2canvas: { scale: 2, useCORS: true, logging: false },
+              jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+            };
+
+            try {
+              const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+              const pdfFile = new File([pdfBlob], cleanName, { type: 'application/pdf' });
+
+              if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                try {
+                  await navigator.share({
+                    files: [pdfFile],
+                    title: cleanDocTitle,
+                    text: 'Documento Oficial SG-SST emitido por DOCTOR PYME'
+                  });
+                  if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>✓ ¡Guardado!</span>';
+                    setTimeout(() => { btn.innerHTML = originalContent; }, 2500);
+                  }
+                  return;
+                } catch (shareErr) {
+                  if (shareErr.name === 'AbortError') {
+                    if (btn) { btn.disabled = false; btn.innerHTML = originalContent; }
+                    return;
+                  }
+                }
+              }
+
+              const blobUrl = URL.createObjectURL(pdfBlob);
+              const a = document.createElement('a');
+              a.href = blobUrl;
+              a.download = cleanName;
+              document.body.appendChild(a);
+              a.click();
+              setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(blobUrl);
+              }, 1500);
+
+              if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<span>✓ ¡Descargado!</span>';
+                setTimeout(() => { btn.innerHTML = originalContent; }, 2500);
+              }
+            } catch (err) {
+              console.warn('Fallo html2pdf blob:', err);
+              if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+              }
+              window.print();
+            }
+          } else {
+            if (btn) {
+              btn.disabled = false;
+              btn.innerHTML = originalContent;
+            }
+            window.print();
+          }
+        }
+      </script>
+    </body>
+    </html>`);
+  win.document.close();
+}
+
 // 1. GENERADOR OFICIAL DE CONTRATO LABORAL INDIVIDUAL DE TRABAJO (9 CLÁUSULAS ESTRUCTURADAS)
 window.generarPdfContratoTrabajador = function(trabajadorId) {
   const trabajador = store.getTrabajadorPorId(trabajadorId);
@@ -2751,38 +3251,7 @@ window.generarPdfContratoTrabajador = function(trabajadorId) {
   const ipFirmaStr = firmaRegistrada?.signer_ip || firmaRegistrada?.ipCliente || trabajador.signature_ip_address || '127.0.0.1';
   const hashFirmaStr = firmaRegistrada?.hashDocumento || firmaRegistrada?.sha256_hash || trabajador.signature_sha256 || 'SHA-256';
 
-  const win = window.open('', '_blank');
-  win.document.write(`
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-      <meta charset="UTF-8">
-      <title>Contrato Individual de Trabajo - ${trabajador.nombre}</title>
-      <style>
-        @page { size: letter; margin: 12mm 15mm; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #0f172a; background: white; margin: 0; padding: 18px 24px; font-size: 8.5pt; line-height: 1.45; }
-        .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 12px; }
-        h1 { margin: 0; font-size: 13pt; text-transform: uppercase; color: #0f172a; font-weight: 900; }
-        h2 { margin: 2px 0 0; font-size: 9pt; color: #4338ca; text-transform: uppercase; font-weight: bold; }
-        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 8.5pt; }
-        .data-table th, .data-table td { border: 1px solid #cbd5e1; padding: 4.5px 8px; text-align: left; vertical-align: middle; }
-        .data-table th { background: #f8fafc; font-weight: bold; width: 28%; font-size: 8pt; color: #334155; }
-        .section-box { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; margin-bottom: 9px; page-break-inside: avoid; }
-        .section-title { font-size: 9pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 3px; margin: 0 0 5px 0; }
-        .clausula-text { font-size: 8.5pt; line-height: 1.45; margin: 0; text-align: justify; }
-        .sig-table { width: 100%; border-collapse: collapse; margin-top: 25px; page-break-inside: avoid; }
-        .sig-table td { width: 50%; vertical-align: top; text-align: center; padding: 0 20px; }
-        .sig-line { border-top: 1px solid #0f172a; margin-bottom: 5px; }
-        @media print { body { padding: 0; } .no-print { display: none; } }
-      </style>
-    </head>
-    <body>
-      <div class="no-print" style="text-align: right; margin-bottom: 12px;">
-        <button onclick="window.print()" style="padding: 8px 18px; background: #4338ca; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
-          🖨️ Imprimir / Guardar como PDF
-        </button>
-      </div>
-
+  const bodyHtml = `
       <div class="header">
         ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 50px; max-width: 150px; object-fit: contain; margin-bottom: 4px;"><br>` : ''}
         <strong style="font-size: 13pt; color: #0f172a;">${empresa.razonSocial}</strong>
@@ -2932,10 +3401,32 @@ window.generarPdfContratoTrabajador = function(trabajadorId) {
       <div style="margin-top: 25px; border-top: 1px solid #cbd5e1; padding-top: 5px; font-size: 8px; color: #94a3b8; text-align: center;">
         Documento generado a través de DOCTOR PYME SG-SST • Validez probatoria Código Sustantivo del Trabajo • Decreto 1072 de 2015
       </div>
-    </body>
-    </html>
-  `);
-  win.document.close();
+  `;
+
+  const cssContrato = `
+    .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 12px; }
+    h1 { margin: 0; font-size: 13pt; text-transform: uppercase; color: #0f172a; font-weight: 900; }
+    h2 { margin: 2px 0 0; font-size: 9pt; color: #4338ca; text-transform: uppercase; font-weight: bold; }
+    .data-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 8.5pt; }
+    .data-table th, .data-table td { border: 1px solid #cbd5e1; padding: 4.5px 8px; text-align: left; vertical-align: middle; }
+    .data-table th { background: #f8fafc; font-weight: bold; width: 28%; font-size: 8pt; color: #334155; }
+    .section-box { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; margin-bottom: 9px; page-break-inside: avoid; }
+    .section-title { font-size: 9pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 3px; margin: 0 0 5px 0; }
+    .clausula-text { font-size: 8.5pt; line-height: 1.45; margin: 0; text-align: justify; }
+    .sig-table { width: 100%; border-collapse: collapse; margin-top: 25px; page-break-inside: avoid; }
+    .sig-table td { width: 50%; vertical-align: top; text-align: center; padding: 0 20px; }
+    .sig-line { border-top: 1px solid #0f172a; margin-bottom: 5px; }
+    @media (max-width: 640px) {
+      .sig-table td { display: block; width: 100%; padding: 10px 0; }
+    }
+  `;
+
+  abrirVentanaDocumentoPortal({
+    titulo: `Contrato Individual de Trabajo - ${trabajador.nombre}`,
+    filename: `Contrato_Laboral_${trabajador.nombre}`,
+    bodyHtml,
+    cssExtra: cssContrato
+  });
 };
 
 // Alias directo para compatibilidad de llamadas
@@ -2952,33 +3443,7 @@ window.generarPdfPerfilCargo = function(cargoName, companyId) {
   const empresa = store.getEmpresa(companyId) || store.getEmpresaActiva();
   const cfg = store.getPerfilCargo(cargoName, companyId);
 
-  const win = window.open('', '_blank');
-  win.document.write(`
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-      <meta charset="UTF-8">
-      <title>Perfil del Cargo - ${cargoName}</title>
-      <style>
-        @page { size: letter; margin: 15mm; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #0f172a; margin: 0; padding: 15px; font-size: 10.5px; line-height: 1.45; }
-        .header { text-align: center; border-bottom: 2px solid #b45309; padding-bottom: 10px; margin-bottom: 15px; }
-        h1 { margin: 0; font-size: 14px; text-transform: uppercase; color: #b45309; }
-        h2 { margin: 2px 0 0; font-size: 11px; color: #1e293b; text-transform: uppercase; }
-        .section-title { background: #fef3c7; border-left: 4px solid #b45309; padding: 5px 8px; font-weight: bold; text-transform: uppercase; margin: 12px 0 6px; color: #78350f; font-size: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        th, td { border: 1px solid #cbd5e1; padding: 5px 8px; text-align: left; }
-        th { background: #f8fafc; font-weight: bold; width: 28%; font-size: 9.5px; }
-        @media print { body { padding: 0; } .no-print { display: none; } }
-      </style>
-    </head>
-    <body>
-      <div class="no-print" style="text-align: right; margin-bottom: 12px;">
-        <button onclick="window.print()" style="padding: 8px 18px; background: #b45309; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;">
-          🖨️ Imprimir / Guardar como PDF
-        </button>
-      </div>
-
+  const bodyHtml = `
       <div class="header">
         ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 52px; max-width: 150px; object-fit: contain; margin-bottom: 5px;"><br>` : ''}
         <strong style="font-size: 13px; color: #0f172a;">${empresa.razonSocial}</strong>
@@ -2995,7 +3460,7 @@ window.generarPdfPerfilCargo = function(cargoName, companyId) {
         </tr>
         <tr>
           <th>OBJETIVO DEL PUESTO:</th>
-          <td>${cfg.perfil?.objetivo}</td>
+          <td>${cfg.perfil?.objetivo || 'Desempeño operativo seguro y eficiente conforme a los estándares de la organización.'}</td>
         </tr>
       </table>
 
@@ -3003,19 +3468,19 @@ window.generarPdfPerfilCargo = function(cargoName, companyId) {
       <table>
         <tr>
           <th>EDUCACIÓN / ESCOLARIDAD:</th>
-          <td>${cfg.perfil?.educacion}</td>
+          <td>${cfg.perfil?.educacion || 'Primaria / Bachiller'}</td>
         </tr>
         <tr>
           <th>EXPERIENCIA PREVIA:</th>
-          <td>${cfg.perfil?.experiencia}</td>
+          <td>${cfg.perfil?.experiencia || '6 meses en cargos afines'}</td>
         </tr>
         <tr>
           <th>FORMACIÓN OBLIGATORIA SST:</th>
-          <td>${cfg.perfil?.formacionSST}</td>
+          <td>${cfg.perfil?.formacionSST || 'Inducción SG-SST, Manejo de EPP y Trabajo Seguro'}</td>
         </tr>
         <tr>
           <th>COMPETENCIAS Y HABILIDADES:</th>
-          <td>${cfg.perfil?.competencias}</td>
+          <td>${cfg.perfil?.competencias || 'Trabajo en equipo, seguimiento de instrucciones y autocuidado'}</td>
         </tr>
       </table>
 
@@ -3023,7 +3488,7 @@ window.generarPdfPerfilCargo = function(cargoName, companyId) {
       <table>
         <tr>
           <th>ÉNFASIS Y VALORACIONES:</th>
-          <td>${cfg.perfil?.examenesMedicos}</td>
+          <td>${cfg.perfil?.examenesMedicos || 'Énfasis osteomuscular, agudeza visual y examen de ingreso'}</td>
         </tr>
       </table>
 
@@ -3037,10 +3502,24 @@ window.generarPdfPerfilCargo = function(cargoName, companyId) {
           <span style="font-size: 8.5px; color: #64748b;">Aprobó Estándar SST</span>
         </div>
       </div>
-    </body>
-    </html>
-  `);
-  win.document.close();
+  `;
+
+  const cssPerfil = `
+    .header { text-align: center; border-bottom: 2px solid #b45309; padding-bottom: 10px; margin-bottom: 15px; }
+    h1 { margin: 0; font-size: 14px; text-transform: uppercase; color: #b45309; }
+    h2 { margin: 2px 0 0; font-size: 11px; color: #1e293b; text-transform: uppercase; }
+    .section-title { background: #fef3c7; border-left: 4px solid #b45309; padding: 5px 8px; font-weight: bold; text-transform: uppercase; margin: 12px 0 6px; color: #78350f; font-size: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+    th, td { border: 1px solid #cbd5e1; padding: 5px 8px; text-align: left; }
+    th { background: #f8fafc; font-weight: bold; width: 28%; font-size: 9.5px; }
+  `;
+
+  abrirVentanaDocumentoPortal({
+    titulo: `Perfil del Cargo - ${cargoName}`,
+    filename: `Perfil_Cargo_${cargoName}`,
+    bodyHtml,
+    cssExtra: cssPerfil
+  });
 };
 
 // 3. GENERADOR OFICIAL DE MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES (PDF)
@@ -3060,34 +3539,7 @@ window.generarPdfPtsCargo = function(cargoName, companyId) {
   const empresa = store.getEmpresa(companyId) || store.getEmpresaActiva();
   const cfg = store.getPerfilCargo(cargoName, companyId);
 
-  const win = window.open('', '_blank');
-  win.document.write(`
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-      <meta charset="UTF-8">
-      <title>Procedimiento de Trabajo Seguro (PTS) - ${cargoName}</title>
-      <style>
-        @page { size: letter; margin: 15mm; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #0f172a; margin: 0; padding: 15px; font-size: 10px; line-height: 1.45; }
-        .header { text-align: center; border-bottom: 2px solid #0f766e; padding-bottom: 10px; margin-bottom: 15px; }
-        h1 { margin: 0; font-size: 13.5px; text-transform: uppercase; color: #0f766e; }
-        h2 { margin: 2px 0 0; font-size: 10.5px; color: #1e293b; text-transform: uppercase; }
-        .section-title { background: #ccfbf1; border-left: 4px solid #0f766e; padding: 5px 8px; font-weight: bold; text-transform: uppercase; margin: 12px 0 6px; color: #115e59; font-size: 10px; }
-        .step-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
-        .step-box strong { color: #0f766e; display: block; margin-bottom: 3px; }
-        ul { margin: 0; padding-left: 18px; }
-        li { margin-bottom: 4px; }
-        @media print { body { padding: 0; } .no-print { display: none; } }
-      </style>
-    </head>
-    <body>
-      <div class="no-print" style="text-align: right; margin-bottom: 12px;">
-        <button onclick="window.print()" style="padding: 8px 18px; background: #0f766e; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;">
-          🖨️ Imprimir / Guardar como PDF
-        </button>
-      </div>
-
+  const bodyHtml = `
       <div class="header">
         ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 52px; max-width: 150px; object-fit: contain; margin-bottom: 5px;"><br>` : ''}
         <strong style="font-size: 13px; color: #0f172a;">${empresa.razonSocial}</strong>
@@ -3098,34 +3550,34 @@ window.generarPdfPtsCargo = function(cargoName, companyId) {
 
       <div class="section-title">1. Peligros Críticos Evaluados (Matriz GTC 45)</div>
       <ul>
-        ${(cfg.pts?.peligrosEvaluados || []).map(p => `<li>${p}</li>`).join('')}
+        ${(cfg.pts?.peligrosEvaluados || ['Condiciones de seguridad locativas y mecánicas', 'Peligro biomecánico por manipulación manual de cargas']).map(p => `<li>${p}</li>`).join('')}
       </ul>
 
       <div class="section-title">2. Elementos de Protección Personal (EPP) de Uso Obligatorio</div>
       <ul>
-        ${(cfg.pts?.eppRequeridos || []).map(e => `<li>✓ ${e}</li>`).join('')}
+        ${(cfg.pts?.eppRequeridos || ['Casco de seguridad con barbuquejo', 'Botas con puntera de seguridad', 'Guantes de vaqueta / nitrilo', 'Gafas de seguridad con filtro UV']).map(e => `<li>✓ ${e}</li>`).join('')}
       </ul>
 
       <div class="section-title">3. Protocolo de Operación Paso a Paso</div>
       
       <div class="step-box">
         <strong>FASE 1: ANTES DE INICIAR LA LABOR</strong>
-        ${cfg.pts?.faseAntes}
+        ${cfg.pts?.faseAntes || 'Inspeccionar el área de trabajo, verificar herramientas y utilizar la dotación y EPP completos.'}
       </div>
 
       <div class="step-box">
         <strong>FASE 2: DURANTE LA EJECUCIÓN OPERATIVA</strong>
-        ${cfg.pts?.faseDurante}
+        ${cfg.pts?.faseDurante || 'Mantener posturas ergonómicas, respetar distancias de seguridad y no manipular equipos energizados sin autorización.'}
       </div>
 
       <div class="step-box">
         <strong>FASE 3: AL FINALIZAR LA LABOR Y CIERRE DE TURNO</strong>
-        ${cfg.pts?.faseDespues}
+        ${cfg.pts?.faseDespues || 'Realizar orden y aseo en el puesto, guardar herramientas en su sitio designado y reportar cualquier condición insegura.'}
       </div>
 
       <div class="section-title">4. Actuación en Caso de Emergencia o Accidente de Trabajo</div>
       <p style="margin: 0; text-align: justify;">
-        ${cfg.pts?.emergencias}
+        ${cfg.pts?.emergencias || 'Suspender labores de inmediato, avisar al brigadista o jefe de área y prestar primeros auxilios sin mover al lesionado si hay sospecha de fractura.'}
       </p>
 
       <div style="margin-top: 35px; display: flex; justify-content: space-around; text-align: center;">
@@ -3138,10 +3590,25 @@ window.generarPdfPtsCargo = function(cargoName, companyId) {
           <span style="font-size: 8.5px; color: #64748b;">Entendido y Acatado</span>
         </div>
       </div>
-    </body>
-    </html>
-  `);
-  win.document.close();
+  `;
+
+  const cssPts = `
+    .header { text-align: center; border-bottom: 2px solid #0f766e; padding-bottom: 10px; margin-bottom: 15px; }
+    h1 { margin: 0; font-size: 13.5px; text-transform: uppercase; color: #0f766e; }
+    h2 { margin: 2px 0 0; font-size: 10.5px; color: #1e293b; text-transform: uppercase; }
+    .section-title { background: #ccfbf1; border-left: 4px solid #0f766e; padding: 5px 8px; font-weight: bold; text-transform: uppercase; margin: 12px 0 6px; color: #115e59; font-size: 10px; }
+    .step-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
+    .step-box strong { color: #0f766e; display: block; margin-bottom: 3px; }
+    ul { margin: 0; padding-left: 18px; }
+    li { margin-bottom: 4px; }
+  `;
+
+  abrirVentanaDocumentoPortal({
+    titulo: `Procedimiento de Trabajo Seguro (PTS) - ${cargoName}`,
+    filename: `PTS_${cargoName}`,
+    bodyHtml,
+    cssExtra: cssPts
+  });
 };
 
 // =============================================================================
@@ -3325,7 +3792,7 @@ window.mostrarToastOperativo = function(mensaje = '¡Listo! Documento firmado co
   const toast = document.createElement('div');
   toast.id = 'toast-operativo-feedback';
   toast.className = 'fixed left-3 right-3 z-[120] max-w-lg mx-auto bg-emerald-600 text-white px-5 py-4 rounded-2xl shadow-2xl border-2 border-emerald-300 flex items-center gap-3 animate-fadeIn';
-  toast.style.top = 'max(env(safe-area-inset-top, 16px), 16px)';
+  toast.style.top = 'max(env(safe-area-inset-top, 44px), 44px)';
   toast.innerHTML = `
     <span class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-xl flex-shrink-0">✅</span>
     <span class="text-[16px] font-bold leading-snug">${mensaje}</span>
@@ -3419,7 +3886,7 @@ function abrirModalOnboardingComplianceGate(trabajador, empresa) {
 
   modalEl.innerHTML = `
     <!-- Cabecera Sólida de Compliance Legal (Sin Blur / Safe Area Android & iOS) -->
-    <div class="bg-[#0B111E] px-4 pb-3 border-b border-slate-800 flex items-center justify-between flex-shrink-0 shadow-md sticky top-0 z-40" style="padding-top: max(env(safe-area-inset-top, 16px), 16px);">
+    <div class="bg-[#0B111E] px-4 pb-3 border-b border-slate-800 flex items-center justify-between flex-shrink-0 shadow-md sticky top-0 z-40" style="padding-top: max(env(safe-area-inset-top, 44px), 44px);">
       <div class="flex items-center gap-3 overflow-hidden">
         <div class="w-11 h-11 rounded-xl bg-teal-500/20 border border-teal-400/40 flex items-center justify-center text-xl flex-shrink-0">
           ⚖️
@@ -3753,28 +4220,28 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
       <!-- =================================================================== -->
       <!-- ENCABEZADO SUPERIOR COMPACTO SÓLIDO (SIN BLUR • SAFE AREA ANDROID)  -->
       <!-- =================================================================== -->
-      <header class="worker-mobile-header bg-[#0B111E] border-b border-slate-800 px-4 pb-3 sticky top-0 z-40 shadow-md" style="background-color: #0B111E; position: sticky; top: 0; z-index: 40; padding-top: max(env(safe-area-inset-top, 16px), 16px);">
+      <header class="worker-mobile-header bg-[#0B111E] border-b border-slate-800 px-4 pb-3 sticky top-0 z-40 shadow-md" style="background-color: #0B111E; position: sticky; top: 0; z-index: 40; padding-top: max(env(safe-area-inset-top, 44px), 44px);">
         <div class="max-w-lg mx-auto flex items-center justify-between gap-3">
           
-          <!-- Identificación de la Empresa y Trabajador -->
+          <!-- Identificación Dinámica Multitenant de la Empresa (logo_url, razon_social, nit) y Trabajador (cédula, cargo) -->
           <div class="flex items-center gap-3 overflow-hidden">
             <div class="w-11 h-11 rounded-xl bg-white p-1 border border-slate-700 overflow-hidden flex items-center justify-center flex-shrink-0 shadow-sm">
               <img 
-                src="${empresa.logoUrl || './assets/app-icon.png'}" 
-                alt="${empresa.razonSocial}" 
+                src="${empresa.logo_url || empresa.logoUrl || empresa.logo || './assets/app-icon.png'}" 
+                alt="${empresa.razon_social || empresa.razonSocial || 'Empresa'}" 
                 class="w-full h-full object-contain"
                 onerror="this.src='./assets/app-icon.png'"
               >
             </div>
             <div class="overflow-hidden">
               <div class="flex items-center gap-1.5 flex-wrap">
-                <h1 class="text-xs sm:text-sm font-black text-white truncate max-w-[180px] sm:max-w-xs">${trabajador.nombre}</h1>
+                <h1 class="text-xs sm:text-sm font-black text-white truncate max-w-[180px] sm:max-w-xs">${trabajador.nombre || trabajador.nombres}</h1>
                 <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 truncate">
                   ${trabajador.cargo}
                 </span>
               </div>
               <p class="text-[11px] text-slate-300 truncate">
-                ${empresa.razonSocial} · <span class="text-teal-400 font-mono">C.C. ${trabajador.identificacion || trabajador.cedula}</span>
+                ${empresa.razon_social || empresa.razonSocial} · <span class="text-slate-400 font-mono">NIT ${empresa.nit || '901003370'}</span> · <span class="text-teal-400 font-mono">C.C. ${trabajador.identificacion || trabajador.cedula}</span>
               </p>
             </div>
           </div>
@@ -4860,7 +5327,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
                     <p class="truncate"><strong class="text-slate-300">Hash SHA-256:</strong> ${trabajador.signature_sha256 || 'SHA-256'}</p>
                     <p><strong class="text-slate-300">Registrada el:</strong> ${trabajador.signature_registered_bogota || new Date(trabajador.signature_registered_at).toLocaleString('es-CO')}</p>
                     <p><strong class="text-slate-300">Dirección IP:</strong> ${trabajador.signature_ip_address || '127.0.0.1'}</p>
-                    <p class="truncate text-teal-400"><strong class="text-slate-300">MinIO S3:</strong> ${trabajador.signature_s3_key || `tenants/${empresa.id}/signatures/emp_${trabajador.id}.png`}</p>
+                    <p class="truncate text-teal-400"><strong class="text-slate-300">MinIO S3:</strong> ${trabajador.signature_s3_key || `tenants/${empresa.id}/workers/${trabajador.id}/firma_base.png`}</p>
                   </div>
                 </div>
               ` : `
@@ -5184,7 +5651,7 @@ async function registrarFirmaDocumentoResiliente({ trabajador, empresa, docType,
     signature_sha256: `sha256-${Date.now().toString(16)}`,
     sha256_hash: `sha256-${Date.now().toString(16)}`,
     signer_ip: 'App Móvil Operario',
-    pdf_s3_key: `tenants/${empresa.id}/documents/${trabajador.id}_${codigoDoc}_signed.pdf`
+    pdf_s3_key: `tenants/${empresa.id}/workers/${trabajador.id}/docs_firmados/${codigoDoc}_${Math.floor(Date.now() / 1000)}.pdf`
   };
 
   try {
@@ -5433,7 +5900,7 @@ window.abrirVisorPoliticaMovil = function(polId, polTitle, trabajadorId) {
 
   modalEl.innerHTML = `
     <!-- Cabecera Sólida con Botón Grande Cerrar X -->
-    <div class="bg-[#0B111E] px-4 pb-3 border-b border-slate-800 flex items-center justify-between gap-2 flex-shrink-0 sticky top-0 z-40" style="padding-top: max(env(safe-area-inset-top, 16px), 16px);">
+    <div class="bg-[#0B111E] px-4 pb-3 border-b border-slate-800 flex items-center justify-between gap-2 flex-shrink-0 sticky top-0 z-40" style="padding-top: max(env(safe-area-inset-top, 44px), 44px);">
       <div class="overflow-hidden">
         <span class="text-[10px] font-mono text-teal-400 font-bold block">${polId} • ${empresa.razonSocial}</span>
         <h3 class="text-sm sm:text-base font-black text-white truncate">${polTitle}</h3>
@@ -5866,7 +6333,7 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
 
   modalEl.innerHTML = `
     <!-- Cabecera Sólida Pantalla Completa con Botón Grande Cerrar X -->
-    <div class="bg-[#0B111E] px-4 pb-3 border-b border-slate-800 text-white flex items-center justify-between gap-2 flex-shrink-0 sticky top-0 z-40" style="padding-top: max(env(safe-area-inset-top, 16px), 16px);">
+    <div class="bg-[#0B111E] px-4 pb-3 border-b border-slate-800 text-white flex items-center justify-between gap-2 flex-shrink-0 sticky top-0 z-40" style="padding-top: max(env(safe-area-inset-top, 44px), 44px);">
       <div class="flex items-center gap-2.5 overflow-hidden">
         <span class="text-2xl flex-shrink-0">📜</span>
         <div class="overflow-hidden">
@@ -8325,7 +8792,8 @@ window.abrirModalCarpetaTrabajador = async function(trabajadorId) {
     { key: 'AFILIACION_EPS', label: 'Certificado de Afiliación EPS', icon: '🏥', desc: 'Certificado de afiliación a Salud (EPS). Vincula a Estándar 1.1.3.' },
     { key: 'AFILIACION_ARL', label: 'Certificado de Afiliación ARL', icon: '🛡️', desc: 'Certificado de afiliación a Riesgos Laborales (ARL). Vincula a Estándar 1.1.3.' },
     { key: 'AFILIACION_PENSION', label: 'Certificado de Afiliación Pensión', icon: '🏛️', desc: 'Certificado de afiliación a Fondo de Pensiones (AFP). Vincula a Estándar 1.1.3.' },
-    { key: 'OTROS_SOPORTES', label: 'Otros Soportes (Contratos, Cursos, etc.)', icon: '📎', desc: 'Certificados de cursos, alturas, inducciones o soportes complementarios.' }
+    { key: 'CURSO_ALTURAS', label: 'Anexo 6: Curso de Alturas (Certificado Trabajo Seguro en Alturas)', icon: '🧗', desc: 'Certificado de Trabajo Seguro en Alturas (Res. 4272 de 2021). Incluye control de vigencia y reentrenamiento anual.' },
+    { key: 'OTROS_SOPORTES', label: 'Otros Soportes (Contratos, Cursos, etc.)', icon: '📎', desc: 'Certificados de cursos, inducciones o soportes complementarios.' }
   ];
 
   function getCategoryInfo(catKey) {
@@ -8352,7 +8820,7 @@ window.abrirModalCarpetaTrabajador = async function(trabajadorId) {
                     Expediente Laboral Digital • Dec. 1072 Art. 2.2.4.6.12
                   </span>
                   <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black ${completeness.isComplete ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
-                    ${completeness.isComplete ? '✓ Expediente Completo (5/5)' : `⚠️ Incompleto (${completeness.presentCount}/5)`}
+                    ${completeness.isComplete ? '✓ Expediente Completo (6/6)' : `⚠️ Incompleto (${completeness.presentCount}/6)`}
                   </span>
                 </div>
                 <h3 class="font-black text-base sm:text-lg text-white mt-1 leading-tight">
@@ -8534,11 +9002,27 @@ window.abrirModalCarpetaTrabajador = async function(trabajadorId) {
                           📄 ${escapeHtml(doc.file_name)} · ${sizeStr}
                         </p>
 
-                        ${doc.expiration_date ? `
-                          <div class="mt-1 flex items-center gap-1 text-[9.5px]">
-                            <span class="text-amber-700 font-bold">Vence: ${doc.expiration_date}</span>
-                          </div>
-                        ` : ''}
+                        ${doc.expiration_date ? (() => {
+                          const exp = new Date(doc.expiration_date);
+                          const hoy = new Date();
+                          const diffDays = Math.ceil((exp - hoy) / (1000 * 60 * 60 * 24));
+                          let alertClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+                          let alertText = `Vence: ${doc.expiration_date} (${diffDays} días)`;
+                          if (diffDays < 0) {
+                            alertClass = 'bg-red-50 text-red-800 border-red-200';
+                            alertText = `🔴 VENCIDO (${doc.expiration_date}) - Reentrenamiento Obligatorio`;
+                          } else if (diffDays <= 30) {
+                            alertClass = 'bg-amber-50 text-amber-800 border-amber-200';
+                            alertText = `🟡 Próximo a vencer (${diffDays} días restantes)`;
+                          }
+                          return `
+                            <div class="mt-1 flex items-center gap-1 text-[9.5px]">
+                              <span class="px-2 py-0.5 rounded border font-bold ${alertClass}">
+                                ${alertText}
+                              </span>
+                            </div>
+                          `;
+                        })() : ''}
                       </div>
 
                       <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
@@ -8580,7 +9064,7 @@ window.abrirModalCarpetaTrabajador = async function(trabajadorId) {
         <!-- PIE DEL MODAL -->
         <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between flex-shrink-0">
           <span class="text-[10px] text-slate-500 font-mono">
-            Ruta S3: tenants/${empresa.id}/employees/${trabajador.id}/...
+            Ruta S3: tenants/${empresa.id}/workers/${trabajador.id}/examenes_medicos/...
           </span>
           <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition cursor-pointer">
             Cerrar Expediente
@@ -8811,7 +9295,7 @@ window.abrirModalRegistroFirmaTrabajador = function(trabajadorId, callbackOnSucc
               <p class="truncate"><strong class="text-slate-900">Hash SHA-256:</strong> ${trabajador.signature_sha256 || 'SHA-256'}</p>
               <p><strong class="text-slate-900">Fecha Bogotá (UTC-5):</strong> ${trabajador.signature_registered_bogota || (trabajador.signature_registered_at ? new Date(trabajador.signature_registered_at).toLocaleString('es-CO') : 'Registrada')}</p>
               <p><strong class="text-slate-900">IP de Registro:</strong> ${trabajador.signature_ip_address || '127.0.0.1'}</p>
-              <p class="truncate text-indigo-700"><strong class="text-slate-900">Ruta MinIO S3:</strong> ${trabajador.signature_s3_key || `tenants/${empresa.id}/signatures/emp_${trabajador.id}.png`}</p>
+              <p class="truncate text-indigo-700"><strong class="text-slate-900">Ruta MinIO S3:</strong> ${trabajador.signature_s3_key || `tenants/${empresa.id}/workers/${trabajador.id}/firma_base.png`}</p>
             </div>
           </div>
         ` : `
@@ -8888,7 +9372,7 @@ window.abrirModalRegistroFirmaTrabajador = function(trabajadorId, callbackOnSucc
               <span>Cifrado SHA-256</span>
             </div>
             <p class="text-slate-500 leading-tight">
-              Al guardar, este trazo se almacena de forma inmutable en <code>tenants/${empresa.id}/signatures/emp_${trabajador.id}.png</code> para estamparse en los documentos oficiales conforme a la Ley 527 de 1999.
+              Al guardar, este trazo se almacena de forma inmutable en <code>tenants/${empresa.id}/workers/${trabajador.id}/firma_base.png</code> para estamparse en los documentos oficiales conforme a la Ley 527 de 1999.
             </p>
           </div>
         </div>
@@ -9200,15 +9684,15 @@ window.imprimirCarneDigital = function() {
       <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
       <style>
         :root {
-          --sat: env(safe-area-inset-top, 0px);
-          --sab: env(safe-area-inset-bottom, 0px);
+          --sat: max(env(safe-area-inset-top, 0px), 44px);
+          --sab: max(env(safe-area-inset-bottom, 0px), 16px);
         }
         @page { size: 85mm 125mm; margin: 3mm; }
         * { box-sizing: border-box; }
         body { 
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
           background: #0f172a; 
-          padding: calc(max(var(--sat), 12px) + 54px) 14px max(var(--sab), 20px) 14px; 
+          padding: calc(var(--sat) + 56px) 14px max(var(--sab), 20px) 14px; 
           margin: 0; 
           min-height: 100vh;
           display: flex;
@@ -9224,8 +9708,8 @@ window.imprimirCarneDigital = function() {
           right: 0;
           z-index: 999999;
           background: #0b1a2d;
-          padding-top: max(var(--sat), 12px);
-          padding-bottom: 10px;
+          padding-top: var(--sat);
+          padding-bottom: 12px;
           padding-left: 12px;
           padding-right: 12px;
           display: flex;
@@ -9290,7 +9774,7 @@ window.imprimirCarneDigital = function() {
           }
         }
 
-        function descargarCarnePDF() {
+        async function descargarCarnePDF() {
           const btn = document.getElementById('btn-descargar-carne');
           const prevText = btn ? btn.innerHTML : '';
           if (btn) {
@@ -9299,29 +9783,66 @@ window.imprimirCarneDigital = function() {
           }
 
           const element = document.getElementById('carne-imprimible');
+          const cleanName = 'Carne_Digital_SST.pdf';
+
           if (typeof html2pdf !== 'undefined' && element) {
             const opt = {
               margin: [4, 4, 4, 4],
-              filename: 'Carne_Digital_SST.pdf',
+              filename: cleanName,
               image: { type: 'jpeg', quality: 0.98 },
               html2canvas: { scale: 2, useCORS: true, logging: false },
               jsPDF: { unit: 'mm', format: [85, 130], orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(element).save().then(function() {
+            try {
+              const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+              const pdfFile = new File([pdfBlob], cleanName, { type: 'application/pdf' });
+
+              if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                try {
+                  await navigator.share({
+                    files: [pdfFile],
+                    title: 'Carné Digital de Identificación SST',
+                    text: 'Carné Digital Oficial emitido por DOCTOR PYME'
+                  });
+                  if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>✓ ¡Guardado!</span>';
+                    setTimeout(function() { btn.innerHTML = prevText; }, 2500);
+                  }
+                  return;
+                } catch (shareErr) {
+                  if (shareErr.name === 'AbortError') {
+                    if (btn) { btn.disabled = false; btn.innerHTML = prevText; }
+                    return;
+                  }
+                }
+              }
+
+              const blobUrl = URL.createObjectURL(pdfBlob);
+              const a = document.createElement('a');
+              a.href = blobUrl;
+              a.download = cleanName;
+              document.body.appendChild(a);
+              a.click();
+              setTimeout(function() {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(blobUrl);
+              }, 1500);
+
               if (btn) {
                 btn.disabled = false;
-                btn.innerHTML = '<span>✓ ¡Guardado!</span>';
+                btn.innerHTML = '<span>✓ ¡Descargado!</span>';
                 setTimeout(function() { btn.innerHTML = prevText; }, 2500);
               }
-            }).catch(function(err) {
-              console.warn('Fallo html2pdf:', err);
+            } catch (err) {
+              console.warn('Fallo html2pdf blob:', err);
               if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = prevText;
               }
               window.print();
-            });
+            }
           } else {
             if (btn) {
               btn.disabled = false;

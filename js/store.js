@@ -1195,6 +1195,17 @@ class Store {
     if (this.data) {
       this.data.updatedAt = this.lastSaved.toISOString();
     }
+    // INTERCEPTOR MODO DEMOSTRACIÓN (Sandbox Efímero - Bloque 4)
+    if (typeof window !== 'undefined' && window.auth && window.auth.isDemo && window.auth.isDemo()) {
+      try {
+        if (typeof sessionStorage !== 'undefined') {
+          sessionStorage.setItem('DOCTOR_PYME_DEMO_SANDBOX', JSON.stringify(this.data));
+        }
+      } catch (e) {}
+      this.notifySaveStatus({ status: 'ok', timestamp: this.lastSaved, serverSynced: false });
+      this.notify();
+      return;
+    }
     try {
       storage.setItem(STORAGE_KEY, JSON.stringify(this.data));
       if (typeof evidenceDB !== 'undefined' && evidenceDB.guardarSnapshot) {
@@ -1470,6 +1481,9 @@ class Store {
   }
 
   enviarAlServidorFisico(forceImmediate = false) {
+    if (typeof window !== 'undefined' && window.auth && window.auth.isDemo && window.auth.isDemo()) {
+      return; // Aislamiento absoluto Sandbox: no mutar data/database.json ni servidor físico
+    }
     if (typeof fetch === 'undefined') return;
     if (this._saveTimeout) clearTimeout(this._saveTimeout);
 
@@ -5709,6 +5723,108 @@ class Store {
       console.error('Error recordSignedDocument:', err);
       return null;
     }
+  }
+
+  // =============================================================================
+  // GESTIÓN DEL PRESUPUESTO ANUAL SG-SST (Res. 0312 Estándar 1.1.2 & Dec. 1072)
+  // =============================================================================
+  getBudgetItems(companyId = null, year = null) {
+    if (!this.data) return [];
+    const targetCid = companyId || this.getEmpresaActivaId();
+    const targetYear = String(year || this.getAnioActivo() || '2026');
+    this.data.budget_items = this.data.budget_items || [];
+    
+    let filtered = this.data.budget_items.filter(it => (it.empresaId === targetCid || it.tenant_id === targetCid) && String(it.anio) === targetYear);
+    if (filtered.length === 0) {
+      const itemsBase = [
+        { id: `bg-${targetCid}-1`, empresaId: targetCid, tenant_id: targetCid, anio: targetYear, codigo: 'PRE-SST-01', nombre: 'Exámenes Médicos Ocupacionales (Ingreso / Periódicos)', categoria: 'Medicina Preventiva', valorPresupuestado: 4500000, valorEjecutado: 3200000, mes: 'Febrero', facturaNumero: 'FE-88902', proveedor: 'Ocupasalud SAS', soporteUrl: '/uploads/factura_medica_demo.pdf' },
+        { id: `bg-${targetCid}-2`, empresaId: targetCid, tenant_id: targetCid, anio: targetYear, codigo: 'PRE-SST-02', nombre: 'Dotación de EPP Certificados y Trabajo Seguro', categoria: 'Seguridad Industrial', valorPresupuestado: 6800000, valorEjecutado: 6800000, mes: 'Marzo', facturaNumero: 'F-10293', proveedor: 'Dotaciones Industriales del Oriente', soporteUrl: '/uploads/factura_epp_demo.pdf' },
+        { id: `bg-${targetCid}-3`, empresaId: targetCid, tenant_id: targetCid, anio: targetYear, codigo: 'PRE-SST-03', nombre: 'Mantenimiento Preventivo de Maquinaria y Equipos Críticos', categoria: 'Mantenimiento', valorPresupuestado: 8500000, valorEjecutado: 4200000, mes: 'Mayo', facturaNumero: 'MTTO-2026-04', proveedor: 'TecnoMecánica Industrial', soporteUrl: '' },
+        { id: `bg-${targetCid}-4`, empresaId: targetCid, tenant_id: targetCid, anio: targetYear, codigo: 'PRE-SST-04', nombre: 'Capacitaciones, Alturas y Brigada de Emergencia', categoria: 'Capacitación y Formación', valorPresupuestado: 3200000, valorEjecutado: 1800000, mes: 'Abril', facturaNumero: 'CAP-7712', proveedor: 'Centro de Entrenamiento en Alturas', soporteUrl: '' },
+        { id: `bg-${targetCid}-5`, empresaId: targetCid, tenant_id: targetCid, anio: targetYear, codigo: 'PRE-SST-05', nombre: 'Recarga y Mantenimiento de Extintores Red Contra Incendios', categoria: 'Emergencias', valorPresupuestado: 1200000, valorEjecutado: 1200000, mes: 'Enero', facturaNumero: 'EXT-4401', proveedor: 'FuegoSeguro Ltda', soporteUrl: '' }
+      ];
+      this.data.budget_items.push(...itemsBase);
+      this.saveToStorage();
+      return itemsBase;
+    }
+    return filtered;
+  }
+
+  saveBudgetItem(item) {
+    if (!this.data) return false;
+    this.data.budget_items = this.data.budget_items || [];
+    const idx = this.data.budget_items.findIndex(b => b.id === item.id);
+    if (idx >= 0) {
+      this.data.budget_items[idx] = { ...this.data.budget_items[idx], ...item, updatedAt: new Date().toISOString() };
+    } else {
+      this.data.budget_items.push({ ...item, id: item.id || `bg-${Date.now()}`, createdAt: new Date().toISOString() });
+    }
+    this.saveToStorage();
+    return true;
+  }
+
+  deleteBudgetItem(itemId) {
+    if (!this.data || !this.data.budget_items) return false;
+    this.data.budget_items = this.data.budget_items.filter(b => b.id !== itemId);
+    this.saveToStorage();
+    return true;
+  }
+
+  // =============================================================================
+  // BLOQUE 3: EJECUCIÓN Y CIERRE DEL PROGRAMA DE MANTENIMIENTO CON ACTA PDF
+  // =============================================================================
+  saveMaintenanceExecution(executionData) {
+    if (!this.data) return false;
+    this.data.mantenimientos = this.data.mantenimientos || [];
+    this.data.tools_interventions_log = this.data.tools_interventions_log || [];
+    this.data.equipos = this.data.equipos || [];
+    this.data.tools_inventory = this.data.tools_inventory || [];
+
+    // 1. Actualizar el registro del mantenimiento programado
+    const mant = this.data.mantenimientos.find(m => m.id === executionData.maintenance_id);
+    if (mant) {
+      mant.estado = 'Ejecutado';
+      mant.executed_at = executionData.executed_at || new Date().toISOString();
+      mant.pts_signed = executionData.pts_signed;
+      mant.technicians = executionData.technicians;
+      mant.photos = executionData.photos;
+      mant.technical_report = executionData.technical_report;
+      mant.acta_conformidad_url = executionData.acta_conformidad_url;
+      mant.acta_sha256 = executionData.acta_sha256;
+    }
+
+    // 2. Registrar en la bitácora inmutable de intervenciones
+    const interventionRecord = {
+      id: `int-${Date.now()}`,
+      tool_id: executionData.tool_id,
+      maintenance_id: executionData.maintenance_id,
+      tipo: executionData.tipo || 'Preventivo',
+      fecha_ejecucion: executionData.executed_at || new Date().toISOString(),
+      tecnicos: executionData.technicians,
+      descripcion_antes: executionData.technical_report?.antes || '',
+      descripcion_durante: executionData.technical_report?.durante || '',
+      descripcion_despues: executionData.technical_report?.despues || '',
+      acta_pdf_hash: executionData.acta_sha256,
+      acta_pdf_url: executionData.acta_conformidad_url,
+      timestamp_bogota: (new Date()).toLocaleString('es-CO', { timeZone: 'America/Bogota' })
+    };
+    this.data.tools_interventions_log.unshift(interventionRecord);
+
+    // 3. Recalcular próxima fecha de mantenimiento en el equipo
+    const tool = (this.data.tools_inventory || []).find(t => t.id === executionData.tool_id) ||
+                 (this.data.equipos || []).find(e => e.id === executionData.tool_id);
+    if (tool) {
+      tool.last_maintenance_date = new Date().toISOString().split('T')[0];
+      const periodicidadDias = parseInt(tool.maintenance_frequency_days || 90, 10);
+      const nextDate = new Date();
+      nextDate.setDate(nextDate.getDate() + periodicidadDias);
+      tool.next_maintenance_date = nextDate.toISOString().split('T')[0];
+      tool.proximoMantenimiento = tool.next_maintenance_date;
+      tool.estado_mantenimiento = 'Al día';
+    }
+
+    this.saveToStorage();
+    return true;
   }
 
   resetearDatosDemo() {

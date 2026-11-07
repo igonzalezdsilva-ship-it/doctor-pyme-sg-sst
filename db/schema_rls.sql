@@ -47,34 +47,92 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN null; END $$;
 
 -- ------------------------------------------------------------------------------
--- 2. TABLA MAESTRA: TENANTS (EMPRESAS CLIENTES) + CONTEXTO IA
+-- 2. BLOQUE 1: ESQUEMA BASE DE INQUILINOS (TENANTS) Y MEMBRESÍAS MULTI-EMPRESA
 -- ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS tenants (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nit VARCHAR(20) UNIQUE NOT NULL,
   razon_social VARCHAR(255) NOT NULL,
-  nit VARCHAR(50) NOT NULL UNIQUE,
-  arl VARCHAR(100) NOT NULL,
-  clase_riesgo VARCHAR(10) NOT NULL, -- I, II, III, IV, V
-  trabajadores INT NOT NULL DEFAULT 1,
+  nivel_riesgo_arl INTEGER NOT NULL DEFAULT 1 CHECK (nivel_riesgo_arl BETWEEN 1 AND 5),
+  numero_trabajadores INTEGER NOT NULL DEFAULT 1,
+  estandar_res_0312 VARCHAR(20) NOT NULL DEFAULT '7_ESTANDARES' CHECK (
+    estandar_res_0312 IN ('7_ESTANDARES', '21_ESTANDARES', '60_ESTANDARES')
+  ),
+  logo_url TEXT,
+  activo BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+  -- Campos extendidos SG-SST & Contexto IA (Retrocompatibilidad)
+  arl VARCHAR(100) DEFAULT 'SURA',
+  clase_riesgo VARCHAR(10) DEFAULT 'I', -- I, II, III, IV, V
+  trabajadores INT DEFAULT 1,
   ciudad VARCHAR(100),
   direccion VARCHAR(255),
   sector VARCHAR(150),
   responsable_sst VARCHAR(255),
   telefono VARCHAR(50),
   email VARCHAR(150),
-  estandares_aplicables INT DEFAULT 60,
+  estandares_aplicables INT DEFAULT 7,
   representante_legal VARCHAR(255),
-  logo_url TEXT,
-  
-  -- Campos de Evolución Contextual & ADN Empresarial (Process-Driven)
-  company_description TEXT,           -- Qué hace la empresa, productos/servicios
-  operational_how_it_works TEXT,      -- Cómo opera, flujo productivo, infraestructura
-  years_operating INT DEFAULT 1,       -- Antigüedad en años
-  ai_context_summary JSONB DEFAULT '{}'::jsonb, -- Síntesis estructurada por IA
-
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  company_description TEXT,
+  operational_how_it_works TEXT,
+  years_operating INT DEFAULT 1,
+  ai_context_summary JSONB DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Trigger automático para calcular estandar_res_0312 según Resolución 0312 de 2019
+CREATE OR REPLACE FUNCTION fn_calcular_estandar_res_0312()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.nivel_riesgo_arl IN (4, 5) OR NEW.numero_trabajadores > 50 THEN
+    NEW.estandar_res_0312 := '60_ESTANDARES';
+    NEW.estandares_aplicables := 60;
+  ELSIF NEW.numero_trabajadores BETWEEN 11 AND 50 AND NEW.nivel_riesgo_arl IN (1, 2, 3) THEN
+    NEW.estandar_res_0312 := '21_ESTANDARES';
+    NEW.estandares_aplicables := 21;
+  ELSE
+    NEW.estandar_res_0312 := '7_ESTANDARES';
+    NEW.estandares_aplicables := 7;
+  END IF;
+  NEW.trabajadores := NEW.numero_trabajadores;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_calcular_estandar_res_0312 ON tenants;
+CREATE TRIGGER trg_calcular_estandar_res_0312
+BEFORE INSERT OR UPDATE OF numero_trabajadores, nivel_riesgo_arl ON tenants
+FOR EACH ROW EXECUTE FUNCTION fn_calcular_estandar_res_0312();
+
+-- Tabla maestra de Usuarios de Plataforma (Consultores SST, Admins, Trabajadores)
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email VARCHAR(180) UNIQUE,
+  cedula VARCHAR(30) UNIQUE,
+  nombre_completo VARCHAR(255) NOT NULL,
+  password_hash TEXT,
+  activo BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Tabla Pivote de Membresías Multi-Empresa (user_tenant_memberships)
+CREATE TABLE IF NOT EXISTS user_tenant_memberships (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  rol VARCHAR(30) NOT NULL CHECK (
+    rol IN ('SUPERADMIN', 'CONSULTOR_SST', 'ADMIN_EMPRESA', 'TRABAJADOR')
+  ),
+  cargo_id UUID NULL,
+  activo BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT uq_user_tenant_membership UNIQUE (user_id, tenant_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_memberships_user_active ON user_tenant_memberships(user_id, activo);
+CREATE INDEX IF NOT EXISTS idx_memberships_tenant_rol ON user_tenant_memberships(tenant_id, rol);
 
 -- ------------------------------------------------------------------------------
 -- 3. BLOQUE 2: MAPA DE PROCESOS Y CARACTERIZACIÓN (SIPOC / PHVA)
@@ -727,26 +785,304 @@ ALTER TABLE job_position_epp_matrix ENABLE ROW LEVEL SECURITY;
 ALTER TABLE epp_dotacion_deliveries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE epp_dotacion_delivery_items ENABLE ROW LEVEL SECURITY;
 
+-- ==============================================================================
+-- 13. BLOQUE 2: ESTANDARIZACIÓN DE tenant_id E ÍNDICES COMPUESTOS EN TABLAS OPERATIVAS
+--     (Cumplimiento Ley 1581 de 2012, Decreto 1072 de 2015, Res. 0312 de 2019)
+-- ==============================================================================
+
+-- 13.1. Tabla Operativa: CARGOS (Homologada con job_positions)
+CREATE TABLE IF NOT EXISTS cargos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  codigo VARCHAR(50),
+  nombre VARCHAR(255) NOT NULL,
+  nivel_jerarquico VARCHAR(50) DEFAULT 'Operativo',
+  mision_cargo TEXT,
+  responsabilidades_sst JSONB DEFAULT '[]'::jsonb,
+  peligros_asociados JSONB DEFAULT '[]'::jsonb,
+  epp_requeridos JSONB DEFAULT '[]'::jsonb,
+  examenes_medicos_requeridos JSONB DEFAULT '[]'::jsonb,
+  activo BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 13.2. Tabla Operativa: WORKERS / TRABAJADORES (Homologada con employees)
+CREATE TABLE IF NOT EXISTS workers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  cargo_id UUID REFERENCES cargos(id) ON DELETE SET NULL,
+  cedula VARCHAR(30) NOT NULL,
+  nombres_apellidos VARCHAR(255) NOT NULL,
+  cargo_nombre VARCHAR(180),
+  email VARCHAR(150),
+  telefono VARCHAR(50),
+  eps VARCHAR(100),
+  arl VARCHAR(100),
+  afp VARCHAR(100),
+  fecha_ingreso DATE DEFAULT CURRENT_DATE,
+  politica_datos_aceptada BOOLEAN NOT NULL DEFAULT false,
+  notificacion_riesgos_aceptada BOOLEAN NOT NULL DEFAULT false,
+  firma_digital_url TEXT,
+  firma_base64 TEXT,
+  firma_sha256 VARCHAR(64),
+  fecha_aceptacion_terminos TIMESTAMPTZ,
+  activo BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT uq_workers_tenant_cedula UNIQUE (tenant_id, cedula)
+);
+
+-- Vista alias `trabajadores` para compatibilidad bidireccional en consultas SQL
+CREATE OR REPLACE VIEW trabajadores AS SELECT * FROM workers;
+
+-- 13.3. Tabla Operativa: DOCUMENTOS_SST (Políticas, Reglamentos, PTS, Anexos, Manuales)
+CREATE TABLE IF NOT EXISTS documentos_sst (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  cargo_id UUID REFERENCES cargos(id) ON DELETE SET NULL,
+  codigo VARCHAR(60) NOT NULL,
+  titulo VARCHAR(255) NOT NULL,
+  tipo_documento VARCHAR(80) NOT NULL, -- POLITICA_SST, REGLAMENTO_HIGIENE, PTS, ANEXO_CONTRACTUAL, MANUAL_CARGO, MATRIZ_RIESGOS
+  version VARCHAR(20) NOT NULL DEFAULT '01',
+  contenido_html TEXT,
+  contenido_json JSONB DEFAULT '{}'::jsonb,
+  archivo_s3_key TEXT,
+  requiere_firma_trabajador BOOLEAN NOT NULL DEFAULT true,
+  vigente BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 13.4. Tabla Operativa: FIRMAS_DOCUMENTOS (Trazabilidad probatoria Ley 527/1999)
+CREATE TABLE IF NOT EXISTS firmas_documentos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  worker_id UUID NOT NULL REFERENCES workers(id) ON DELETE CASCADE,
+  documento_id UUID REFERENCES documentos_sst(id) ON DELETE SET NULL,
+  documento_codigo VARCHAR(100),
+  documento_titulo VARCHAR(255) NOT NULL,
+  tipo_documento VARCHAR(80) NOT NULL,
+  firma_url TEXT NOT NULL,
+  pdf_firmado_s3_key TEXT,
+  hash_sha256 VARCHAR(64) NOT NULL,
+  ip_origen VARCHAR(50),
+  user_agent TEXT,
+  firmado_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  retencion_legal_anios INTEGER NOT NULL DEFAULT 20
+);
+
+-- 13.5. Tabla Operativa: INSPECCIONES_PREOPERACIONALES
+CREATE TABLE IF NOT EXISTS inspecciones_preoperacionales (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  worker_id UUID NOT NULL REFERENCES workers(id) ON DELETE CASCADE,
+  equipo_herramienta VARCHAR(255) NOT NULL,
+  respuestas_chequeo JSONB NOT NULL DEFAULT '{}'::jsonb,
+  apto_para_operar BOOLEAN NOT NULL DEFAULT true,
+  observaciones TEXT,
+  evidencia_foto_s3_key TEXT,
+  firma_url TEXT,
+  hash_sha256 VARCHAR(64),
+  inspeccionado_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 13.6. Tabla Operativa: ENTREGA_EPP (Estándar 4.2.6 Res. 0312 de 2019)
+CREATE TABLE IF NOT EXISTS entrega_epp (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  worker_id UUID NOT NULL REFERENCES workers(id) ON DELETE CASCADE,
+  cargo_id UUID REFERENCES cargos(id) ON DELETE SET NULL,
+  consecutivo VARCHAR(80) NOT NULL,
+  elementos_entregados JSONB NOT NULL DEFAULT '[]'::jsonb,
+  estado VARCHAR(40) NOT NULL DEFAULT 'FIRMADO_ENTREGADO',
+  firma_url TEXT,
+  pdf_acta_s3_key TEXT,
+  hash_sha256 VARCHAR(64),
+  entregado_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 13.7. Tabla Operativa: REPORTES_CONDICIONES_INSEGURAS (Art. 2.2.4.6.10 Dec. 1072/2015)
+CREATE TABLE IF NOT EXISTS reportes_condiciones_inseguras (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  worker_id UUID NOT NULL REFERENCES workers(id) ON DELETE CASCADE,
+  tipo_reporte VARCHAR(60) NOT NULL DEFAULT 'Condicion_Insegura', -- Condicion_Insegura, Acto_Inseguro, Incidente
+  ubicacion VARCHAR(255) NOT NULL,
+  descripcion TEXT NOT NULL,
+  nivel_severidad VARCHAR(30) NOT NULL DEFAULT 'Media',
+  evidencia_s3_key TEXT,
+  estado VARCHAR(40) NOT NULL DEFAULT 'Abierto',
+  observaciones_cierre TEXT,
+  reportado_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  actualizado_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 13.8. Tabla Operativa: CAPACITACIONES_ELEARNING (Aula Virtual SST)
+CREATE TABLE IF NOT EXISTS capacitaciones_elearning (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  codigo VARCHAR(60) NOT NULL,
+  titulo VARCHAR(255) NOT NULL,
+  descripcion TEXT,
+  intensidad_horaria NUMERIC(4,1) NOT NULL DEFAULT 2.0,
+  modulos_json JSONB NOT NULL DEFAULT '[]'::jsonb,
+  preguntas_evaluacion JSONB NOT NULL DEFAULT '[]'::jsonb,
+  puntaje_minimo_aprobacion NUMERIC(3,1) NOT NULL DEFAULT 4.0,
+  activo BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 13.9. Tabla Operativa: EXAMENES_MEDICOS (Profesiograma y Conceptos de Aptitud Res. 2346/2007)
+CREATE TABLE IF NOT EXISTS examenes_medicos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  worker_id UUID NOT NULL REFERENCES workers(id) ON DELETE CASCADE,
+  tipo_examen VARCHAR(60) NOT NULL DEFAULT 'INGRESO', -- INGRESO, PERIODICO, EGRESO, POST_INCAPACIDAD
+  concepto_aptitud VARCHAR(100) NOT NULL DEFAULT 'APTO_SIN_RESTRICCIONES',
+  enfasis_evaluacion TEXT,
+  restricciones_recomendaciones TEXT,
+  entidad_ips VARCHAR(200),
+  fecha_examen DATE NOT NULL DEFAULT CURRENT_DATE,
+  fecha_vencimiento DATE,
+  certificado_s3_key TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ------------------------------------------------------------------------------
+-- 13.10. EXCEPCIÓN: TABLAS DE CATÁLOGO GLOBAL DE NORMATIVIDAD COLOMBIANA
+--        (Sin tenant_id o con tenant_id IS NULL para plantillas globales de solo lectura)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS catalogo_estandares_res_0312 (
+  id SERIAL PRIMARY KEY,
+  numeral VARCHAR(20) UNIQUE NOT NULL,
+  ciclo_phva VARCHAR(20) NOT NULL CHECK (ciclo_phva IN ('PLANEAR', 'HACER', 'VERIFICAR', 'ACTUAR')),
+  nombre_estandar VARCHAR(255) NOT NULL,
+  peso_porcentual NUMERIC(5,2) NOT NULL,
+  aplica_7_estandares BOOLEAN NOT NULL DEFAULT false,
+  aplica_21_estandares BOOLEAN NOT NULL DEFAULT false,
+  aplica_60_estandares BOOLEAN NOT NULL DEFAULT true,
+  criterio_verificacion TEXT,
+  modo_verificacion TEXT
+);
+
+CREATE TABLE IF NOT EXISTS catalogo_peligros_gtc45 (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NULL REFERENCES tenants(id) ON DELETE CASCADE, -- NULL = Plantilla Global GTC 45 de solo lectura
+  clasificacion VARCHAR(100) NOT NULL, -- Biológico, Físico, Químico, Psicosocial, Biomecánico, Condiciones de Seguridad, Fenómenos Naturales
+  descripcion_peligro VARCHAR(255) NOT NULL,
+  efectos_posibles TEXT,
+  controles_sugeridos_fuente TEXT,
+  controles_sugeridos_medio TEXT,
+  controles_sugeridos_individuo TEXT,
+  es_plantilla_global BOOLEAN NOT NULL DEFAULT true
+);
+
+-- ------------------------------------------------------------------------------
+-- 13.11. ÍNDICES COMPUESTOS ENCABEZADOS POR tenant_id EN TODAS LAS TABLAS OPERATIVAS
+-- ------------------------------------------------------------------------------
+CREATE INDEX IF NOT EXISTS idx_workers_tenant_cc ON workers(tenant_id, cedula);
+CREATE INDEX IF NOT EXISTS idx_workers_tenant_cargo ON workers(tenant_id, cargo_id);
+CREATE INDEX IF NOT EXISTS idx_cargos_tenant_nombre ON cargos(tenant_id, nombre);
+CREATE INDEX IF NOT EXISTS idx_docs_sst_tenant_tipo ON documentos_sst(tenant_id, tipo_documento);
+CREATE INDEX IF NOT EXISTS idx_docs_sst_tenant_cargo ON documentos_sst(tenant_id, cargo_id);
+CREATE INDEX IF NOT EXISTS idx_firmas_tenant_worker ON firmas_documentos(tenant_id, worker_id);
+CREATE INDEX IF NOT EXISTS idx_firmas_tenant_doc ON firmas_documentos(tenant_id, documento_id);
+CREATE INDEX IF NOT EXISTS idx_preop_tenant_worker ON inspecciones_preoperacionales(tenant_id, worker_id);
+CREATE INDEX IF NOT EXISTS idx_entrega_epp_tenant_worker ON entrega_epp(tenant_id, worker_id);
+CREATE INDEX IF NOT EXISTS idx_reportes_ci_tenant_worker ON reportes_condiciones_inseguras(tenant_id, worker_id);
+CREATE INDEX IF NOT EXISTS idx_reportes_ci_tenant_estado ON reportes_condiciones_inseguras(tenant_id, estado);
+CREATE INDEX IF NOT EXISTS idx_capacitaciones_tenant_activo ON capacitaciones_elearning(tenant_id, activo);
+CREATE INDEX IF NOT EXISTS idx_examenes_tenant_worker ON examenes_medicos(tenant_id, worker_id);
+
+-- Índices compuestos adicionales en tablas operativas Process-Driven
+CREATE INDEX IF NOT EXISTS idx_employees_tenant_doc ON employees(tenant_id, document_number);
+CREATE INDEX IF NOT EXISTS idx_job_positions_tenant_code ON job_positions(tenant_id, code);
+CREATE INDEX IF NOT EXISTS idx_job_pos_docs_tenant_pos ON job_position_documents(tenant_id, job_position_id);
+CREATE INDEX IF NOT EXISTS idx_emp_doc_sigs_tenant_emp ON employee_document_signatures(tenant_id, employee_id);
+CREATE INDEX IF NOT EXISTS idx_tools_int_log_tenant_emp ON tools_interventions_log(tenant_id, employee_id);
+CREATE INDEX IF NOT EXISTS idx_epp_deliv_tenant_emp ON epp_deliveries(tenant_id, employee_id);
+CREATE INDEX IF NOT EXISTS idx_worker_sst_rep_tenant_emp ON worker_sst_reports(tenant_id, employee_id);
+
+-- ==============================================================================
+-- 14. BLOQUE 3: ACTIVACIÓN DE ROW-LEVEL SECURITY (RLS) Y FORZADO ESTRICTO
+--     EN TODAS LAS TABLAS CON tenant_id
+-- ==============================================================================
 DO $$
 DECLARE
   tbl text;
 BEGIN
   FOR tbl IN
     SELECT unnest(ARRAY[
+      -- Tablas operativas estándar del SG-SST
+      'workers',
+      'cargos',
+      'documentos_sst',
+      'firmas_documentos',
+      'inspecciones_preoperacionales',
+      'entrega_epp',
+      'reportes_condiciones_inseguras',
+      'capacitaciones_elearning',
+      'examenes_medicos',
+      -- Tablas operativas Process-Driven y de soporte
+      'process_maps',
+      'job_positions',
+      'processes',
+      'process_activities',
+      'process_activity_positions',
+      'job_position_documents',
+      'employees',
+      'gtc45_risk_matrices',
+      'tools_inventory',
+      'tools_assignments',
+      'tools_sst',
+      'tools_interventions_log',
+      'employee_document_signatures',
+      'employee_folder_documents',
+      'employee_job_position_assignments',
+      'epp_deliveries',
+      'worker_sst_reports',
       'epp_dotacion_catalog',
       'job_position_epp_matrix',
       'epp_dotacion_deliveries',
       'epp_dotacion_delivery_items'
     ])
   LOOP
+    -- 1. Activar y Forzar RLS (incluso para el propietario de la tabla)
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY;', tbl);
+    EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY;', tbl);
+
+    -- 2. Limpiar políticas previas para evitar colisiones
+    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_policy ON %I;', tbl);
     EXECUTE format('DROP POLICY IF EXISTS rls_%I_tenant_isolation ON %I;', tbl, tbl);
+    EXECUTE format('DROP POLICY IF EXISTS rls_%I_tenant ON %I;', tbl, tbl);
+
+    -- 3. Crear la política estándar de aislamiento estricto por sesión
     EXECUTE format('
-      CREATE POLICY rls_%I_tenant_isolation ON %I
-        FOR ALL
-        USING (tenant_id = NULLIF(current_setting(''app.current_tenant_id'', true), '''')::uuid)
-        WITH CHECK (tenant_id = NULLIF(current_setting(''app.current_tenant_id'', true), '''')::uuid);
-    ', tbl, tbl);
+      CREATE POLICY tenant_isolation_policy ON %I
+      AS PERMISSIVE FOR ALL
+      TO PUBLIC
+      USING (tenant_id = NULLIF(current_setting(''app.current_tenant_id'', true), '''')::uuid)
+      WITH CHECK (tenant_id = NULLIF(current_setting(''app.current_tenant_id'', true), '''')::uuid);
+    ', tbl);
   END LOOP;
 END $$;
+
+-- Política especial para Catálogo GTC 45 (Permite leer plantillas globales con tenant_id IS NULL y escribir/leer las del tenant activo)
+ALTER TABLE catalogo_peligros_gtc45 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE catalogo_peligros_gtc45 FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_or_global_gtc45_policy ON catalogo_peligros_gtc45;
+CREATE POLICY tenant_or_global_gtc45_policy ON catalogo_peligros_gtc45
+AS PERMISSIVE FOR ALL
+TO PUBLIC
+USING (
+  tenant_id IS NULL
+  OR tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid
+)
+WITH CHECK (
+  tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid
+);
+
 
 

@@ -34,6 +34,17 @@ const USUARIOS_VALIDOS = [
     cargo: 'Inspector Técnico de Trabajo - MinTrabajo Territorial',
     rol: 'Auditor',
     esSuperAdmin: false
+  },
+  {
+    email: 'demo@doctorpyme.com',
+    aliases: ['demo', 'demouser', 'demo@doctorpyme.co'],
+    password: 'demo2026',
+    nombre: 'Usuario Demo (Modo Simulación)',
+    cargo: 'Coordinador SST Demo - Sandbox Efímero',
+    rol: 'Super Administrador SST',
+    esSuperAdmin: true,
+    is_demo: true,
+    empresaId: 'emp-demo'
   }
 ];
 
@@ -117,6 +128,10 @@ class Auth {
     return this.session?.rol === 'Auditor';
   }
 
+  isDemo() {
+    return Boolean(this.session?.is_demo);
+  }
+
   login(identificador, password) {
     const cleanId = (identificador || '').trim().toLowerCase();
     const cleanPass = (password || '').trim();
@@ -183,8 +198,9 @@ class Auth {
         cargo: userInstitucional.cargo,
         rol: userInstitucional.rol,
         esSuperAdmin: !!userInstitucional.esSuperAdmin,
+        is_demo: Boolean(userInstitucional.is_demo),
         tipo: 'institucional',
-        empresaId: null,
+        empresaId: userInstitucional.empresaId || null,
         loginAt: new Date().toISOString()
       };
       storage.setItem(AUTH_KEY, JSON.stringify(this.session));
@@ -332,12 +348,14 @@ class Auth {
         ...data.worker,
         trabajadorId: data.worker.id,
         cedula: data.worker.cedula || data.worker.identificacion,
-        nombre: data.worker.nombre,
+        nombre: data.worker.nombre || data.worker.nombres,
         cargo: data.worker.cargo,
         area: data.worker.area,
-        correo: data.worker.correo,
+        correo: data.worker.correo || data.worker.email,
+        tenant_id: data.tenant_id || data.company.id,
         empresaId: data.company.id,
         company: data.company,
+        membership: data.membership || null,
         has_signed_onboarding: data.has_signed_onboarding,
         politica_datos_aceptada: Boolean(data.worker.politica_datos_aceptada || data.has_signed_onboarding),
         notificacion_riesgos_aceptada: Boolean(data.worker.notificacion_riesgos_aceptada || data.has_signed_onboarding),
@@ -347,11 +365,13 @@ class Auth {
         has_registered_signature: Boolean(data.worker.has_registered_signature || data.worker.firma_digital_url || data.worker.signature_url),
         signature_svg: data.worker.signature_svg || data.worker.firma_base64 || null,
         signature_url: data.worker.signature_url || data.worker.firma_digital_url || null,
+        signature_s3_key: data.worker.signature_s3_key || `tenants/${data.tenant_id || data.company.id}/workers/${data.worker.id}/firma_base.png`,
         signature_sha256: data.worker.signature_sha256 || null,
         signature_registered_at: data.worker.signature_registered_at || null,
         signature_registered_bogota: data.worker.signature_registered_bogota || null,
         token: data.token,
         rol: 'Trabajador',
+        rol_rls: data.rol || 'TRABAJADOR',
         esSuperAdmin: false,
         tipo: 'trabajador',
         loginAt: new Date().toISOString()
@@ -379,8 +399,71 @@ class Auth {
     }
   }
 
+  getActiveTenantId() {
+    if (this.session && (this.session.rol === 'Trabajador' || this.session.tipo === 'trabajador')) {
+      return this.session.tenant_id || this.session.empresaId || this.session.companyId || null;
+    }
+    return this.session?.tenant_id || this.session?.empresaId || (typeof store !== 'undefined' && store.getEmpresaActivaId ? store.getEmpresaActivaId() : null);
+  }
+
+  getAuthHeaders(extraHeaders = {}) {
+    const headers = { 'Content-Type': 'application/json', ...extraHeaders };
+    if (this.session?.token) {
+      headers['Authorization'] = `Bearer ${this.session.token}`;
+    }
+    const tid = this.getActiveTenantId();
+    if (tid) {
+      headers['X-Tenant-Id'] = tid;
+    }
+    if (this.isDemo()) {
+      headers['X-Demo-Mode'] = 'true';
+    }
+    return headers;
+  }
+
+  async switchTenant(newTenantId) {
+    if (!newTenantId) return { ok: false, error: 'tenant_id requerido' };
+    if (this.isWorker()) {
+      return { ok: false, error: 'Acceso denegado (RLS): Un trabajador operativo solo puede acceder a su empresa empleadora.' };
+    }
+    try {
+      const res = await fetch('/api/auth/switch-tenant', {
+        method: 'POST',
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({
+          tenant_id: newTenantId,
+          email: this.session?.email || 'i.gonzalez.dsilva@gmail.com'
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { ok: false, error: data.error || 'No autorizado para cambiar a esta empresa.' };
+      }
+      if (this.session) {
+        this.session.token = data.token;
+        this.session.tenant_id = data.tenant_id;
+        this.session.empresaId = data.tenant_id;
+        this.session.active_tenant = data.active_tenant;
+        storage.setItem(AUTH_KEY, JSON.stringify(this.session));
+      }
+      if (typeof store !== 'undefined' && store.setEmpresaActivaId) {
+        store.setEmpresaActivaId(newTenantId);
+      }
+      return { ok: true, data };
+    } catch (err) {
+      console.error('Error switchTenant:', err);
+      return { ok: false, error: err.message };
+    }
+  }
+
   loginDirectoComo(tipo) {
-    if (tipo === 'admin') {
+    if (tipo === 'demo') {
+      const res = this.login('demo@doctorpyme.com', 'demo2026');
+      if (res.ok && typeof store !== 'undefined' && store.setEmpresaActivaId) {
+        store.setEmpresaActivaId('emp-demo');
+      }
+      return res;
+    } else if (tipo === 'admin') {
       return this.login('i.gonzalez.dsilva@gmail.com', 'Stoner200');
     } else if (tipo === 'empresa' || tipo === 'ochoa') {
       return this.login('sstmineroambientall8a@gmail.com', 'Ochoa2026*');
@@ -522,6 +605,16 @@ class Auth {
                   <span>Acceder al Panel</span>
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </button>
+
+                <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
+                  <button 
+                    type="button" 
+                    id="btn-login-demo-rapido"
+                    class="w-full py-2.5 px-3 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                  >
+                    <span>🚀 Acceder como Usuario Demo (Simulación Sandbox)</span>
+                  </button>
+                </div>
               </form>
             </div>
 
@@ -665,6 +758,14 @@ class Auth {
       });
     }
 
+    // Botón Rápido Usuario Demo
+    document.getElementById('btn-login-demo-rapido')?.addEventListener('click', () => {
+      const res = this.loginDirectoComo('demo');
+      if (res.ok) {
+        onLoginSuccess(res.user);
+      }
+    });
+
     // Submit Login Administrativo
     document.getElementById('form-login').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -710,5 +811,6 @@ class Auth {
 
 export const auth = new Auth();
 if (typeof window !== 'undefined') {
+  window.auth = auth;
   window.cambiarRol = (tipo) => auth.cambiarRol(tipo);
 }

@@ -37,13 +37,13 @@
     };
   </script>
   
-  <!-- Estilos Personalizados e Impresión (Cache-busting v=2.1) -->
-  <link rel="stylesheet" href="./css/styles.css?v=2.1">
+  <!-- Estilos Personalizados e Impresión (Cache-busting v=2.3) -->
+  <link rel="stylesheet" href="./css/styles.css?v=2.3">
   <style>
     /* Safe areas para notch y barras de navegación móviles (iOS / Android) */
     :root {
-      --sat: env(safe-area-inset-top, 16px);
-      --sab: env(safe-area-inset-bottom, 8px);
+      --sat: max(env(safe-area-inset-top, 44px), 44px);
+      --sab: max(env(safe-area-inset-bottom, 16px), 16px);
     }
     html, body {
       margin: 0;
@@ -66,7 +66,7 @@
 <body class="h-full bg-slate-950 text-slate-100 mobile-app-mode select-none">
 
   <!-- BANNER DE ESTADO OFFLINE (SIN CONEXIÓN) CON PADDING PARA NOTCH -->
-  <div id="banner-offline-mode" class="hidden fixed top-0 left-0 right-0 z-50 bg-amber-500 text-slate-950 text-[11px] font-black pb-2 px-3 text-center shadow-lg flex items-center justify-center gap-2" style="padding-top: max(env(safe-area-inset-top, 0px), 8px);">
+  <div id="banner-offline-mode" class="hidden fixed top-0 left-0 right-0 z-50 bg-amber-500 text-slate-950 text-[11px] font-black pb-2 px-3 text-center shadow-lg flex items-center justify-center gap-2" style="padding-top: max(env(safe-area-inset-top, 44px), 44px);">
     <span>⚠️</span>
     <span>Modo Sin Conexión a Internet. Tus inspecciones y reportes se guardarán localmente.</span>
   </div>
@@ -94,11 +94,11 @@
     </main>
   </div>
 
-  <!-- SCRIPT BOOTSTRAP DE LA APLICACIÓN MÓVIL (Versionado v=2.1) -->
+  <!-- SCRIPT BOOTSTRAP DE LA APLICACIÓN MÓVIL (Versionado v=2.3) -->
   <script type="module">
-    import { auth } from './js/auth.js?v=2.1';
-    import { store } from './js/store.js?v=2.1';
-    import { renderWorkerPortal } from './js/components/workerPortal.js?v=2.1';
+    import { auth } from './js/auth.js?v=2.3';
+    import { store } from './js/store.js?v=2.3';
+    import { renderWorkerPortal } from './js/components/workerPortal.js?v=2.3';
 
     // Función global para forzar recarga limpia y purga de caché
     window.forzarActualizacionApp = async function() {

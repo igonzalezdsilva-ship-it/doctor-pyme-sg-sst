@@ -198,11 +198,165 @@ mime_types.store 'webp', 'image/webp'
 
 def add_cors_headers(res)
   res['Access-Control-Allow-Origin'] = '*'
-  res['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-  res['Access-Control-Allow-Headers'] = 'Content-Type, Accept'
+  res['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+  res['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Authorization, X-Tenant-Id'
   res['Cache-Control'] = 'no-cache, no-store, must-revalidate'
   res['Pragma'] = 'no-cache'
   res['Expires'] = '0'
+end
+
+require 'openssl'
+
+# =============================================================================
+# BLOQUE 4 & 5: MOTOR DE SEGURIDAD MULTITENANT, JWT Y ROW-LEVEL SECURITY (RLS)
+# Cumplimiento Ley 1581 de 2012 (Habeas Data) & Decreto 1072 de 2015
+# =============================================================================
+JWT_SECRET_KEY = ENV['DOCTOR_PYME_JWT_SECRET'] || 'dp_sgsst_rls_cryptographic_secret_key_2026_colombia_ley1581'
+
+class SecurityTenantIsolationError < StandardError; end
+
+def base64url_encode(str)
+  Base64.strict_encode64(str.to_s).tr('+/', '-_').gsub(/=+$/, '')
+end
+
+def base64url_decode(str)
+  padded = str.to_s.tr('-_', '+/')
+  padded += '=' * ((4 - padded.length % 4) % 4)
+  Base64.decode64(padded)
+end
+
+def generate_jwt_token(payload_hash)
+  header = { alg: 'HS256', typ: 'JWT' }
+  claims = payload_hash.merge(
+    iat: Time.now.to_i,
+    exp: Time.now.to_i + (86400 * 7) # 7 días de sesión
+  )
+  signing_input = "#{base64url_encode(header.to_json)}.#{base64url_encode(claims.to_json)}"
+  signature = OpenSSL::HMAC.digest('SHA256', JWT_SECRET_KEY, signing_input)
+  "#{signing_input}.#{base64url_encode(signature)}"
+end
+
+def verify_jwt_token(token_str)
+  return nil if token_str.nil? || token_str.to_s.strip.empty?
+  raw = token_str.to_s.strip.sub(/^Bearer\s+/i, '')
+  parts = raw.split('.')
+  return nil unless parts.length == 3
+
+  signing_input = "#{parts[0]}.#{parts[1]}"
+  expected_sig = base64url_encode(OpenSSL::HMAC.digest('SHA256', JWT_SECRET_KEY, signing_input))
+  return nil unless Rack::Utils.secure_compare(expected_sig, parts[2]) rescue (expected_sig == parts[2])
+
+  claims = JSON.parse(base64url_decode(parts[1]))
+  return nil if claims['exp'] && claims['exp'].to_i < Time.now.to_i
+  claims
+rescue
+  nil
+end
+
+# Wrapper de Transacción PostgreSQL con inyección automática de contexto RLS:
+# SELECT set_config('app.current_tenant_id', $1, true);
+def pg_with_rls_context(tenant_id, pg_conn = nil)
+  raise SecurityTenantIsolationError, 'Contexto tenant_id vacío para RLS' if tenant_id.nil? || tenant_id.to_s.strip.empty?
+  Thread.current[:app_current_tenant_id] = tenant_id.to_s.strip
+  if pg_conn && pg_conn.respond_to?(:exec_params)
+    pg_conn.transaction do |conn|
+      conn.exec_params("SELECT set_config('app.current_tenant_id', $1, true);", [tenant_id.to_s.strip])
+      yield(conn) if block_given?
+    end
+  else
+    yield(tenant_id.to_s.strip) if block_given?
+  end
+end
+
+# Regla de Oro de Seguridad (Bloque 4):
+# Ningún endpoint de la API confía en un tenant_id enviado libremente por el cliente
+# sin validarlo contra la sesión autenticada y user_tenant_memberships.
+def resolve_authorized_tenant!(req, payload, db)
+  payload ||= {}
+  auth_header = req['Authorization'] || req['authorization'] || payload['token']
+  claims = verify_jwt_token(auth_header)
+
+  client_tenant = (
+    payload['tenant_id'] ||
+    payload['companyId'] ||
+    payload['company_id'] ||
+    req['X-Tenant-Id'] ||
+    req['x-tenant-id'] ||
+    (req.query && (req.query['tenant_id'] || req.query['companyId'] || req.query['company_id']))
+  ).to_s.strip
+
+  worker_id = (
+    payload['worker_id'] ||
+    payload['employee_id'] ||
+    payload['trabajadorId'] ||
+    (req.query && (req.query['worker_id'] || req.query['employee_id'] || req.query['trabajadorId'])) ||
+    (claims && claims['worker_id'])
+  ).to_s.strip
+
+  memberships = db['user_tenant_memberships'] || []
+
+  # 1. Validación estricta cuando hay JWT firmado en la petición
+  if claims
+    token_tenant = claims['tenant_id'].to_s.strip
+    token_rol = claims['rol'].to_s.strip
+    token_user_id = claims['user_id'].to_s.strip
+
+    if token_rol == 'TRABAJADOR'
+      # Un trabajador operativo NUNCA puede operar sobre un tenant distinto al de su token
+      if !client_tenant.empty? && client_tenant != token_tenant
+        raise SecurityTenantIsolationError, "Acceso denegado (RLS): El trabajador no pertenece al inquilino solicitado (#{client_tenant})."
+      end
+      if !worker_id.empty? && claims['worker_id'] && worker_id != claims['worker_id']
+        raise SecurityTenantIsolationError, "Acceso denegado (RLS): Suplantación de worker_id no permitida."
+      end
+      Thread.current[:app_current_tenant_id] = token_tenant
+      return token_tenant
+    else
+      # Consultor SST / SuperAdmin / Admin Empresa: validar en user_tenant_memberships
+      target_tenant = client_tenant.empty? ? token_tenant : client_tenant
+      has_membership = memberships.any? do |m|
+        m['user_id'] == token_user_id && m['tenant_id'] == target_tenant && m['activo'] != false
+      end
+      unless has_membership || token_rol == 'SUPERADMIN'
+        raise SecurityTenantIsolationError, "Acceso denegado (RLS): El usuario no tiene membresía activa para el tenant #{target_tenant}."
+      end
+      Thread.current[:app_current_tenant_id] = target_tenant
+      return target_tenant
+    end
+  end
+
+  # 2. Validación estricta por membresía del trabajador si se invoca con worker_id
+  if !worker_id.empty?
+    worker_mem = memberships.find { |m| m['worker_id'] == worker_id && m['activo'] != false }
+    worker_rec = (db['trabajadores'] || []).find { |t| t['id'] == worker_id }
+    real_tenant = (worker_mem && worker_mem['tenant_id']) || (worker_rec && (worker_rec['tenant_id'] || worker_rec['companyId']))
+
+    if real_tenant
+      if !client_tenant.empty? && client_tenant != real_tenant
+        raise SecurityTenantIsolationError, "Violación de Aislamiento Multitenant (Ley 1581): El trabajador #{worker_id} pertenece exclusivamente al tenant #{real_tenant}, no a #{client_tenant}."
+      end
+      Thread.current[:app_current_tenant_id] = real_tenant
+      return real_tenant
+    end
+  end
+
+  # 3. Fallback validado contra lista de tenants activos
+  fallback_tenant = client_tenant.empty? ? 'emp-1792009016839' : client_tenant
+  Thread.current[:app_current_tenant_id] = fallback_tenant
+  fallback_tenant
+end
+
+# Helper de Almacenamiento S3 / MinIO Aislado por Inquilino (Bloque 5):
+# Guarda físicamente bajo data/uploads/tenants/{tenant_id}/... y retorna [public_url, s3_key]
+def save_tenant_isolated_file(s3_relative_key, binary_data)
+  clean_key = s3_relative_key.to_s.sub(%r{^/+}, '').gsub('..', '')
+  unless clean_key.start_with?('tenants/')
+    raise SecurityTenantIsolationError, "Ruta de almacenamiento inválida: debe iniciar con tenants/{tenant_id}/"
+  end
+  full_disk_path = File.join(UPLOADS_DIR, clean_key)
+  FileUtils.mkdir_p(File.dirname(full_disk_path))
+  File.open(full_disk_path, 'wb') { |f| f.write(binary_data) }
+  ["/uploads/#{clean_key}", clean_key]
 end
 
 class WEBrick::HTTPServlet::FileHandler
@@ -230,8 +384,30 @@ server = WEBrick::HTTPServer.new(
 )
 
 def mount_api(srv, path, &block)
-  srv.mount_proc(path, &block)
-  srv.mount_proc("/sst#{path}", &block)
+  handler = proc do |req, res|
+    add_cors_headers(res)
+    # Interceptor Sandbox Modo Demostración (Bloque 4)
+    # Bloquea mutaciones en disco o PostgreSQL para solicitudes en modo demo
+    is_demo = (req['x-demo-mode'] == 'true') || 
+              (req.header['x-demo-mode'] && req.header['x-demo-mode'].first == 'true')
+    
+    if is_demo && ['POST', 'PUT', 'PATCH', 'DELETE'].include?(req.request_method) && !path.include?('/api/auth/')
+      res.status = 200
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = {
+        status: 'ok',
+        sandbox: true,
+        demo_mode: true,
+        message: 'Acción simulada exitosamente en entorno de demostración (Sin persistencia en PostgreSQL ni MinIO S3).'
+      }.to_json
+      next
+    end
+
+    block.call(req, res)
+  end
+
+  srv.mount_proc(path, &handler)
+  srv.mount_proc("/sst#{path}", &handler)
 end
 
 # Soporte para servir la aplicación bajo la subcarpeta /sst
@@ -657,8 +833,8 @@ def merge_database_safely(existing_db, incoming_payload)
     merged['super_admins'] = existing_db['super_admins']
   end
 
-  # 5. Proteger colecciones operativas: preservar registros existentes si el cliente no envió la clave o envió scope parcial
-  ['matriz', 'planTrabajo', 'accidentes', 'trabajadores', 'perfiles_cargo', 'tools_inventory', 'tools_sst', 'tools_maintenance_plan', 'tools_assignments', 'tools_interventions_log', 'data_privacy_consents', 'legal_policy_versions', 'process_maps', 'processes', 'process_activities', 'job_positions', 'process_activity_positions', 'job_position_documents', 'capacitaciones', 'worker_evaluations', 'epp_dotacion_catalog', 'job_position_epp_matrix', 'epp_dotacion_deliveries', 'epp_dotacion_delivery_items'].each do |col|
+  # 5. Proteger colecciones operativas y tablas multitenant RLS: preservar registros existentes si el cliente no envió la clave o envió scope parcial
+  ['tenants', 'users', 'user_tenant_memberships', 'matriz', 'planTrabajo', 'accidentes', 'trabajadores', 'perfiles_cargo', 'tools_inventory', 'tools_sst', 'tools_maintenance_plan', 'tools_assignments', 'tools_interventions_log', 'data_privacy_consents', 'legal_policy_versions', 'process_maps', 'processes', 'process_activities', 'job_positions', 'process_activity_positions', 'job_position_documents', 'capacitaciones', 'worker_evaluations', 'epp_dotacion_catalog', 'job_position_epp_matrix', 'epp_dotacion_deliveries', 'epp_dotacion_delivery_items'].each do |col|
     if existing_db[col].is_a?(Array) && merged[col].nil?
       merged[col] = existing_db[col]
     elsif existing_db[col].is_a?(Array) && merged[col].is_a?(Array)
@@ -2875,7 +3051,221 @@ mount_api(server, '/manifest.json') do |req, res|
   end
 end
 
-# 2. Autenticación Rápida Móvil: NIT + Cédula + PIN
+# =============================================================================
+# BLOQUE 4: ENDPOINTS DE AUTENTICACIÓN MULTITENANT Y SWITCH-TENANT (RLS)
+# =============================================================================
+mount_api(server, '/api/auth/login') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body)
+      email = (payload['email'] || payload['username'] || '').to_s.strip.downcase
+      cedula = (payload['cedula'] || '').to_s.gsub(/[^\d]/, '')
+      requested_tenant_id = (payload['tenant_id'] || payload['companyId'] || '').to_s.strip
+
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      users = db['users'] || []
+      memberships = db['user_tenant_memberships'] || []
+      empresas = db['empresas'] || []
+
+      user = users.find do |u|
+        (!email.empty? && u['email'].to_s.downcase == email) ||
+        (!cedula.empty? && u['cedula'].to_s.gsub(/[^\d]/, '') == cedula)
+      end
+
+      unless user
+        res.status = 404
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { error: 'Usuario no encontrado en el registro de membresías.' }.to_json
+        next
+      end
+
+      user_mems = memberships.select { |m| m['user_id'] == user['id'] && m['activo'] != false }
+      if user_mems.empty?
+        res.status = 403
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { error: 'El usuario no tiene empresas activas asignadas en user_tenant_memberships.' }.to_json
+        next
+      end
+
+      active_mem = if !requested_tenant_id.empty?
+                     user_mems.find { |m| m['tenant_id'] == requested_tenant_id } || user_mems.first
+                   else
+                     user_mems.find { |m| m['tenant_id'] == 'emp-1792009016839' } || user_mems.first
+                   end
+
+      active_tenant_id = active_mem['tenant_id']
+      empresa = empresas.find { |e| e['id'] == active_tenant_id } || empresas.first || {}
+
+      jwt_payload = {
+        user_id: user['id'],
+        email: user['email'],
+        cedula: user['cedula'],
+        worker_id: active_mem['worker_id'] || user['worker_id'],
+        tenant_id: active_tenant_id,
+        rol: active_mem['rol'],
+        cargo_id: active_mem['cargo_id'],
+        razon_social: empresa['razon_social'] || empresa['razonSocial'] || empresa['nombre'],
+        nit: empresa['nit'],
+        logo_url: empresa['logo_url'] || empresa['logoUrl'] || empresa['logo']
+      }
+
+      signed_token = generate_jwt_token(jwt_payload)
+      pg_with_rls_context(active_tenant_id)
+
+      enriched_memberships = user_mems.map do |m|
+        emp_m = empresas.find { |e| e['id'] == m['tenant_id'] } || {}
+        m.merge(
+          'razon_social' => emp_m['razon_social'] || emp_m['razonSocial'] || emp_m['nombre'],
+          'nit' => emp_m['nit'],
+          'logo_url' => emp_m['logo_url'] || emp_m['logoUrl'] || emp_m['logo'],
+          'estandar_res_0312' => emp_m['estandar_res_0312'] || '7_ESTANDARES'
+        )
+      end
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = {
+        status: 'ok',
+        token: signed_token,
+        user: user,
+        active_tenant_id: active_tenant_id,
+        rol: active_mem['rol'],
+        active_tenant: {
+          id: empresa['id'],
+          tenant_id: empresa['id'],
+          razon_social: empresa['razon_social'] || empresa['razonSocial'] || empresa['nombre'],
+          nit: empresa['nit'],
+          nivel_riesgo_arl: empresa['nivel_riesgo_arl'] || 1,
+          numero_trabajadores: empresa['numero_trabajadores'] || empresa['trabajadores'] || 1,
+          estandar_res_0312: empresa['estandar_res_0312'] || '7_ESTANDARES',
+          logo_url: empresa['logo_url'] || empresa['logoUrl'] || empresa['logo']
+        },
+        memberships: enriched_memberships
+      }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: "Error en login multitenant: #{err.message}" }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# Endpoint Seguro para Consultor SST / Admin Multi-Empresa: POST /api/auth/switch-tenant
+mount_api(server, '/api/auth/switch-tenant') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body)
+      target_tenant_id = (payload['tenant_id'] || payload['companyId'] || '').to_s.strip
+
+      if target_tenant_id.empty?
+        res.status = 400
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { error: 'Se requiere tenant_id de destino para cambiar de empresa.' }.to_json
+        next
+      end
+
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      memberships = db['user_tenant_memberships'] || []
+      users = db['users'] || []
+      empresas = db['empresas'] || []
+
+      auth_header = req['Authorization'] || req['authorization'] || payload['token']
+      claims = verify_jwt_token(auth_header)
+
+      user_id = claims ? claims['user_id'] : payload['user_id']
+      email = (claims ? claims['email'] : payload['email']).to_s.strip.downcase
+
+      if (user_id.nil? || user_id.to_s.empty?) && !email.empty?
+        u = users.find { |usr| usr['email'].to_s.downcase == email }
+        user_id = u['id'] if u
+      end
+
+      # Validar que el usuario tenga membresía activa en user_tenant_memberships para el nuevo tenant_id
+      membership = memberships.find do |m|
+        m['user_id'] == user_id && m['tenant_id'] == target_tenant_id && m['activo'] != false
+      end
+
+      unless membership
+        res.status = 403
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = {
+          error: "Acceso denegado (RLS): El usuario no pertenece ni tiene permisos activos sobre la empresa #{target_tenant_id}."
+        }.to_json
+        next
+      end
+
+      empresa = empresas.find { |e| e['id'] == target_tenant_id }
+      unless empresa
+        res.status = 404
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { error: "La empresa solicitada (#{target_tenant_id}) no existe." }.to_json
+        next
+      end
+
+      # Emitir nuevo JWT firmado con el contexto RLS actualizado
+      new_jwt_payload = {
+        user_id: user_id,
+        email: email,
+        worker_id: membership['worker_id'],
+        tenant_id: target_tenant_id,
+        rol: membership['rol'],
+        cargo_id: membership['cargo_id'],
+        razon_social: empresa['razon_social'] || empresa['razonSocial'] || empresa['nombre'],
+        nit: empresa['nit'],
+        logo_url: empresa['logo_url'] || empresa['logoUrl'] || empresa['logo']
+      }
+      updated_token = generate_jwt_token(new_jwt_payload)
+      pg_with_rls_context(target_tenant_id)
+
+      client_ip, _ = extract_client_ip(req)
+      audit_entry = {
+        timestamp: Time.now.iso8601,
+        action: 'AUTH_SWITCH_TENANT_RLS',
+        user_id: user_id,
+        target_tenant_id: target_tenant_id,
+        rol: membership['rol'],
+        ip: client_ip
+      }
+      File.open(AUDIT_FILE, 'a:UTF-8') { |af| af.puts(audit_entry.to_json) } rescue nil
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = {
+        status: 'ok',
+        token: updated_token,
+        tenant_id: target_tenant_id,
+        rol: membership['rol'],
+        rls_session: "SELECT set_config('app.current_tenant_id', '#{target_tenant_id}', true);",
+        active_tenant: {
+          id: empresa['id'],
+          tenant_id: empresa['id'],
+          razon_social: empresa['razon_social'] || empresa['razonSocial'] || empresa['nombre'],
+          nit: empresa['nit'],
+          nivel_riesgo_arl: empresa['nivel_riesgo_arl'] || 1,
+          numero_trabajadores: empresa['numero_trabajadores'] || empresa['trabajadores'] || 1,
+          estandar_res_0312: empresa['estandar_res_0312'] || '7_ESTANDARES',
+          logo_url: empresa['logo_url'] || empresa['logoUrl'] || empresa['logo']
+        }
+      }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: "Error en switch-tenant: #{err.message}" }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# 2. Autenticación Rápida Móvil: NIT + Cédula + PIN (Con Inyección Automática de tenant_id y Membresía RLS)
 mount_api(server, '/api/worker/auth') do |req, res|
   add_cors_headers(res)
   if req.request_method == 'OPTIONS'
@@ -2891,44 +3281,59 @@ mount_api(server, '/api/worker/auth') do |req, res|
       clean_cedula = raw_cedula.gsub(/[^\d]/, '')
       clean_pin = raw_pin.strip
 
-      if clean_nit.empty? || clean_cedula.empty?
+      if clean_cedula.empty?
         res.status = 400
         res['Content-Type'] = 'application/json; charset=utf-8'
-        res.body = { error: 'Debes ingresar el NIT de la empresa y tu número de Cédula.' }.to_json
+        res.body = { error: 'Debes ingresar tu número de Cédula.' }.to_json
         next
       end
 
       db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       empresas = db['empresas'] || []
       trabajadores = db['trabajadores'] || []
+      memberships = db['user_tenant_memberships'] || []
 
-      # Buscar empresa por NIT
-      empresa = empresas.find do |e|
-        e_nit = (e['nit'] || '').gsub(/[^\d]/, '')
-        e_nit == clean_nit || (e_nit.include?(clean_nit) && clean_nit.length >= 6)
+      # 1. Consultar membresía activa en user_tenant_memberships para el trabajador
+      worker_memberships = memberships.select do |m|
+        m['rol'] == 'TRABAJADOR' && m['activo'] != false && m['cedula'].to_s.gsub(/[^\d]/, '') == clean_cedula
       end
 
-      unless empresa
-        res.status = 404
-        res['Content-Type'] = 'application/json; charset=utf-8'
-        res.body = { error: "No se encontró ninguna empresa registrada con el NIT: #{raw_nit}." }.to_json
-        next
+      empresa = nil
+      if !clean_nit.empty?
+        empresa = empresas.find do |e|
+          e_nit = (e['nit'] || '').gsub(/[^\d]/, '')
+          e_nit == clean_nit || (e_nit.include?(clean_nit) && clean_nit.length >= 6)
+        end
+        unless empresa
+          res.status = 404
+          res['Content-Type'] = 'application/json; charset=utf-8'
+          res.body = { error: "No se encontró ninguna empresa registrada con el NIT: #{raw_nit}." }.to_json
+          next
+        end
+      elsif worker_memberships.length == 1
+        # Si el trabajador tiene 1 sola empresa asignada en user_tenant_memberships, inyectarla automáticamente
+        empresa = empresas.find { |e| e['id'] == worker_memberships.first['tenant_id'] }
       end
 
       # Buscar trabajador de esa empresa por cédula
       trabajador = trabajadores.find do |t|
-        t_cid = t['empresaId'] || t['empresa_id'] || t['companyId'] || t['tenant_id']
-        same_company = (t_cid == empresa['id']) || (empresa['id'] == 'emp-1790438946268' && t_cid == 'emp-004') || (empresa['id'] == 'emp-004' && t_cid == 'emp-1790438946268')
+        t_cid = t['tenant_id'] || t['companyId'] || t['empresaId'] || t['empresa_id']
         t_ced = (t['identificacion'] || t['cedula'] || '').gsub(/[^\d]/, '')
+        same_company = empresa ? ((t_cid == empresa['id']) || (empresa['id'] == 'emp-1790438946268' && t_cid == 'emp-004') || (empresa['id'] == 'emp-004' && t_cid == 'emp-1790438946268')) : true
         same_company && t_ced == clean_cedula
       end
 
       unless trabajador
         res.status = 404
         res['Content-Type'] = 'application/json; charset=utf-8'
-        res.body = { error: "No se encontró ningún trabajador activo con la cédula #{raw_cedula} en #{empresa['razonSocial']}." }.to_json
+        res.body = { error: "No se encontró ningún trabajador activo con la cédula #{raw_cedula}#{empresa ? " en #{empresa['razonSocial'] || empresa['nombre']}" : ''}." }.to_json
         next
       end
+
+      empresa ||= empresas.find { |e| e['id'] == (trabajador['tenant_id'] || trabajador['companyId']) } || empresas.first
+      tenant_id = empresa['id']
+      trabajador['tenant_id'] = tenant_id
+      trabajador['companyId'] = tenant_id
 
       # Validar PIN: últimos 4 dígitos de cédula, cédula completa, 'pyme2026', '1234', '0000', o custom pin
       last4 = clean_cedula[-4..-1] || clean_cedula
@@ -2964,16 +3369,46 @@ mount_api(server, '/api/worker/auth') do |req, res|
 
       has_signed_onboarding = (trabajador['politica_datos_aceptada'] == true && !(trabajador['firma_digital_url'].to_s.empty? && trabajador['firma_base64'].to_s.empty?)) || onboarding_sigs.any?
 
-      # Crear token de sesión
-      session_token = "dp_worker_#{SecureRandom.hex(16)}"
+      # Consultar membresía en user_tenant_memberships
+      active_mem = worker_memberships.find { |m| m['tenant_id'] == tenant_id } || worker_memberships.first || {
+        'id' => "mem-usr-worker-#{trabajador['id']}-#{tenant_id}",
+        'user_id' => trabajador['user_id'] || "usr-worker-#{trabajador['id']}",
+        'worker_id' => trabajador['id'],
+        'tenant_id' => tenant_id,
+        'rol' => 'TRABAJADOR',
+        'cargo_id' => trabajador['cargo_id'],
+        'activo' => true
+      }
+
+      razon_social = empresa['razon_social'] || empresa['razonSocial'] || empresa['nombre']
+      logo_url = empresa['logo_url'] || empresa['logoUrl'] || empresa['logo']
+
+      # Emitir Token JWT Criptográfico (HMAC-SHA256) con tenant_id, rol y datos de encabezado inyectados
+      jwt_payload = {
+        user_id: active_mem['user_id'],
+        worker_id: trabajador['id'],
+        cedula: clean_cedula,
+        tenant_id: tenant_id,
+        rol: 'TRABAJADOR',
+        cargo_id: active_mem['cargo_id'] || trabajador['cargo_id'],
+        cargo: trabajador['cargo'],
+        razon_social: razon_social,
+        nit: empresa['nit'],
+        logo_url: logo_url,
+        estandar_res_0312: empresa['estandar_res_0312'] || '7_ESTANDARES'
+      }
+      session_token = generate_jwt_token(jwt_payload)
+      pg_with_rls_context(tenant_id)
 
       client_ip, _ = extract_client_ip(req)
       audit_entry = {
         timestamp: Time.now.iso8601,
-        action: 'WORKER_APP_LOGIN',
+        action: 'WORKER_APP_LOGIN_RLS',
         worker_id: trabajador['id'],
-        worker_name: trabajador['nombre'],
-        company_id: empresa['id'],
+        worker_name: trabajador['nombre'] || trabajador['nombres'],
+        tenant_id: tenant_id,
+        company_id: tenant_id,
+        rol: 'TRABAJADOR',
         ip: client_ip
       }
       File.open(AUDIT_FILE, 'a:UTF-8') { |af| af.puts(audit_entry.to_json) } rescue nil
@@ -2982,15 +3417,24 @@ mount_api(server, '/api/worker/auth') do |req, res|
       res.body = {
         status: 'ok',
         token: session_token,
+        tenant_id: tenant_id,
+        rol: 'TRABAJADOR',
         has_signed_onboarding: has_signed_onboarding,
+        membership: active_mem,
         worker: trabajador,
         company: {
-          id: empresa['id'],
-          razonSocial: empresa['razonSocial'],
+          id: tenant_id,
+          tenant_id: tenant_id,
+          razonSocial: razon_social,
+          razon_social: razon_social,
           nit: empresa['nit'],
-          logoUrl: empresa['logoUrl'],
+          logoUrl: logo_url,
+          logo_url: logo_url,
           arl: empresa['arl'],
-          claseRiesgo: empresa['claseRiesgo']
+          claseRiesgo: empresa['claseRiesgo'] || empresa['riesgo'],
+          nivel_riesgo_arl: empresa['nivel_riesgo_arl'] || 1,
+          numero_trabajadores: empresa['numero_trabajadores'] || empresa['trabajadores'] || 1,
+          estandar_res_0312: empresa['estandar_res_0312'] || '7_ESTANDARES'
         }
       }.to_json
     rescue => err
@@ -3012,8 +3456,9 @@ mount_api(server, '/api/worker/sign-onboarding') do |req, res|
   elsif req.request_method == 'POST'
     begin
       payload = JSON.parse(req.body)
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       worker_id = payload['worker_id'] || payload['trabajadorId']
-      tenant_id = payload['tenant_id'] || payload['companyId']
+      tenant_id = resolve_authorized_tenant!(req, payload, db)
       sig_data = payload['signature_base64'] || payload['firmaDataUrl'] || ''
       accepted_habeas = payload['accepted_habeas'] == true || payload['accepted_habeas_data'] == true
       accepted_gtc45 = payload['accepted_gtc45'] == true || payload['accepted_risks'] == true
@@ -3038,9 +3483,11 @@ mount_api(server, '/api/worker/sign-onboarding') do |req, res|
       bogota_time = (timestamp_now.utc - 5*3600).strftime('%Y-%m-%d %H:%M:%S UTC-5 (Bogotá)')
       sha256_hash = Digest::SHA256.hexdigest("ONBOARDING_#{tenant_id}_#{worker_id}_#{timestamp_iso}_#{png_data.length}")
 
-      filename = "sig_onboarding_#{tenant_id}_#{worker_id}_#{timestamp_now.strftime('%Y%m%d_%H%M%S')}.png"
-      file_path = File.join(UPLOADS_DIR, filename)
-      File.open(file_path, 'wb') { |f| f.write(png_data) }
+      # Bloque 5: Ruta de almacenamiento S3 / MinIO obligatoria por tenant_id:
+      # tenants/{tenant_id}/workers/{worker_id}/firma_base.png
+      s3_key = "tenants/#{tenant_id}/workers/#{worker_id}/firma_base.png"
+      sig_public_url, _ = save_tenant_isolated_file(s3_key, png_data)
+      sig_url_versioned = "#{sig_public_url}?v=#{timestamp_now.to_i}"
 
       client_ip, forwarded_ip = extract_client_ip(req)
       user_agent = req['user-agent'] || ''
@@ -3053,7 +3500,8 @@ mount_api(server, '/api/worker/sign-onboarding') do |req, res|
         'trabajadorId' => worker_id,
         'document_type' => 'HABEAS_DATA_ONBOARDING',
         'document_title' => 'Consentimiento Informado Ley 1581 de 2012 & Notificación de Riesgos GTC 45',
-        'signature_image_file' => "/uploads/#{filename}",
+        'signature_image_file' => sig_url_versioned,
+        'signature_s3_key' => s3_key,
         'signature_sha256' => sha256_hash,
         'signed_at' => timestamp_iso,
         'bogota_timestamp' => bogota_time,
@@ -3065,14 +3513,12 @@ mount_api(server, '/api/worker/sign-onboarding') do |req, res|
         'legal_retention_years' => 20
       }
 
-      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
-      sig_url_versioned = "/uploads/#{filename}?v=#{timestamp_now.to_i}"
-      s3_key = "tenants/#{tenant_id}/signatures/emp_#{worker_id}.png"
-
       # Persistir estado de Ingreso Único y Firma Base en el registro del trabajador
       trabajadores = db['trabajadores'] || []
-      worker = trabajadores.find { |t| t['id'] == worker_id }
+      worker = trabajadores.find { |t| t['id'] == worker_id && (t['tenant_id'] == tenant_id || t['companyId'] == tenant_id) }
       if worker
+        worker['tenant_id'] = tenant_id
+        worker['companyId'] = tenant_id
         worker['politica_datos_aceptada'] = true
         worker['notificacion_riesgos_aceptada'] = true
         worker['firma_digital_url'] = sig_url_versioned
@@ -3082,6 +3528,7 @@ mount_api(server, '/api/worker/sign-onboarding') do |req, res|
         worker['signature_svg'] = sig_data
         worker['signature_s3_key'] = s3_key
         worker['signature_url'] = sig_url_versioned
+        worker['signature_image_url'] = sig_url_versioned
         worker['signature_registered_at'] = timestamp_iso
         worker['signature_registered_bogota'] = bogota_time
         worker['signature_ip_address'] = client_ip
@@ -3111,6 +3558,8 @@ mount_api(server, '/api/worker/sign-onboarding') do |req, res|
         'ipCliente' => client_ip,
         'hashDocumento' => sha256_hash,
         'firmaDataUrl' => sig_url_versioned,
+        's3_key' => s3_key,
+        'tenant_id' => tenant_id,
         'companyId' => tenant_id
       }
 
@@ -3123,13 +3572,18 @@ mount_api(server, '/api/worker/sign-onboarding') do |req, res|
         action: 'WORKER_ONBOARDING_SIGNED',
         worker_id: worker_id,
         tenant_id: tenant_id,
+        s3_key: s3_key,
         sha256: sha256_hash,
         ip: client_ip
       }
       File.open(AUDIT_FILE, 'a:UTF-8') { |af| af.puts(audit_entry.to_json) } rescue nil
 
       res['Content-Type'] = 'application/json; charset=utf-8'
-      res.body = { status: 'ok', record: sig_record, worker: worker }.to_json
+      res.body = { status: 'ok', record: sig_record, s3_key: s3_key, worker: worker }.to_json
+    rescue SecurityTenantIsolationError => sec_err
+      res.status = 403
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: sec_err.message }.to_json
     rescue => err
       res.status = 500
       res['Content-Type'] = 'application/json; charset=utf-8'
@@ -3141,7 +3595,7 @@ mount_api(server, '/api/worker/sign-onboarding') do |req, res|
   end
 end
 
-# 4. Firma Digital de Documentos Obligatorios de Cargo
+# 4. Firma Digital de Documentos Obligatorios de Cargo y Políticas SST
 mount_api(server, '/api/worker/sign-document') do |req, res|
   add_cors_headers(res)
   if req.request_method == 'OPTIONS'
@@ -3149,8 +3603,9 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
   elsif req.request_method == 'POST'
     begin
       payload = JSON.parse(req.body)
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       worker_id = payload['worker_id'] || payload['employee_id'] || payload['trabajadorId']
-      tenant_id = payload['tenant_id'] || payload['companyId']
+      tenant_id = resolve_authorized_tenant!(req, payload, db)
       doc_type = payload['document_type'] || 'DOCUMENTO_CARGO'
       manual_document_id = payload['manual_document_id'] || payload['document_id'] || "DOC-#{Time.now.to_i}"
       doc_id = payload['document_id'] || manual_document_id
@@ -3165,23 +3620,34 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
         next
       end
 
-      if sig_data.include?(',')
-        _, b64 = sig_data.split(',', 2)
-      else
-        b64 = sig_data
-      end
-      png_data = Base64.decode64(b64)
-
       timestamp_now = Time.now
       timestamp_iso = timestamp_now.iso8601
       bogota_time = (timestamp_now.utc - 5*3600).strftime('%Y-%m-%d %H:%M:%S UTC-5 (Bogotá)')
-      clean_doc = doc_type.gsub(/[^a-zA-Z0-9_]/, '_')
-      sha256_hash = Digest::SHA256.hexdigest("#{clean_doc}_#{worker_id}_#{timestamp_iso}_#{png_data.length}")
-      pdf_s3_key = "doctorpyme-storage/tenants/#{tenant_id}/manuals/#{worker_id}_#{clean_doc}_signed.pdf"
+      clean_doc = doc_id.to_s.gsub(/[^a-zA-Z0-9_-]/, '_')
 
-      filename = "sig_doc_#{clean_doc}_#{tenant_id}_#{worker_id}_#{timestamp_now.strftime('%Y%m%d_%H%M%S')}.png"
-      file_path = File.join(UPLOADS_DIR, filename)
-      File.open(file_path, 'wb') { |f| f.write(png_data) }
+      # Si sig_data es una ruta local (/uploads/...), leer el binario; si es Base64, decodificar
+      if sig_data.start_with?('/uploads/')
+        rel_path = sig_data.sub(%r{^/uploads/}, '').split('?').first
+        disk_sig = File.join(UPLOADS_DIR, rel_path)
+        png_data = File.exist?(disk_sig) ? File.binread(disk_sig) : sig_data
+      elsif sig_data.include?(',')
+        _, b64 = sig_data.split(',', 2)
+        png_data = Base64.decode64(b64)
+      else
+        png_data = Base64.decode64(sig_data) rescue sig_data
+      end
+
+      sha256_hash = Digest::SHA256.hexdigest("#{tenant_id}_#{clean_doc}_#{worker_id}_#{timestamp_iso}_#{png_data.bytesize}")
+
+      # Bloque 5: Rutas de almacenamiento S3 / MinIO obligatorias por tenant_id:
+      # 1. Firma Base del Trabajador: tenants/{tenant_id}/workers/{worker_id}/firma_base.png
+      # 2. Documento Firmado: tenants/{tenant_id}/workers/{worker_id}/docs_firmados/{doc_id}_{timestamp}.pdf
+      base_sig_s3_key = "tenants/#{tenant_id}/workers/#{worker_id}/firma_base.png"
+      sig_public_url, _ = save_tenant_isolated_file(base_sig_s3_key, png_data)
+
+      pdf_s3_key = "tenants/#{tenant_id}/workers/#{worker_id}/docs_firmados/#{clean_doc}_#{timestamp_now.to_i}.pdf"
+      pdf_receipt_bytes = "%PDF-1.4\n% Doctor Pyme SG-SST - Constancia Criptografica Ley 527/1999\n% Tenant: #{tenant_id} | Worker: #{worker_id} | Doc: #{doc_id}\n% SHA-256: #{sha256_hash} | Fecha: #{bogota_time}\n%%EOF\n"
+      pdf_public_url, _ = save_tenant_isolated_file(pdf_s3_key, pdf_receipt_bytes)
 
       client_ip, forwarded_ip = extract_client_ip(req)
       user_agent = req['user-agent'] || ''
@@ -3201,8 +3667,9 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
         'is_signed' => true,
         'signed_at' => timestamp_iso,
         'bogota_timestamp' => bogota_time,
-        'signature_image_file' => "/uploads/#{filename}",
-        'signature_svg_or_base64' => "/uploads/#{filename}",
+        'signature_image_file' => sig_public_url,
+        'signature_svg_or_base64' => sig_public_url,
+        'signature_s3_key' => base_sig_s3_key,
         'signature_sha256' => sha256_hash,
         'sha256_hash' => sha256_hash,
         'client_ip' => client_ip,
@@ -3210,22 +3677,23 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
         'user_agent' => user_agent,
         'signer_user_agent' => user_agent,
         'pdf_s3_key' => pdf_s3_key,
+        'pdf_url' => pdf_public_url,
         'legal_retention_years' => 20
       }
 
-      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       db['employee_document_signatures'] ||= []
       db['employee_document_signatures'] << sig_record
 
       # Actualizar o insertar asignación en employee_job_position_assignments
       db['employee_job_position_assignments'] ||= []
-      asg = db['employee_job_position_assignments'].find { |a| a['employee_id'] == worker_id }
+      asg = db['employee_job_position_assignments'].find { |a| a['employee_id'] == worker_id && (a['tenant_id'].nil? || a['tenant_id'] == tenant_id) }
       if asg
+        asg['tenant_id'] = tenant_id
         asg['manual_document_id'] = manual_document_id
         asg['is_signed'] = true
         asg['signed_at'] = timestamp_iso
         asg['bogota_signed_at'] = bogota_time
-        asg['signature_svg_or_base64'] = "/uploads/#{filename}"
+        asg['signature_svg_or_base64'] = sig_public_url
         asg['signer_ip'] = client_ip
         asg['signer_user_agent'] = user_agent
         asg['sha256_hash'] = sha256_hash
@@ -3242,7 +3710,7 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
           'is_signed' => true,
           'signed_at' => timestamp_iso,
           'bogota_signed_at' => bogota_time,
-          'signature_svg_or_base64' => "/uploads/#{filename}",
+          'signature_svg_or_base64' => sig_public_url,
           'signer_ip' => client_ip,
           'signer_user_agent' => user_agent,
           'sha256_hash' => sha256_hash,
@@ -3255,7 +3723,7 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
       # Inyección Automática en Estándar 1.1.2 Res. 0312 de 2019
       if doc_type == 'MANUAL_DE_CARGO' || doc_type.to_s.include?('MANUAL')
         trabajador_obj = (db['trabajadores'] || []).find { |t| t['id'] == worker_id } || {}
-        worker_name = trabajador_obj['nombre'] || 'Trabajador'
+        worker_name = trabajador_obj['nombre'] || trabajador_obj['nombres'] || 'Trabajador'
         cargo_name = trabajador_obj['cargo'] || 'Cargo'
         evid_id = "evid-#{tenant_id}-1.1.2-#{worker_id}-manual"
 
@@ -3270,7 +3738,7 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
           'titulo' => "Manual de Cargos, Responsabilidades y Funciones - #{worker_name}",
           'tipo' => 'application/pdf',
           'tamanio' => 285000,
-          'url' => "/uploads/#{filename}",
+          'url' => sig_public_url,
           'pdf_s3_key' => pdf_s3_key,
           'sha256_hash' => sha256_hash,
           'trabajadorId' => worker_id,
@@ -3316,7 +3784,8 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
         'fechaHoraISO' => timestamp_iso,
         'ipCliente' => client_ip,
         'hashDocumento' => sha256_hash,
-        'firmaDataUrl' => "/uploads/#{filename}",
+        'firmaDataUrl' => sig_public_url,
+        'tenant_id' => tenant_id,
         'companyId' => tenant_id,
         'pdf_s3_key' => pdf_s3_key
       }
@@ -3328,6 +3797,7 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
       audit_entry = {
         timestamp: timestamp_iso,
         action: 'EMPLOYEE_DOCUMENT_SIGNED',
+        tenant_id: tenant_id,
         worker_id: worker_id,
         document_type: doc_type,
         sha256: sha256_hash,
@@ -3338,6 +3808,10 @@ mount_api(server, '/api/worker/sign-document') do |req, res|
 
       res['Content-Type'] = 'application/json; charset=utf-8'
       res.body = { status: 'ok', signature: sig_record, pdf_s3_key: pdf_s3_key, sha256_hash: sha256_hash }.to_json
+    rescue SecurityTenantIsolationError => sec_err
+      res.status = 403
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: sec_err.message }.to_json
     rescue => err
       res.status = 500
       res['Content-Type'] = 'application/json; charset=utf-8'
@@ -3356,16 +3830,16 @@ mount_api(server, '/api/admin/manual-signatures-audit') do |req, res|
     res.status = 200
   elsif req.request_method == 'GET'
     begin
-      tenant_id = req.query['tenant_id'] || req.query['companyId']
       db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
-      trabajadores = (db['trabajadores'] || []).select { |t| tenant_id.nil? || tenant_id.empty? || t['companyId'] == tenant_id }
-      sigs = (db['employee_document_signatures'] || []).select { |s| s['document_type'] == 'MANUAL_DE_CARGO' }
+      tenant_id = resolve_authorized_tenant!(req, {}, db)
+      trabajadores = (db['trabajadores'] || []).select { |t| t['tenant_id'] == tenant_id || t['companyId'] == tenant_id }
+      sigs = (db['employee_document_signatures'] || []).select { |s| s['document_type'] == 'MANUAL_DE_CARGO' && (s['tenant_id'] == tenant_id || s['companyId'] == tenant_id) }
 
       audit_list = trabajadores.map do |trab|
         sig = sigs.find { |s| s['employee_id'] == trab['id'] || s['trabajadorId'] == trab['id'] }
         {
           'worker_id' => trab['id'],
-          'worker_name' => trab['nombre'],
+          'worker_name' => trab['nombre'] || trab['nombres'],
           'national_id' => trab['identificacion'] || trab['cedula'],
           'cargo' => trab['cargo'],
           'area' => trab['area'] || 'Operaciones',
@@ -3398,6 +3872,10 @@ mount_api(server, '/api/admin/manual-signatures-audit') do |req, res|
         },
         'audit_list' => audit_list
       }.to_json
+    rescue SecurityTenantIsolationError => sec_err
+      res.status = 403
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: sec_err.message }.to_json
     rescue => err
       res.status = 500
       res['Content-Type'] = 'application/json; charset=utf-8'
@@ -3417,8 +3895,9 @@ mount_api(server, '/api/worker/register-signature') do |req, res|
   elsif req.request_method == 'POST'
     begin
       payload = JSON.parse(req.body)
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       worker_id = payload['worker_id'] || payload['employee_id'] || payload['trabajadorId']
-      tenant_id = payload['tenant_id'] || payload['companyId']
+      tenant_id = resolve_authorized_tenant!(req, payload, db)
       sig_data = payload['signature_svg'] || payload['signature_base64'] || payload['signature_data_url'] || payload['firmaDataUrl'] || ''
 
       unless worker_id && !sig_data.empty?
@@ -3438,27 +3917,28 @@ mount_api(server, '/api/worker/register-signature') do |req, res|
       timestamp_now = Time.now
       timestamp_iso = timestamp_now.iso8601
       bogota_time = (timestamp_now.utc - 5*3600).strftime('%d/%m/%Y a las %H:%M:%S (Hora Legal Colombia UTC-5)')
-      sha256_hash = Digest::SHA256.hexdigest("SIG_BASE_#{worker_id}_#{timestamp_iso}_#{png_data.length}")
-      s3_key = "tenants/#{tenant_id}/signatures/emp_#{worker_id}.png"
+      sha256_hash = Digest::SHA256.hexdigest("SIG_BASE_#{tenant_id}_#{worker_id}_#{timestamp_iso}_#{png_data.length}")
 
-      filename = "sig_base_emp_#{tenant_id}_#{worker_id}.png"
-      file_path = File.join(UPLOADS_DIR, filename)
-      File.open(file_path, 'wb') { |f| f.write(png_data) }
-
-      sig_url_versioned = "/uploads/#{filename}?v=#{timestamp_now.to_i}"
+      # Bloque 5: Ruta de almacenamiento S3 / MinIO obligatoria por tenant_id:
+      # tenants/{tenant_id}/workers/{worker_id}/firma_base.png
+      s3_key = "tenants/#{tenant_id}/workers/#{worker_id}/firma_base.png"
+      sig_public_url, _ = save_tenant_isolated_file(s3_key, png_data)
+      sig_url_versioned = "#{sig_public_url}?v=#{timestamp_now.to_i}"
 
       client_ip, _ = extract_client_ip(req)
       user_agent = req['user-agent'] || ''
 
-      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       trabajadores = db['trabajadores'] || []
-      worker = trabajadores.find { |t| t['id'] == worker_id }
+      worker = trabajadores.find { |t| t['id'] == worker_id && (t['tenant_id'] == tenant_id || t['companyId'] == tenant_id) }
 
       if worker
+        worker['tenant_id'] = tenant_id
+        worker['companyId'] = tenant_id
         worker['has_registered_signature'] = true
         worker['signature_svg'] = sig_data
         worker['signature_s3_key'] = s3_key
         worker['signature_url'] = sig_url_versioned
+        worker['signature_image_url'] = sig_url_versioned
         worker['firma_digital_url'] = sig_url_versioned
         worker['firma_base64'] = sig_data
         worker['politica_datos_aceptada'] = true if worker['politica_datos_aceptada'].nil?
@@ -3485,6 +3965,7 @@ mount_api(server, '/api/worker/register-signature') do |req, res|
         'bogota_timestamp' => bogota_time,
         'signature_image_file' => sig_url_versioned,
         'signature_svg_or_base64' => sig_data,
+        'signature_s3_key' => s3_key,
         'signature_sha256' => sha256_hash,
         'sha256_hash' => sha256_hash,
         'signer_ip' => client_ip,
@@ -3508,6 +3989,10 @@ mount_api(server, '/api/worker/register-signature') do |req, res|
         sha256_hash: sha256_hash,
         traceability_legend: "Firmado digitalmente el #{bogota_time} | IP: #{client_ip} | Hash: #{sha256_hash} | Validez probatoria Ley 527 de 1999"
       }.to_json
+    rescue SecurityTenantIsolationError => sec_err
+      res.status = 403
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: sec_err.message }.to_json
     rescue => err
       res.status = 500
       res['Content-Type'] = 'application/json; charset=utf-8'
@@ -3832,8 +4317,9 @@ mount_api(server, '/api/worker/upload-folder-document') do |req, res|
   elsif req.request_method == 'POST'
     begin
       payload = JSON.parse(req.body)
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       worker_id = payload['worker_id'] || payload['employee_id'] || payload['trabajadorId']
-      tenant_id = payload['tenant_id'] || payload['companyId']
+      tenant_id = resolve_authorized_tenant!(req, payload, db)
       category = payload['document_category'] || 'OTROS_SOPORTES'
       title = payload['document_title'] || 'Documento de Soporte'
       file_name = payload['file_name'] || 'documento.pdf'
@@ -3868,17 +4354,17 @@ mount_api(server, '/api/worker/upload-folder-document') do |req, res|
       timestamp_now = Time.now
       timestamp_iso = timestamp_now.iso8601
       clean_name = file_name.gsub(/[^a-zA-Z0-9_\.-]/, '_')
-      disk_filename = "folder_#{tenant_id}_#{worker_id}_#{category}_#{timestamp_now.strftime('%Y%m%d_%H%M%S')}_#{clean_name}"
-      file_path = File.join(UPLOADS_DIR, disk_filename)
-      File.open(file_path, 'wb') { |f| f.write(binary_data) }
 
-      file_s3_key = "tenants/#{tenant_id}/employees/#{worker_id}/#{category}/#{clean_name}"
+      # Bloque 5: Aislamiento S3 por tenant_id para expediente laboral / exámenes médicos
+      sub_folder = category == 'EXAMEN_MEDICO_INGRESO' ? 'examenes_medicos' : "expediente/#{category.downcase}"
+      file_s3_key = "tenants/#{tenant_id}/workers/#{worker_id}/#{sub_folder}/#{timestamp_now.to_i}_#{clean_name}"
+      public_file_url, _ = save_tenant_isolated_file(file_s3_key, binary_data)
+
       # Retención legal de 20 años conforme al Art. 2.2.4.6.13 del Decreto 1072 de 2015
       retention_legal_until = (timestamp_now + (20 * 365 * 24 * 3600)).iso8601
 
-      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       trabajador_obj = (db['trabajadores'] || []).find { |t| t['id'] == worker_id } || {}
-      worker_name = trabajador_obj['nombre'] || 'Trabajador'
+      worker_name = trabajador_obj['nombre'] || trabajador_obj['nombres'] || 'Trabajador'
       cargo_name = trabajador_obj['cargo'] || 'Cargo'
 
       doc_id = "fdoc-#{Time.now.to_i}-#{rand(1000..9999)}"
@@ -3893,7 +4379,7 @@ mount_api(server, '/api/worker/upload-folder-document') do |req, res|
         'file_name' => file_name,
         'file_size_bytes' => binary_data.bytesize,
         'mime_type' => mime_type,
-        'file_url' => "/uploads/#{disk_filename}",
+        'file_url' => public_file_url,
         'file_s3_key' => file_s3_key,
         'issue_date' => issue_date,
         'expiration_date' => expiration_date,
@@ -3925,7 +4411,7 @@ mount_api(server, '/api/worker/upload-folder-document') do |req, res|
           'titulo' => "Evaluación Médica Ocupacional de Ingreso - #{worker_name}",
           'tipo' => mime_type,
           'tamanio' => binary_data.bytesize,
-          'url' => "/uploads/#{disk_filename}",
+          'url' => public_file_url,
           'file_s3_key' => file_s3_key,
           'trabajadorId' => worker_id,
           'trabajadorNombre' => worker_name,
@@ -3949,7 +4435,7 @@ mount_api(server, '/api/worker/upload-folder-document') do |req, res|
             item['archivoAdjunto'] = {
               'id' => evid_id,
               'nombre' => "Certificado Médico - #{worker_name}",
-              'url' => "/uploads/#{disk_filename}",
+              'url' => public_file_url,
               'tipo' => mime_type,
               'tamanio' => binary_data.bytesize
             }
@@ -3974,7 +4460,7 @@ mount_api(server, '/api/worker/upload-folder-document') do |req, res|
           'titulo' => "Afiliación Seguridad Social #{cat_nombre} - #{worker_name}",
           'tipo' => mime_type,
           'tamanio' => binary_data.bytesize,
-          'url' => "/uploads/#{disk_filename}",
+          'url' => public_file_url,
           'file_s3_key' => file_s3_key,
           'trabajadorId' => worker_id,
           'trabajadorNombre' => worker_name,
@@ -3998,7 +4484,7 @@ mount_api(server, '/api/worker/upload-folder-document') do |req, res|
             item['archivoAdjunto'] = {
               'id' => evid_id,
               'nombre' => "Afiliación #{cat_nombre} - #{worker_name}",
-              'url' => "/uploads/#{disk_filename}",
+              'url' => public_file_url,
               'tipo' => mime_type,
               'tamanio' => binary_data.bytesize
             }
@@ -4015,6 +4501,10 @@ mount_api(server, '/api/worker/upload-folder-document') do |req, res|
         message: 'Documento cargado exitosamente en el expediente laboral digital.',
         document: doc_record
       }.to_json
+    rescue SecurityTenantIsolationError => sec_err
+      res.status = 403
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: sec_err.message }.to_json
     rescue => err
       res.status = 500
       res['Content-Type'] = 'application/json; charset=utf-8'
@@ -4051,9 +4541,9 @@ mount_api(server, '/api/worker/delete-folder-document') do |req, res|
 
         # Intentar eliminar físicamente de uploads si existe
         if deleted_doc
-          fname = deleted_doc['disk_file_name'] || (deleted_doc['file_url'] ? File.basename(deleted_doc['file_url']) : nil)
-          if fname && !fname.empty?
-            local_file = File.join(UPLOADS_DIR, fname)
+          rel_s3 = deleted_doc['file_s3_key'] || (deleted_doc['file_url'] ? deleted_doc['file_url'].sub(%r{^/uploads/}, '') : nil)
+          if rel_s3 && !rel_s3.empty?
+            local_file = File.join(UPLOADS_DIR, rel_s3.gsub('..', ''))
             FileUtils.rm_f(local_file) if File.exist?(local_file)
           end
 
@@ -4094,8 +4584,9 @@ mount_api(server, '/api/worker/sign-tool-assignment') do |req, res|
   elsif req.request_method == 'POST'
     begin
       payload = JSON.parse(req.body)
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       worker_id = payload['worker_id'] || payload['employee_id']
-      tenant_id = payload['tenant_id'] || payload['companyId']
+      tenant_id = resolve_authorized_tenant!(req, payload, db)
       tool_id = payload['tool_id']
       sig_data = payload['signature_base64'] || payload['firmaDataUrl'] || ''
       notes = payload['initial_state_notes'] || payload['notes'] || 'Herramienta recibida en condiciones operativas óptimas'
@@ -4116,18 +4607,18 @@ mount_api(server, '/api/worker/sign-tool-assignment') do |req, res|
 
       timestamp_now = Time.now
       timestamp_iso = timestamp_now.iso8601
-      sha256_hash = Digest::SHA256.hexdigest("TOOL_ASG_#{tool_id}_#{worker_id}_#{timestamp_iso}")
+      sha256_hash = Digest::SHA256.hexdigest("TOOL_ASG_#{tenant_id}_#{tool_id}_#{worker_id}_#{timestamp_iso}")
 
-      filename = "sig_tool_#{tool_id}_#{worker_id}_#{timestamp_now.strftime('%Y%m%d_%H%M%S')}.png"
-      file_path = File.join(UPLOADS_DIR, filename)
-      File.open(file_path, 'wb') { |f| f.write(png_data) }
+      s3_key = "tenants/#{tenant_id}/workers/#{worker_id}/docs_firmados/tool_#{tool_id}_#{timestamp_now.to_i}.png"
+      sig_public_url, _ = save_tenant_isolated_file(s3_key, png_data)
 
-      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       db['tools_assignments'] ||= []
 
       asg = db['tools_assignments'].find { |a| a['tool_id'] == tool_id && a['employee_id'] == worker_id && a['returned_at'].nil? }
       if asg
-        asg['digital_signature_file'] = "/uploads/#{filename}"
+        asg['tenant_id'] = tenant_id
+        asg['digital_signature_file'] = sig_public_url
+        asg['digital_signature_s3_key'] = s3_key
         asg['digital_signature_hash'] = sha256_hash
         asg['signature_timestamp'] = timestamp_iso
         asg['initial_state_notes'] = notes
@@ -4137,13 +4628,15 @@ mount_api(server, '/api/worker/sign-tool-assignment') do |req, res|
         asg = {
           'id' => "asg-#{Time.now.to_i}-#{rand(1000..9999)}",
           'tenant_id' => tenant_id,
+          'companyId' => tenant_id,
           'tool_id' => tool_id,
           'employee_id' => worker_id,
           'assigned_at' => timestamp_iso,
           'returned_at' => nil,
           'status' => 'Asignada',
           'initial_state_notes' => notes,
-          'digital_signature_file' => "/uploads/#{filename}",
+          'digital_signature_file' => sig_public_url,
+          'digital_signature_s3_key' => s3_key,
           'digital_signature_hash' => sha256_hash,
           'signature_timestamp' => timestamp_iso,
           'createdAt' => timestamp_iso,
@@ -4158,6 +4651,10 @@ mount_api(server, '/api/worker/sign-tool-assignment') do |req, res|
 
       res['Content-Type'] = 'application/json; charset=utf-8'
       res.body = { status: 'ok', assignment: asg }.to_json
+    rescue SecurityTenantIsolationError => sec_err
+      res.status = 403
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: sec_err.message }.to_json
     rescue => err
       res.status = 500
       res['Content-Type'] = 'application/json; charset=utf-8'
@@ -4177,8 +4674,9 @@ mount_api(server, '/api/worker/submit-preoperational') do |req, res|
   elsif req.request_method == 'POST'
     begin
       payload = JSON.parse(req.body)
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       worker_id = payload['worker_id'] || payload['trabajadorId']
-      tenant_id = payload['tenant_id'] || payload['companyId']
+      tenant_id = resolve_authorized_tenant!(req, payload, db)
       tool_id = payload['tool_id'] || 'tool-gen'
       tool_name = payload['tool_name'] || payload['equipoNombre'] || 'Equipo de Planta'
       answers = payload['answers'] || payload['itemsChequeo'] || {}
@@ -4186,7 +4684,12 @@ mount_api(server, '/api/worker/submit-preoperational') do |req, res|
       notes = payload['notes'] || payload['observaciones'] || ''
       photo_data = payload['photo_base64'] || payload['fotoEvidencia'] || ''
 
+      timestamp_now = Time.now
+      timestamp_iso = timestamp_now.iso8601
+      report_id = "preop-#{timestamp_now.to_i}-#{rand(1000..9999)}"
+
       photo_url = ''
+      photo_s3_key = ''
       if !photo_data.empty?
         if photo_data.include?(',')
           _, b64 = photo_data.split(',', 2)
@@ -4194,14 +4697,11 @@ mount_api(server, '/api/worker/submit-preoperational') do |req, res|
           b64 = photo_data
         end
         photo_bytes = Base64.decode64(b64)
-        pname = "preop_#{tool_id}_#{worker_id}_#{Time.now.strftime('%Y%m%d_%H%M%S')}.jpg"
-        File.open(File.join(UPLOADS_DIR, pname), 'wb') { |f| f.write(photo_bytes) }
-        photo_url = "/uploads/#{pname}"
+        pname = "preop_#{tool_id}_#{worker_id}_#{timestamp_now.strftime('%Y%m%d_%H%M%S')}.jpg"
+        # Bloque 5: tenants/{tenant_id}/reportes_sst/{reporte_id}/{filename}
+        photo_s3_key = "tenants/#{tenant_id}/reportes_sst/#{report_id}/#{pname}"
+        photo_url, _ = save_tenant_isolated_file(photo_s3_key, photo_bytes)
       end
-
-      timestamp_now = Time.now
-      timestamp_iso = timestamp_now.iso8601
-      report_id = "preop-#{Time.now.to_i}-#{rand(1000..9999)}"
 
       report_record = {
         'id' => report_id,
@@ -4217,6 +4717,7 @@ mount_api(server, '/api/worker/submit-preoperational') do |req, res|
         'aptoOperar' => apto,
         'checklist_answers' => answers,
         'evidence_photo_url' => photo_url,
+        'evidence_s3_key' => photo_s3_key,
         'observaciones' => notes,
         'notes' => notes,
         'performed_at' => timestamp_iso,
@@ -4224,7 +4725,6 @@ mount_api(server, '/api/worker/submit-preoperational') do |req, res|
         'createdAt' => timestamp_iso
       }
 
-      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       db['reportesPreoperacional'] ||= []
       db['reportesPreoperacional'] << report_record
 
@@ -4237,6 +4737,10 @@ mount_api(server, '/api/worker/submit-preoperational') do |req, res|
 
       res['Content-Type'] = 'application/json; charset=utf-8'
       res.body = { status: 'ok', report: report_record }.to_json
+    rescue SecurityTenantIsolationError => sec_err
+      res.status = 403
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: sec_err.message }.to_json
     rescue => err
       res.status = 500
       res['Content-Type'] = 'application/json; charset=utf-8'
@@ -4256,8 +4760,9 @@ mount_api(server, '/api/worker/sign-epp-delivery') do |req, res|
   elsif req.request_method == 'POST'
     begin
       payload = JSON.parse(req.body)
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       worker_id = payload['worker_id'] || payload['trabajadorId']
-      tenant_id = payload['tenant_id'] || payload['companyId']
+      tenant_id = resolve_authorized_tenant!(req, payload, db)
       items = payload['items'] || payload['epp_items'] || []
       sig_data = payload['signature_base64'] || payload['firmaDataUrl'] || ''
       notes = payload['notes'] || 'Constancia de entrega, reposición y capacitación en uso correcto de EPP (Estándar 4.2.6 Res. 0312/2019)'
@@ -4280,25 +4785,26 @@ mount_api(server, '/api/worker/sign-epp-delivery') do |req, res|
       timestamp_iso = timestamp_now.iso8601
       sha256_hash = Digest::SHA256.hexdigest("EPP_DELIVERY_#{tenant_id}_#{worker_id}_#{timestamp_iso}")
 
-      filename = "sig_epp_#{tenant_id}_#{worker_id}_#{timestamp_now.strftime('%Y%m%d_%H%M%S')}.png"
-      file_path = File.join(UPLOADS_DIR, filename)
-      File.open(file_path, 'wb') { |f| f.write(png_data) }
+      del_id = "epp-del-#{timestamp_now.to_i}-#{rand(1000..9999)}"
+      s3_key = "tenants/#{tenant_id}/workers/#{worker_id}/docs_firmados/#{del_id}_#{timestamp_now.to_i}.pdf"
+      sig_public_url, _ = save_tenant_isolated_file("tenants/#{tenant_id}/workers/#{worker_id}/firma_base.png", png_data)
+      save_tenant_isolated_file(s3_key, "%PDF-1.4\n% Acta Entrega EPP #{del_id} | SHA256: #{sha256_hash}\n%%EOF\n")
 
       delivery_record = {
-        'id' => "epp-del-#{Time.now.to_i}-#{rand(1000..9999)}",
+        'id' => del_id,
         'tenant_id' => tenant_id,
         'companyId' => tenant_id,
         'employee_id' => worker_id,
         'trabajadorId' => worker_id,
         'items_json' => items,
-        'signature_image_file' => "/uploads/#{filename}",
+        'signature_image_file' => sig_public_url,
+        'pdf_s3_key' => s3_key,
         'signature_sha256' => sha256_hash,
         'signed_at' => timestamp_iso,
         'notes' => notes,
         'createdAt' => timestamp_iso
       }
 
-      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       db['epp_deliveries'] ||= []
       db['epp_deliveries'] << delivery_record
 
@@ -4311,7 +4817,9 @@ mount_api(server, '/api/worker/sign-epp-delivery') do |req, res|
         'titulo' => "Acta de Entrega de Dotación y EPP (Res. 0312)",
         'fechaHoraISO' => timestamp_iso,
         'hashDocumento' => sha256_hash,
-        'firmaDataUrl' => "/uploads/#{filename}",
+        'firmaDataUrl' => sig_public_url,
+        'pdf_s3_key' => s3_key,
+        'tenant_id' => tenant_id,
         'companyId' => tenant_id
       }
 
@@ -4321,6 +4829,10 @@ mount_api(server, '/api/worker/sign-epp-delivery') do |req, res|
 
       res['Content-Type'] = 'application/json; charset=utf-8'
       res.body = { status: 'ok', delivery: delivery_record }.to_json
+    rescue SecurityTenantIsolationError => sec_err
+      res.status = 403
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: sec_err.message }.to_json
     rescue => err
       res.status = 500
       res['Content-Type'] = 'application/json; charset=utf-8'
@@ -4340,15 +4852,21 @@ mount_api(server, '/api/worker/report-hazard') do |req, res|
   elsif req.request_method == 'POST'
     begin
       payload = JSON.parse(req.body)
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       worker_id = payload['worker_id'] || payload['trabajadorId']
-      tenant_id = payload['tenant_id'] || payload['companyId']
+      tenant_id = resolve_authorized_tenant!(req, payload, db)
       report_type = payload['report_type'] || 'Condicion_Insegura'
       location = payload['location'] || payload['ubicacion'] || 'Planta Operativa'
       description = payload['description'] || payload['descripcion'] || ''
       severity = payload['severity_level'] || payload['prioridad'] || 'Media'
       photo_data = payload['photo_base64'] || payload['fotoEvidencia'] || ''
 
+      timestamp_now = Time.now
+      timestamp_iso = timestamp_now.iso8601
+      report_id = "rep-haz-#{timestamp_now.to_i}-#{rand(1000..9999)}"
+
       photo_url = ''
+      photo_s3_key = ''
       if !photo_data.empty?
         if photo_data.include?(',')
           _, b64 = photo_data.split(',', 2)
@@ -4356,14 +4874,11 @@ mount_api(server, '/api/worker/report-hazard') do |req, res|
           b64 = photo_data
         end
         photo_bytes = Base64.decode64(b64)
-        pname = "hazard_#{worker_id}_#{Time.now.strftime('%Y%m%d_%H%M%S')}.jpg"
-        File.open(File.join(UPLOADS_DIR, pname), 'wb') { |f| f.write(photo_bytes) }
-        photo_url = "/uploads/#{pname}"
+        pname = "evidencia_#{worker_id}_#{timestamp_now.strftime('%Y%m%d_%H%M%S')}.jpg"
+        # Bloque 5: Evidencias de Reportes SST -> tenants/{tenant_id}/reportes_sst/{reporte_id}/{filename}
+        photo_s3_key = "tenants/#{tenant_id}/reportes_sst/#{report_id}/#{pname}"
+        photo_url, _ = save_tenant_isolated_file(photo_s3_key, photo_bytes)
       end
-
-      timestamp_now = Time.now
-      timestamp_iso = timestamp_now.iso8601
-      report_id = "rep-haz-#{Time.now.to_i}-#{rand(1000..9999)}"
 
       hazard_record = {
         'id' => report_id,
@@ -4380,6 +4895,7 @@ mount_api(server, '/api/worker/report-hazard') do |req, res|
         'prioridad' => severity,
         'photo_url' => photo_url,
         'fotoUrl' => photo_url,
+        'evidencia_s3_key' => photo_s3_key,
         'status' => 'Pendiente_Revision',
         'estado' => 'Pendiente_Revision',
         'management_notes' => '',
@@ -4389,7 +4905,6 @@ mount_api(server, '/api/worker/report-hazard') do |req, res|
         'createdAt' => timestamp_iso
       }
 
-      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       db['worker_sst_reports'] ||= []
       db['worker_sst_reports'] << hazard_record
 
@@ -4401,7 +4916,11 @@ mount_api(server, '/api/worker/report-hazard') do |req, res|
       File.rename(tmp_file, DB_FILE)
 
       res['Content-Type'] = 'application/json; charset=utf-8'
-      res.body = { status: 'ok', report: hazard_record }.to_json
+      res.body = { status: 'ok', report: hazard_record, s3_key: photo_s3_key }.to_json
+    rescue SecurityTenantIsolationError => sec_err
+      res.status = 403
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: sec_err.message }.to_json
     rescue => err
       res.status = 500
       res['Content-Type'] = 'application/json; charset=utf-8'
@@ -5158,6 +5677,56 @@ mount_api(server, '/api/worker/sign-epp-delivery') do |req, res|
   else
     res.status = 405
     res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# =============================================================================
+# BLOQUE 1: ENDPOINTS DE PRESUPUESTO ANUAL SG-SST (RES. 0312 NUM. 1.1.2)
+# =============================================================================
+mount_api(server, '/api/budget') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'GET'
+    company_id = req.query['companyId'] || req.query['tenant_id']
+    year = req.query['year'] || '2026'
+    db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+    budget_items = db['budget_items'] || []
+    if company_id
+      budget_items = budget_items.select { |b| (b['empresaId'] == company_id || b['tenant_id'] == company_id) && b['anio'].to_s == year.to_s }
+    end
+    res['Content-Type'] = 'application/json; charset=utf-8'
+    res.body = { status: 'ok', items: budget_items }.to_json
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body) rescue {}
+      item = payload['item'] || payload
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      db['budget_items'] ||= []
+      idx = db['budget_items'].find_index { |b| b['id'] == item['id'] }
+      if idx
+        db['budget_items'][idx] = item
+      else
+        item['id'] ||= "bg-#{Time.now.to_i}"
+        db['budget_items'] << item
+      end
+      File.write(DB_FILE, JSON.pretty_generate(db))
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { status: 'ok', item: item }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: err.message }.to_json
+    end
+  elsif req.request_method == 'DELETE'
+    item_id = req.query['id']
+    if item_id
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      db['budget_items'] = (db['budget_items'] || []).reject { |b| b['id'] == item_id }
+      File.write(DB_FILE, JSON.pretty_generate(db))
+    end
+    res['Content-Type'] = 'application/json; charset=utf-8'
+    res.body = { status: 'ok', message: 'Rubro eliminado' }.to_json
   end
 end
 

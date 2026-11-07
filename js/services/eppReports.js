@@ -30,13 +30,13 @@ function abrirVentanaImpresionEPP(tituloDoc, htmlBody) {
 
       <style>
         :root {
-          --sat: env(safe-area-inset-top, 0px);
-          --sab: env(safe-area-inset-bottom, 0px);
+          --sat: max(env(safe-area-inset-top, 0px), 44px);
+          --sab: max(env(safe-area-inset-bottom, 0px), 16px);
         }
         * { box-sizing: border-box; }
         body { 
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-          padding: calc(max(var(--sat), 12px) + 56px) 20px max(var(--sab), 24px) 20px; 
+          padding: calc(var(--sat) + 58px) 16px max(var(--sab), 24px) 16px; 
           color: #0f172a; 
           background: #f8fafc; 
           line-height: 1.45; 
@@ -53,8 +53,8 @@ function abrirVentanaImpresionEPP(tituloDoc, htmlBody) {
           z-index: 999999;
           background: #0b1a2d;
           color: #ffffff;
-          padding-top: max(var(--sat), 12px);
-          padding-bottom: 10px;
+          padding-top: var(--sat);
+          padding-bottom: 12px;
           padding-left: 14px;
           padding-right: 14px;
           display: flex;
@@ -321,7 +321,7 @@ function abrirVentanaImpresionEPP(tituloDoc, htmlBody) {
           }
         }
 
-        function descargarDocumentoPDF() {
+        async function descargarDocumentoPDF() {
           const btn = document.getElementById("btn-descargar-pdf");
           const originalContent = btn ? btn.innerHTML : "";
           if (btn) {
@@ -330,31 +330,67 @@ function abrirVentanaImpresionEPP(tituloDoc, htmlBody) {
           }
 
           const element = document.getElementById("documento-imprimible");
+          const cleanDocTitle = "${cleanDocTitle}";
           const cleanName = "${fileDownloadName}" + ".pdf";
 
           if (typeof html2pdf !== "undefined" && element) {
             const opt = {
-              margin: [10, 10, 10, 10],
+              margin: [8, 8, 8, 8],
               filename: cleanName,
               image: { type: "jpeg", quality: 0.98 },
               html2canvas: { scale: 2, useCORS: true, logging: false },
               jsPDF: { unit: "mm", format: "letter", orientation: "portrait" }
             };
 
-            html2pdf().set(opt).from(element).save().then(function() {
+            try {
+              const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+              const pdfFile = new File([pdfBlob], cleanName, { type: 'application/pdf' });
+
+              if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                try {
+                  await navigator.share({
+                    files: [pdfFile],
+                    title: cleanDocTitle,
+                    text: 'Acta Oficial de Entrega de EPP y Dotación - DOCTOR PYME'
+                  });
+                  if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = "<span>✓ ¡Guardado!</span>";
+                    setTimeout(function() { btn.innerHTML = originalContent; }, 2500);
+                  }
+                  return;
+                } catch (shareErr) {
+                  if (shareErr.name === 'AbortError') {
+                    if (btn) { btn.disabled = false; btn.innerHTML = originalContent; }
+                    return;
+                  }
+                }
+              }
+
+              const blobUrl = URL.createObjectURL(pdfBlob);
+              const a = document.createElement("a");
+              a.href = blobUrl;
+              a.download = cleanName;
+              document.body.appendChild(a);
+              a.click();
+              setTimeout(function() {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(blobUrl);
+              }, 1500);
+
               if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = "<span>✓ ¡Descargado!</span>";
                 setTimeout(function() { btn.innerHTML = originalContent; }, 2500);
               }
-            }).catch(function(err) {
-              console.warn("Fallo html2pdf, recurriendo a diálogo de impresión:", err);
+            } catch (err) {
+              console.warn("Fallo html2pdf blob, recurriendo a impresión:", err);
               if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = originalContent;
               }
               window.print();
-            });
+            }
           } else {
             if (btn) {
               btn.disabled = false;

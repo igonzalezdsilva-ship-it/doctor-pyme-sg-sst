@@ -20,6 +20,7 @@ import { renderAuditorView } from './components/auditorView.js';
 import { renderLegalComplianceRepository, renderLegalConsentScreen } from './components/legalCompliance.js';
 import { renderSuperAdmins } from './components/superAdmins.js';
 import { renderMasterRepository } from './components/masterRepository.js';
+import { renderBudget } from './components/budget.js';
 import { abrirModalIA } from './components/aiAssistant.js';
 import './components/diagramViewer.js';
 import './components/documentViewer.js';
@@ -33,6 +34,7 @@ const routes = {
   '#procesos': renderProcessMap,
   '#evaluacion': renderEvaluation,
   '#matriz': renderMatrix,
+  '#presupuesto': renderBudget,
   '#plan-trabajo': renderWorkPlan,
   '#accidentes': renderAccidents,
   '#reportes': renderReports,
@@ -421,6 +423,45 @@ async function initApp() {
     if (nameEl) nameEl.innerText = user.nombre;
     if (roleEl) roleEl.innerText = user.rol;
   }
+
+  // Control de Cinta Colapsable de Menú Lateral (Bloque 1)
+  const appSidebar = document.getElementById('app-sidebar');
+  const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+  if (appSidebar && btnToggleSidebar) {
+    const isCollapsedSaved = localStorage.getItem('DOCTOR_PYME_SIDEBAR_COLLAPSED') === 'true';
+    if (isCollapsedSaved) {
+      appSidebar.classList.add('sidebar-collapsed');
+      const icon = btnToggleSidebar.querySelector('svg');
+      if (icon) icon.classList.add('rotate-180');
+    }
+
+    btnToggleSidebar.addEventListener('click', () => {
+      const isCollapsed = appSidebar.classList.toggle('sidebar-collapsed');
+      localStorage.setItem('DOCTOR_PYME_SIDEBAR_COLLAPSED', isCollapsed ? 'true' : 'false');
+      const icon = btnToggleSidebar.querySelector('svg');
+      if (icon) {
+        icon.classList.toggle('rotate-180', isCollapsed);
+      }
+    });
+  }
+
+  // Banner y Control de Modo Demostración (Bloque 4)
+  const demoBanner = document.getElementById('banner-demo-mode');
+  if (demoBanner) {
+    if (auth.isDemo && auth.isDemo()) {
+      demoBanner.classList.remove('hidden');
+    } else {
+      demoBanner.classList.add('hidden');
+    }
+  }
+
+  window.salirModoDemo = () => {
+    if (confirm("¿Deseas salir del entorno de demostración interactiva?")) {
+      auth.logout();
+      window.location.hash = '#login';
+      window.location.reload();
+    }
+  };
 
   document.getElementById('btn-logout')?.addEventListener('click', () => {
     if (confirm("¿Deseas cerrar tu sesión en Doctor Pyme?")) {

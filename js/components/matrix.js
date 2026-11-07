@@ -998,9 +998,95 @@ window.imprimirMatrizGTC45PDF = function() {
     <html lang="es">
     <head>
       <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
       <title>MATRIZ DE PELIGROS GTC 45 - ${empresaActiva.razonSocial}</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
       <style>
-        body { font-family: Arial, sans-serif; font-size: 10px; color: #1e293b; margin: 18px; }
+        :root {
+          --sat: max(env(safe-area-inset-top, 0px), 44px);
+          --sab: max(env(safe-area-inset-bottom, 0px), 16px);
+        }
+        * { box-sizing: border-box; }
+        body { 
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+          font-size: 10px; 
+          color: #1e293b; 
+          background: #f8fafc;
+          margin: 0; 
+          padding: calc(var(--sat) + 58px) 14px max(var(--sab), 20px) 14px; 
+        }
+
+        .doc-control-bar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 999999;
+          background: #0b1a2d;
+          color: #ffffff;
+          padding-top: var(--sat);
+          padding-bottom: 12px;
+          padding-left: 14px;
+          padding-right: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+          border-bottom: 1px solid #1e293b;
+        }
+        .btn-back {
+          padding: 8px 14px;
+          background: #1e293b;
+          color: #f1f5f9;
+          border: 1px solid #334155;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 12px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          touch-action: manipulation;
+        }
+        .btn-download {
+          padding: 8px 14px;
+          background: #0d9488;
+          color: #ffffff;
+          border: none;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 12px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: 0 2px 6px rgba(13, 148, 136, 0.35);
+          touch-action: manipulation;
+        }
+        .btn-print { 
+          padding: 8px 14px; 
+          background: #4338ca; 
+          color: white; 
+          border: none; 
+          border-radius: 10px; 
+          font-weight: 700; 
+          cursor: pointer; 
+          font-size: 12px; 
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          touch-action: manipulation;
+        }
+
+        .doc-wrapper {
+          background: #ffffff;
+          padding: 24px;
+          border-radius: 12px;
+          box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+          border: 1px solid #e2e8f0;
+        }
+
         .header { display: flex; justify-content: space-between; align-items: center; border: 2px solid #0f172a; padding: 10px; margin-bottom: 12px; }
         h1 { font-size: 14px; margin: 0; color: #0f172a; }
         table { width: 100%; border-collapse: collapse; margin-top: 8px; }
@@ -1010,13 +1096,34 @@ window.imprimirMatrizGTC45PDF = function() {
         .lvl-II { background: #ffedd5; color: #9a3412; font-weight: bold; }
         .lvl-III { background: #fef3c7; color: #92400e; font-weight: bold; }
         .lvl-IV { background: #d1fae5; color: #065f46; font-weight: bold; }
-        @media print { .no-print { display: none; } @page { size: landscape; margin: 10mm; } }
+        @media print { 
+          body { padding: 0 !important; background: #ffffff !important; } 
+          .no-print, .doc-control-bar { display: none !important; } 
+          .doc-wrapper { border: none !important; box-shadow: none !important; padding: 0 !important; }
+          @page { size: landscape; margin: 8mm; } 
+        }
       </style>
     </head>
     <body>
-      <div class="no-print" style="margin-bottom:10px; text-align:right;">
-        <button onclick="window.print()" style="padding:8px 16px; background:#4f46e5; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🖨️ Imprimir / Guardar en PDF</button>
+      <div class="doc-control-bar no-print">
+        <button type="button" class="btn-back" onclick="regresarAlPortal()">
+          <span>←</span>
+          <span>Volver</span>
+        </button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" id="btn-descargar-pdf" class="btn-download" onclick="descargarDocumentoPDF()">
+            <span>📥</span>
+            <span>Descargar PDF</span>
+          </button>
+          <button type="button" class="btn-print" onclick="window.print()">
+            <span>🖨️</span>
+            <span>Imprimir</span>
+          </button>
+        </div>
       </div>
+
+      <div class="doc-wrapper">
+        <div id="documento-imprimible">
       <div class="header" style="display: flex; align-items: center; justify-content: space-between; border: 2px solid #0f172a; padding: 10px 14px; margin-bottom: 12px; gap: 15px;">
         <div style="flex-shrink: 0; min-width: 140px; text-align: center;">
           ${empresaActiva.logoUrl 
@@ -1065,6 +1172,98 @@ window.imprimirMatrizGTC45PDF = function() {
           `).join('')}
         </tbody>
       </table>
+        </div>
+      </div>
+
+      <script>
+        function regresarAlPortal() {
+          if (window.opener && !window.opener.closed) {
+            window.close();
+          } else if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = './app.html';
+          }
+        }
+
+        async function descargarDocumentoPDF() {
+          const btn = document.getElementById('btn-descargar-pdf');
+          const prev = btn ? btn.innerHTML : '';
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳ Generando PDF...</span>';
+          }
+
+          const element = document.getElementById('documento-imprimible');
+          const cleanName = 'Matriz_GTC45_${empresaActiva.razonSocial.replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf';
+
+          if (typeof html2pdf !== 'undefined' && element) {
+            const opt = {
+              margin: [6, 6, 6, 6],
+              filename: cleanName,
+              image: { type: 'jpeg', quality: 0.98 },
+              html2canvas: { scale: 2, useCORS: true, logging: false },
+              jsPDF: { unit: 'mm', format: 'letter', orientation: 'landscape' }
+            };
+
+            try {
+              const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+              const pdfFile = new File([pdfBlob], cleanName, { type: 'application/pdf' });
+
+              if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                try {
+                  await navigator.share({
+                    files: [pdfFile],
+                    title: 'Matriz de Peligros GTC 45',
+                    text: 'Matriz Oficial SG-SST DOCTOR PYME'
+                  });
+                  if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>✓ ¡Guardado!</span>';
+                    setTimeout(() => { btn.innerHTML = prev; }, 2500);
+                  }
+                  return;
+                } catch (shareErr) {
+                  if (shareErr.name === 'AbortError') {
+                    if (btn) { btn.disabled = false; btn.innerHTML = prev; }
+                    return;
+                  }
+                }
+              }
+
+              const blobUrl = URL.createObjectURL(pdfBlob);
+              const a = document.createElement('a');
+              a.href = blobUrl;
+              a.download = cleanName;
+              document.body.appendChild(a);
+              a.click();
+              setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(blobUrl);
+              }, 1500);
+
+              if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<span>✓ ¡Descargado!</span>';
+                setTimeout(() => { btn.innerHTML = prev; }, 2500);
+              }
+            } catch (err) {
+              console.warn('Fallo html2pdf blob:', err);
+              if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = prev;
+              }
+              window.print();
+            }
+          } else {
+            if (btn) {
+              btn.disabled = false;
+              btn.innerHTML = prev;
+            }
+            window.print();
+          }
+        }
+      </script>
     </body>
     </html>
   `);

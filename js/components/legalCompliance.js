@@ -902,18 +902,99 @@ window.descargarCertificadoLegalPDF = function(recordId) {
     <html lang="es">
     <head>
       <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
       <title>Certificado Legal Forense - ${record.certificate_code}</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
       <style>
+        :root {
+          --sat: max(env(safe-area-inset-top, 0px), 44px);
+          --sab: max(env(safe-area-inset-bottom, 0px), 16px);
+        }
+        * { box-sizing: border-box; }
         @page { size: letter; margin: 12mm 15mm; }
         body {
-          font-family: 'Helvetica Neue', Arial, sans-serif;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
           color: #0f172a;
-          background: #ffffff;
+          background: #f8fafc;
           margin: 0;
-          padding: 15px;
+          padding: calc(var(--sat) + 58px) 16px max(var(--sab), 24px) 16px;
           font-size: 10px;
           line-height: 1.4;
         }
+
+        .doc-control-bar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 999999;
+          background: #0b1a2d;
+          color: #ffffff;
+          padding-top: var(--sat);
+          padding-bottom: 12px;
+          padding-left: 14px;
+          padding-right: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+          border-bottom: 1px solid #1e293b;
+        }
+        .btn-back {
+          padding: 8px 14px;
+          background: #1e293b;
+          color: #f1f5f9;
+          border: 1px solid #334155;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 12px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          touch-action: manipulation;
+        }
+        .btn-download {
+          padding: 8px 14px;
+          background: #0d9488;
+          color: #ffffff;
+          border: none;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 12px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: 0 2px 6px rgba(13, 148, 136, 0.35);
+          touch-action: manipulation;
+        }
+        .btn-print { 
+          padding: 8px 14px; 
+          background: #4338ca; 
+          color: white; 
+          border: none; 
+          border-radius: 10px; 
+          font-weight: 700; 
+          cursor: pointer; 
+          font-size: 12px; 
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          touch-action: manipulation;
+        }
+
+        .doc-wrapper {
+          max-width: 860px;
+          margin: 0 auto;
+          background: #ffffff;
+          padding: 26px 22px;
+          border-radius: 14px;
+          box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+          border: 1px solid #e2e8f0;
+        }
+
         .header-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; border-bottom: 2px solid #0f172a; padding-bottom: 10px; }
         .logo-box { width: 22%; }
         .title-box { text-align: center; width: 56%; }
@@ -987,11 +1068,25 @@ window.descargarCertificadoLegalPDF = function(recordId) {
     </head>
     <body>
 
-      <div class="no-print" style="text-align: right; margin-bottom: 12px;">
-        <button onclick="window.print()" style="padding: 8px 18px; background: #4338ca; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;">
-          🖨️ Imprimir / Guardar como PDF
+      <div class="doc-control-bar no-print">
+        <button type="button" class="btn-back" onclick="regresarAlPortal()">
+          <span>←</span>
+          <span>Volver</span>
         </button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" id="btn-descargar-pdf" class="btn-download" onclick="descargarDocumentoPDF()">
+            <span>📥</span>
+            <span>Descargar PDF</span>
+          </button>
+          <button type="button" class="btn-print" onclick="window.print()">
+            <span>🖨️</span>
+            <span>Imprimir</span>
+          </button>
+        </div>
       </div>
+
+      <div class="doc-wrapper">
+        <div id="documento-imprimible">
 
       <!-- ENCABEZADO OFICIAL -->
       <table class="header-table">
@@ -1117,7 +1212,98 @@ ${activePolicy.legal_text_content}
         <span>Documento generado electrónicamente por DOCTOR PYME SG-SST • Validez probatoria en todo el territorio colombiano.</span>
         <span>Certificado No. ${record.certificate_code} • Pág. 1 de 1</span>
       </div>
+        </div>
+      </div>
 
+      <script>
+        function regresarAlPortal() {
+          if (window.opener && !window.opener.closed) {
+            window.close();
+          } else if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = './app.html';
+          }
+        }
+
+        async function descargarDocumentoPDF() {
+          const btn = document.getElementById('btn-descargar-pdf');
+          const prev = btn ? btn.innerHTML : '';
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳ Generando PDF...</span>';
+          }
+
+          const element = document.getElementById('documento-imprimible');
+          const cleanName = 'Certificado_Legal_${record.certificate_code}.pdf';
+
+          if (typeof html2pdf !== 'undefined' && element) {
+            const opt = {
+              margin: [8, 8, 8, 8],
+              filename: cleanName,
+              image: { type: 'jpeg', quality: 0.98 },
+              html2canvas: { scale: 2, useCORS: true, logging: false },
+              jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+            };
+
+            try {
+              const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+              const pdfFile = new File([pdfBlob], cleanName, { type: 'application/pdf' });
+
+              if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                try {
+                  await navigator.share({
+                    files: [pdfFile],
+                    title: 'Certificado Legal Forense',
+                    text: 'Certificado Legal Emitido por DOCTOR PYME'
+                  });
+                  if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>✓ ¡Guardado!</span>';
+                    setTimeout(() => { btn.innerHTML = prev; }, 2500);
+                  }
+                  return;
+                } catch (shareErr) {
+                  if (shareErr.name === 'AbortError') {
+                    if (btn) { btn.disabled = false; btn.innerHTML = prev; }
+                    return;
+                  }
+                }
+              }
+
+              const blobUrl = URL.createObjectURL(pdfBlob);
+              const a = document.createElement('a');
+              a.href = blobUrl;
+              a.download = cleanName;
+              document.body.appendChild(a);
+              a.click();
+              setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(blobUrl);
+              }, 1500);
+
+              if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<span>✓ ¡Descargado!</span>';
+                setTimeout(() => { btn.innerHTML = prev; }, 2500);
+              }
+            } catch (err) {
+              console.warn('Fallo html2pdf blob:', err);
+              if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = prev;
+              }
+              window.print();
+            }
+          } else {
+            if (btn) {
+              btn.disabled = false;
+              btn.innerHTML = prev;
+            }
+            window.print();
+          }
+        }
+      </script>
     </body>
     </html>
   `);

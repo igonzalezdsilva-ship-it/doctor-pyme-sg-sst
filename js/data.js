@@ -903,6 +903,35 @@ export const ESTANDARES_RES_0312 = [
 // =============================================================================
 export const EMPRESAS_DEMO = [
   {
+    id: "emp-demo",
+    razonSocial: "Empresa Demo Industrial S.A.S.",
+    nit: "900.888.777-1",
+    arl: "SURA",
+    claseRiesgo: "IV",
+    trabajadores: 28,
+    ciudad: "Bogota D.C.",
+    direccion: "Zona Industrial Cazuca Carrera 4 # 12-40",
+    sector: "Fabricacion de estructuras metalicas y montajes industriales",
+    responsableSST: "Ing. Ivan David Gonzalez Silva - Licencia: RESOLUCIÓN No. 6514 de 19/10/2022",
+    telefono: "3105559876",
+    email: "demo@doctorpyme.com",
+    estandaresAplicables: 60,
+    representanteLegal: "Carlos Eduardo Mendoza - C.C. 80.450.912",
+    logoUrl: "./assets/logo-horizontal.png",
+    tieneLogo: true,
+    tieneOrganigrama: true,
+    tieneMapaProcesos: true,
+    is_demo: true,
+    createdAt: "2026-11-01T08:00:00.000Z",
+    acceso: {
+      usuario: "demo@doctorpyme.com",
+      password: "demo2026",
+      estado: "ACTIVO",
+      rol: "Super Administrador SST",
+      ultimoIngreso: "2026-11-07T08:00:00Z"
+    }
+  },
+  {
     id: "emp-1790438946268",
     razonSocial: "LADRILLOS OCHOA LTDA",
     nit: "830124631",

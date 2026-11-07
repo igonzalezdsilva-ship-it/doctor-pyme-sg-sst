@@ -660,8 +660,11 @@ window.abrirModalDetalleHerramienta = function(toolId) {
           </div>
         </div>
 
-        <!-- 3 BOTONES EXPORTABLES PDF -->
+        <!-- 4 BOTONES DE ACCIÓN: EXPORTABLES PDF Y EDICIÓN -->
         <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="document.getElementById('${modalId}').remove(); window.abrirModalCrearHerramienta('${tool.id}')" class="px-3 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-md" title="Editar Información Técnica del Activo">
+            <span>✏️</span> Editar
+          </button>
           <button onclick="window.generarPdfHojaDeVida('${tool.id}')" class="px-3 py-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer" title="Exportar Hoja de Vida Oficial en PDF">
             <span>📄</span> Hoja de Vida
           </button>
@@ -910,10 +913,11 @@ window.cambiarPestanaDetalle = function(tabName) {
 // =============================================================================
 // MODAL: NUEVA HERRAMIENTA O EDITAR
 // =============================================================================
-window.abrirModalCrearHerramienta = function() {
+window.abrirModalCrearHerramienta = function(toolIdToEdit = null) {
   const tenantId = store.getEmpresaActivaId();
   const trabajadores = store.getTrabajadores(tenantId);
   const proyectos = PROYECTOS_PREDEFINIDOS[tenantId] || [];
+  const toolToEdit = toolIdToEdit ? (store.getTools(tenantId).find(t => t.id === toolIdToEdit) || store.getEquipos().find(e => e.id === toolIdToEdit)) : null;
 
   const modalId = 'modal-crear-herramienta';
   let modalEl = document.getElementById(modalId);
@@ -929,7 +933,7 @@ window.abrirModalCrearHerramienta = function() {
       <div class="p-6 bg-linear-to-r from-teal-900 to-slate-900 text-white flex items-center justify-between">
         <div>
           <span class="text-[10px] font-black uppercase tracking-wider text-teal-300">Inventario de Activos • SaaS Multitenant</span>
-          <h3 class="text-base font-black">Registrar Nueva Herramienta o Equipo</h3>
+          <h3 class="text-base font-black">${toolToEdit ? 'Editar Información del Equipo' : 'Registrar Nueva Herramienta o Equipo'}</h3>
         </div>
         <button onclick="document.getElementById('${modalId}').remove()" class="text-slate-400 hover:text-white text-lg cursor-pointer">✕</button>
       </div>
@@ -942,7 +946,9 @@ window.abrirModalCrearHerramienta = function() {
             <label class="font-bold text-slate-700 uppercase flex items-center gap-1.5 text-[11px] tracking-wide">
               <span>📸</span> Fotografía Oficial de la Herramienta o Equipo
             </label>
-            <span id="badge-photo-tool" class="text-[10px] px-2 py-0.5 rounded font-bold bg-slate-200 text-slate-600">Recomendado</span>
+            <span id="badge-photo-tool" class="text-[10px] px-2 py-0.5 rounded font-bold ${toolToEdit?.photo_url ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'}">
+              ${toolToEdit?.photo_url ? '✓ Foto Actual' : 'Recomendado'}
+            </span>
           </div>
           <p class="text-[11px] text-slate-500 leading-tight">
             Carga la fotografía técnica o placa del activo. Se incorporará automáticamente a la <strong>Hoja de Vida Oficial</strong> y a la <strong>Ficha de Seguridad SST</strong>.
@@ -950,8 +956,8 @@ window.abrirModalCrearHerramienta = function() {
 
           <div class="flex flex-col sm:flex-row items-center gap-3 pt-1">
             <!-- Contenedor Preview -->
-            <div id="preview-tool-photo-container" class="hidden relative group w-24 h-24 rounded-2xl overflow-hidden border-2 border-teal-500 bg-white shadow-sm flex-shrink-0 flex items-center justify-center p-1">
-              <img id="preview-tool-photo-img" src="" alt="Fotografía Herramienta" class="w-full h-full object-cover rounded-xl">
+            <div id="preview-tool-photo-container" class="${toolToEdit?.photo_url ? '' : 'hidden'} relative group w-24 h-24 rounded-2xl overflow-hidden border-2 border-teal-500 bg-white shadow-sm flex-shrink-0 flex items-center justify-center p-1">
+              <img id="preview-tool-photo-img" src="${toolToEdit?.photo_url || ''}" alt="Fotografía Herramienta" class="w-full h-full object-cover rounded-xl">
               <div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                 <button type="button" id="btn-quitar-tool-photo" class="px-2 py-1 bg-red-600 text-white rounded-lg text-[10px] font-bold shadow hover:bg-red-700 cursor-pointer">
                   Quitar
@@ -962,7 +968,7 @@ window.abrirModalCrearHerramienta = function() {
             <!-- Zona de Carga / Dropzone -->
             <label id="dropzone-tool-photo" class="flex-1 w-full flex flex-col items-center justify-center p-4 border-2 border-dashed border-slate-300 hover:border-teal-500 hover:bg-teal-50/40 rounded-2xl cursor-pointer bg-white transition text-center group">
               <svg class="w-6 h-6 text-teal-600 mb-1 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-              <span class="text-xs text-teal-800 font-bold" id="texto-dropzone-tool-photo">Seleccionar o arrastrar fotografía de la herramienta</span>
+              <span class="text-xs text-teal-800 font-bold" id="texto-dropzone-tool-photo">${toolToEdit?.photo_url ? 'Cambiar fotografía seleccionada' : 'Seleccionar o arrastrar fotografía de la herramienta'}</span>
               <span class="text-[10px] text-slate-400 mt-0.5">Formatos: JPG, PNG, WebP o foto directa desde cámara (Optimizado)</span>
               <input type="file" id="tool-photo-file" accept="image/*" class="hidden">
             </label>
@@ -971,24 +977,38 @@ window.abrirModalCrearHerramienta = function() {
           <!-- Opción alternativa por URL -->
           <div class="flex items-center gap-2 pt-1">
             <span class="text-[10px] text-slate-400 font-medium">O enlace web:</span>
-            <input type="url" id="tool-photo-url-input" placeholder="https://dominio.com/foto-equipo.jpg" class="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-[11px] text-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500">
+            <input type="url" id="tool-photo-url-input" value="${toolToEdit?.photo_url || ''}" placeholder="https://dominio.com/foto-equipo.jpg" class="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-[11px] text-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500">
           </div>
+        </div>
+
+        <!-- Asignación obligatoria al Programa de Mantenimiento (Bloque 2) -->
+        <div class="p-3.5 bg-indigo-50/80 border border-indigo-200 rounded-2xl space-y-1.5">
+          <label class="block font-bold text-indigo-950 uppercase text-[11px] tracking-wide">
+            ⚙️ Asignación al Programa de Mantenimiento SG-SST (Res. 0312 Estándar 2.4.1) *
+          </label>
+          <select id="tool-maintenance-assignment" required class="w-full px-3 py-2 bg-white border border-indigo-300 rounded-xl text-xs font-bold text-indigo-900 focus:ring-2 focus:ring-indigo-500">
+            <option value="true" ${toolToEdit?.maintenance_program_assignment !== false ? 'selected' : ''}>✓ ASIGNADO AL PROGRAMA DE MANTENIMIENTO (Equipo Crítico / Maquinaria con Cronograma)</option>
+            <option value="false" ${toolToEdit?.maintenance_program_assignment === false ? 'selected' : ''}>✗ EXENTO / HERRAMIENTA MENOR (No requiere cronograma estricto en Programa de Mantenimiento)</option>
+          </select>
+          <p class="text-[10px] text-indigo-700 leading-tight">
+            Solo los equipos marcados como <strong>ASIGNADOS</strong> aparecerán en el Diagrama de Gantt y alertas del módulo <em>"Programa de mantenimiento"</em>.
+          </p>
         </div>
 
         <!-- Fila 1 -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block font-bold text-slate-700 mb-1">Código Interno *</label>
-            <input type="text" id="tool-code" required placeholder="ej: TL-IND-006" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
+            <input type="text" id="tool-code" required value="${toolToEdit?.internal_code || toolToEdit?.codigo || ''}" placeholder="ej: TL-IND-006" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
           </div>
           <div>
             <label class="block font-bold text-slate-700 mb-1">Tipo de Herramienta *</label>
             <select id="tool-type" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
-              <option value="Manual">Manual</option>
-              <option value="Eléctrica">Eléctrica</option>
-              <option value="Industrial">Industrial</option>
-              <option value="Neumática">Neumática</option>
-              <option value="Medición">Medición</option>
+              <option value="Manual" ${toolToEdit?.tool_type === 'Manual' ? 'selected' : ''}>Manual</option>
+              <option value="Eléctrica" ${toolToEdit?.tool_type === 'Eléctrica' ? 'selected' : ''}>Eléctrica</option>
+              <option value="Industrial" ${toolToEdit?.tool_type === 'Industrial' ? 'selected' : ''}>Industrial</option>
+              <option value="Neumática" ${toolToEdit?.tool_type === 'Neumática' ? 'selected' : ''}>Neumática</option>
+              <option value="Medición" ${toolToEdit?.tool_type === 'Medición' ? 'selected' : ''}>Medición</option>
             </select>
           </div>
         </div>
@@ -996,22 +1016,22 @@ window.abrirModalCrearHerramienta = function() {
         <!-- Fila 2 -->
         <div>
           <label class="block font-bold text-slate-700 mb-1">Nombre Exacto del Activo *</label>
-          <input type="text" id="tool-name" required placeholder="ej: Compresor de Aire de Pistón 50L" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
+          <input type="text" id="tool-name" required value="${toolToEdit?.exact_name || toolToEdit?.nombre || ''}" placeholder="ej: Compresor de Aire de Pistón 50L" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
         </div>
 
         <!-- Fila 3 -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="block font-bold text-slate-700 mb-1">Marca *</label>
-            <input type="text" id="tool-brand" required placeholder="ej: Schulz" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
+            <input type="text" id="tool-brand" required value="${toolToEdit?.brand || toolToEdit?.marca || ''}" placeholder="ej: Schulz" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
           </div>
           <div>
             <label class="block font-bold text-slate-700 mb-1">Modelo *</label>
-            <input type="text" id="tool-model" required placeholder="ej: Bravo MSV-20" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
+            <input type="text" id="tool-model" required value="${toolToEdit?.model || toolToEdit?.modelo || ''}" placeholder="ej: Bravo MSV-20" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
           </div>
           <div>
             <label class="block font-bold text-slate-700 mb-1">Número de Serie *</label>
-            <input type="text" id="tool-serial" required placeholder="ej: SCH-99482-COL" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
+            <input type="text" id="tool-serial" required value="${toolToEdit?.serial_number || toolToEdit?.serie || ''}" placeholder="ej: SCH-99482-COL" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
           </div>
         </div>
 
@@ -1019,20 +1039,20 @@ window.abrirModalCrearHerramienta = function() {
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="block font-bold text-slate-700 mb-1">Valor Comercial (COP) *</label>
-            <input type="number" id="tool-value" required placeholder="ej: 3500000" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
+            <input type="number" id="tool-value" required value="${toolToEdit?.commercial_value || 3500000}" placeholder="ej: 3500000" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
           </div>
           <div>
             <label class="block font-bold text-slate-700 mb-1">Año de Adquisición *</label>
-            <input type="number" id="tool-year" required value="2025" min="2000" max="2030" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
+            <input type="number" id="tool-year" required value="${toolToEdit?.acquisition_year || 2025}" min="2000" max="2030" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
           </div>
           <div>
             <label class="block font-bold text-slate-700 mb-1">Vida Útil (1 a 5 Años) *</label>
             <select id="tool-useful-life" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none">
-              <option value="1">1 Año</option>
-              <option value="2">2 Años</option>
-              <option value="3" selected>3 Años</option>
-              <option value="4">4 Años</option>
-              <option value="5">5 Años</option>
+              <option value="1" ${toolToEdit?.useful_life_years === 1 ? 'selected' : ''}>1 Año</option>
+              <option value="2" ${toolToEdit?.useful_life_years === 2 ? 'selected' : ''}>2 Años</option>
+              <option value="3" ${toolToEdit?.useful_life_years === 3 || !toolToEdit ? 'selected' : ''}>3 Años</option>
+              <option value="4" ${toolToEdit?.useful_life_years === 4 ? 'selected' : ''}>4 Años</option>
+              <option value="5" ${toolToEdit?.useful_life_years === 5 ? 'selected' : ''}>5 Años</option>
             </select>
           </div>
         </div>
@@ -1224,7 +1244,10 @@ window.abrirModalCrearHerramienta = function() {
 
     const finalPhoto = fotoDataUrlSeleccionada || (inputPhotoUrl ? inputPhotoUrl.value.trim() : '') || fallbackFotos[toolType];
 
+    const isMaintenanceAssigned = document.getElementById('tool-maintenance-assignment')?.value === 'true';
+
     const toolData = {
+      ...(toolToEdit ? { id: toolToEdit.id } : {}),
       internal_code: document.getElementById('tool-code').value.trim(),
       tool_type: toolType,
       exact_name: document.getElementById('tool-name').value.trim(),
@@ -1235,6 +1258,7 @@ window.abrirModalCrearHerramienta = function() {
       acquisition_year: Number(document.getElementById('tool-year').value) || 2025,
       useful_life_years: Number(document.getElementById('tool-useful-life').value) || 3,
       current_status: currentStatus,
+      maintenance_program_assignment: isMaintenanceAssigned,
       operative_vars: operativeVars,
       photo_url: finalPhoto
     };
@@ -1556,10 +1580,12 @@ window.generarPdfHojaDeVida = function(toolId) {
     <html lang="es">
     <head>
       <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
       <title>Hoja de Vida Técnica - ${tool.internal_code} - ${tool.exact_name}</title>
       <style>
         @page { size: letter; margin: 15mm; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #1e293b; background: white; margin: 0; padding: 20px; font-size: 11px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b; background: #f8fafc; margin: 0; padding: calc(max(env(safe-area-inset-top, 0px), 48px) + 56px) 20px 20px 20px; font-size: 11px; }
+        .doc-wrapper { max-width: 860px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
         .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #0f766e; padding-bottom: 15px; margin-bottom: 20px; }
         .logo-box { width: 140px; }
         .title-box { text-align: center; flex: 1; }
@@ -1576,13 +1602,21 @@ window.generarPdfHojaDeVida = function(toolId) {
         .sig-row { display: flex; justify-content: space-around; margin-top: 40px; }
         .sig-box { text-align: center; width: 200px; }
         .sig-line { border-top: 1px solid #475569; margin-bottom: 5px; }
-        @media print { body { padding: 0; } button { display: none; } }
+        @media print { body { padding: 0 !important; background: white !important; } .no-print { display: none !important; } .doc-wrapper { padding: 0 !important; border: none !important; box-shadow: none !important; } }
       </style>
     </head>
     <body>
-      <div style="text-align: right; margin-bottom: 10px;">
-        <button onclick="window.print()" style="padding: 8px 16px; background: #0f766e; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">🖨️ Imprimir / Guardar como PDF</button>
+      <!-- BARRA DE CONTROL MÓVIL: REGRESAR / IMPRIMIR -->
+      <div class="no-print" style="position: fixed; top: 0; left: 0; right: 0; z-index: 999999; background: #0b1a2d; color: #ffffff; padding-top: max(env(safe-area-inset-top, 0px), 48px); padding-bottom: 12px; padding-left: 14px; padding-right: 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.25);">
+        <button type="button" onclick="if(window.opener && !window.opener.closed){window.close();}else if(window.history.length>1){window.history.back();}else{window.location.href='./app.html';}" style="padding: 8px 14px; background: #1e293b; color: #f1f5f9; border: 1px solid #334155; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer;">
+          ← Volver al Sistema
+        </button>
+        <button type="button" onclick="window.print()" style="padding: 8px 16px; background: #0f766e; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer;">
+          🖨️ Imprimir / Guardar en PDF
+        </button>
       </div>
+
+      <div class="doc-wrapper">
 
       <div class="header">
         <div class="logo-box">
@@ -1726,10 +1760,12 @@ window.generarPdfFichaSST = function(toolId) {
     <html lang="es">
     <head>
       <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
       <title>Ficha de Seguridad SST - ${tool.internal_code}</title>
       <style>
         @page { size: letter; margin: 15mm; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #1e293b; background: white; margin: 0; padding: 20px; font-size: 11px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b; background: #f8fafc; margin: 0; padding: calc(max(env(safe-area-inset-top, 0px), 48px) + 56px) 20px 20px 20px; font-size: 11px; }
+        .doc-wrapper { max-width: 860px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
         .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #b91c1c; padding-bottom: 12px; margin-bottom: 15px; }
         h1 { margin: 0; font-size: 16px; text-transform: uppercase; color: #b91c1c; }
         h2 { margin: 2px 0; font-size: 11px; color: #334155; }
@@ -1743,13 +1779,20 @@ window.generarPdfFichaSST = function(toolId) {
         .sig-row { display: flex; justify-content: space-around; margin-top: 35px; }
         .sig-box { text-align: center; width: 200px; }
         .sig-line { border-top: 1px solid #475569; margin-bottom: 5px; }
-        @media print { button { display: none; } }
+        @media print { body { padding: 0 !important; background: white !important; } .no-print { display: none !important; } .doc-wrapper { padding: 0 !important; border: none !important; box-shadow: none !important; } }
       </style>
     </head>
     <body>
-      <div style="text-align: right; margin-bottom: 10px;">
-        <button onclick="window.print()" style="padding: 8px 16px; background: #b91c1c; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">🖨️ Imprimir / Guardar como PDF</button>
+      <div class="no-print" style="position: fixed; top: 0; left: 0; right: 0; z-index: 999999; background: #0b1a2d; color: #ffffff; padding-top: max(env(safe-area-inset-top, 0px), 48px); padding-bottom: 12px; padding-left: 14px; padding-right: 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.25);">
+        <button type="button" onclick="if(window.opener && !window.opener.closed){window.close();}else if(window.history.length>1){window.history.back();}else{window.location.href='./app.html';}" style="padding: 8px 14px; background: #1e293b; color: #f1f5f9; border: 1px solid #334155; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer;">
+          ← Volver al Sistema
+        </button>
+        <button type="button" onclick="window.print()" style="padding: 8px 16px; background: #b91c1c; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer;">
+          🖨️ Imprimir / Guardar en PDF
+        </button>
       </div>
+
+      <div class="doc-wrapper">
 
       <div class="header">
         <div>
@@ -1833,23 +1876,32 @@ window.generarPdfPlanMantenimiento = function(toolId) {
     <html lang="es">
     <head>
       <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
       <title>Plan de Mantenimiento - ${tool.internal_code}</title>
       <style>
         @page { size: letter; margin: 15mm; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #1e293b; background: white; margin: 0; padding: 20px; font-size: 11px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b; background: #f8fafc; margin: 0; padding: calc(max(env(safe-area-inset-top, 0px), 48px) + 56px) 20px 20px 20px; font-size: 11px; }
+        .doc-wrapper { max-width: 860px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
         .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #4338ca; padding-bottom: 12px; margin-bottom: 15px; }
         h1 { margin: 0; font-size: 16px; text-transform: uppercase; color: #4338ca; }
         .section-title { background: #eef2ff; border-left: 4px solid #4338ca; padding: 6px 10px; font-size: 11px; font-weight: bold; text-transform: uppercase; margin: 15px 0 10px; color: #312e81; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
         th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
         th { background: #f8fafc; font-weight: bold; width: 30%; }
-        @media print { button { display: none; } }
+        @media print { body { padding: 0 !important; background: white !important; } .no-print { display: none !important; } .doc-wrapper { padding: 0 !important; border: none !important; box-shadow: none !important; } }
       </style>
     </head>
     <body>
-      <div style="text-align: right; margin-bottom: 10px;">
-        <button onclick="window.print()" style="padding: 8px 16px; background: #4338ca; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">🖨️ Imprimir / Guardar como PDF</button>
+      <div class="no-print" style="position: fixed; top: 0; left: 0; right: 0; z-index: 999999; background: #0b1a2d; color: #ffffff; padding-top: max(env(safe-area-inset-top, 0px), 48px); padding-bottom: 12px; padding-left: 14px; padding-right: 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.25);">
+        <button type="button" onclick="if(window.opener && !window.opener.closed){window.close();}else if(window.history.length>1){window.history.back();}else{window.location.href='./app.html';}" style="padding: 8px 14px; background: #1e293b; color: #f1f5f9; border: 1px solid #334155; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer;">
+          ← Volver al Sistema
+        </button>
+        <button type="button" onclick="window.print()" style="padding: 8px 16px; background: #4338ca; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer;">
+          🖨️ Imprimir / Guardar en PDF
+        </button>
       </div>
+
+      <div class="doc-wrapper">
 
       <div class="header">
         <div>
