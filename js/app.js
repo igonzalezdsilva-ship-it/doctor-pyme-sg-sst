@@ -96,7 +96,9 @@ function router() {
   }
 
   // Conmutación automática de Modo App Móvil vs Escritorio
-  if (hash === '#portal-trabajador' || auth.isWorker()) {
+  // Solo se activa mobile-app-mode si el usuario autenticado tiene rol TRABAJADOR
+  // En la consola administrativa de index.html, el menú lateral (sidebar) siempre se preserva
+  if (auth.isWorker()) {
     document.body.classList.add('mobile-app-mode');
   } else {
     document.body.classList.remove('mobile-app-mode');

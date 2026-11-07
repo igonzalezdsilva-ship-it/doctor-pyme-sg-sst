@@ -183,6 +183,7 @@ export function renderWorkerPortal() {
   }
 
   // 3. Vista Principal para Administradores SST y Empresas: Consola de Gestión y Creación
+  document.body.classList.remove('mobile-app-mode');
   renderConsolaGestionTrabajadores(container);
 }
 
@@ -190,6 +191,8 @@ export function renderWorkerPortal() {
 // VISTA PRINCIPAL ADMINISTRATIVA: GESTIÓN Y CREACIÓN DE TRABAJADORES
 // =============================================================================
 function renderConsolaGestionTrabajadores(container) {
+  // Asegurar que el entorno de escritorio conserve la barra lateral y cabecera
+  document.body.classList.remove('mobile-app-mode');
   const empresaActiva = store.getEmpresaActiva() || {
     id: 'emp-1790438946268',
     razonSocial: 'LADRILLOS OCHOA LTDA',
