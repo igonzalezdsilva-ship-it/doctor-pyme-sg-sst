@@ -8838,7 +8838,7 @@ window.abrirModalCarpetaTrabajador = async function(trabajadorId) {
         <!-- CUERPO PRINCIPAL CON SCROLL -->
         <div class="p-5 overflow-y-auto flex-1 space-y-4">
           
-          <!-- SEMÁFORO Y PANEL DE COMPLETITUD DE 5 DOCUMENTOS LEGALES -->
+          <!-- SEMÁFORO Y PANEL DE COMPLETITUD DE 6 DOCUMENTOS LEGALES (BLOQUE 5) -->
           <div class="p-4 rounded-2xl border ${completeness.isComplete ? 'bg-emerald-50/80 border-emerald-200' : 'bg-amber-50/80 border-amber-200'}">
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-black uppercase tracking-wider ${completeness.isComplete ? 'text-emerald-950' : 'text-amber-950'} flex items-center gap-1.5">
@@ -8846,7 +8846,7 @@ window.abrirModalCarpetaTrabajador = async function(trabajadorId) {
                 <span>Semáforo de Requisitos Obligatorios SG-SST &amp; Laboral</span>
               </span>
               <span class="text-xs font-bold font-mono ${completeness.isComplete ? 'text-emerald-800' : 'text-amber-800'}">
-                ${completeness.presentCount} de 5 requeridos (${completeness.percentage}%)
+                ${completeness.presentCount} de 6 requeridos (${completeness.percentage}%)
               </span>
             </div>
 
@@ -8855,14 +8855,15 @@ window.abrirModalCarpetaTrabajador = async function(trabajadorId) {
               <div class="h-full transition-all duration-500 rounded-full ${completeness.isComplete ? 'bg-emerald-500' : 'bg-amber-500'}" style="width: ${completeness.percentage}%;"></div>
             </div>
 
-            <!-- Fichas de las 5 Categorías Obligatorias -->
-            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
+            <!-- Fichas de las 6 Categorías Obligatorias (Bloque 5) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 text-center">
               ${[
                 { key: 'CEDULA_CIUDADANIA', label: 'Cédula', icon: '🪪' },
                 { key: 'HOJA_DE_VIDA', label: 'Hoja Vida', icon: '📄' },
                 { key: 'CERTIFICACION_BANCARIA', label: 'Banco', icon: '🏦' },
                 { key: 'EXAMEN_MEDICO_INGRESO', label: 'Examen Médico', icon: '🩺' },
-                { key: 'SEGURIDAD_SOCIAL', label: 'Seg. Social', icon: '🏥' }
+                { key: 'SEGURIDAD_SOCIAL', label: 'Seg. Social', icon: '🏥' },
+                { key: 'CURSO_ALTURAS', label: 'Anexo 6: Alturas', icon: '🧗' }
               ].map(cat => {
                 const tiene = !!completeness.categoriesPresent[cat.key];
                 return `

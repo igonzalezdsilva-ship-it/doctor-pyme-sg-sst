@@ -5072,7 +5072,8 @@ class Store {
       { key: 'HOJA_DE_VIDA', label: 'Hoja de Vida', icon: '📄' },
       { key: 'CERTIFICACION_BANCARIA', label: 'Certificación Bancaria', icon: '🏦' },
       { key: 'EXAMEN_MEDICO_INGRESO', label: 'Certificado Médico de Ingreso (Aptitud)', icon: '🩺' },
-      { key: 'SEGURIDAD_SOCIAL', label: 'Afiliación EPS / ARL / Pensión', icon: '🏥' }
+      { key: 'SEGURIDAD_SOCIAL', label: 'Afiliación EPS / ARL / Pensión', icon: '🏥' },
+      { key: 'CURSO_ALTURAS', label: 'Anexo 6: Curso de Alturas (Res. 4272/2021)', icon: '🧗' }
     ];
 
     const categoriesPresent = {};
