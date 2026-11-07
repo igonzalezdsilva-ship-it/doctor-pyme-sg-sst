@@ -15,6 +15,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Doctor Pyme">
 
+  <!-- Motor de Exportación y Descarga de PDF Directo -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <!-- Tailwind CSS CDN con Paleta Corporativa Doctor Pyme -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -38,7 +41,7 @@
   </script>
   
   <!-- Estilos Personalizados e Impresión (Cache-busting v=2.3) -->
-  <link rel="stylesheet" href="./css/styles.css?v=2.3">
+  <link rel="stylesheet" href="./css/styles.css?v=2.4">
   <style>
     /* Safe areas para notch y barras de navegación móviles (iOS / Android) */
     :root {
@@ -96,9 +99,9 @@
 
   <!-- SCRIPT BOOTSTRAP DE LA APLICACIÓN MÓVIL (Versionado v=2.3) -->
   <script type="module">
-    import { auth } from './js/auth.js?v=2.3';
-    import { store } from './js/store.js?v=2.3';
-    import { renderWorkerPortal } from './js/components/workerPortal.js?v=2.3';
+    import { auth } from './js/auth.js?v=2.4';
+    import { store } from './js/store.js?v=2.4';
+    import { renderWorkerPortal } from './js/components/workerPortal.js?v=2.4';
 
     // Función global para forzar recarga limpia y purga de caché
     window.forzarActualizacionApp = async function() {
@@ -122,7 +125,7 @@
     // 1. Registro del Service Worker para PWA con detección inmediata de actualización
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.1').then((reg) => {
+        navigator.serviceWorker.register('./sw.js?v=2.4').then((reg) => {
           console.log('[PWA Trabajador v2.1] Service Worker activo:', reg.scope);
           // Forzar chequeo de actualización contra el servidor
           reg.update();

@@ -576,15 +576,118 @@ window.generarPdfPresupuesto = function(empresaId, year) {
   const totalEjecutado = items.reduce((acc, it) => acc + (Number(it.valorEjecutado) || 0), 0);
   const formatCOP = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
 
+  const cleanDocTitle = `Acta Oficial de Presupuesto SG-SST ${year} - ${empresa.razonSocial || 'Empresa'}`.replace(/"/g, '&quot;');
+  const fileDownloadName = `Acta_Presupuesto_SGSST_${year}_${(empresa.razonSocial || 'Empresa').replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+
   const win = window.open('', '_blank');
+  if (!win) {
+    alert("Por favor habilita las ventanas emergentes (popups) para visualizar e imprimir el Acta de Presupuesto.");
+    return;
+  }
+
+  win.document.open();
   win.document.write(`
     <!DOCTYPE html>
     <html lang="es">
     <head>
       <meta charset="UTF-8">
-      <title>Acta Oficial de Presupuesto SG-SST ${year} - ${empresa.razonSocial}</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+      <title>${cleanDocTitle}</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
       <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1e293b; padding: 25px; max-width: 850px; margin: 0 auto; font-size: 11px; }
+        :root {
+          --sat: max(env(safe-area-inset-top, 0px), 44px);
+          --sab: max(env(safe-area-inset-bottom, 0px), 16px);
+        }
+        * { box-sizing: border-box; }
+        body { 
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+          color: #1e293b; 
+          background: #f8fafc;
+          padding: calc(var(--sat) + 58px) 16px max(var(--sab), 24px) 16px; 
+          margin: 0;
+          font-size: 11px; 
+        }
+        .doc-control-bar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 999999;
+          background: #0b1a2d;
+          color: #ffffff;
+          padding-top: var(--sat);
+          padding-bottom: 12px;
+          padding-left: 14px;
+          padding-right: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+          border-bottom: 1px solid #1e293b;
+        }
+        .btn-back {
+          padding: 8px 14px;
+          background: #1e293b;
+          color: #f1f5f9;
+          border: 1px solid #334155;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 12px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          transition: background 0.15s ease;
+          touch-action: manipulation;
+        }
+        .btn-back:hover, .btn-back:active { background: #334155; color: #ffffff; }
+        .doc-bar-actions { display: flex; align-items: center; gap: 8px; }
+        .btn-download {
+          padding: 8px 14px;
+          background: #0d9488;
+          color: #ffffff;
+          border: none;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 12px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: 0 2px 6px rgba(13, 148, 136, 0.35);
+          transition: background 0.15s ease;
+          touch-action: manipulation;
+        }
+        .btn-download:hover, .btn-download:active { background: #0f766e; }
+        .btn-download:disabled { opacity: 0.6; cursor: wait; }
+        .btn-print { 
+          padding: 8px 14px; 
+          background: #4338ca; 
+          color: white; 
+          border: none; 
+          border-radius: 10px; 
+          font-weight: 700; 
+          cursor: pointer; 
+          font-size: 12px; 
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          box-shadow: 0 2px 6px rgba(67, 56, 202, 0.3); 
+          transition: background 0.15s ease;
+          touch-action: manipulation;
+        }
+        .btn-print:hover, .btn-print:active { background: #3730a3; }
+        .doc-wrapper {
+          max-width: 860px;
+          margin: 0 auto;
+          background: #ffffff;
+          padding: 30px;
+          border-radius: 14px;
+          box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+          border: 1px solid #e2e8f0;
+        }
         .header { border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .title { font-size: 16px; font-weight: 900; text-transform: uppercase; color: #0f172a; margin: 0; }
         .meta { font-size: 10px; color: #64748b; }
@@ -595,21 +698,40 @@ window.generarPdfPresupuesto = function(empresaId, year) {
         .text-center { text-align: center; }
         .signatures { margin-top: 40px; display: flex; justify-content: space-between; }
         .sig-box { width: 45%; border-top: 1px solid #0f172a; padding-top: 6px; font-size: 10px; text-align: center; }
-        @media print { .no-print { display: none; } }
+        @media print { 
+          body { padding: 0 !important; background: #ffffff !important; }
+          .no-print, .doc-control-bar { display: none !important; } 
+          .doc-wrapper { max-width: 100% !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+          @page { margin: 1cm; size: letter; }
+        }
       </style>
     </head>
     <body>
-      <div class="no-print" style="margin-bottom: 15px; display: flex; justify-content: space-between;">
-        <button onclick="window.close()" style="padding: 6px 12px; background: #64748b; color: white; border: none; border-radius: 6px; cursor: pointer;">← Volver</button>
-        <button onclick="window.print()" style="padding: 6px 16px; background: #0d9488; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">🖨️ Imprimir Acta</button>
-      </div>
-      <div class="header">
-        <div>
-          <h1 class="title">ACTA DE ASIGNACIÓN Y SEGUIMIENTO PRESUPUESTAL SG-SST</h1>
-          <p class="meta">Resolución 0312 de 2019 (Estándar 1.1.2) • Decreto 1072 de 2015 Art. 2.2.4.6.17</p>
-          <p class="meta">Empresa: <strong>${empresa.razonSocial}</strong> • NIT: ${empresa.nit} • Vigencia: ${year}</p>
+      <div class="doc-control-bar no-print">
+        <button type="button" class="btn-back" onclick="regresarAlPortal()">
+          <span>←</span>
+          <span>Volver al Portal</span>
+        </button>
+        <div class="doc-bar-actions">
+          <button type="button" id="btn-descargar-pdf" class="btn-download" onclick="descargarDocumentoPDF()">
+            <span>📥</span>
+            <span>Descargar PDF</span>
+          </button>
+          <button type="button" class="btn-print" onclick="window.print()">
+            <span>🖨️</span>
+            <span>Imprimir</span>
+          </button>
         </div>
       </div>
+      <div class="doc-wrapper">
+        <div id="documento-imprimible">
+          <div class="header">
+            <div>
+              <h1 class="title">ACTA DE ASIGNACIÓN Y SEGUIMIENTO PRESUPUESTAL SG-SST</h1>
+              <p class="meta">Resolución 0312 de 2019 (Estándar 1.1.2) • Decreto 1072 de 2015 Art. 2.2.4.6.17</p>
+              <p class="meta">Empresa: <strong>${empresa.razonSocial}</strong> • NIT: ${empresa.nit} • Vigencia: ${year}</p>
+            </div>
+          </div>
 
       <div style="background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-around;">
         <div>Presupuesto Total: <strong>${formatCOP(totalPresupuesto)}</strong></div>
@@ -656,6 +778,73 @@ window.generarPdfPresupuesto = function(empresaId, year) {
           <p>Licencia SST No. 6514 / MinSalud</p>
         </div>
       </div>
+        </div>
+      </div>
+
+      <script>
+        function regresarAlPortal() {
+          try {
+            if (window.opener && !window.opener.closed) {
+              window.close();
+              return;
+            }
+          } catch(e) {}
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = './index.html';
+          }
+        }
+
+        async function descargarDocumentoPDF() {
+          const btn = document.getElementById('btn-descargar-pdf');
+          const orig = btn ? btn.innerHTML : '';
+          if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳ Generando PDF...</span>'; }
+          const el = document.getElementById('documento-imprimible');
+          const cleanName = '${fileDownloadName}' + '.pdf';
+          if (typeof html2pdf !== 'undefined' && el) {
+            const opt = {
+              margin: [10, 10, 10, 10],
+              filename: cleanName,
+              image: { type: 'jpeg', quality: 0.98 },
+              html2canvas: { scale: 2, useCORS: true, logging: false },
+              jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+            };
+            try {
+              const pdfBlob = await html2pdf().set(opt).from(el).outputPdf('blob');
+              const pdfFile = new File([pdfBlob], cleanName, { type: 'application/pdf' });
+              if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                try {
+                  await navigator.share({
+                    files: [pdfFile],
+                    title: '${cleanDocTitle}',
+                    text: 'Acta Oficial Presupuesto SG-SST'
+                  });
+                  if (btn) { btn.disabled = false; btn.innerHTML = '<span>✓ ¡Guardado!</span>'; setTimeout(() => btn.innerHTML = orig, 2500); }
+                  return;
+                } catch(e) {
+                  if (e.name === 'AbortError') { if (btn) { btn.disabled = false; btn.innerHTML = orig; } return; }
+                }
+              }
+              const blobUrl = URL.createObjectURL(pdfBlob);
+              const a = document.createElement('a');
+              a.href = blobUrl;
+              a.download = cleanName;
+              document.body.appendChild(a);
+              a.click();
+              setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(blobUrl); }, 1500);
+              if (btn) { btn.disabled = false; btn.innerHTML = '<span>✓ ¡Descargado!</span>'; setTimeout(() => btn.innerHTML = orig, 2500); }
+            } catch(e) {
+              console.warn('Fallo blob html2pdf:', e);
+              if (btn) { btn.disabled = false; btn.innerHTML = orig; }
+              window.print();
+            }
+          } else {
+            if (btn) { btn.disabled = false; btn.innerHTML = orig; }
+            window.print();
+          }
+        }
+      </script>
     </body>
     </html>
   `);

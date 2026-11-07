@@ -117,15 +117,20 @@ export async function renderReports() {
             <option value="ATEL" ${tipoReporte === 'ATEL' ? 'selected' : ''}>Informe Estadístico de Accidentalidad</option>
           </select>
 
-          <button onclick="window.print()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold shadow-sm transition flex items-center gap-2">
+          <button id="btn-descargar-informe-pdf" onclick="window.descargarInformeActualPDF()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs sm:text-sm font-semibold shadow-sm transition flex items-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            <span>Descargar PDF</span>
+          </button>
+
+          <button onclick="window.print()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs sm:text-sm font-semibold shadow-sm transition flex items-center gap-2 cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-            Imprimir / Guardar en PDF
+            <span>Imprimir</span>
           </button>
         </div>
       </div>
 
       <!-- Hoja Oficial Membretada (Imprimible) -->
-      <div class="bg-white p-8 md:p-12 rounded-xl border border-slate-200 shadow-sm print:p-0 print:border-none print:shadow-none space-y-8">
+      <div id="contenedor-informe-imprimible" class="bg-white p-8 md:p-12 rounded-xl border border-slate-200 shadow-sm print:p-0 print:border-none print:shadow-none space-y-8">
         
         <!-- Membrete Legal Oficial Doctor Pyme -->
         <div class="border-b-2 border-teal-800 pb-5">
@@ -574,5 +579,79 @@ if (typeof window !== 'undefined') {
   window.cambiarTipoReporte = function(tipo) {
     tipoReporte = tipo;
     renderReports();
+  };
+
+  window.descargarInformeActualPDF = async function() {
+    const btn = document.getElementById('btn-descargar-informe-pdf');
+    const orig = btn ? btn.innerHTML : '';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳ Generando PDF...</span>';
+    }
+
+    const el = document.getElementById('contenedor-informe-imprimible');
+    const empresa = store.getEmpresaActiva() || {};
+    const nombreEmpresa = (empresa.razonSocial || 'Empresa').replace(/[^a-zA-Z0-9_-]/g, '_');
+    const filename = `Informe_SGSST_${tipoReporte}_${nombreEmpresa}_${new Date().toISOString().split('T')[0]}.pdf`;
+
+    if (typeof html2pdf !== 'undefined' && el) {
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+      };
+
+      try {
+        const pdfBlob = await html2pdf().set(opt).from(el).outputPdf('blob');
+        const pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
+
+        if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+          try {
+            await navigator.share({
+              files: [pdfFile],
+              title: `Informe Oficial SG-SST - ${empresa.razonSocial || ''}`,
+              text: 'Informe Oficial del Sistema de Gestión de Seguridad y Salud en el Trabajo'
+            });
+            if (btn) {
+              btn.disabled = false;
+              btn.innerHTML = '<span>✓ ¡Guardado!</span>';
+              setTimeout(() => { btn.innerHTML = orig; }, 2500);
+            }
+            return;
+          } catch (e) {
+            if (e.name === 'AbortError') {
+              if (btn) { btn.disabled = false; btn.innerHTML = orig; }
+              return;
+            }
+          }
+        }
+
+        const blobUrl = URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(blobUrl);
+        }, 1500);
+
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>✓ ¡Descargado!</span>';
+          setTimeout(() => { btn.innerHTML = orig; }, 2500);
+        }
+      } catch (err) {
+        console.warn('Fallo html2pdf blob, usando window.print():', err);
+        if (btn) { btn.disabled = false; btn.innerHTML = orig; }
+        window.print();
+      }
+    } else {
+      if (btn) { btn.disabled = false; btn.innerHTML = orig; }
+      window.print();
+    }
   };
 }
