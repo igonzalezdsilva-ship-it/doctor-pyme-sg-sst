@@ -761,31 +761,40 @@ def merge_database_safely(existing_db, incoming_payload)
     merged['empresas'] = final_empresas
   end
 
-  # 2. Evaluaciones: Si el cliente envió evaluaciones para una empresa y año, respetar su contenido (ej. año 2026 limpio)
+  # 2. Evaluaciones: Fusión no-destructiva garantizada (Blindaje anti-pérdida de numerales y evidencias)
   if existing_db['evaluaciones'].is_a?(Hash)
     merged['evaluaciones'] ||= {}
     existing_db['evaluaciones'].each do |cid, years|
       next unless years.is_a?(Hash)
-      if !merged['evaluaciones'].key?(cid)
-        merged['evaluaciones'][cid] = years
-        next
-      end
       merged['evaluaciones'][cid] ||= {}
       years.each do |yr, stds|
         next unless stds.is_a?(Hash)
-        if !merged['evaluaciones'][cid].key?(yr)
-          merged['evaluaciones'][cid][yr] = stds
+
+        incoming_year = merged['evaluaciones'][cid][yr]
+        if incoming_year.nil? || !incoming_year.is_a?(Hash) || incoming_year.empty?
+          # Si el cliente no envió el año o lo envió vacío, PRESERVAR estrictamente el disco
+          merged['evaluaciones'][cid][yr] = Marshal.load(Marshal.dump(stds))
           next
         end
-        # Si el año está vacío deliberadamente (ej. 2026 limpio), NO repoblar desde disco
-        next if merged['evaluaciones'][cid][yr].empty?
 
-        # Enriquecer numerales existentes con fuentes o justificaciones de disco si faltaban
+        # Si el cliente envió menos numerales que los existentes en disco, o si faltan numerales,
+        # PRESERVAR todos los numerales existentes en disco que no vinieron en el payload
         stds.each do |numeral, orig_val|
+          next unless orig_val.is_a?(Hash)
           curr_val = merged['evaluaciones'][cid][yr][numeral]
-          next if curr_val.nil? || !curr_val.is_a?(Hash)
 
-          if curr_val['fuentes'].is_a?(Array)
+          if curr_val.nil? || !curr_val.is_a?(Hash)
+            # Numeral faltante en el cliente: preservar íntegramente desde disco
+            merged['evaluaciones'][cid][yr][numeral] = Marshal.load(Marshal.dump(orig_val))
+            next
+          end
+
+          # Numeral presente en cliente: fusionar protegiendo evidencias, adjuntos y justificaciones
+          if (curr_val['archivoAdjunto'].nil? || curr_val['archivoAdjunto'].empty?) && orig_val['archivoAdjunto']
+            curr_val['archivoAdjunto'] = orig_val['archivoAdjunto']
+          end
+
+          if curr_val['fuentes'].is_a?(Array) && !curr_val['fuentes'].empty?
             first_with_url = curr_val['fuentes'].find { |f| f.is_a?(Hash) && f['url'] && !f['url'].to_s.strip.empty? }
             curr_val['linkGuia'] = first_with_url['url'] if first_with_url
           elsif orig_val['fuentes'].is_a?(Array) && !orig_val['fuentes'].empty?
@@ -801,6 +810,25 @@ def merge_database_safely(existing_db, incoming_payload)
           if (!curr_val['estado'] || curr_val['estado'].to_s.strip.empty?) && (orig_val['estado'] && !orig_val['estado'].to_s.strip.empty?)
             curr_val['estado'] = orig_val['estado']
           end
+        end
+      end
+    end
+
+    # Sincronización bidireccional permanente de alias para Ladrillos Ochoa Ltda.
+    ochoa_p = merged['evaluaciones']['emp-1790438946268']
+    ochoa_a = merged['evaluaciones']['emp-004']
+    if ochoa_p.is_a?(Hash) && (!ochoa_a.is_a?(Hash) || ochoa_a.empty?)
+      merged['evaluaciones']['emp-004'] = Marshal.load(Marshal.dump(ochoa_p))
+    elsif ochoa_a.is_a?(Hash) && (!ochoa_p.is_a?(Hash) || ochoa_p.empty?)
+      merged['evaluaciones']['emp-1790438946268'] = Marshal.load(Marshal.dump(ochoa_a))
+    elsif ochoa_p.is_a?(Hash) && ochoa_a.is_a?(Hash)
+      ['2025', '2026'].each do |yr|
+        len_p = (ochoa_p[yr] || {}).length
+        len_a = (ochoa_a[yr] || {}).length
+        if len_p >= len_a && len_p > 0
+          ochoa_a[yr] = Marshal.load(Marshal.dump(ochoa_p[yr]))
+        elsif len_a > len_p
+          ochoa_p[yr] = Marshal.load(Marshal.dump(ochoa_a[yr]))
         end
       end
     end

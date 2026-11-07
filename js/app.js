@@ -138,10 +138,11 @@ export function actualizarSelectorCabecera() {
   if (!select) return;
 
   const esSuperAdmin = auth.isSuperAdmin();
+  const puedeSeleccionarEmpresa = esSuperAdmin || !auth.isWorker();
   const empresas = store.getEmpresas();
   const activaId = store.getEmpresaActivaId();
 
-  if (esSuperAdmin) {
+  if (puedeSeleccionarEmpresa) {
     select.disabled = false;
     select.classList.remove('cursor-default', 'opacity-95');
     select.classList.add('cursor-pointer');
@@ -245,7 +246,8 @@ export function actualizarSelectorAnioCabecera() {
 window.actualizarSelectorAnioCabecera = actualizarSelectorAnioCabecera;
 
 window.cambiarEmpresaActiva = function(id) {
-  if (!auth.isSuperAdmin()) {
+  if (!id) return;
+  if (auth.isWorker() && document.body.classList.contains('mobile-app-mode')) {
     const user = auth.getUser();
     if (user?.empresaId) {
       store.setEmpresaActivaId(user.empresaId);

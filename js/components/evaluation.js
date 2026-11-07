@@ -41,7 +41,19 @@ let filtroCiclo = 'TODOS'; // 'TODOS', 'PLANEAR', 'HACER', 'VERIFICAR', 'ACTUAR'
 
 export async function renderEvaluation() {
   const container = document.getElementById('main-content');
-  const empresaActiva = store.getEmpresaActiva();
+  let empresaActiva = store.getEmpresaActiva();
+
+  // Si no hay empresa activa o está en 'todas', seleccionar por defecto Ladrillos Ochoa Ltda.
+  if (!empresaActiva || store.getEmpresaActivaId() === 'todas') {
+    const defaultEmp = store.getEmpresa('emp-1790438946268') || store.getEmpresa('emp-004') || store.getEmpresas()[0];
+    if (defaultEmp) {
+      store.setEmpresaActivaId(defaultEmp.id);
+      empresaActiva = defaultEmp;
+      if (typeof window !== 'undefined' && window.actualizarSelectorCabecera) {
+        window.actualizarSelectorCabecera();
+      }
+    }
+  }
 
   if (!empresaActiva) {
     container.innerHTML = `
