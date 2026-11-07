@@ -281,9 +281,12 @@
               <div id="mobile-login-error" class="hidden p-2.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 font-semibold leading-relaxed"></div>
 
               <div>
-                <label class="block text-[10.5px] font-bold text-slate-700 uppercase mb-1">NIT de tu Empresa</label>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="block text-[10.5px] font-bold text-slate-700 uppercase">NIT de tu Empresa</label>
+                  <span class="text-[9.5px] text-teal-600 font-medium">Opcional (Auto-detección)</span>
+                </div>
                 <div class="relative">
-                  <input type="text" id="m-login-nit" required inputmode="numeric" placeholder="ej: 830124631" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-800 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                  <input type="text" id="m-login-nit" inputmode="numeric" placeholder="ej: 901003370 / 830124631" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-800 focus:ring-2 focus:ring-teal-500 focus:outline-none">
                   <span class="absolute left-3 top-2.5 text-sm pointer-events-none">🏢</span>
                 </div>
               </div>
@@ -335,15 +338,15 @@
       const form = document.getElementById('form-mobile-worker-login');
       form?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const nit = document.getElementById('m-login-nit')?.value.trim();
+        const nit = document.getElementById('m-login-nit')?.value.trim() || '';
         const cedula = document.getElementById('m-login-cedula')?.value.trim();
         const pin = document.getElementById('m-login-pin')?.value.trim();
         const errBox = document.getElementById('mobile-login-error');
         const btn = document.getElementById('btn-submit-m-login');
 
-        if (!nit || !cedula || !pin) {
+        if (!cedula || !pin) {
           if (errBox) {
-            errBox.innerText = 'Por favor completa todos los campos (NIT, Cédula y PIN).';
+            errBox.innerText = 'Por favor ingresa tu número de Cédula y PIN de 4 dígitos.';
             errBox.classList.remove('hidden');
           }
           return;

@@ -295,17 +295,30 @@ class Auth {
       const passValido = cleanPass === 'pyme2026' || cleanPass === soloDigitosCed || cleanPass === '123456';
 
       if (passValido) {
+        const empTrabajador = store.getEmpresa(trabajador.companyId);
         this.session = {
           trabajadorId: trabajador.id,
+          id: trabajador.id,
           cedula: trabajador.cedula,
           nombre: trabajador.nombre,
           cargo: trabajador.cargo,
           area: trabajador.area,
           correo: trabajador.correo,
           empresaId: trabajador.companyId,
+          companyId: trabajador.companyId,
+          tenant_id: trabajador.companyId,
+          company: empTrabajador || null,
           rol: 'Trabajador',
+          rol_rls: 'TRABAJADOR',
           esSuperAdmin: false,
           tipo: 'trabajador',
+          politica_datos_aceptada: Boolean(trabajador.politica_datos_aceptada),
+          notificacion_riesgos_aceptada: Boolean(trabajador.notificacion_riesgos_aceptada),
+          firma_digital_url: trabajador.firma_digital_url || trabajador.signature_url || null,
+          firma_base64: trabajador.firma_base64 || trabajador.signature_svg || null,
+          has_registered_signature: Boolean(trabajador.has_registered_signature || trabajador.firma_digital_url || trabajador.signature_url),
+          signature_url: trabajador.signature_url || trabajador.firma_digital_url || null,
+          signature_svg: trabajador.signature_svg || trabajador.firma_base64 || null,
           loginAt: new Date().toISOString()
         };
         storage.setItem(AUTH_KEY, JSON.stringify(this.session));
@@ -354,6 +367,7 @@ class Auth {
         correo: data.worker.correo || data.worker.email,
         tenant_id: data.tenant_id || data.company.id,
         empresaId: data.company.id,
+        companyId: data.company.id,
         company: data.company,
         membership: data.membership || null,
         has_signed_onboarding: data.has_signed_onboarding,
@@ -377,14 +391,35 @@ class Auth {
         loginAt: new Date().toISOString()
       };
 
-      if (typeof store !== 'undefined' && store && Array.isArray(store.data?.trabajadores)) {
-        const idx = store.data.trabajadores.findIndex(t => t.id === data.worker.id);
-        if (idx !== -1) {
-          store.data.trabajadores[idx] = { ...store.data.trabajadores[idx], ...data.worker };
-        } else {
-          store.data.trabajadores.push(data.worker);
+      if (typeof store !== 'undefined' && store) {
+        if (!store.data) store.data = {};
+        if (data.company) {
+          if (!Array.isArray(store.data.empresas)) store.data.empresas = [];
+          const empIdx = store.data.empresas.findIndex(e => e && (e.id === data.company.id || (e.nit && data.company.nit && String(e.nit).trim() === String(data.company.nit).trim())));
+          if (empIdx !== -1) {
+            store.data.empresas[empIdx] = { ...data.company, ...store.data.empresas[empIdx] };
+          } else {
+            store.data.empresas.push({ ...data.company });
+          }
         }
-        store.saveToStorage();
+
+        if (data.worker) {
+          if (!Array.isArray(store.data.trabajadores)) store.data.trabajadores = [];
+          const idx = store.data.trabajadores.findIndex(t => t && (t.id === data.worker.id || (t.cedula && data.worker.cedula && String(t.cedula).trim() === String(data.worker.cedula).trim())));
+          if (idx !== -1) {
+            store.data.trabajadores[idx] = { ...store.data.trabajadores[idx], ...data.worker };
+          } else {
+            store.data.trabajadores.push(data.worker);
+          }
+        }
+
+        if (data.company?.id && store.setEmpresaActivaId) {
+          store.setEmpresaActivaId(data.company.id);
+        }
+
+        if (store.saveToStorage) {
+          store.saveToStorage();
+        }
       }
 
       storage.setItem(AUTH_KEY, JSON.stringify(this.session));

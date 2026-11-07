@@ -310,7 +310,12 @@ export function imprimirRegistroCapacitacionDOC10(evaluationId) {
 
   const training = evalData.training || store.getCapacitacionPorId(evalData.training_id) || {};
   const trabajador = store.getTrabajadorPorId(evalData.worker_id || evalData.trabajadorId) || {};
-  const empresa = store.getEmpresa(evalData.company_id || evalData.tenant_id || training.companyId || trabajador.companyId) || store.getEmpresaActiva() || {};
+  const targetTid = evalData.company_id || evalData.tenant_id || training.companyId || training.tenant_id || trabajador.companyId || trabajador.tenant_id;
+  const empresa = (targetTid ? store.getEmpresa(targetTid) : null) || store.getEmpresaActiva() || {
+    id: targetTid || 'emp-1792009016839',
+    razonSocial: 'EMPRESA SG-SST',
+    nit: '901003370'
+  };
 
   // Regla de Negocio Bloque 2: Validación obligatoria de firma digital del trabajador
   if (trabajador && !trabajador.has_registered_signature && !trabajador.signature_url && !trabajador.signature_svg) {
@@ -588,7 +593,12 @@ export function imprimirEvaluacionCapacitacionDOC16(evaluationId) {
 
   const training = evalData.training || store.getCapacitacionPorId(evalData.training_id) || {};
   const trabajador = store.getTrabajadorPorId(evalData.worker_id || evalData.trabajadorId) || {};
-  const empresa = store.getEmpresa(evalData.company_id || evalData.tenant_id || training.companyId || trabajador.companyId) || store.getEmpresaActiva() || {};
+  const targetTid = evalData.company_id || evalData.tenant_id || training.companyId || training.tenant_id || trabajador.companyId || trabajador.tenant_id;
+  const empresa = (targetTid ? store.getEmpresa(targetTid) : null) || store.getEmpresaActiva() || {
+    id: targetTid || 'emp-1792009016839',
+    razonSocial: 'EMPRESA SG-SST',
+    nit: '901003370'
+  };
 
   // Regla de Negocio Bloque 2: Validación obligatoria de firma digital del trabajador
   if (trabajador && !trabajador.has_registered_signature && !trabajador.signature_url && !trabajador.signature_svg) {

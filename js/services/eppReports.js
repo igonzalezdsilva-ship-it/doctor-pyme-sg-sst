@@ -414,18 +414,20 @@ export function imprimirActaEntregaEPP_SST_FOR_01(deliveryId) {
     return;
   }
 
-  const empresa = store.getEmpresa(delivery.tenant_id || delivery.companyId) || store.getEmpresaActiva() || {
-    razonSocial: 'LADRILLOS OCHOA LTDA.',
-    nit: '830124631',
-    ciudad: 'Bogotá D.C.',
-    direccion: 'Planta Principal'
-  };
-
   const trabajador = store.getTrabajadorPorId(delivery.employee_id || delivery.trabajadorId) || {
     nombre: delivery.trabajadorNombre || 'Trabajador',
     identificacion: delivery.trabajadorCedula || '',
     cargo: delivery.cargoNombre || 'Operario',
     tipoContrato: 'Término Indefinido'
+  };
+
+  const targetTid = delivery.tenant_id || delivery.companyId || trabajador.companyId || trabajador.tenant_id;
+  const empresa = (targetTid ? store.getEmpresa(targetTid) : null) || store.getEmpresaActiva() || {
+    id: targetTid || 'emp-1792009016839',
+    razonSocial: 'EMPRESA CONTRATANTE SG-SST',
+    nit: '901003370',
+    ciudad: 'Bogotá D.C.',
+    direccion: 'Sede Principal'
   };
 
   const items = delivery.items || [];

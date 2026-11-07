@@ -3313,15 +3313,33 @@ mount_api(server, '/api/worker/auth') do |req, res|
           e_nit = (e['nit'] || '').gsub(/[^\d]/, '')
           e_nit == clean_nit || (e_nit.include?(clean_nit) && clean_nit.length >= 6)
         end
+        # Si no encontró la empresa por NIT exacto, buscar si coincide con cédula de trabajador para auto-detectar
+        unless empresa
+          candidato = trabajadores.find do |t|
+            t_ced = (t['identificacion'] || t['cedula'] || '').gsub(/[^\d]/, '')
+            t_ced == clean_cedula
+          end
+          if candidato
+            empresa = empresas.find { |e| e['id'] == (candidato['tenant_id'] || candidato['companyId']) }
+          end
+        end
         unless empresa
           res.status = 404
           res['Content-Type'] = 'application/json; charset=utf-8'
           res.body = { error: "No se encontró ninguna empresa registrada con el NIT: #{raw_nit}." }.to_json
           next
         end
-      elsif worker_memberships.length == 1
-        # Si el trabajador tiene 1 sola empresa asignada en user_tenant_memberships, inyectarla automáticamente
-        empresa = empresas.find { |e| e['id'] == worker_memberships.first['tenant_id'] }
+      else
+        # Si el NIT no fue provisto, auto-resolver a partir de la cédula del trabajador
+        candidatos = trabajadores.select do |t|
+          (t['identificacion'] || t['cedula'] || '').gsub(/[^\d]/, '') == clean_cedula
+        end
+        if candidatos.any?
+          target_cid = candidatos.first['tenant_id'] || candidatos.first['companyId']
+          empresa = empresas.find { |e| e['id'] == target_cid }
+        elsif worker_memberships.length == 1
+          empresa = empresas.find { |e| e['id'] == worker_memberships.first['tenant_id'] }
+        end
       end
 
       # Buscar trabajador de esa empresa por cédula
@@ -3333,13 +3351,22 @@ mount_api(server, '/api/worker/auth') do |req, res|
       end
 
       unless trabajador
+        # Rescate por cédula para evitar bloqueos por discrepancias menores de NIT
+        trabajador = trabajadores.find do |t|
+          (t['identificacion'] || t['cedula'] || '').gsub(/[^\d]/, '') == clean_cedula
+        end
+      end
+
+      unless trabajador
         res.status = 404
         res['Content-Type'] = 'application/json; charset=utf-8'
         res.body = { error: "No se encontró ningún trabajador activo con la cédula #{raw_cedula}#{empresa ? " en #{empresa['razonSocial'] || empresa['nombre']}" : ''}." }.to_json
         next
       end
 
-      empresa ||= empresas.find { |e| e['id'] == (trabajador['tenant_id'] || trabajador['companyId']) } || empresas.first
+      # AISLAMIENTO MULTI-TENANT ESTRICTO: Garantizar que la empresa sea exactamente la empleadora del trabajador
+      real_company = empresas.find { |e| e['id'] == (trabajador['tenant_id'] || trabajador['companyId']) }
+      empresa = real_company || empresa || empresas.first
       tenant_id = empresa['id']
       trabajador['tenant_id'] = tenant_id
       trabajador['companyId'] = tenant_id

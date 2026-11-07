@@ -41,6 +41,66 @@ function slugify(text) {
     .replace(/^_+|_+$/g, '');
 }
 
+/**
+ * Resuelve estrictamente la empresa legítima del trabajador o del contexto operativo,
+ * evitando cualquier fuga o contaminación cruzada entre inquilinos (Ley 1581 de 2012 / Dec. 1072).
+ */
+export function resolverEmpresaTrabajador(trabajador, companyIdContext = null) {
+  const targetId = companyIdContext || trabajador?.tenant_id || trabajador?.companyId || trabajador?.empresaId || (typeof auth !== 'undefined' && auth.isWorker && auth.isWorker() ? auth.getActiveTenantId() : null);
+
+  // 1. Intentar por store.getEmpresa
+  let emp = targetId ? store.getEmpresa(targetId) : null;
+
+  // 2. Buscar en la sesión de autenticación si coincide
+  if (!emp && typeof auth !== 'undefined' && auth.session) {
+    const sComp = auth.session.company || auth.session.active_tenant;
+    if (sComp && (!targetId || sComp.id === targetId || (sComp.nit && String(sComp.nit).trim() === String(targetId).trim()))) {
+      emp = sComp;
+    }
+  }
+
+  // 3. Buscar en el catálogo maestro EMPRESAS_DEMO
+  if (!emp && typeof EMPRESAS_DEMO !== 'undefined' && Array.isArray(EMPRESAS_DEMO)) {
+    if (targetId) {
+      emp = EMPRESAS_DEMO.find(e => e && (e.id === targetId || (e.nit && String(e.nit).trim() === String(targetId).trim())));
+    }
+  }
+
+  // 4. Si el trabajador tiene empresa embebida en su propio registro
+  if (!emp && trabajador?.empresa && typeof trabajador.empresa === 'object') {
+    emp = trabajador.empresa;
+  }
+
+  // 5. Si no se encontró por ID y NO estamos en sesión cerrada de operario
+  if (!emp && !(typeof auth !== 'undefined' && auth.isWorker && auth.isWorker())) {
+    emp = store.getEmpresaActiva();
+  }
+
+  // 6. Construir objeto seguro si tenemos targetId conocido
+  if (!emp && targetId) {
+    emp = {
+      id: targetId,
+      razonSocial: trabajador?.razon_social || trabajador?.empresaNombre || 'EMPRESA SG-SST',
+      razon_social: trabajador?.razon_social || trabajador?.empresaNombre || 'EMPRESA SG-SST',
+      nit: trabajador?.nit || '901003370',
+      logoUrl: './assets/app-icon.png'
+    };
+  }
+
+  // 7. Fallback neutral seguro
+  if (!emp) {
+    emp = store.getEmpresaActiva() || {
+      id: 'emp-1792009016839',
+      razonSocial: 'SERVICIOS IG SAS',
+      razon_social: 'SERVICIOS IG SAS',
+      nit: '901003370',
+      logoUrl: './assets/app-icon.png'
+    };
+  }
+
+  return emp;
+}
+
 export function obtenerUrlFirmaTrabajador(trab) {
   if (!trab) return '';
   // Si tiene el trazo Base64 en memoria (data:image/...), mostrarlo directamente para cero latencia y evitar caché del navegador
@@ -2272,7 +2332,7 @@ window.generarPdfCartaPreaviso = function(trabajadorId) {
     alert("No se encontró el trabajador.");
     return;
   }
-  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva();
+  const empresa = resolverEmpresaTrabajador(trabajador);
   const alerta = calcularAlertaContrato(trabajador);
 
   const fechaHoyStr = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -3214,7 +3274,7 @@ window.generarPdfContratoTrabajador = function(trabajadorId) {
     alert("No se encontró el trabajador.");
     return;
   }
-  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva();
+  const empresa = resolverEmpresaTrabajador(trabajador);
   const formatCOP = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
 
   // Obtener la estructura oficial de 9 cláusulas configurada para el cargo
@@ -3443,7 +3503,7 @@ window.imprimirMinutaContratoTrabajador = function(trabajadorId, cargoId) {
 
 // 2. GENERADOR OFICIAL DE PERFIL DEL CARGO (PDF)
 window.generarPdfPerfilCargo = function(cargoName, companyId) {
-  const empresa = store.getEmpresa(companyId) || store.getEmpresaActiva();
+  const empresa = resolverEmpresaTrabajador(null, companyId);
   const cfg = store.getPerfilCargo(cargoName, companyId);
 
   const bodyHtml = `
@@ -3527,7 +3587,8 @@ window.generarPdfPerfilCargo = function(cargoName, companyId) {
 
 // 3. GENERADOR OFICIAL DE MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES (PDF)
 window.generarPdfManualFunciones = function(cargoName, companyId, trabajadorId = null) {
-  const empresa = store.getEmpresa(companyId) || store.getEmpresaActiva();
+  const trab = trabajadorId ? store.getTrabajadorPorId(trabajadorId) : null;
+  const empresa = resolverEmpresaTrabajador(trab, companyId);
   const cargos = store.getJobPositions(empresa?.id);
   const cargoObj = cargos.find(j => (j.title || '').toLowerCase().trim() === (cargoName || '').toLowerCase().trim() || j.id === cargoName);
   
@@ -3539,7 +3600,7 @@ window.generarPdfManualFunciones = function(cargoName, companyId, trabajadorId =
 
 // 4. GENERADOR OFICIAL DE PROCEDIMIENTO DE TRABAJO SEGURO (PTS - PDF)
 window.generarPdfPtsCargo = function(cargoName, companyId) {
-  const empresa = store.getEmpresa(companyId) || store.getEmpresaActiva();
+  const empresa = resolverEmpresaTrabajador(null, companyId);
   const cfg = store.getPerfilCargo(cargoName, companyId);
 
   const bodyHtml = `
@@ -4080,11 +4141,8 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
     trabajador.id = trabajador.trabajadorId;
   }
 
-  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva() || {
-    id: 'emp-1790438946268',
-    razonSocial: 'LADRILLOS OCHOA LTDA',
-    nit: '830124631'
-  };
+  // AISLAMIENTO MULTI-TENANT ESTRICTO: Resuelve exclusivamente la empresa del trabajador autenticado
+  const empresa = resolverEmpresaTrabajador(trabajador);
 
   // Verificar compuerta de Onboarding Legal obligatorio (Ley 1581 & GTC 45)
   verificarComplianceGateOnboarding(trabajador, empresa);
@@ -5704,11 +5762,7 @@ window.abrirModalConfirmacionFirmaRapida = function(docType, docTitle, trabajado
     alert("No se encontró la sesión del trabajador. Por favor recarga la aplicación.");
     return;
   }
-  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva() || {
-    id: trabajador.companyId || 'emp-1792009016839',
-    razonSocial: 'EMPRESA SG-SST',
-    nit: '900000000'
-  };
+  const empresa = resolverEmpresaTrabajador(trabajador);
   const cargosFormales = store.getJobPositions(empresa.id);
   const cargoFormal = cargosFormales.find(cg => cg.id === trabajador.job_position_id || (cg.title || '').toLowerCase().trim() === (trabajador.cargo || '').toLowerCase().trim());
   const codigoDoc = isPolicy ? docType : obtenerCodigoDocPorTipo(docType, cargoFormal);
@@ -5846,11 +5900,7 @@ window.firmarPolitica = function(polId, polTitle, trabajadorId) {
 window.abrirVisorPoliticaMovil = function(polId, polTitle, trabajadorId) {
   const trabajador = obtenerTrabajadorResiliente(trabajadorId);
   if (!trabajador) return;
-  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva() || {
-    id: trabajador.companyId || 'emp-1792009016839',
-    razonSocial: 'EMPRESA SG-SST',
-    nit: '900000000'
-  };
+  const empresa = resolverEmpresaTrabajador(trabajador);
   const firmas = store.getFirmasPorTrabajador ? store.getFirmasPorTrabajador(trabajador.id) : [];
   const docSigs = store.getEmployeeDocumentSignatures ? store.getEmployeeDocumentSignatures(trabajador.id) : [];
   const isFirmada = firmas.some(f => f.documentoId === polId || f.documentoCodigo === polId) ||
@@ -6042,11 +6092,7 @@ window.descargarPdfVisorCargoActual = async function(tituloDoc) {
 window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajadorId) {
   const trabajador = obtenerTrabajadorResiliente(trabajadorId);
   if (!trabajador) return;
-  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva() || {
-    id: trabajador.companyId || 'emp-1792009016839',
-    razonSocial: 'EMPRESA SG-SST',
-    nit: '900000000'
-  };
+  const empresa = resolverEmpresaTrabajador(trabajador);
   const configCargo = store.getPerfilCargo(trabajador.cargo, empresa.id);
   const cargosFormales = store.getJobPositions(empresa.id);
   const cargoFormal = cargosFormales.find(cg => cg.id === trabajador.job_position_id || (cg.title || '').toLowerCase().trim() === (trabajador.cargo || '').toLowerCase().trim());
@@ -6492,7 +6538,7 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
 window.abrirModalEscanerQR = function(trabajadorId) {
   const trabajador = store.getTrabajadorPorId(trabajadorId);
   if (!trabajador) return;
-  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva();
+  const empresa = resolverEmpresaTrabajador(trabajador);
   const tools = store.getToolsInventory(empresa.id);
 
   const modalId = 'modal-escaner-qr';
@@ -6604,7 +6650,7 @@ window.abrirModalEscanerQR = function(trabajadorId) {
 window.abrirModalPreoperacionalTrabajador = function(trabajadorId, toolIdPreseleccionado = '') {
   const trabajador = store.getTrabajadorPorId(trabajadorId);
   if (!trabajador) return;
-  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva();
+  const empresa = resolverEmpresaTrabajador(trabajador);
   const tools = store.getToolsInventory(empresa.id);
 
   const modalId = 'modal-preoperacional-trabajador';
@@ -6811,11 +6857,8 @@ window.abrirModalPreoperacionalTrabajador = function(trabajadorId, toolIdPresele
 // =============================================================================
 
 window.abrirModalAsignarEntregaEPP = async function(preTrabajadorId = null, preCargoId = null) {
-  const empresaActiva = store.getEmpresaActiva() || {
-    id: 'emp-1790438946268',
-    razonSocial: 'LADRILLOS OCHOA LTDA',
-    nit: '830124631'
-  };
+  const trabPre = preTrabajadorId ? store.getTrabajadorPorId(preTrabajadorId) : null;
+  const empresaActiva = resolverEmpresaTrabajador(trabPre);
 
   let trabajadores = store.getTrabajadores(empresaActiva.id).filter(t => (t.estado || 'Activo') === 'Activo');
   if (trabajadores.length === 0) {
@@ -7215,7 +7258,7 @@ window.abrirModalFirmarActaEntregaEPP = function(deliveryId, trabajadorId) {
     return;
   }
 
-  const empresa = store.getEmpresa(delivery.tenant_id || trabajador.companyId) || store.getEmpresaActiva();
+  const empresa = resolverEmpresaTrabajador(trabajador, delivery.tenant_id || delivery.companyId);
   const items = Array.isArray(delivery.items) ? delivery.items : [];
   const bogotaHora = delivery.bogota_assigned_at || new Date(delivery.assigned_at).toLocaleString('es-CO');
 
@@ -7376,7 +7419,7 @@ window.abrirModalFirmaActaEPP = function(trabajadorId) {
 window.abrirModalFirmaCustodia = function(toolId, toolName, trabajadorId) {
   const trabajador = store.getTrabajadorPorId(trabajadorId);
   if (!trabajador) return;
-  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva();
+  const empresa = resolverEmpresaTrabajador(trabajador);
 
   const modalId = 'modal-firma-custodia';
   const existing = document.getElementById(modalId);
@@ -8774,7 +8817,7 @@ window.abrirModalCarpetaTrabajador = async function(trabajadorId) {
     alert("No se encontró el trabajador.");
     return;
   }
-  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva();
+  const empresa = resolverEmpresaTrabajador(trabajador);
 
   // Cargar documentos del expediente desde el servidor
   await store.getWorkerFolderDocuments(trabajador.id, empresa.id);
@@ -9236,11 +9279,7 @@ window.abrirModalRegistroFirmaTrabajador = function(trabajadorId, callbackOnSucc
     alert("No se encontró el trabajador.");
     return;
   }
-  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva() || {
-    id: 'emp-1790438946268',
-    razonSocial: 'LADRILLOS OCHOA LTDA',
-    nit: '830124631'
-  };
+  const empresa = resolverEmpresaTrabajador(trabajador);
 
   const modalId = 'modal-registro-firma-trabajador';
   const existing = document.getElementById(modalId);
@@ -9524,13 +9563,7 @@ window.abrirModalCarneDigital = function(trabajadorId) {
     alert("No se encontró la información del colaborador.");
     return;
   }
-  const empresa = store.getEmpresa(trabajador.companyId) || store.getEmpresaActiva() || {
-    id: 'emp-001',
-    razonSocial: 'DOCTOR PYME SG-SST',
-    nit: '901.000.000-1',
-    arl: 'SURA',
-    claseRiesgo: 'I'
-  };
+  const empresa = resolverEmpresaTrabajador(trabajador);
 
   const modalId = 'modal-carne-digital-trabajador';
   const existing = document.getElementById(modalId);

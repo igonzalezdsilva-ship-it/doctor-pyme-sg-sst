@@ -1076,6 +1076,9 @@ class Store {
 
           // Consolidar empresa auténtica: LADRILLOS OCHOA LTDA (emp-1790438946268) preservando las demás empresas
           const ID_OCHOA = "emp-1790438946268";
+          const ochoaDemo = (typeof EMPRESAS_DEMO !== 'undefined' && Array.isArray(EMPRESAS_DEMO)) 
+            ? (EMPRESAS_DEMO.find(e => e.id === ID_OCHOA) || EMPRESAS_DEMO[0]) 
+            : null;
           const ochoaExistente = this.data.empresas.find(e => 
             e.id === ID_OCHOA || e.id === 'emp-004' || (e.razonSocial && e.razonSocial.toLowerCase().includes('ladrillos ochoa'))
           );
@@ -1085,27 +1088,58 @@ class Store {
 
           let ochoaConsolidada;
           if (!ochoaExistente) {
-            ochoaConsolidada = { ...EMPRESAS_DEMO[0] };
+            ochoaConsolidada = ochoaDemo ? { ...ochoaDemo } : { id: ID_OCHOA, razonSocial: 'LADRILLOS OCHOA LTDA', nit: '830124631' };
           } else {
             ochoaConsolidada = {
-              ...EMPRESAS_DEMO[0],
+              ...(ochoaDemo || {}),
               ...ochoaExistente,
               id: ID_OCHOA,
               razonSocial: "LADRILLOS OCHOA LTDA",
-              nit: ochoaExistente.nit || EMPRESAS_DEMO[0].nit,
-              arl: ochoaExistente.arl || EMPRESAS_DEMO[0].arl,
-              claseRiesgo: ochoaExistente.claseRiesgo || EMPRESAS_DEMO[0].claseRiesgo,
-              trabajadores: ochoaExistente.trabajadores || EMPRESAS_DEMO[0].trabajadores,
-              responsableSST: ochoaExistente.responsableSST || EMPRESAS_DEMO[0].responsableSST,
-              email: ochoaExistente.email || EMPRESAS_DEMO[0].email,
-              telefono: ochoaExistente.telefono || EMPRESAS_DEMO[0].telefono,
+              nit: ochoaExistente.nit || (ochoaDemo && ochoaDemo.nit) || '830124631',
+              arl: ochoaExistente.arl || (ochoaDemo && ochoaDemo.arl) || 'Positiva',
+              claseRiesgo: ochoaExistente.claseRiesgo || (ochoaDemo && ochoaDemo.claseRiesgo) || 'IV',
+              trabajadores: ochoaExistente.trabajadores || (ochoaDemo && ochoaDemo.trabajadores) || 19,
+              responsableSST: ochoaExistente.responsableSST || (ochoaDemo && ochoaDemo.responsableSST),
+              email: ochoaExistente.email || (ochoaDemo && ochoaDemo.email),
+              telefono: ochoaExistente.telefono || (ochoaDemo && ochoaDemo.telefono),
               estandaresAplicables: 60,
               tieneMapaProcesos: true,
               tieneOrganigrama: true,
-              acceso: ochoaExistente.acceso || EMPRESAS_DEMO[0].acceso
+              acceso: ochoaExistente.acceso || (ochoaDemo && ochoaDemo.acceso)
             };
           }
           this.data.empresas = [ochoaConsolidada, ...otrasEmpresas];
+
+          // Garantizar que todas las empresas registradas en EMPRESAS_DEMO (SERVICIOS IG, MATMA, WIWA, etc.) existan en this.data.empresas
+          if (typeof EMPRESAS_DEMO !== 'undefined' && Array.isArray(EMPRESAS_DEMO)) {
+            EMPRESAS_DEMO.forEach(demoEmp => {
+              const idx = this.data.empresas.findIndex(e => e && (e.id === demoEmp.id || (e.nit && demoEmp.nit && String(e.nit).trim() === String(demoEmp.nit).trim())));
+              if (idx === -1) {
+                this.data.empresas.push({ ...demoEmp });
+              } else {
+                this.data.empresas[idx] = {
+                  ...demoEmp,
+                  ...this.data.empresas[idx]
+                };
+              }
+            });
+          }
+
+          // Garantizar que los trabajadores oficiales de las empresas estén disponibles en this.data.trabajadores
+          if (typeof TRABAJADORES_DEMO !== 'undefined' && Array.isArray(TRABAJADORES_DEMO)) {
+            if (!Array.isArray(this.data.trabajadores)) this.data.trabajadores = [];
+            TRABAJADORES_DEMO.forEach(demoTrab => {
+              const idx = this.data.trabajadores.findIndex(t => t && ((t.id && t.id === demoTrab.id) || (t.cedula && demoTrab.cedula && String(t.cedula).trim() === String(demoTrab.cedula).trim())));
+              if (idx === -1) {
+                this.data.trabajadores.push({ ...demoTrab });
+              } else {
+                this.data.trabajadores[idx] = {
+                  ...demoTrab,
+                  ...this.data.trabajadores[idx]
+                };
+              }
+            });
+          }
 
           // Garantizar que toda empresa tenga su objeto de acceso configurado
           this.data.empresas.forEach(emp => {
@@ -1710,13 +1744,14 @@ class Store {
       if (this.isSuperAdminSession()) {
         return null;
       }
-      const raw = storage.getItem('DOCTOR_PYME_SESSION_V2') || storage.getItem('DOCTOR_PYME_SESSION_V1');
+      const raw = storage.getItem('DOCTOR_PYME_SESSION_V2') || storage.getItem('DOCTOR_PYME_SESSION_V1') || (typeof localStorage !== 'undefined' ? (localStorage.getItem('SG_SST_USER_SESSION') || localStorage.getItem('SG_SST_SESSION')) : null);
       if (!raw) return null;
       const session = JSON.parse(raw);
       if (!session) return null;
-      // Si es cuenta de empresa o trabajador, bloquear estrictamente a su empresaId
-      if (session.empresaId) {
-        return session.empresaId;
+      // Si es cuenta de empresa o trabajador, bloquear estrictamente a su tenant_id / empresaId
+      const lockedId = session.tenant_id || session.empresaId || session.companyId || session.company?.id || session.active_tenant?.id;
+      if (lockedId) {
+        return lockedId;
       }
       return null;
     } catch (e) {
@@ -1850,13 +1885,21 @@ class Store {
   }
 
   getEmpresaActiva() {
+    const lockedId = this.getSessionTenantLock();
+    if (lockedId) {
+      const lockedEmp = this.getEmpresa(lockedId);
+      if (lockedEmp) return lockedEmp;
+    }
     const activeId = this.getEmpresaActivaId();
-    if (activeId === 'todas' && !this.getSessionTenantLock()) {
+    if (activeId === 'todas' && !lockedId) {
       return null;
     }
     const empresasVisibles = this.getEmpresas();
     let emp = empresasVisibles.find(e => e.id === activeId);
-    if (!emp) emp = empresasVisibles[0] || null;
+    if (!emp && lockedId) {
+      emp = this.getEmpresa(lockedId);
+    }
+    if (!emp && !lockedId) emp = empresasVisibles[0] || null;
     return emp;
   }
 
@@ -1926,12 +1969,34 @@ class Store {
   }
 
   getEmpresa(id) {
-    if (!this.data?.empresas) return null;
-    let emp = this.data.empresas.find(e => e.id === id);
+    if (!id) return null;
+    if (!this.data?.empresas) this.data = { ...(this.data || {}), empresas: [] };
+    let emp = this.data.empresas.find(e => e && (e.id === id || (e.nit && String(e.nit).trim() === String(id).trim())));
     if (!emp && (id === 'emp-004' || id === 'emp-1790438946268')) {
-      emp = this.data.empresas.find(e => e.id === 'emp-1790438946268' || e.id === 'emp-004');
+      emp = this.data.empresas.find(e => e && (e.id === 'emp-1790438946268' || e.id === 'emp-004'));
     }
-    return emp;
+    // Si no está en memoria principal, buscar en la sesión activa (inyectada en workerLogin o auth)
+    if (!emp) {
+      try {
+        const raw = storage.getItem('DOCTOR_PYME_SESSION_V2') || storage.getItem('DOCTOR_PYME_SESSION_V1');
+        if (raw) {
+          const s = JSON.parse(raw);
+          if (s?.company && (s.company.id === id || (s.company.nit && String(s.company.nit).trim() === String(id).trim()))) {
+            emp = s.company;
+          } else if (s?.active_tenant && (s.active_tenant.id === id || (s.active_tenant.nit && String(s.active_tenant.nit).trim() === String(id).trim()))) {
+            emp = s.active_tenant;
+          }
+        }
+      } catch (e) {}
+    }
+    // Si aún no está, buscar en el catálogo maestro EMPRESAS_DEMO y auto-inyectar en empresas
+    if (!emp && typeof EMPRESAS_DEMO !== 'undefined' && Array.isArray(EMPRESAS_DEMO)) {
+      emp = EMPRESAS_DEMO.find(e => e && (e.id === id || (e.nit && String(e.nit).trim() === String(id).trim())));
+      if (emp && this.data && Array.isArray(this.data.empresas)) {
+        this.data.empresas.push({ ...emp });
+      }
+    }
+    return emp || null;
   }
 
   saveEmpresa(empresaData) {
