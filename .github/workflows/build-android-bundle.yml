@@ -24,10 +24,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: 📱 Aceptar Licencias e Instalar Android SDK 35
+      - name: 📱 Aceptar Licencias e Instalar Android SDK 36
         run: |
           yes | sdkmanager --licenses > /dev/null 2>&1 || true
-          sdkmanager "platforms;android-35" "build-tools;35.0.0" || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0" "platforms;android-35" "build-tools;35.0.0" || true
 
       - name: 🐘 Configurar Gradle
         uses: gradle/actions/setup-gradle@v3
@@ -39,13 +39,13 @@ jobs:
         run: |
           cd android
           gradle bundleRelease --stacktrace
-          cp app/build/outputs/bundle/release/app-release.aab app/build/outputs/bundle/release/doctorpyme-v1.0.3.aab
+          cp app/build/outputs/bundle/release/app-release.aab app/build/outputs/bundle/release/doctorpyme-v1.0.4.aab
 
       - name: 📤 Publicar Artefacto .AAB para Google Play Console
         uses: actions/upload-artifact@v4
         with:
-          name: DoctorPyme-v1.0.3-AAB
+          name: DoctorPyme-v1.0.4-AAB
           path: |
-            android/app/build/outputs/bundle/release/doctorpyme-v1.0.3.aab
+            android/app/build/outputs/bundle/release/doctorpyme-v1.0.4.aab
             android/app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
