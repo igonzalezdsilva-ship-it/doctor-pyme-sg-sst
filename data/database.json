@@ -50,7 +50,24 @@
           "Proveedores de insumos y mantenimiento"
         ],
         "generated_at": "2026-10-15T08:22:38-05:00"
-      }
+      },
+      "politicaDatosAceptada": true,
+      "politicaDatosCertificado": "DP-LEGAL-20261014-A79B",
+      "politicaDatosFecha": "2026-10-14 10:30:00.125 -0500",
+      "politicaDatosFirmante": "Ing. Iván David González Silva",
+      "load_base_repository": false,
+      "razonSocial": "LADRILLOS OCHOA LTDA",
+      "nit": "830124631",
+      "arl": "Positiva",
+      "claseRiesgo": "V",
+      "trabajadores": 42,
+      "ciudad": "Bogota D.C",
+      "direccion": "Kilometro 2 Via Mochuelo",
+      "sector": "Fabricacion de productos de Gres",
+      "responsableSST": "Ing. Ivan David Gonzalez Silva - Licencia: RESOLUCIÓN No. 6514 de 19/10/2022",
+      "telefono": "3144001787",
+      "email": "sstmineroambientall8a@gmail.com",
+      "estandaresAplicables": 60
     },
     {
       "id": "emp-1792009016839",
@@ -330,431 +347,6 @@
   ],
   "evaluaciones": {
     "emp-1790438946268": {
-      "2026": {
-        "1.1.1.1": {
-          "estado": "CUMPLE",
-          "justificacion": "Profesional en SST o con especialización en SST (certificados de acta de grado y diploma)",
-          "planAccion": "",
-          "linkGuia": "",
-          "updatedAt": "2026-09-29T16:41:21.537Z"
-        },
-        "1.1.1.2": {
-          "estado": "CUMPLE",
-          "justificacion": "Licencia vigente de SST",
-          "planAccion": "",
-          "linkGuia": "",
-          "updatedAt": "2026-09-29T16:41:21.537Z"
-        },
-        "1.1.1.3": {
-          "estado": "CUMPLE",
-          "justificacion": "Acta de nombramiento del responsable del SG-SST debidamente firmada por el representante legal y el profesional responsable de SST.",
-          "planAccion": "",
-          "linkGuia": "/uploads/20260115_090000_1_1_1_3_Acta_Asignacion_Responsable_SST_Ladrillos_Ochoa.pdf",
-          "updatedAt": "2026-09-29T16:41:21.537Z",
-          "archivoAdjunto": {
-            "id": "evid-emp-1790438946268-1.1.1.3-acta",
-            "nombre": "Acta de Asignación Responsable SG-SST (Firmada).pdf",
-            "url": "/uploads/20260115_090000_1_1_1_3_Acta_Asignacion_Responsable_SST_Ladrillos_Ochoa.pdf",
-            "dataUrl": "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvUmVzb3VyY2VzIDw8IC9Gb250IDw8IC9GMSA0IDAgUiAvRjIgNSAwIFIgL0YzIDYgMCBSID4+ID4+IC9Db250ZW50cyA3IDAgUiA+PiBlbmRvYmoKNCAwIG9iaiA8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4gZW5kb2JqCjUgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgPj4gZW5kb2JqCjYgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLU9ibGlxdWUgPj4gZW5kb2JqCjcgMCBvYmogPDwgL0xlbmd0aCAzMzU5ID4+CnN0cmVhbQpCVCAvRjIgMTQgVGYgNTAgNzQwIFRkIChMQURSSUxMT1MgT0NIT0EgTFREQSkgVGogRVQKQlQgL0YxIDkgVGYgNTAgNzI2IFRkIChOSVQ6IDgwMC4xMjMuNDU2LTcgfCBTaXN0ZW1hIGRlIEdlc3Rpb24gZGUgbGEgU2VndXJpZGFkIHkgU2FsdWQgZW4gZWwgVHJhYmFqbyBTRy1TU1QpIFRqIEVUCjAuMiAwLjQgMC42IFJHIDIgdyA1MCA3MTUgbSA1NjIgNzE1IGwgUwpCVCAvRjIgMTIgVGYgNTAgNjkwIFRkIChBQ1RBIE9GSUNJQUwgREUgQVNJR05BQ0lPTiBERUwgUkVTUE9OU0FCTEUgREVMIFNHLVNTVCkgVGogRVQKQlQgL0YxIDkgVGYgNTAgNjc1IFRkIChDdW1wbGltaWVudG8gTGVnYWw6IFJlc29sdWNpb24gMDMxMiBkZSAyMDE5IE51bWVyYWwgMS4xLjEuMyAtIERlY3JldG8gMTA3MiBkZSAyMDE1IEFydC4gMi4yLjQuNi44KSBUaiBFVApCVCAvRjIgMTAgVGYgNTAgNjQ1IFRkICgxLiBEQVRPUyBERSBMQSBERVNJR05BQ0lPTikgVGogRVQKQlQgL0YxIDkgVGYgNjAgNjMwIFRkIChFbXByZXNhOiBMQURSSUxMT1MgT0NIT0EgTFREQSkgVGogRVQKQlQgL0YxIDkgVGYgNjAgNjE1IFRkIChSZXByZXNlbnRhbnRlIExlZ2FsOiBKQUlNRSBBTEJFUlRPIE9DSE9BIE1BUlRJTkVaIC0gQy5DLiA3OS41NDQuMTU2KSBUaiBFVApCVCAvRjEgOSBUZiA2MCA2MDAgVGQgKFByb2Zlc2lvbmFsIERlc2lnbmFkbzogSVZBTiBEQVJJTyBHT05aQUxFWiBEIFNJTFZBIC0gQy5DLiA4MC4xMjMuNDU2KSBUaiBFVApCVCAvRjEgOSBUZiA2MCA1ODUgVGQgKExpY2VuY2lhIFNTVCBWaWdlbnRlOiBSZXMuIE5vLiAxNDIwNS0yMDIyIGRlIE1pblNhbHVkIHkgUHJvdGVjY2lvbiBTb2NpYWwpIFRqIEVUCkJUIC9GMSA5IFRmIDYwIDU3MCBUZCAoRmVjaGEgZGUgVmlnZW5jaWE6IDE1IGRlIEVuZXJvIGRlIDIwMjUgLyBSYXRpZmljYWNpb24gVmlnZW5jaWEgMjAyNikgVGogRVQKQlQgL0YyIDEwIFRmIDUwIDU0MCBUZCAoMi4gT0JKRVRPIFkgQUxDQU5DRSBERSBMQSBERUxFR0FDSU9OKSBUaiBFVApCVCAvRjEgOC41IFRmIDUwIDUyNSBUZCAoRW4gY3VtcGxpbWllbnRvIGRlbCBEZWNyZXRvIDEwNzIgZGUgMjAxNSwgbGEgR2VyZW5jaWEgR2VuZXJhbCBhc2lnbmEgZm9ybWFsbWVudGUgbGEgYWRtaW5pc3RyYWNpb24sKSBUaiBFVApCVCAvRjEgOC41IFRmIDUwIDUxMiBUZCAoZGlzZW5vLCBlamVjdWNpb24geSBldmFsdWFjaW9uIGRlbCBTRy1TU1QgYWwgcHJvZmVzaW9uYWwgZGVzaWduYWRvLCBjb25maXJpZW5kb2xlIGxhIGF1dG9yaWRhZCwpIFRqIEVUCkJUIC9GMSA4LjUgVGYgNTAgNDk5IFRkIChhdXRvbm9taWEgeSByZWN1cnNvcyByZXF1ZXJpZG9zIHBhcmEgZ2FyYW50aXphciBjb25kaWNpb25lcyBkZSB0cmFiYWpvIHNlZ3VyYXMgeSBzYWx1ZGFibGVzLikgVGogRVQKQlQgL0YyIDEwIFRmIDUwIDQ3MCBUZCAoMy4gUkVTUE9OU0FCSUxJREFERVMgQVNJR05BREFTIChERUNSRVRPIDEwNzIgQVJULiAyLjIuNC42LjgpKSBUaiBFVApCVCAvRjEgOC41IFRmIDYwIDQ1NSBUZCAoYSkgUGxhbmVhciwgb3JnYW5pemFyLCBkaXJpZ2lyLCBkZXNhcnJvbGxhciB5IGFwbGljYXIgZWwgU0ctU1NUIHkgZXZhbHVhciBzdSBjdW1wbGltaWVudG8uKSBUaiBFVApCVCAvRjEgOC41IFRmIDYwIDQ0MiBUZCAoYikgRWxhYm9yYXIgZWwgUGxhbiBkZSBUcmFiYWpvIEFudWFsIHkgc29tZXRlcmxvIGEgYXByb2JhY2lvbiB5IGFzaWduYWNpb24gZGUgcHJlc3VwdWVzdG8uKSBUaiBFVApCVCAvRjEgOC41IFRmIDYwIDQyOSBUZCAoYykgQ29vcmRpbmFyIGxhIGlkZW50aWZpY2FjaW9uIGRlIHBlbGlncm9zLCBldmFsdWFjaW9uIHkgdmFsb3JhY2lvbiBkZSByaWVzZ29zIHNlZ3VuIEdUQyA0NS4pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjAgNDE2IFRkIChkKSBBcG95YXIgeSBjb29yZGluYXIgbGEgZWxlY2Npb24geSBmdW5jaW9uYW1pZW50byBkZWwgQ09QQVNTVCB5IENvbWl0ZSBkZSBDb252aXZlbmNpYS4pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjAgNDAzIFRkIChlKSBQcm9tb3ZlciBsYSBwYXJ0aWNpcGFjaW9uIGFjdGl2YSBkZSBsb3MgdHJhYmFqYWRvcmVzIGVuIGxhIHByZXZlbmNpb24gZGUgcmllc2dvcy4pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjAgMzkwIFRkIChmKSBSZW5kaXIgY3VlbnRhcyBhIGxhIEFsdGEgRGlyZWNjaW9uIHNvYnJlIGVsIGRlc2VtcGVubyBkZWwgU0ctU1NUIGFsIG1lbm9zIHVuYSB2ZXogYWwgYW5vLikgVGogRVQKQlQgL0YyIDEwIFRmIDUwIDM2MCBUZCAoNC4gQ09NUFJPTUlTTyBZIENPTlNUQU5DSUEgREUgRklSTUFTKSBUaiBFVApCVCAvRjEgOC41IFRmIDUwIDM0NSBUZCAoUGFyYSBjb25zdGFuY2lhIGRlIGFjZXB0YWNpb24geSBtdXR1byBhY3VlcmRvLCBzZSBzdXNjcmliZSBsYSBwcmVzZW50ZSBhY3RhIG9maWNpYWwgcG9yIGxhcyBwYXJ0ZXMuKSBUaiBFVAowLjcgMC43IDAuNyBSRyAxIHcgNTAgMjAwIDIzMCAxMTAgcmUgUwowLjcgMC43IDAuNyBSRyAxIHcgMzMyIDIwMCAyMzAgMTEwIHJlIFMKMC4xIDAuMiAwLjUgcmcgQlQgL0YzIDExIFRmIDY1IDI3MCBUZCAoW0RPQ1VNRU5UTyBGSVJNQURPIERJR0lUQUxNRU5URV0pIFRqIEVUCjAgMCAwIHJnIEJUIC9GMiA5IFRmIDY1IDI0MCBUZCAoSkFJTUUgQUxCRVJUTyBPQ0hPQSBNQVJUSU5FWikgVGogRVQKQlQgL0YxIDggVGYgNjUgMjI4IFRkIChSZXByZXNlbnRhbnRlIExlZ2FsKSBUaiBFVApCVCAvRjEgOCBUZiA2NSAyMTYgVGQgKEMuQy4gNzkuNTQ0LjE1NiBkZSBCb2dvdGEgRC5DLikgVGogRVQKMC4xIDAuMiAwLjUgcmcgQlQgL0YzIDExIFRmIDM0NyAyNzAgVGQgKFtET0NVTUVOVE8gRklSTUFETyBESUdJVEFMTUVOVEVdKSBUaiBFVAowIDAgMCByZyBCVCAvRjIgOSBUZiAzNDcgMjQwIFRkIChJVkFOIERBUklPIEdPTlpBTEVaIEQgU0lMVkEpIFRqIEVUCkJUIC9GMSA4IFRmIDM0NyAyMjggVGQgKFByb2Zlc2lvbmFsIFJlc3BvbnNhYmxlIEFzaWduYWRvIFNHLVNTVCkgVGogRVQKQlQgL0YxIDggVGYgMzQ3IDIxNiBUZCAoQy5DLiA4MC4xMjMuNDU2IC0gTGljZW5jaWEgU1NUIE5vLiAxNDIwNS0yMDIyKSBUaiBFVAowLjIgMC40IDAuNiBSRyAxIHcgNTAgMTYwIG0gNTYyIDE2MCBsIFMKMC40IDAuNCAwLjQgcmcgQlQgL0YxIDcuNSBUZiA1MCAxNDUgVGQgKERPQ1RPUiBQWU1FIFNHLVNTVCAtIEV2aWRlbmNpYSBkZSBDdW1wbGltaWVudG8gRXN0YW5kYXIgMS4xLjEuMyAtIFRyYXphYmlsaWRhZCBWZXJpZmljYWRhKSBUaiBFVApCVCAvRjEgNy41IFRmIDUwIDEzMyBUZCAoRG9jdW1lbnRvIGNvbiB2YWxvciBwcm9iYXRvcmlvIGxhYm9yYWwgeSByZWdsYW1lbnRhcmlvIHBhcmEgYXVkaXRvcmlhcyBkZSBNaW5pc3RlcmlvIGRlbCBUcmFiYWpvIHkgQVJMKSBUaiBFVAplbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCA4CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAwOSAwMDAwMCBuIAowMDAwMDAwMDU4IDAwMDAwIG4gCjAwMDAwMDAxMTUgMDAwMDAgbiAKMDAwMDAwMDI2MSAwMDAwMCBuIAowMDAwMDAwMzMxIDAwMDAwIG4gCjAwMDAwMDA0MDYgMDAwMDAgbiAKMDAwMDAwMDQ4NCAwMDAwMCBuIAp0cmFpbGVyIDw8IC9TaXplIDggL1Jvb3QgMSAwIFIgPj4Kc3RhcnR4cmVmCjM4OTUKJSVFT0YK",
-            "tipo": "application/pdf",
-            "tamanio": 4119,
-            "fechaCargue": "2026-01-15T14:00:00.000Z"
-          },
-          "fuentes": [
-            {
-              "id": "f-pdf-1_1_1_3",
-              "url": "/uploads/20260115_090000_1_1_1_3_Acta_Asignacion_Responsable_SST_Ladrillos_Ochoa.pdf",
-              "titulo": "📄 Acta de Asignación Responsable SG-SST (Firmada).pdf"
-            },
-            {
-              "id": "f-gdoc-1_1_1_3",
-              "url": "https://docs.google.com/document/d/1KwN9NqmkfD7RTZMilnMopH4AeTbdIftwNfaBRCQg9H8/edit?usp=sharing",
-              "titulo": "Plantilla Editable (Google Docs)"
-            }
-          ]
-        },
-        "1.1.2.1": {
-          "estado": "CUMPLE",
-          "justificacion": "Soportado con Manuales de Cargos, Responsabilidades y Funciones firmados digitalmente (Ley 527/1999) y socializados al personal.",
-          "planAccion": "",
-          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
-          "updatedAt": "2026-09-29T16:41:21.537Z"
-        },
-        "1.1.2.2": {
-          "estado": "CUMPLE",
-          "justificacion": "Responsabilidades del COPASST definidas",
-          "planAccion": "",
-          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
-          "updatedAt": "2026-09-30T14:58:29.629Z"
-        },
-        "1.1.2.3": {
-          "estado": "CUMPLE",
-          "justificacion": "Responsabilidades del Comité de Convivencia definidas",
-          "planAccion": "",
-          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
-          "updatedAt": "2026-09-30T14:58:27.479Z"
-        },
-        "1.1.2.4": {
-          "estado": "CUMPLE",
-          "justificacion": "Responsabilidades de Brigadistas definidas",
-          "planAccion": "",
-          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
-          "updatedAt": "2026-09-30T14:58:25.512Z"
-        },
-        "1.1.2.5": {
-          "estado": "CUMPLE",
-          "justificacion": "Soportado con Manuales de Cargos, Responsabilidades y Funciones firmados digitalmente (Ley 527/1999) y socializados al personal.",
-          "planAccion": "",
-          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
-          "updatedAt": "2026-09-30T14:21:28.374Z"
-        },
-        "1.1.2.6": {
-          "estado": "CUMPLE",
-          "justificacion": "Soportado con Manuales de Cargos, Responsabilidades y Funciones firmados digitalmente (Ley 527/1999) y socializados al personal.",
-          "planAccion": "",
-          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
-          "updatedAt": "2026-09-30T14:21:30.524Z"
-        },
-        "1.1.3": {
-          "estado": "CUMPLE",
-          "justificacion": "Soportado con Certificados de Afiliación a Seguridad Social en Expediente Laboral Digital.",
-          "planAccion": "",
-          "linkGuia": "https://docs.google.com/spreadsheets/d/1j9ZjfdRTcrpZNUwa2Kp0HPNDOffEtDDo/edit?usp=sharing&ouid=105054984538376788001&rtpof=true&sd=true",
-          "updatedAt": "2026-09-29T16:41:21.537Z"
-        },
-        "1.1.4": {
-          "estado": "CUMPLE",
-          "justificacion": "Planillas de seguridad social - 2026",
-          "planAccion": "",
-          "linkGuia": "",
-          "updatedAt": "2026-09-29T16:41:21.537Z"
-        },
-        "2.1.1": {
-          "estado": "CUMPLE",
-          "justificacion": "Política Actualizada 2026 - Firmada por representante legal y soportes de capacitación.",
-          "linkGuia": "/uploads/20260115_092000_2_1_1_Politica_SST_2026_Firmada.pdf",
-          "updatedAt": "2026-09-29T17:21:15.578Z",
-          "archivoAdjunto": {
-            "id": "evid-emp-1790438946268-2.1.1-politica",
-            "nombre": "Política Oficial del SG-SST 2026 (Firmada).pdf",
-            "url": "/uploads/20260115_092000_2_1_1_Politica_SST_2026_Firmada.pdf",
-            "dataUrl": "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvUmVzb3VyY2VzIDw8IC9Gb250IDw8IC9GMSA0IDAgUiAvRjIgNSAwIFIgL0YzIDYgMCBSID4+ID4+IC9Db250ZW50cyA3IDAgUiA+PiBlbmRvYmoKNCAwIG9iaiA8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4gZW5kb2JqCjUgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgPj4gZW5kb2JqCjYgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLU9ibGlxdWUgPj4gZW5kb2JqCjcgMCBvYmogPDwgL0xlbmd0aCAyMjcxID4+CnN0cmVhbQpCVCAvRjIgMTQgVGYgNTAgNzQwIFRkIChMQURSSUxMT1MgT0NIT0EgTFREQSkgVGogRVQKQlQgL0YxIDkgVGYgNTAgNzI2IFRkIChOSVQ6IDgwMC4xMjMuNDU2LTcgfCBTaXN0ZW1hIGRlIEdlc3Rpb24gZGUgbGEgU2VndXJpZGFkIHkgU2FsdWQgZW4gZWwgVHJhYmFqbyBTRy1TU1QpIFRqIEVUCjAuMiAwLjQgMC42IFJHIDIgdyA1MCA3MTUgbSA1NjIgNzE1IGwgUwpCVCAvRjIgMTEgVGYgNTAgNjkwIFRkIChQT0xJVElDQSBERUwgU0lTVEVNQSBERSBHRVNUSU9OIERFIFNFR1VSSURBRCBZIFNBTFVEIEVOIEVMIFRSQUJBSk8gKDIwMjYpKSBUaiBFVApCVCAvRjEgOC41IFRmIDUwIDY3NSBUZCAoQ3VtcGxpbWllbnRvIExlZ2FsOiBSZXNvbHVjaW9uIDAzMTIgZGUgMjAxOSBOdW1lcmFsIDIuMS4xIC0gRGVjcmV0byAxMDcyIGRlIDIwMTUpIFRqIEVUCkJUIC9GMiA5LjUgVGYgNTAgNjMyIFRkICgxLiBERUNMQVJBQ0lPTiBERSBMQSBBTFRBIERJUkVDQ0lPTikgVGogRVQKQlQgL0YxIDguNSBUZiA1MCA2MTYgVGQgKExBRFJJTExPUyBPQ0hPQSBMVERBIGFzdW1lIGVsIGNvbXByb21pc28gZm9ybWFsIGNvbiBsYSBwcm90ZWNjaW9uIGRlIGxhIHNlZ3VyaWRhZCB5IHNhbHVkKSBUaiBFVApCVCAvRjEgOC41IFRmIDUwIDYwMyBUZCAoZGUgdG9kb3Mgc3VzIHRyYWJhamFkb3JlcyBkaXJlY3RvcywgY29udHJhdGlzdGFzIHkgcGFydGVzIGludGVyZXNhZGFzIGVuIHN1cyBjZW50cm9zIGRlIHRyYWJham8uKSBUaiBFVApCVCAvRjIgOS41IFRmIDUwIDU4MiBUZCAoMi4gT0JKRVRJVk9TIEVTVFJBVEVHSUNPUyBERSBMQSBQT0xJVElDQSkgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA1NjYgVGQgKC0gSWRlbnRpZmljYXIgbG9zIHBlbGlncm9zLCBldmFsdWFyIHkgdmFsb3JhciBsb3Mgcmllc2dvcyB5IGVzdGFibGVjZXIgbG9zIHJlc3BlY3Rpdm9zIGNvbnRyb2xlcy4pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjUgNTUzIFRkICgtIFByb3RlZ2VyIGxhIHNlZ3VyaWRhZCB5IHNhbHVkIGRlIHRvZG9zIGxvcyB0cmFiYWphZG9yZXMgbWVkaWFudGUgbGEgbWVqb3JhIGNvbnRpbnVhIGRlbCBTRy1TU1QuKSBUaiBFVApCVCAvRjEgOC41IFRmIDY1IDU0MCBUZCAoLSBDdW1wbGlyIGNvbiBsYSBub3JtYXRpdmlkYWQgbGVnYWwgdmlnZW50ZSBlbiBDb2xvbWJpYSBlbiBtYXRlcmlhIGRlIHJpZXNnb3MgbGFib3JhbGVzLikgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA1MjcgVGQgKC0gRGVzdGluYXIgbG9zIHJlY3Vyc29zIGZpbmFuY2llcm9zLCB0ZWNuaWNvcyB5IGh1bWFub3MgbmVjZXNhcmlvcyBwYXJhIGxhIGVqZWN1Y2lvbiBkZWwgc2lzdGVtYS4pIFRqIEVUCkJUIC9GMiA5LjUgVGYgNTAgNTA2IFRkICgzLiBESUZVU0lPTiBZIEFDQ0VTTykgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA0OTAgVGQgKC0gRXN0YSBwb2xpdGljYSBoYSBzaWRvIHNvY2lhbGl6YWRhIHkgcHVibGljYWRhIGVuIGNhcnRlbGVyYXMgZGUgbGEgcGxhbnRhIHkgcG9ydGFsIHdlYiBkZSBsYSBlbXByZXNhLikgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA0NzcgVGQgKC0gQXBsaWNhIGEgdG9kbyBlbCBwZXJzb25hbCB5IGN1ZW50YSBjb24gcmV2aXNpb24gYW51YWwgY29uZm9ybWUgYWwgRGVjcmV0byAxMDcyIGRlIDIwMTUuKSBUaiBFVAowLjcgMC43IDAuNyBSRyAxIHcgMTgwIDIxMCAyNTAgOTAgcmUgUwowLjEgMC4yIDAuNSByZyBCVCAvRjMgMTAgVGYgMjAwIDI3MCBUZCAoW0RPQ1VNRU5UTyBGSVJNQURPIERJR0lUQUxNRU5URV0pIFRqIEVUCjAgMCAwIHJnIEJUIC9GMiA4LjUgVGYgMjAwIDI0NSBUZCAoSkFJTUUgQUxCRVJUTyBPQ0hPQSBNQVJUSU5FWikgVGogRVQKQlQgL0YxIDcuNSBUZiAyMDAgMjMzIFRkIChSZXByZXNlbnRhbnRlIExlZ2FsIC0gR2VyZW5jaWEgR2VuZXJhbCkgVGogRVQKQlQgL0YxIDcuNSBUZiAyMDAgMjIxIFRkIChDLkMuIDc5LjU0NC4xNTYgZGUgQm9nb3RhIEQuQy4pIFRqIEVUCjAuMiAwLjQgMC42IFJHIDEgdyA1MCA5MCBtIDU2MiA5MCBsIFMKMC40IDAuNCAwLjQgcmcgQlQgL0YxIDcuNSBUZiA1MCA3NSBUZCAoRE9DVE9SIFBZTUUgU0ctU1NUIC0gRXZpZGVuY2lhIGRlIEN1bXBsaW1pZW50byBFc3RhbmRhciAyLjEuMSAtIEFyY2hpdm8gT2ZpY2lhbCBQcm90ZWdpZG8pIFRqIEVUCkJUIC9GMSA3LjUgVGYgNTAgNjMgVGQgKERvY3VtZW50byBjb24gdmFsb3IgcHJvYmF0b3JpbyBsYWJvcmFsIHkgcmVnbGFtZW50YXJpbyBwYXJhIGF1ZGl0b3JpYXMgZGUgTWluaXN0ZXJpbyBkZWwgVHJhYmFqbyB5IEFSTCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgOAowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1OCAwMDAwMCBuIAowMDAwMDAwMTE1IDAwMDAwIG4gCjAwMDAwMDAyNjEgMDAwMDAgbiAKMDAwMDAwMDMzMSAwMDAwMCBuIAowMDAwMDAwNDA2IDAwMDAwIG4gCjAwMDAwMDA0ODQgMDAwMDAgbiAKdHJhaWxlciA8PCAvU2l6ZSA4IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgoyODA3CiUlRU9GCg==",
-            "tipo": "application/pdf",
-            "tamanio": 3031,
-            "fechaCargue": "2026-01-15T14:20:00.000Z"
-          },
-          "fuentes": [
-            {
-              "id": "f-pdf-2_1_1",
-              "url": "/uploads/20260115_092000_2_1_1_Politica_SST_2026_Firmada.pdf",
-              "titulo": "📄 Política Oficial del SG-SST 2026 (Firmada).pdf"
-            },
-            {
-              "id": "f-gdoc-2_1_1",
-              "url": "https://docs.google.com/document/d/1sRg32I5sGNpe6ROYxwxjq1pcRpEPAZN9mJoWj_rEpFw/edit?usp=sharing",
-              "titulo": "Plantilla Editable (Google Docs)"
-            }
-          ]
-        },
-        "3.1.3": {
-          "estado": "CUMPLE",
-          "justificacion": "Perfil sociodemografico",
-          "planAccion": "",
-          "linkGuia": "https://docs.google.com/spreadsheets/d/17Fn1kRCPqey7OsAayK8aIE-i3eMmHmWnlSUhQrODGCc/edit?gid=1384905893#gid=1384905893",
-          "updatedAt": "2026-09-29T16:41:21.537Z"
-        },
-        "1.1.5": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T14:21:48.824Z"
-        },
-        "1.1.6": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T15:10:21.337Z"
-        },
-        "1.1.7": {
-          "linkGuia": "https://docs.google.com/presentation/d/1Pogtv62k7U8Uc9Y-q6-CkoSIkZ9GPeYoTO4ytHBhkYM/edit?usp=sharing",
-          "updatedAt": "2026-09-30T15:11:34.119Z",
-          "estado": "CUMPLE"
-        },
-        "1.1.8": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T15:30:55.824Z",
-          "linkGuia": ""
-        },
-        "1.2.1": {
-          "linkGuia": "https://docs.google.com/spreadsheets/d/16xBhbhxgWSB7zUBTaOiCFslyKDhKLlQgcmEBI4v7fb0/edit?usp=sharing",
-          "updatedAt": "2026-10-05T14:22:45.022Z",
-          "estado": "CUMPLE"
-        },
-        "1.2.2": {
-          "estado": "NO_APLICA",
-          "updatedAt": "2026-10-16T13:39:42.609Z",
-          "justificacion": "No se realizan actividades en alturas o espacios confinados que demanden certificaciones externas.",
-          "fuentes": [
-            {
-              "id": "f-pdf-1_2_2",
-              "url": "/uploads/20260115_091000_1_2_2_Certificado_No_Alturas_Espacios_Confinados.pdf",
-              "titulo": "📄 Certificado No Aplicación Alturas y Confinados (Firmado).pdf"
-            },
-            {
-              "id": "f-gdoc-1_2_2",
-              "url": "https://docs.google.com/document/d/1_XFL8X6yJrIr8JVClYx5LBD7Kv1cum41k66jmt_74CY/edit?usp=sharing",
-              "titulo": "Plantilla Editable (Google Docs)"
-            }
-          ],
-          "linkGuia": "/uploads/20260115_091000_1_2_2_Certificado_No_Alturas_Espacios_Confinados.pdf",
-          "archivoAdjunto": {
-            "id": "evid-emp-1790438946268-1.2.2-cert",
-            "nombre": "Certificado No Aplicación Alturas y Confinados (Firmado).pdf",
-            "url": "/uploads/20260115_091000_1_2_2_Certificado_No_Alturas_Espacios_Confinados.pdf",
-            "dataUrl": "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvUmVzb3VyY2VzIDw8IC9Gb250IDw8IC9GMSA0IDAgUiAvRjIgNSAwIFIgL0YzIDYgMCBSID4+ID4+IC9Db250ZW50cyA3IDAgUiA+PiBlbmRvYmoKNCAwIG9iaiA8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4gZW5kb2JqCjUgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgPj4gZW5kb2JqCjYgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLU9ibGlxdWUgPj4gZW5kb2JqCjcgMCBvYmogPDwgL0xlbmd0aCAyNDI3ID4+CnN0cmVhbQpCVCAvRjIgMTQgVGYgNTAgNzQwIFRkIChMQURSSUxMT1MgT0NIT0EgTFREQSkgVGogRVQKQlQgL0YxIDkgVGYgNTAgNzI2IFRkIChOSVQ6IDgwMC4xMjMuNDU2LTcgfCBTaXN0ZW1hIGRlIEdlc3Rpb24gZGUgbGEgU2VndXJpZGFkIHkgU2FsdWQgZW4gZWwgVHJhYmFqbyBTRy1TU1QpIFRqIEVUCjAuMiAwLjQgMC42IFJHIDIgdyA1MCA3MTUgbSA1NjIgNzE1IGwgUwpCVCAvRjIgMTEgVGYgNTAgNjkwIFRkIChDRVJUSUZJQ0FDSU9OIERFIE5PIEFQTElDQUNJT04gREUgVFJBQkFKTyBFTiBBTFRVUkFTIE5JIEVTUEFDSU9TIENPTkZJTkFET1MpIFRqIEVUCkJUIC9GMSA4LjUgVGYgNTAgNjc1IFRkIChDdW1wbGltaWVudG8gTGVnYWw6IFJlc29sdWNpb24gMDMxMiBkZSAyMDE5IE51bWVyYWwgMS4yLjIgLSBEZWNyZXRvIDEwNzIgZGUgMjAxNSkgVGogRVQKQlQgL0YyIDkuNSBUZiA1MCA2MzIgVGQgKDEuIERFQ0xBUkFDSU9OIEdFTkVSQUwpIFRqIEVUCkJUIC9GMSA4LjUgVGYgNTAgNjE2IFRkIChFbCBzdXNjcml0byBSZXByZXNlbnRhbnRlIExlZ2FsIGRlIExBRFJJTExPUyBPQ0hPQSBMVERBIGNlcnRpZmljYSBxdWU6KSBUaiBFVApCVCAvRjEgOC41IFRmIDY1IDYwMyBUZCAoLSBMYSBlbXByZXNhIHJlYWxpemEgYWN0aXZpZGFkZXMgZGUgZmFicmljYWNpb24geSBjb21lcmNpYWxpemFjaW9uIGRlIHByb2R1Y3RvcyBkZSBhcmNpbGxhLikgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA1OTAgVGQgKC0gRW4gbGFzIGluc3RhbGFjaW9uZXMgb3BlcmF0aXZhcyBubyBzZSBlamVjdXRhbiBsYWJvcmVzIGVuIGFsdHVyYXMgc3VwZXJpb3JlcyBhIDEuNTAgbWV0cm9zLikgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA1NzcgVGQgKC0gTm8gc2UgcmVhbGl6YW4gbGFib3JlcyBkZSBpbmdyZXNvIGEgZXNwYWNpb3MgY29uZmluYWRvcyBxdWUgZGVtYW5kZW4gY2VydGlmaWNhY2lvbmVzIHRlY25pY2FzIGV4dGVybmFzLikgVGogRVQKQlQgL0YyIDkuNSBUZiA1MCA1NTYgVGQgKDIuIEpVU1RJRklDQUNJT04gVEVDTklDQSBZIE5PUk1BVElWQSkgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA1NDAgVGQgKC0gQ29uZm9ybWUgYSBsYSBSZXNvbHVjaW9uIDQyNzIgZGUgMjAyMSB5IFJlc29sdWNpb24gMDMxMiBkZSAyMDE5LCBlc3RlIHJlcXVpc2l0byBzZSBkZWNsYXJhIE5PIEFQTElDQS4pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjUgNTI3IFRkICgtIFRvZGEgYWN0aXZpZGFkIGRlIG1hbnRlbmltaWVudG8gZGUgdGVjaG9zIG8gZXN0cnVjdHVyYXMgZWxldmFkYXMgc2UgdGVyY2VyaXphIGNvbiBwZXJzb25hbCBjZXJ0aWZpY2Fkby4pIFRqIEVUCkJUIC9GMiA5LjUgVGYgNTAgNTA2IFRkICgzLiBWSUdFTkNJQSBZIEFDVFVBTElaQUNJT04pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjUgNDkwIFRkICgtIENlcnRpZmljYWNpb24gdmFsaWRhIHBhcmEgbGEgdmlnZW5jaWEgMjAyNSAtIDIwMjYsIHN1amV0YSBhIHJldmlzaW9uIGFudWFsIHBvciBlbCBDT1BBU1NUIHkgR2VyZW5jaWEuKSBUaiBFVAowLjcgMC43IDAuNyBSRyAxIHcgNTAgMjEwIDIzMCA5MCByZSBTCjAuNyAwLjcgMC43IFJHIDEgdyAzMzIgMjEwIDIzMCA5MCByZSBTCjAuMSAwLjIgMC41IHJnIEJUIC9GMyAxMCBUZiA2NSAyNzAgVGQgKFtET0NVTUVOVE8gRklSTUFETyBESUdJVEFMTUVOVEVdKSBUaiBFVAowIDAgMCByZyBCVCAvRjIgOC41IFRmIDY1IDI0NSBUZCAoSkFJTUUgQUxCRVJUTyBPQ0hPQSBNQVJUSU5FWikgVGogRVQKQlQgL0YxIDcuNSBUZiA2NSAyMzMgVGQgKFJlcHJlc2VudGFudGUgTGVnYWwpIFRqIEVUCkJUIC9GMSA3LjUgVGYgNjUgMjIxIFRkIChDLkMuIDc5LjU0NC4xNTYgZGUgQm9nb3RhIEQuQy4pIFRqIEVUCjAuMSAwLjIgMC41IHJnIEJUIC9GMyAxMCBUZiAzNDcgMjcwIFRkIChbRE9DVU1FTlRPIEZJUk1BRE8gRElHSVRBTE1FTlRFXSkgVGogRVQKMCAwIDAgcmcgQlQgL0YyIDguNSBUZiAzNDcgMjQ1IFRkIChJVkFOIERBUklPIEdPTlpBTEVaIEQgU0lMVkEpIFRqIEVUCkJUIC9GMSA3LjUgVGYgMzQ3IDIzMyBUZCAoUmVzcG9uc2FibGUgZGVsIFNHLVNTVCkgVGogRVQKQlQgL0YxIDcuNSBUZiAzNDcgMjIxIFRkIChMaWNlbmNpYSBTU1QgTm8uIDE0MjA1LTIwMjIpIFRqIEVUCjAuMiAwLjQgMC42IFJHIDEgdyA1MCA5MCBtIDU2MiA5MCBsIFMKMC40IDAuNCAwLjQgcmcgQlQgL0YxIDcuNSBUZiA1MCA3NSBUZCAoRE9DVE9SIFBZTUUgU0ctU1NUIC0gRXZpZGVuY2lhIGRlIEN1bXBsaW1pZW50byBFc3RhbmRhciAxLjIuMiAtIEFyY2hpdm8gT2ZpY2lhbCBQcm90ZWdpZG8pIFRqIEVUCkJUIC9GMSA3LjUgVGYgNTAgNjMgVGQgKERvY3VtZW50byBjb24gdmFsb3IgcHJvYmF0b3JpbyBsYWJvcmFsIHkgcmVnbGFtZW50YXJpbyBwYXJhIGF1ZGl0b3JpYXMgZGUgTWluaXN0ZXJpbyBkZWwgVHJhYmFqbyB5IEFSTCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgOAowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1OCAwMDAwMCBuIAowMDAwMDAwMTE1IDAwMDAwIG4gCjAwMDAwMDAyNjEgMDAwMDAgbiAKMDAwMDAwMDMzMSAwMDAwMCBuIAowMDAwMDAwNDA2IDAwMDAwIG4gCjAwMDAwMDA0ODQgMDAwMDAgbiAKdHJhaWxlciA8PCAvU2l6ZSA4IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgoyOTYzCiUlRU9GCg==",
-            "tipo": "application/pdf",
-            "tamanio": 3187,
-            "fechaCargue": "2026-01-15T14:10:00.000Z"
-          }
-        },
-        "1.2.3": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T15:41:38.428Z"
-        },
-        "2.2.1": {
-          "linkGuia": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?gid=1312744091#gid=1312744091",
-          "updatedAt": "2026-09-30T15:54:38.557Z",
-          "estado": "CUMPLE"
-        },
-        "2.3.1": {
-          "linkGuia": "https://docs.google.com/spreadsheets/d/1y2GNo3owQiyUmRa_WM9EwyQEjwGy9yOZtuHbCBXoTg0/edit?usp=sharing",
-          "updatedAt": "2026-09-30T15:54:35.640Z",
-          "estado": "CUMPLE"
-        },
-        "2.4.1": {
-          "linkGuia": "https://docs.google.com/spreadsheets/d/1JOwYHHi-ba1Jts79jWLNT8xqExg03bgIZxOMi0XAl0U/edit?usp=sharing",
-          "updatedAt": "2026-09-30T15:59:55.306Z",
-          "estado": "CUMPLE"
-        },
-        "2.5.1": {
-          "linkGuia": "https://docs.google.com/spreadsheets/d/1gaamZRZIqd1B1IdnF6S3vwqVzUR68izYt2IbmaJJVCk/edit?usp=sharing",
-          "updatedAt": "2026-09-30T16:01:00.765Z",
-          "estado": "CUMPLE",
-          "fuentes": [
-            {
-              "id": "f-1",
-              "url": "https://docs.google.com/spreadsheets/d/1gaamZRZIqd1B1IdnF6S3vwqVzUR68izYt2IbmaJJVCk/edit?usp=sharing",
-              "titulo": "PROCEDIMIENTO DE INDUCCIÓN EN SEGURIDAD Y SALUD EN EL TRABAJO"
-            }
-          ]
-        },
-        "2.9.1": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:02:55.021Z"
-        },
-        "2.10.1": {
-          "estado": "NO_CUMPLE",
-          "updatedAt": "2026-10-05T15:53:44.090Z",
-          "planAccion": "crear manual de contratistas "
-        },
-        "2.11.1": {
-          "estado": "NO_APLICA",
-          "updatedAt": "2026-09-30T16:04:20.075Z"
-        },
-        "2.7.1": {
-          "linkGuia": "https://docs.google.com/spreadsheets/d/1DxsrXdYgG99KxXvZg9XMpNL1dQuTfYrzaXw0TNeKh9k/edit?usp=sharing",
-          "updatedAt": "2026-09-30T16:06:04.760Z",
-          "estado": "CUMPLE"
-        },
-        "2.6.1": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:06:58.019Z"
-        },
-        "3.1.1": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:09:31.778Z",
-          "linkGuia": "https://docs.google.com/spreadsheets/d/1pWHmc5DCNYd93LPwt9vJ0RJE7tDX_bq_xm06MZrcs18/edit?gid=1747483566#gid=1747483566"
-        },
-        "3.1.2": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:14:29.179Z"
-        },
-        "3.1.4": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:16:21.173Z",
-          "justificacion": "Soportado con Certificado de Aptitud Médica Ocupacional de Ingreso en Expediente Laboral Digital."
-        },
-        "3.1.5": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:20:17.860Z"
-        },
-        "3.1.6": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:25:06.929Z"
-        },
-        "3.1.7.1": {
-          "estado": "CUMPLE",
-          "justificacion": "Política de prevención y consumo de tabaco, alcohol y sustancias psicoactivas, firmada por el empleador.",
-          "linkGuia": "/uploads/20260115_093000_3_1_7_1_Politica_Prevencion_Alcohol_Tabaco_SPA_Firmada.pdf",
-          "updatedAt": "2026-09-30T17:10:50.287Z",
-          "archivoAdjunto": {
-            "id": "evid-emp-1790438946268-3.1.7.1-politica-spa",
-            "nombre": "Política de Prevención Tabaco, Alcohol y SPA (Firmada).pdf",
-            "url": "/uploads/20260115_093000_3_1_7_1_Politica_Prevencion_Alcohol_Tabaco_SPA_Firmada.pdf",
-            "dataUrl": "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvUmVzb3VyY2VzIDw8IC9Gb250IDw8IC9GMSA0IDAgUiAvRjIgNSAwIFIgL0YzIDYgMCBSID4+ID4+IC9Db250ZW50cyA3IDAgUiA+PiBlbmRvYmoKNCAwIG9iaiA8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4gZW5kb2JqCjUgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgPj4gZW5kb2JqCjYgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLU9ibGlxdWUgPj4gZW5kb2JqCjcgMCBvYmogPDwgL0xlbmd0aCAyNTk1ID4+CnN0cmVhbQpCVCAvRjIgMTQgVGYgNTAgNzQwIFRkIChMQURSSUxMT1MgT0NIT0EgTFREQSkgVGogRVQKQlQgL0YxIDkgVGYgNTAgNzI2IFRkIChOSVQ6IDgwMC4xMjMuNDU2LTcgfCBTaXN0ZW1hIGRlIEdlc3Rpb24gZGUgbGEgU2VndXJpZGFkIHkgU2FsdWQgZW4gZWwgVHJhYmFqbyBTRy1TU1QpIFRqIEVUCjAuMiAwLjQgMC42IFJHIDIgdyA1MCA3MTUgbSA1NjIgNzE1IGwgUwpCVCAvRjIgMTEgVGYgNTAgNjkwIFRkIChQT0xJVElDQSBERSBQUkVWRU5DSU9OIERFTCBDT05TVU1PIERFIFRBQkFDTywgQUxDT0hPTCBZIFNVU1RBTkNJQVMgUFNJQ09BQ1RJVkFTKSBUaiBFVApCVCAvRjEgOC41IFRmIDUwIDY3NSBUZCAoQ3VtcGxpbWllbnRvIExlZ2FsOiBSZXNvbHVjaW9uIDAzMTIgZGUgMjAxOSBOdW1lcmFsIDMuMS43LjEgLSBEZWNyZXRvIDEwNzIgZGUgMjAxNSkgVGogRVQKQlQgL0YyIDkuNSBUZiA1MCA2MzIgVGQgKDEuIFBST1BPU0lUTyBJTlNUSVRVQ0lPTkFMKSBUaiBFVApCVCAvRjEgOC41IFRmIDUwIDYxNiBUZCAoTEFEUklMTE9TIE9DSE9BIExUREEgZXN0YWJsZWNlIGVsIGNvbXByb21pc28gaXJyZXN0cmljdG8gZGUgcHJvcGljaWFyIHVuIGFtYmllbnRlIGRlIHRyYWJham8pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNTAgNjAzIFRkIChzYW5vLCBzZWd1cm8geSBwcm9kdWN0aXZvLCBsaWJyZSBkZWwgY29uc3VtbyBkZSB0YWJhY28sIGFsY29ob2wgeSBkcm9nYXMgZW4gdG9kYXMgc3VzIGFyZWFzLikgVGogRVQKQlQgL0YyIDkuNSBUZiA1MCA1ODIgVGQgKDIuIERJUkVDVFJJQ0VTIFkgUFJPSElCSUNJT05FUykgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA1NjYgVGQgKC0gU2UgcHJvaGliZSBwcmVzZW50YXJzZSBhIGxhYm9yYXIgYmFqbyBlbCBlZmVjdG8gZGUgYWxjb2hvbCwgc3VzdGFuY2lhcyBwc2ljb2FjdGl2YXMgbyBlc3R1cGVmYWNpZW50ZXMuKSBUaiBFVApCVCAvRjEgOC41IFRmIDY1IDU1MyBUZCAoLSBTZSBwcm9oaWJlIGxhIHBvc2VzaW9uLCBkaXN0cmlidWNpb24sIGNvbWVyY2lhbGl6YWNpb24gbyBjb25zdW1vIGRlIGVzdGFzIHN1c3RhbmNpYXMgZW4gaW5zdGFsYWNpb25lcy4pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjUgNTQwIFRkICgtIFF1ZWRhIHByb2hpYmlkbyBmdW1hciBlbiB0b2RhcyBsYXMgaW5zdGFsYWNpb25lcyBkZSBsYSBvcmdhbml6YWNpb24gKEVzcGFjaW8gMTAwJSBMaWJyZSBkZSBIdW1vKS4pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjUgNTI3IFRkICgtIExhIGVtcHJlc2EgcHJvbW92ZXJhIHByb2dyYW1hcyBkZSBlc3RpbG9zIGRlIHZpZGEgc2FsdWRhYmxlcyB5IHBhdXNhcyBhY3RpdmFzIHBhcmEgbG9zIGNvbGFib3JhZG9yZXMuKSBUaiBFVApCVCAvRjIgOS41IFRmIDUwIDUwNiBUZCAoMy4gU0FOQ0lPTkVTIFkgRVZBTFVBQ0lPTikgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA0OTAgVGQgKC0gRWwgaW5jdW1wbGltaWVudG8gZGUgZXN0YSBwb2xpdGljYSBjb25zdGl0dXllIGZhbHRhIGdyYXZlIHNlZ3VuIGVsIFJlZ2xhbWVudG8gSW50ZXJubyBkZSBUcmFiYWpvLikgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA0NzcgVGQgKC0gU2UgcmVhbGl6YXJhbiBwcnVlYmFzIGRlIGNvbnRyb2wgeSB0YW1pemFqZSBwcmV2ZW50aXZvIG9yaWVudGFkYXMgYSBsYSBwcm90ZWNjaW9uIGludGVncmFsIGRlbCB0cmFiYWphZG9yLikgVGogRVQKMC43IDAuNyAwLjcgUkcgMSB3IDUwIDIxMCAyMzAgOTAgcmUgUwowLjcgMC43IDAuNyBSRyAxIHcgMzMyIDIxMCAyMzAgOTAgcmUgUwowLjEgMC4yIDAuNSByZyBCVCAvRjMgMTAgVGYgNjUgMjcwIFRkIChbRE9DVU1FTlRPIEZJUk1BRE8gRElHSVRBTE1FTlRFXSkgVGogRVQKMCAwIDAgcmcgQlQgL0YyIDguNSBUZiA2NSAyNDUgVGQgKEpBSU1FIEFMQkVSVE8gT0NIT0EgTUFSVElORVopIFRqIEVUCkJUIC9GMSA3LjUgVGYgNjUgMjMzIFRkIChSZXByZXNlbnRhbnRlIExlZ2FsKSBUaiBFVApCVCAvRjEgNy41IFRmIDY1IDIyMSBUZCAoQy5DLiA3OS41NDQuMTU2IGRlIEJvZ290YSBELkMuKSBUaiBFVAowLjEgMC4yIDAuNSByZyBCVCAvRjMgMTAgVGYgMzQ3IDI3MCBUZCAoW0RPQ1VNRU5UTyBGSVJNQURPIERJR0lUQUxNRU5URV0pIFRqIEVUCjAgMCAwIHJnIEJUIC9GMiA4LjUgVGYgMzQ3IDI0NSBUZCAoSVZBTiBEQVJJTyBHT05aQUxFWiBEIFNJTFZBKSBUaiBFVApCVCAvRjEgNy41IFRmIDM0NyAyMzMgVGQgKFJlc3BvbnNhYmxlIGRlbCBTRy1TU1QpIFRqIEVUCkJUIC9GMSA3LjUgVGYgMzQ3IDIyMSBUZCAoTGljZW5jaWEgU1NUIE5vLiAxNDIwNS0yMDIyKSBUaiBFVAowLjIgMC40IDAuNiBSRyAxIHcgNTAgOTAgbSA1NjIgOTAgbCBTCjAuNCAwLjQgMC40IHJnIEJUIC9GMSA3LjUgVGYgNTAgNzUgVGQgKERPQ1RPUiBQWU1FIFNHLVNTVCAtIEV2aWRlbmNpYSBkZSBDdW1wbGltaWVudG8gRXN0YW5kYXIgMy4xLjcuMSAtIEFyY2hpdm8gT2ZpY2lhbCBQcm90ZWdpZG8pIFRqIEVUCkJUIC9GMSA3LjUgVGYgNTAgNjMgVGQgKERvY3VtZW50byBjb24gdmFsb3IgcHJvYmF0b3JpbyBsYWJvcmFsIHkgcmVnbGFtZW50YXJpbyBwYXJhIGF1ZGl0b3JpYXMgZGUgTWluaXN0ZXJpbyBkZWwgVHJhYmFqbyB5IEFSTCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgOAowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1OCAwMDAwMCBuIAowMDAwMDAwMTE1IDAwMDAwIG4gCjAwMDAwMDAyNjEgMDAwMDAgbiAKMDAwMDAwMDMzMSAwMDAwMCBuIAowMDAwMDAwNDA2IDAwMDAwIG4gCjAwMDAwMDA0ODQgMDAwMDAgbiAKdHJhaWxlciA8PCAvU2l6ZSA4IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgozMTMxCiUlRU9GCg==",
-            "tipo": "application/pdf",
-            "tamanio": 3355,
-            "fechaCargue": "2026-01-15T14:30:00.000Z"
-          },
-          "fuentes": [
-            {
-              "id": "f-pdf-3_1_7_1",
-              "url": "/uploads/20260115_093000_3_1_7_1_Politica_Prevencion_Alcohol_Tabaco_SPA_Firmada.pdf",
-              "titulo": "📄 Política de Prevención Tabaco, Alcohol y SPA (Firmada).pdf"
-            },
-            {
-              "id": "f-gdoc-3_1_7_1",
-              "url": "https://docs.google.com/document/d/1vfHlhlNkl3thBA5VrxDOoYrR_lb93BAMUjNfJ_L5x8A/edit?usp=sharing",
-              "titulo": "Plantilla Editable (Google Docs)"
-            }
-          ]
-        },
-        "3.1.7.2": {
-          "estado": "CUMPLE",
-          "justificacion": "Programa de estilos de vida y entornos saludables (Prevención y Promoción de salud Pública): tabaquismo, alcoholismo, farmacodependencia, salud mental, alimentación saludable, pausas activas, ergonomía y control de enfermedades.",
-          "linkGuia": "https://docs.google.com/document/d/1vfHlhlNkl3thBA5VrxDOoYrR_lb93BAMUjNfJ_L5x8A/edit?usp=sharing",
-          "updatedAt": "2026-10-05T19:08:56.576Z"
-        },
-        "3.1.8": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:26:10.195Z"
-        },
-        "3.1.9": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:27:01.464Z"
-        },
-        "3.2.1": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:43:43.716Z"
-        },
-        "3.2.3": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:56:08.876Z"
-        },
-        "3.2.2": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:56:11.177Z"
-        },
-        "4.1.1": {
-          "linkGuia": "https://docs.google.com/spreadsheets/d/1r5uCJkbwY8cRiAMk82XuHngf9iIATwZrU39Mtf1TpVU/edit?usp=sharing",
-          "updatedAt": "2026-09-30T16:56:57.184Z",
-          "estado": "CUMPLE"
-        },
-        "4.1.2": {
-          "linkGuia": "https://docs.google.com/spreadsheets/d/1r5uCJkbwY8cRiAMk82XuHngf9iIATwZrU39Mtf1TpVU/edit?usp=sharing",
-          "updatedAt": "2026-10-03T16:09:46.480Z",
-          "estado": "CUMPLE"
-        },
-        "4.1.3": {
-          "linkGuia": "https://drive.google.com/drive/folders/19I3DB87qxUcNDLaxh8EmCgbGP-Xi9EaW",
-          "updatedAt": "2026-10-03T16:09:58.659Z",
-          "estado": "CUMPLE"
-        },
-        "2.8.1": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:08:40.752Z"
-        },
-        "4.1.4": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:10:08.692Z"
-        },
-        "4.2.1": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:10:20.858Z"
-        },
-        "4.2.2": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:10:39.407Z"
-        },
-        "4.2.3": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:10:44.507Z"
-        },
-        "4.2.4": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:13:01.772Z"
-        },
-        "4.2.6": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
-        },
-        "4.2.5": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:20:36.662Z"
-        },
-        "5.1.1": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:20:45.845Z",
-          "linkGuia": "https://drive.google.com/file/d/17S8G1u-aBV7Hhr2T5PVzT_zRtYqSxPif/view?usp=drive_link"
-        },
-        "5.1.2": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:21:15.345Z"
-        },
-        "6.1.2": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:21:45.878Z"
-        },
-        "6.1.1": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:21:47.563Z"
-        },
-        "3.3.1": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-05T19:55:48.856Z",
-          "linkGuia": "https://docs.google.com/spreadsheets/d/15m279FowJpNTtXc23roPiruQzYMYUNdVp7qnKeNUrfQ/edit?usp=sharing"
-        },
-        "3.3.2": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
-        },
-        "3.3.3": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
-        },
-        "3.3.4": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
-        },
-        "3.3.5": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
-        },
-        "3.3.6": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
-        },
-        "6.1.3": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
-        },
-        "6.1.4": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
-        },
-        "7.1.1": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
-        },
-        "7.1.2": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
-        },
-        "7.1.3": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
-        },
-        "7.1.4": {
-          "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
-        }
-      },
       "2025": {
         "1.1.1.1": {
           "estado": "CUMPLE",
@@ -911,26 +503,33 @@
         },
         "1.1.5": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T14:21:48.824Z"
+          "updatedAt": "2026-09-30T14:21:48.824Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "1.1.6": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T15:10:21.337Z"
+          "updatedAt": "2026-09-30T15:10:21.337Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "1.1.7": {
           "linkGuia": "https://docs.google.com/presentation/d/1Pogtv62k7U8Uc9Y-q6-CkoSIkZ9GPeYoTO4ytHBhkYM/edit?usp=sharing",
           "updatedAt": "2026-09-30T15:11:34.119Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "1.1.8": {
           "estado": "CUMPLE",
           "updatedAt": "2026-09-30T15:30:55.824Z",
-          "linkGuia": ""
+          "linkGuia": "",
+          "justificacion": ""
         },
         "1.2.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/16xBhbhxgWSB7zUBTaOiCFslyKDhKLlQgcmEBI4v7fb0/edit?usp=sharing",
           "updatedAt": "2026-09-30T15:34:42.535Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "1.2.2": {
           "estado": "NO_APLICA",
@@ -961,22 +560,27 @@
         },
         "1.2.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T15:41:38.428Z"
+          "updatedAt": "2026-09-30T15:41:38.428Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "2.2.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?gid=1312744091#gid=1312744091",
           "updatedAt": "2026-09-30T15:54:38.557Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.3.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1y2GNo3owQiyUmRa_WM9EwyQEjwGy9yOZtuHbCBXoTg0/edit?usp=sharing",
           "updatedAt": "2026-09-30T15:54:35.640Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.4.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1JOwYHHi-ba1Jts79jWLNT8xqExg03bgIZxOMi0XAl0U/edit?usp=sharing",
           "updatedAt": "2026-09-30T15:59:55.306Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.5.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1gaamZRZIqd1B1IdnF6S3vwqVzUR68izYt2IbmaJJVCk/edit?usp=sharing",
@@ -988,186 +592,261 @@
               "url": "https://docs.google.com/spreadsheets/d/1gaamZRZIqd1B1IdnF6S3vwqVzUR68izYt2IbmaJJVCk/edit?usp=sharing",
               "titulo": "PROCEDIMIENTO DE INDUCCIÓN EN SEGURIDAD Y SALUD EN EL TRABAJO"
             }
-          ]
+          ],
+          "justificacion": ""
         },
         "2.9.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:02:55.021Z"
+          "updatedAt": "2026-09-30T16:02:55.021Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "2.10.1": {
           "estado": "NO_CUMPLE",
           "updatedAt": "2026-09-30T16:04:08.458Z",
-          "planAccion": "crear manual de contratistas "
+          "planAccion": "crear manual de contratistas ",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "2.11.1": {
           "estado": "NO_APLICA",
-          "updatedAt": "2026-09-30T16:04:20.075Z"
+          "updatedAt": "2026-09-30T16:04:20.075Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "2.7.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1DxsrXdYgG99KxXvZg9XMpNL1dQuTfYrzaXw0TNeKh9k/edit?usp=sharing",
           "updatedAt": "2026-09-30T16:06:04.760Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.6.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:06:58.019Z"
+          "updatedAt": "2026-09-30T16:06:58.019Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.1": {
           "estado": "CUMPLE",
           "updatedAt": "2026-09-30T16:09:31.778Z",
-          "linkGuia": "https://docs.google.com/spreadsheets/d/1pWHmc5DCNYd93LPwt9vJ0RJE7tDX_bq_xm06MZrcs18/edit?gid=1747483566#gid=1747483566"
+          "linkGuia": "https://docs.google.com/spreadsheets/d/1pWHmc5DCNYd93LPwt9vJ0RJE7tDX_bq_xm06MZrcs18/edit?gid=1747483566#gid=1747483566",
+          "justificacion": ""
         },
         "3.1.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:14:29.179Z"
+          "updatedAt": "2026-09-30T16:14:29.179Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.4": {
           "estado": "CUMPLE",
           "updatedAt": "2026-09-30T16:16:21.173Z",
-          "justificacion": "Soportado con Certificado de Aptitud Médica Ocupacional de Ingreso en Expediente Laboral Digital."
+          "justificacion": "Soportado con Certificado de Aptitud Médica Ocupacional de Ingreso en Expediente Laboral Digital.",
+          "linkGuia": ""
         },
         "3.1.5": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:20:17.860Z"
+          "updatedAt": "2026-09-30T16:20:17.860Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.6": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:25:06.929Z"
+          "updatedAt": "2026-09-30T16:25:06.929Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.8": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:26:10.195Z"
+          "updatedAt": "2026-09-30T16:26:10.195Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.9": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:27:01.464Z"
+          "updatedAt": "2026-09-30T16:27:01.464Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.2.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:43:43.716Z"
+          "updatedAt": "2026-09-30T16:43:43.716Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.2.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:56:08.876Z"
+          "updatedAt": "2026-09-30T16:56:08.876Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.2.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:56:11.177Z"
+          "updatedAt": "2026-09-30T16:56:11.177Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.1.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1r5uCJkbwY8cRiAMk82XuHngf9iIATwZrU39Mtf1TpVU/edit?usp=sharing",
           "updatedAt": "2026-09-30T16:56:57.184Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "4.1.2": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1r5uCJkbwY8cRiAMk82XuHngf9iIATwZrU39Mtf1TpVU/edit?usp=sharing",
           "updatedAt": "2026-09-30T16:57:06.085Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "4.1.3": {
           "linkGuia": "https://drive.google.com/drive/folders/19I3DB87qxUcNDLaxh8EmCgbGP-Xi9EaW",
           "updatedAt": "2026-09-30T16:57:40.228Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.8.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.1": {
           "estado": "CUMPLE",
           "updatedAt": "2026-10-03T11:37:49-05:00",
           "linkGuia": "https://docs.google.com/spreadsheets/d/15m279FowJpNTtXc23roPiruQzYMYUNdVp7qnKeNUrfQ/edit?usp=sharing",
-          "justificacion": null
+          "justificacion": ""
         },
         "3.3.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.5": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.6": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.1.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.5": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.6": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "5.1.1": {
           "estado": "CUMPLE",
           "updatedAt": "2026-10-03T11:37:49-05:00",
           "linkGuia": "https://drive.google.com/file/d/17S8G1u-aBV7Hhr2T5PVzT_zRtYqSxPif/view?usp=drive_link",
-          "justificacion": null
+          "justificacion": ""
         },
         "5.1.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "6.1.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "6.1.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "6.1.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "6.1.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "7.1.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "7.1.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "7.1.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "7.1.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "cargo_operario_de_arrime_endague_y_cargue_horno_2_manual": {
           "estado": "CUMPLE",
@@ -1194,6 +873,520 @@
             }
           ],
           "linkGuia": "/uploads/20261028_095012_cargo_operario_de_arrime_endague_y_cargue_horno_2_manual_MAN-OPE-003_-_MANUAL_DE_CARGOS__RESPONSABILIDADES_Y_FUNCIONES_-_OPERARIO_DE_ARRIME__ENDAGUE_Y_CARGUE_HORNO_2.pdf"
+        }
+      },
+      "2026": {
+        "1.1.1.1": {
+          "estado": "CUMPLE",
+          "justificacion": "Profesional en SST o con especialización en SST (certificados de acta de grado y diploma)",
+          "planAccion": "",
+          "linkGuia": "",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.1.2": {
+          "estado": "CUMPLE",
+          "justificacion": "Licencia vigente de SST",
+          "planAccion": "",
+          "linkGuia": "",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.1.3": {
+          "estado": "CUMPLE",
+          "justificacion": "Acta de nombramiento del responsable del SG-SST debidamente firmada por el representante legal y el profesional responsable de SST.",
+          "planAccion": "",
+          "linkGuia": "/uploads/20260115_090000_1_1_1_3_Acta_Asignacion_Responsable_SST_Ladrillos_Ochoa.pdf",
+          "updatedAt": "2026-09-29T16:41:21.537Z",
+          "archivoAdjunto": {
+            "id": "evid-emp-1790438946268-1.1.1.3-acta",
+            "nombre": "Acta de Asignación Responsable SG-SST (Firmada).pdf",
+            "url": "/uploads/20260115_090000_1_1_1_3_Acta_Asignacion_Responsable_SST_Ladrillos_Ochoa.pdf",
+            "dataUrl": "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvUmVzb3VyY2VzIDw8IC9Gb250IDw8IC9GMSA0IDAgUiAvRjIgNSAwIFIgL0YzIDYgMCBSID4+ID4+IC9Db250ZW50cyA3IDAgUiA+PiBlbmRvYmoKNCAwIG9iaiA8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4gZW5kb2JqCjUgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgPj4gZW5kb2JqCjYgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLU9ibGlxdWUgPj4gZW5kb2JqCjcgMCBvYmogPDwgL0xlbmd0aCAzMzU5ID4+CnN0cmVhbQpCVCAvRjIgMTQgVGYgNTAgNzQwIFRkIChMQURSSUxMT1MgT0NIT0EgTFREQSkgVGogRVQKQlQgL0YxIDkgVGYgNTAgNzI2IFRkIChOSVQ6IDgwMC4xMjMuNDU2LTcgfCBTaXN0ZW1hIGRlIEdlc3Rpb24gZGUgbGEgU2VndXJpZGFkIHkgU2FsdWQgZW4gZWwgVHJhYmFqbyBTRy1TU1QpIFRqIEVUCjAuMiAwLjQgMC42IFJHIDIgdyA1MCA3MTUgbSA1NjIgNzE1IGwgUwpCVCAvRjIgMTIgVGYgNTAgNjkwIFRkIChBQ1RBIE9GSUNJQUwgREUgQVNJR05BQ0lPTiBERUwgUkVTUE9OU0FCTEUgREVMIFNHLVNTVCkgVGogRVQKQlQgL0YxIDkgVGYgNTAgNjc1IFRkIChDdW1wbGltaWVudG8gTGVnYWw6IFJlc29sdWNpb24gMDMxMiBkZSAyMDE5IE51bWVyYWwgMS4xLjEuMyAtIERlY3JldG8gMTA3MiBkZSAyMDE1IEFydC4gMi4yLjQuNi44KSBUaiBFVApCVCAvRjIgMTAgVGYgNTAgNjQ1IFRkICgxLiBEQVRPUyBERSBMQSBERVNJR05BQ0lPTikgVGogRVQKQlQgL0YxIDkgVGYgNjAgNjMwIFRkIChFbXByZXNhOiBMQURSSUxMT1MgT0NIT0EgTFREQSkgVGogRVQKQlQgL0YxIDkgVGYgNjAgNjE1IFRkIChSZXByZXNlbnRhbnRlIExlZ2FsOiBKQUlNRSBBTEJFUlRPIE9DSE9BIE1BUlRJTkVaIC0gQy5DLiA3OS41NDQuMTU2KSBUaiBFVApCVCAvRjEgOSBUZiA2MCA2MDAgVGQgKFByb2Zlc2lvbmFsIERlc2lnbmFkbzogSVZBTiBEQVJJTyBHT05aQUxFWiBEIFNJTFZBIC0gQy5DLiA4MC4xMjMuNDU2KSBUaiBFVApCVCAvRjEgOSBUZiA2MCA1ODUgVGQgKExpY2VuY2lhIFNTVCBWaWdlbnRlOiBSZXMuIE5vLiAxNDIwNS0yMDIyIGRlIE1pblNhbHVkIHkgUHJvdGVjY2lvbiBTb2NpYWwpIFRqIEVUCkJUIC9GMSA5IFRmIDYwIDU3MCBUZCAoRmVjaGEgZGUgVmlnZW5jaWE6IDE1IGRlIEVuZXJvIGRlIDIwMjUgLyBSYXRpZmljYWNpb24gVmlnZW5jaWEgMjAyNikgVGogRVQKQlQgL0YyIDEwIFRmIDUwIDU0MCBUZCAoMi4gT0JKRVRPIFkgQUxDQU5DRSBERSBMQSBERUxFR0FDSU9OKSBUaiBFVApCVCAvRjEgOC41IFRmIDUwIDUyNSBUZCAoRW4gY3VtcGxpbWllbnRvIGRlbCBEZWNyZXRvIDEwNzIgZGUgMjAxNSwgbGEgR2VyZW5jaWEgR2VuZXJhbCBhc2lnbmEgZm9ybWFsbWVudGUgbGEgYWRtaW5pc3RyYWNpb24sKSBUaiBFVApCVCAvRjEgOC41IFRmIDUwIDUxMiBUZCAoZGlzZW5vLCBlamVjdWNpb24geSBldmFsdWFjaW9uIGRlbCBTRy1TU1QgYWwgcHJvZmVzaW9uYWwgZGVzaWduYWRvLCBjb25maXJpZW5kb2xlIGxhIGF1dG9yaWRhZCwpIFRqIEVUCkJUIC9GMSA4LjUgVGYgNTAgNDk5IFRkIChhdXRvbm9taWEgeSByZWN1cnNvcyByZXF1ZXJpZG9zIHBhcmEgZ2FyYW50aXphciBjb25kaWNpb25lcyBkZSB0cmFiYWpvIHNlZ3VyYXMgeSBzYWx1ZGFibGVzLikgVGogRVQKQlQgL0YyIDEwIFRmIDUwIDQ3MCBUZCAoMy4gUkVTUE9OU0FCSUxJREFERVMgQVNJR05BREFTIChERUNSRVRPIDEwNzIgQVJULiAyLjIuNC42LjgpKSBUaiBFVApCVCAvRjEgOC41IFRmIDYwIDQ1NSBUZCAoYSkgUGxhbmVhciwgb3JnYW5pemFyLCBkaXJpZ2lyLCBkZXNhcnJvbGxhciB5IGFwbGljYXIgZWwgU0ctU1NUIHkgZXZhbHVhciBzdSBjdW1wbGltaWVudG8uKSBUaiBFVApCVCAvRjEgOC41IFRmIDYwIDQ0MiBUZCAoYikgRWxhYm9yYXIgZWwgUGxhbiBkZSBUcmFiYWpvIEFudWFsIHkgc29tZXRlcmxvIGEgYXByb2JhY2lvbiB5IGFzaWduYWNpb24gZGUgcHJlc3VwdWVzdG8uKSBUaiBFVApCVCAvRjEgOC41IFRmIDYwIDQyOSBUZCAoYykgQ29vcmRpbmFyIGxhIGlkZW50aWZpY2FjaW9uIGRlIHBlbGlncm9zLCBldmFsdWFjaW9uIHkgdmFsb3JhY2lvbiBkZSByaWVzZ29zIHNlZ3VuIEdUQyA0NS4pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjAgNDE2IFRkIChkKSBBcG95YXIgeSBjb29yZGluYXIgbGEgZWxlY2Npb24geSBmdW5jaW9uYW1pZW50byBkZWwgQ09QQVNTVCB5IENvbWl0ZSBkZSBDb252aXZlbmNpYS4pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjAgNDAzIFRkIChlKSBQcm9tb3ZlciBsYSBwYXJ0aWNpcGFjaW9uIGFjdGl2YSBkZSBsb3MgdHJhYmFqYWRvcmVzIGVuIGxhIHByZXZlbmNpb24gZGUgcmllc2dvcy4pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjAgMzkwIFRkIChmKSBSZW5kaXIgY3VlbnRhcyBhIGxhIEFsdGEgRGlyZWNjaW9uIHNvYnJlIGVsIGRlc2VtcGVubyBkZWwgU0ctU1NUIGFsIG1lbm9zIHVuYSB2ZXogYWwgYW5vLikgVGogRVQKQlQgL0YyIDEwIFRmIDUwIDM2MCBUZCAoNC4gQ09NUFJPTUlTTyBZIENPTlNUQU5DSUEgREUgRklSTUFTKSBUaiBFVApCVCAvRjEgOC41IFRmIDUwIDM0NSBUZCAoUGFyYSBjb25zdGFuY2lhIGRlIGFjZXB0YWNpb24geSBtdXR1byBhY3VlcmRvLCBzZSBzdXNjcmliZSBsYSBwcmVzZW50ZSBhY3RhIG9maWNpYWwgcG9yIGxhcyBwYXJ0ZXMuKSBUaiBFVAowLjcgMC43IDAuNyBSRyAxIHcgNTAgMjAwIDIzMCAxMTAgcmUgUwowLjcgMC43IDAuNyBSRyAxIHcgMzMyIDIwMCAyMzAgMTEwIHJlIFMKMC4xIDAuMiAwLjUgcmcgQlQgL0YzIDExIFRmIDY1IDI3MCBUZCAoW0RPQ1VNRU5UTyBGSVJNQURPIERJR0lUQUxNRU5URV0pIFRqIEVUCjAgMCAwIHJnIEJUIC9GMiA5IFRmIDY1IDI0MCBUZCAoSkFJTUUgQUxCRVJUTyBPQ0hPQSBNQVJUSU5FWikgVGogRVQKQlQgL0YxIDggVGYgNjUgMjI4IFRkIChSZXByZXNlbnRhbnRlIExlZ2FsKSBUaiBFVApCVCAvRjEgOCBUZiA2NSAyMTYgVGQgKEMuQy4gNzkuNTQ0LjE1NiBkZSBCb2dvdGEgRC5DLikgVGogRVQKMC4xIDAuMiAwLjUgcmcgQlQgL0YzIDExIFRmIDM0NyAyNzAgVGQgKFtET0NVTUVOVE8gRklSTUFETyBESUdJVEFMTUVOVEVdKSBUaiBFVAowIDAgMCByZyBCVCAvRjIgOSBUZiAzNDcgMjQwIFRkIChJVkFOIERBUklPIEdPTlpBTEVaIEQgU0lMVkEpIFRqIEVUCkJUIC9GMSA4IFRmIDM0NyAyMjggVGQgKFByb2Zlc2lvbmFsIFJlc3BvbnNhYmxlIEFzaWduYWRvIFNHLVNTVCkgVGogRVQKQlQgL0YxIDggVGYgMzQ3IDIxNiBUZCAoQy5DLiA4MC4xMjMuNDU2IC0gTGljZW5jaWEgU1NUIE5vLiAxNDIwNS0yMDIyKSBUaiBFVAowLjIgMC40IDAuNiBSRyAxIHcgNTAgMTYwIG0gNTYyIDE2MCBsIFMKMC40IDAuNCAwLjQgcmcgQlQgL0YxIDcuNSBUZiA1MCAxNDUgVGQgKERPQ1RPUiBQWU1FIFNHLVNTVCAtIEV2aWRlbmNpYSBkZSBDdW1wbGltaWVudG8gRXN0YW5kYXIgMS4xLjEuMyAtIFRyYXphYmlsaWRhZCBWZXJpZmljYWRhKSBUaiBFVApCVCAvRjEgNy41IFRmIDUwIDEzMyBUZCAoRG9jdW1lbnRvIGNvbiB2YWxvciBwcm9iYXRvcmlvIGxhYm9yYWwgeSByZWdsYW1lbnRhcmlvIHBhcmEgYXVkaXRvcmlhcyBkZSBNaW5pc3RlcmlvIGRlbCBUcmFiYWpvIHkgQVJMKSBUaiBFVAplbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCA4CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAwOSAwMDAwMCBuIAowMDAwMDAwMDU4IDAwMDAwIG4gCjAwMDAwMDAxMTUgMDAwMDAgbiAKMDAwMDAwMDI2MSAwMDAwMCBuIAowMDAwMDAwMzMxIDAwMDAwIG4gCjAwMDAwMDA0MDYgMDAwMDAgbiAKMDAwMDAwMDQ4NCAwMDAwMCBuIAp0cmFpbGVyIDw8IC9TaXplIDggL1Jvb3QgMSAwIFIgPj4Kc3RhcnR4cmVmCjM4OTUKJSVFT0YK",
+            "tipo": "application/pdf",
+            "tamanio": 4119,
+            "fechaCargue": "2026-01-15T14:00:00.000Z"
+          },
+          "fuentes": [
+            {
+              "id": "f-pdf-1_1_1_3",
+              "url": "/uploads/20260115_090000_1_1_1_3_Acta_Asignacion_Responsable_SST_Ladrillos_Ochoa.pdf",
+              "titulo": "📄 Acta de Asignación Responsable SG-SST (Firmada).pdf"
+            },
+            {
+              "id": "f-gdoc-1_1_1_3",
+              "url": "https://docs.google.com/document/d/1KwN9NqmkfD7RTZMilnMopH4AeTbdIftwNfaBRCQg9H8/edit?usp=sharing",
+              "titulo": "Plantilla Editable (Google Docs)"
+            }
+          ]
+        },
+        "1.1.2.1": {
+          "estado": "CUMPLE",
+          "justificacion": "Soportado con Manuales de Cargos, Responsabilidades y Funciones firmados digitalmente (Ley 527/1999) y socializados al personal.",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.2.2": {
+          "estado": "CUMPLE",
+          "justificacion": "Responsabilidades del COPASST definidas",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-30T14:58:29.629Z"
+        },
+        "1.1.2.3": {
+          "estado": "CUMPLE",
+          "justificacion": "Responsabilidades del Comité de Convivencia definidas",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-30T14:58:27.479Z"
+        },
+        "1.1.2.4": {
+          "estado": "CUMPLE",
+          "justificacion": "Responsabilidades de Brigadistas definidas",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-30T14:58:25.512Z"
+        },
+        "1.1.2.5": {
+          "estado": "CUMPLE",
+          "justificacion": "Soportado con Manuales de Cargos, Responsabilidades y Funciones firmados digitalmente (Ley 527/1999) y socializados al personal.",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-30T14:21:28.374Z"
+        },
+        "1.1.2.6": {
+          "estado": "CUMPLE",
+          "justificacion": "Soportado con Manuales de Cargos, Responsabilidades y Funciones firmados digitalmente (Ley 527/1999) y socializados al personal.",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing",
+          "updatedAt": "2026-09-30T14:21:30.524Z"
+        },
+        "1.1.3": {
+          "estado": "CUMPLE",
+          "justificacion": "Soportado con Certificados de Afiliación a Seguridad Social en Expediente Laboral Digital.",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/spreadsheets/d/1j9ZjfdRTcrpZNUwa2Kp0HPNDOffEtDDo/edit?usp=sharing&ouid=105054984538376788001&rtpof=true&sd=true",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.4": {
+          "estado": "CUMPLE",
+          "justificacion": "Planillas de seguridad social - 2026",
+          "planAccion": "",
+          "linkGuia": "",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "2.1.1": {
+          "estado": "CUMPLE",
+          "justificacion": "Política Actualizada 2026 - Firmada por representante legal y soportes de capacitación.",
+          "linkGuia": "/uploads/20260115_092000_2_1_1_Politica_SST_2026_Firmada.pdf",
+          "updatedAt": "2026-09-29T17:21:15.578Z",
+          "archivoAdjunto": {
+            "id": "evid-emp-1790438946268-2.1.1-politica",
+            "nombre": "Política Oficial del SG-SST 2026 (Firmada).pdf",
+            "url": "/uploads/20260115_092000_2_1_1_Politica_SST_2026_Firmada.pdf",
+            "dataUrl": "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvUmVzb3VyY2VzIDw8IC9Gb250IDw8IC9GMSA0IDAgUiAvRjIgNSAwIFIgL0YzIDYgMCBSID4+ID4+IC9Db250ZW50cyA3IDAgUiA+PiBlbmRvYmoKNCAwIG9iaiA8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4gZW5kb2JqCjUgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgPj4gZW5kb2JqCjYgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLU9ibGlxdWUgPj4gZW5kb2JqCjcgMCBvYmogPDwgL0xlbmd0aCAyMjcxID4+CnN0cmVhbQpCVCAvRjIgMTQgVGYgNTAgNzQwIFRkIChMQURSSUxMT1MgT0NIT0EgTFREQSkgVGogRVQKQlQgL0YxIDkgVGYgNTAgNzI2IFRkIChOSVQ6IDgwMC4xMjMuNDU2LTcgfCBTaXN0ZW1hIGRlIEdlc3Rpb24gZGUgbGEgU2VndXJpZGFkIHkgU2FsdWQgZW4gZWwgVHJhYmFqbyBTRy1TU1QpIFRqIEVUCjAuMiAwLjQgMC42IFJHIDIgdyA1MCA3MTUgbSA1NjIgNzE1IGwgUwpCVCAvRjIgMTEgVGYgNTAgNjkwIFRkIChQT0xJVElDQSBERUwgU0lTVEVNQSBERSBHRVNUSU9OIERFIFNFR1VSSURBRCBZIFNBTFVEIEVOIEVMIFRSQUJBSk8gKDIwMjYpKSBUaiBFVApCVCAvRjEgOC41IFRmIDUwIDY3NSBUZCAoQ3VtcGxpbWllbnRvIExlZ2FsOiBSZXNvbHVjaW9uIDAzMTIgZGUgMjAxOSBOdW1lcmFsIDIuMS4xIC0gRGVjcmV0byAxMDcyIGRlIDIwMTUpIFRqIEVUCkJUIC9GMiA5LjUgVGYgNTAgNjMyIFRkICgxLiBERUNMQVJBQ0lPTiBERSBMQSBBTFRBIERJUkVDQ0lPTikgVGogRVQKQlQgL0YxIDguNSBUZiA1MCA2MTYgVGQgKExBRFJJTExPUyBPQ0hPQSBMVERBIGFzdW1lIGVsIGNvbXByb21pc28gZm9ybWFsIGNvbiBsYSBwcm90ZWNjaW9uIGRlIGxhIHNlZ3VyaWRhZCB5IHNhbHVkKSBUaiBFVApCVCAvRjEgOC41IFRmIDUwIDYwMyBUZCAoZGUgdG9kb3Mgc3VzIHRyYWJhamFkb3JlcyBkaXJlY3RvcywgY29udHJhdGlzdGFzIHkgcGFydGVzIGludGVyZXNhZGFzIGVuIHN1cyBjZW50cm9zIGRlIHRyYWJham8uKSBUaiBFVApCVCAvRjIgOS41IFRmIDUwIDU4MiBUZCAoMi4gT0JKRVRJVk9TIEVTVFJBVEVHSUNPUyBERSBMQSBQT0xJVElDQSkgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA1NjYgVGQgKC0gSWRlbnRpZmljYXIgbG9zIHBlbGlncm9zLCBldmFsdWFyIHkgdmFsb3JhciBsb3Mgcmllc2dvcyB5IGVzdGFibGVjZXIgbG9zIHJlc3BlY3Rpdm9zIGNvbnRyb2xlcy4pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjUgNTUzIFRkICgtIFByb3RlZ2VyIGxhIHNlZ3VyaWRhZCB5IHNhbHVkIGRlIHRvZG9zIGxvcyB0cmFiYWphZG9yZXMgbWVkaWFudGUgbGEgbWVqb3JhIGNvbnRpbnVhIGRlbCBTRy1TU1QuKSBUaiBFVApCVCAvRjEgOC41IFRmIDY1IDU0MCBUZCAoLSBDdW1wbGlyIGNvbiBsYSBub3JtYXRpdmlkYWQgbGVnYWwgdmlnZW50ZSBlbiBDb2xvbWJpYSBlbiBtYXRlcmlhIGRlIHJpZXNnb3MgbGFib3JhbGVzLikgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA1MjcgVGQgKC0gRGVzdGluYXIgbG9zIHJlY3Vyc29zIGZpbmFuY2llcm9zLCB0ZWNuaWNvcyB5IGh1bWFub3MgbmVjZXNhcmlvcyBwYXJhIGxhIGVqZWN1Y2lvbiBkZWwgc2lzdGVtYS4pIFRqIEVUCkJUIC9GMiA5LjUgVGYgNTAgNTA2IFRkICgzLiBESUZVU0lPTiBZIEFDQ0VTTykgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA0OTAgVGQgKC0gRXN0YSBwb2xpdGljYSBoYSBzaWRvIHNvY2lhbGl6YWRhIHkgcHVibGljYWRhIGVuIGNhcnRlbGVyYXMgZGUgbGEgcGxhbnRhIHkgcG9ydGFsIHdlYiBkZSBsYSBlbXByZXNhLikgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA0NzcgVGQgKC0gQXBsaWNhIGEgdG9kbyBlbCBwZXJzb25hbCB5IGN1ZW50YSBjb24gcmV2aXNpb24gYW51YWwgY29uZm9ybWUgYWwgRGVjcmV0byAxMDcyIGRlIDIwMTUuKSBUaiBFVAowLjcgMC43IDAuNyBSRyAxIHcgMTgwIDIxMCAyNTAgOTAgcmUgUwowLjEgMC4yIDAuNSByZyBCVCAvRjMgMTAgVGYgMjAwIDI3MCBUZCAoW0RPQ1VNRU5UTyBGSVJNQURPIERJR0lUQUxNRU5URV0pIFRqIEVUCjAgMCAwIHJnIEJUIC9GMiA4LjUgVGYgMjAwIDI0NSBUZCAoSkFJTUUgQUxCRVJUTyBPQ0hPQSBNQVJUSU5FWikgVGogRVQKQlQgL0YxIDcuNSBUZiAyMDAgMjMzIFRkIChSZXByZXNlbnRhbnRlIExlZ2FsIC0gR2VyZW5jaWEgR2VuZXJhbCkgVGogRVQKQlQgL0YxIDcuNSBUZiAyMDAgMjIxIFRkIChDLkMuIDc5LjU0NC4xNTYgZGUgQm9nb3RhIEQuQy4pIFRqIEVUCjAuMiAwLjQgMC42IFJHIDEgdyA1MCA5MCBtIDU2MiA5MCBsIFMKMC40IDAuNCAwLjQgcmcgQlQgL0YxIDcuNSBUZiA1MCA3NSBUZCAoRE9DVE9SIFBZTUUgU0ctU1NUIC0gRXZpZGVuY2lhIGRlIEN1bXBsaW1pZW50byBFc3RhbmRhciAyLjEuMSAtIEFyY2hpdm8gT2ZpY2lhbCBQcm90ZWdpZG8pIFRqIEVUCkJUIC9GMSA3LjUgVGYgNTAgNjMgVGQgKERvY3VtZW50byBjb24gdmFsb3IgcHJvYmF0b3JpbyBsYWJvcmFsIHkgcmVnbGFtZW50YXJpbyBwYXJhIGF1ZGl0b3JpYXMgZGUgTWluaXN0ZXJpbyBkZWwgVHJhYmFqbyB5IEFSTCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgOAowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1OCAwMDAwMCBuIAowMDAwMDAwMTE1IDAwMDAwIG4gCjAwMDAwMDAyNjEgMDAwMDAgbiAKMDAwMDAwMDMzMSAwMDAwMCBuIAowMDAwMDAwNDA2IDAwMDAwIG4gCjAwMDAwMDA0ODQgMDAwMDAgbiAKdHJhaWxlciA8PCAvU2l6ZSA4IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgoyODA3CiUlRU9GCg==",
+            "tipo": "application/pdf",
+            "tamanio": 3031,
+            "fechaCargue": "2026-01-15T14:20:00.000Z"
+          },
+          "fuentes": [
+            {
+              "id": "f-pdf-2_1_1",
+              "url": "/uploads/20260115_092000_2_1_1_Politica_SST_2026_Firmada.pdf",
+              "titulo": "📄 Política Oficial del SG-SST 2026 (Firmada).pdf"
+            },
+            {
+              "id": "f-gdoc-2_1_1",
+              "url": "https://docs.google.com/document/d/1sRg32I5sGNpe6ROYxwxjq1pcRpEPAZN9mJoWj_rEpFw/edit?usp=sharing",
+              "titulo": "Plantilla Editable (Google Docs)"
+            }
+          ]
+        },
+        "3.1.3": {
+          "estado": "CUMPLE",
+          "justificacion": "Perfil sociodemografico",
+          "planAccion": "",
+          "linkGuia": "https://docs.google.com/spreadsheets/d/17Fn1kRCPqey7OsAayK8aIE-i3eMmHmWnlSUhQrODGCc/edit?gid=1384905893#gid=1384905893",
+          "updatedAt": "2026-09-29T16:41:21.537Z"
+        },
+        "1.1.5": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T14:21:48.824Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "1.1.6": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T15:10:21.337Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "1.1.7": {
+          "linkGuia": "https://docs.google.com/presentation/d/1Pogtv62k7U8Uc9Y-q6-CkoSIkZ9GPeYoTO4ytHBhkYM/edit?usp=sharing",
+          "updatedAt": "2026-09-30T15:11:34.119Z",
+          "estado": "CUMPLE",
+          "justificacion": ""
+        },
+        "1.1.8": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T15:30:55.824Z",
+          "linkGuia": "",
+          "justificacion": ""
+        },
+        "1.2.1": {
+          "linkGuia": "https://docs.google.com/spreadsheets/d/16xBhbhxgWSB7zUBTaOiCFslyKDhKLlQgcmEBI4v7fb0/edit?usp=sharing",
+          "updatedAt": "2026-10-05T14:22:45.022Z",
+          "estado": "CUMPLE",
+          "justificacion": ""
+        },
+        "1.2.2": {
+          "estado": "NO_APLICA",
+          "updatedAt": "2026-10-16T13:39:42.609Z",
+          "justificacion": "No se realizan actividades en alturas o espacios confinados que demanden certificaciones externas.",
+          "fuentes": [
+            {
+              "id": "f-pdf-1_2_2",
+              "url": "/uploads/20260115_091000_1_2_2_Certificado_No_Alturas_Espacios_Confinados.pdf",
+              "titulo": "📄 Certificado No Aplicación Alturas y Confinados (Firmado).pdf"
+            },
+            {
+              "id": "f-gdoc-1_2_2",
+              "url": "https://docs.google.com/document/d/1_XFL8X6yJrIr8JVClYx5LBD7Kv1cum41k66jmt_74CY/edit?usp=sharing",
+              "titulo": "Plantilla Editable (Google Docs)"
+            }
+          ],
+          "linkGuia": "/uploads/20260115_091000_1_2_2_Certificado_No_Alturas_Espacios_Confinados.pdf",
+          "archivoAdjunto": {
+            "id": "evid-emp-1790438946268-1.2.2-cert",
+            "nombre": "Certificado No Aplicación Alturas y Confinados (Firmado).pdf",
+            "url": "/uploads/20260115_091000_1_2_2_Certificado_No_Alturas_Espacios_Confinados.pdf",
+            "dataUrl": "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvUmVzb3VyY2VzIDw8IC9Gb250IDw8IC9GMSA0IDAgUiAvRjIgNSAwIFIgL0YzIDYgMCBSID4+ID4+IC9Db250ZW50cyA3IDAgUiA+PiBlbmRvYmoKNCAwIG9iaiA8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4gZW5kb2JqCjUgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgPj4gZW5kb2JqCjYgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLU9ibGlxdWUgPj4gZW5kb2JqCjcgMCBvYmogPDwgL0xlbmd0aCAyNDI3ID4+CnN0cmVhbQpCVCAvRjIgMTQgVGYgNTAgNzQwIFRkIChMQURSSUxMT1MgT0NIT0EgTFREQSkgVGogRVQKQlQgL0YxIDkgVGYgNTAgNzI2IFRkIChOSVQ6IDgwMC4xMjMuNDU2LTcgfCBTaXN0ZW1hIGRlIEdlc3Rpb24gZGUgbGEgU2VndXJpZGFkIHkgU2FsdWQgZW4gZWwgVHJhYmFqbyBTRy1TU1QpIFRqIEVUCjAuMiAwLjQgMC42IFJHIDIgdyA1MCA3MTUgbSA1NjIgNzE1IGwgUwpCVCAvRjIgMTEgVGYgNTAgNjkwIFRkIChDRVJUSUZJQ0FDSU9OIERFIE5PIEFQTElDQUNJT04gREUgVFJBQkFKTyBFTiBBTFRVUkFTIE5JIEVTUEFDSU9TIENPTkZJTkFET1MpIFRqIEVUCkJUIC9GMSA4LjUgVGYgNTAgNjc1IFRkIChDdW1wbGltaWVudG8gTGVnYWw6IFJlc29sdWNpb24gMDMxMiBkZSAyMDE5IE51bWVyYWwgMS4yLjIgLSBEZWNyZXRvIDEwNzIgZGUgMjAxNSkgVGogRVQKQlQgL0YyIDkuNSBUZiA1MCA2MzIgVGQgKDEuIERFQ0xBUkFDSU9OIEdFTkVSQUwpIFRqIEVUCkJUIC9GMSA4LjUgVGYgNTAgNjE2IFRkIChFbCBzdXNjcml0byBSZXByZXNlbnRhbnRlIExlZ2FsIGRlIExBRFJJTExPUyBPQ0hPQSBMVERBIGNlcnRpZmljYSBxdWU6KSBUaiBFVApCVCAvRjEgOC41IFRmIDY1IDYwMyBUZCAoLSBMYSBlbXByZXNhIHJlYWxpemEgYWN0aXZpZGFkZXMgZGUgZmFicmljYWNpb24geSBjb21lcmNpYWxpemFjaW9uIGRlIHByb2R1Y3RvcyBkZSBhcmNpbGxhLikgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA1OTAgVGQgKC0gRW4gbGFzIGluc3RhbGFjaW9uZXMgb3BlcmF0aXZhcyBubyBzZSBlamVjdXRhbiBsYWJvcmVzIGVuIGFsdHVyYXMgc3VwZXJpb3JlcyBhIDEuNTAgbWV0cm9zLikgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA1NzcgVGQgKC0gTm8gc2UgcmVhbGl6YW4gbGFib3JlcyBkZSBpbmdyZXNvIGEgZXNwYWNpb3MgY29uZmluYWRvcyBxdWUgZGVtYW5kZW4gY2VydGlmaWNhY2lvbmVzIHRlY25pY2FzIGV4dGVybmFzLikgVGogRVQKQlQgL0YyIDkuNSBUZiA1MCA1NTYgVGQgKDIuIEpVU1RJRklDQUNJT04gVEVDTklDQSBZIE5PUk1BVElWQSkgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA1NDAgVGQgKC0gQ29uZm9ybWUgYSBsYSBSZXNvbHVjaW9uIDQyNzIgZGUgMjAyMSB5IFJlc29sdWNpb24gMDMxMiBkZSAyMDE5LCBlc3RlIHJlcXVpc2l0byBzZSBkZWNsYXJhIE5PIEFQTElDQS4pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjUgNTI3IFRkICgtIFRvZGEgYWN0aXZpZGFkIGRlIG1hbnRlbmltaWVudG8gZGUgdGVjaG9zIG8gZXN0cnVjdHVyYXMgZWxldmFkYXMgc2UgdGVyY2VyaXphIGNvbiBwZXJzb25hbCBjZXJ0aWZpY2Fkby4pIFRqIEVUCkJUIC9GMiA5LjUgVGYgNTAgNTA2IFRkICgzLiBWSUdFTkNJQSBZIEFDVFVBTElaQUNJT04pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjUgNDkwIFRkICgtIENlcnRpZmljYWNpb24gdmFsaWRhIHBhcmEgbGEgdmlnZW5jaWEgMjAyNSAtIDIwMjYsIHN1amV0YSBhIHJldmlzaW9uIGFudWFsIHBvciBlbCBDT1BBU1NUIHkgR2VyZW5jaWEuKSBUaiBFVAowLjcgMC43IDAuNyBSRyAxIHcgNTAgMjEwIDIzMCA5MCByZSBTCjAuNyAwLjcgMC43IFJHIDEgdyAzMzIgMjEwIDIzMCA5MCByZSBTCjAuMSAwLjIgMC41IHJnIEJUIC9GMyAxMCBUZiA2NSAyNzAgVGQgKFtET0NVTUVOVE8gRklSTUFETyBESUdJVEFMTUVOVEVdKSBUaiBFVAowIDAgMCByZyBCVCAvRjIgOC41IFRmIDY1IDI0NSBUZCAoSkFJTUUgQUxCRVJUTyBPQ0hPQSBNQVJUSU5FWikgVGogRVQKQlQgL0YxIDcuNSBUZiA2NSAyMzMgVGQgKFJlcHJlc2VudGFudGUgTGVnYWwpIFRqIEVUCkJUIC9GMSA3LjUgVGYgNjUgMjIxIFRkIChDLkMuIDc5LjU0NC4xNTYgZGUgQm9nb3RhIEQuQy4pIFRqIEVUCjAuMSAwLjIgMC41IHJnIEJUIC9GMyAxMCBUZiAzNDcgMjcwIFRkIChbRE9DVU1FTlRPIEZJUk1BRE8gRElHSVRBTE1FTlRFXSkgVGogRVQKMCAwIDAgcmcgQlQgL0YyIDguNSBUZiAzNDcgMjQ1IFRkIChJVkFOIERBUklPIEdPTlpBTEVaIEQgU0lMVkEpIFRqIEVUCkJUIC9GMSA3LjUgVGYgMzQ3IDIzMyBUZCAoUmVzcG9uc2FibGUgZGVsIFNHLVNTVCkgVGogRVQKQlQgL0YxIDcuNSBUZiAzNDcgMjIxIFRkIChMaWNlbmNpYSBTU1QgTm8uIDE0MjA1LTIwMjIpIFRqIEVUCjAuMiAwLjQgMC42IFJHIDEgdyA1MCA5MCBtIDU2MiA5MCBsIFMKMC40IDAuNCAwLjQgcmcgQlQgL0YxIDcuNSBUZiA1MCA3NSBUZCAoRE9DVE9SIFBZTUUgU0ctU1NUIC0gRXZpZGVuY2lhIGRlIEN1bXBsaW1pZW50byBFc3RhbmRhciAxLjIuMiAtIEFyY2hpdm8gT2ZpY2lhbCBQcm90ZWdpZG8pIFRqIEVUCkJUIC9GMSA3LjUgVGYgNTAgNjMgVGQgKERvY3VtZW50byBjb24gdmFsb3IgcHJvYmF0b3JpbyBsYWJvcmFsIHkgcmVnbGFtZW50YXJpbyBwYXJhIGF1ZGl0b3JpYXMgZGUgTWluaXN0ZXJpbyBkZWwgVHJhYmFqbyB5IEFSTCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgOAowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1OCAwMDAwMCBuIAowMDAwMDAwMTE1IDAwMDAwIG4gCjAwMDAwMDAyNjEgMDAwMDAgbiAKMDAwMDAwMDMzMSAwMDAwMCBuIAowMDAwMDAwNDA2IDAwMDAwIG4gCjAwMDAwMDA0ODQgMDAwMDAgbiAKdHJhaWxlciA8PCAvU2l6ZSA4IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgoyOTYzCiUlRU9GCg==",
+            "tipo": "application/pdf",
+            "tamanio": 3187,
+            "fechaCargue": "2026-01-15T14:10:00.000Z"
+          }
+        },
+        "1.2.3": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T15:41:38.428Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "2.2.1": {
+          "linkGuia": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?gid=1312744091#gid=1312744091",
+          "updatedAt": "2026-09-30T15:54:38.557Z",
+          "estado": "CUMPLE",
+          "justificacion": ""
+        },
+        "2.3.1": {
+          "linkGuia": "https://docs.google.com/spreadsheets/d/1y2GNo3owQiyUmRa_WM9EwyQEjwGy9yOZtuHbCBXoTg0/edit?usp=sharing",
+          "updatedAt": "2026-09-30T15:54:35.640Z",
+          "estado": "CUMPLE",
+          "justificacion": ""
+        },
+        "2.4.1": {
+          "linkGuia": "https://docs.google.com/spreadsheets/d/1JOwYHHi-ba1Jts79jWLNT8xqExg03bgIZxOMi0XAl0U/edit?usp=sharing",
+          "updatedAt": "2026-09-30T15:59:55.306Z",
+          "estado": "CUMPLE",
+          "justificacion": ""
+        },
+        "2.5.1": {
+          "linkGuia": "https://docs.google.com/spreadsheets/d/1gaamZRZIqd1B1IdnF6S3vwqVzUR68izYt2IbmaJJVCk/edit?usp=sharing",
+          "updatedAt": "2026-09-30T16:01:00.765Z",
+          "estado": "CUMPLE",
+          "fuentes": [
+            {
+              "id": "f-1",
+              "url": "https://docs.google.com/spreadsheets/d/1gaamZRZIqd1B1IdnF6S3vwqVzUR68izYt2IbmaJJVCk/edit?usp=sharing",
+              "titulo": "PROCEDIMIENTO DE INDUCCIÓN EN SEGURIDAD Y SALUD EN EL TRABAJO"
+            }
+          ],
+          "justificacion": ""
+        },
+        "2.9.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T16:02:55.021Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "2.10.1": {
+          "estado": "NO_CUMPLE",
+          "updatedAt": "2026-10-05T15:53:44.090Z",
+          "planAccion": "crear manual de contratistas ",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "2.11.1": {
+          "estado": "NO_APLICA",
+          "updatedAt": "2026-09-30T16:04:20.075Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "2.7.1": {
+          "linkGuia": "https://docs.google.com/spreadsheets/d/1DxsrXdYgG99KxXvZg9XMpNL1dQuTfYrzaXw0TNeKh9k/edit?usp=sharing",
+          "updatedAt": "2026-09-30T16:06:04.760Z",
+          "estado": "CUMPLE",
+          "justificacion": ""
+        },
+        "2.6.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T16:06:58.019Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "3.1.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T16:09:31.778Z",
+          "linkGuia": "https://docs.google.com/spreadsheets/d/1pWHmc5DCNYd93LPwt9vJ0RJE7tDX_bq_xm06MZrcs18/edit?gid=1747483566#gid=1747483566",
+          "justificacion": ""
+        },
+        "3.1.2": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T16:14:29.179Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "3.1.4": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T16:16:21.173Z",
+          "justificacion": "Soportado con Certificado de Aptitud Médica Ocupacional de Ingreso en Expediente Laboral Digital.",
+          "linkGuia": ""
+        },
+        "3.1.5": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T16:20:17.860Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "3.1.6": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T16:25:06.929Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "3.1.7.1": {
+          "estado": "CUMPLE",
+          "justificacion": "Política de prevención y consumo de tabaco, alcohol y sustancias psicoactivas, firmada por el empleador.",
+          "linkGuia": "/uploads/20260115_093000_3_1_7_1_Politica_Prevencion_Alcohol_Tabaco_SPA_Firmada.pdf",
+          "updatedAt": "2026-09-30T17:10:50.287Z",
+          "archivoAdjunto": {
+            "id": "evid-emp-1790438946268-3.1.7.1-politica-spa",
+            "nombre": "Política de Prevención Tabaco, Alcohol y SPA (Firmada).pdf",
+            "url": "/uploads/20260115_093000_3_1_7_1_Politica_Prevencion_Alcohol_Tabaco_SPA_Firmada.pdf",
+            "dataUrl": "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvUmVzb3VyY2VzIDw8IC9Gb250IDw8IC9GMSA0IDAgUiAvRjIgNSAwIFIgL0YzIDYgMCBSID4+ID4+IC9Db250ZW50cyA3IDAgUiA+PiBlbmRvYmoKNCAwIG9iaiA8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4gZW5kb2JqCjUgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgPj4gZW5kb2JqCjYgMCBvYmogPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhLU9ibGlxdWUgPj4gZW5kb2JqCjcgMCBvYmogPDwgL0xlbmd0aCAyNTk1ID4+CnN0cmVhbQpCVCAvRjIgMTQgVGYgNTAgNzQwIFRkIChMQURSSUxMT1MgT0NIT0EgTFREQSkgVGogRVQKQlQgL0YxIDkgVGYgNTAgNzI2IFRkIChOSVQ6IDgwMC4xMjMuNDU2LTcgfCBTaXN0ZW1hIGRlIEdlc3Rpb24gZGUgbGEgU2VndXJpZGFkIHkgU2FsdWQgZW4gZWwgVHJhYmFqbyBTRy1TU1QpIFRqIEVUCjAuMiAwLjQgMC42IFJHIDIgdyA1MCA3MTUgbSA1NjIgNzE1IGwgUwpCVCAvRjIgMTEgVGYgNTAgNjkwIFRkIChQT0xJVElDQSBERSBQUkVWRU5DSU9OIERFTCBDT05TVU1PIERFIFRBQkFDTywgQUxDT0hPTCBZIFNVU1RBTkNJQVMgUFNJQ09BQ1RJVkFTKSBUaiBFVApCVCAvRjEgOC41IFRmIDUwIDY3NSBUZCAoQ3VtcGxpbWllbnRvIExlZ2FsOiBSZXNvbHVjaW9uIDAzMTIgZGUgMjAxOSBOdW1lcmFsIDMuMS43LjEgLSBEZWNyZXRvIDEwNzIgZGUgMjAxNSkgVGogRVQKQlQgL0YyIDkuNSBUZiA1MCA2MzIgVGQgKDEuIFBST1BPU0lUTyBJTlNUSVRVQ0lPTkFMKSBUaiBFVApCVCAvRjEgOC41IFRmIDUwIDYxNiBUZCAoTEFEUklMTE9TIE9DSE9BIExUREEgZXN0YWJsZWNlIGVsIGNvbXByb21pc28gaXJyZXN0cmljdG8gZGUgcHJvcGljaWFyIHVuIGFtYmllbnRlIGRlIHRyYWJham8pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNTAgNjAzIFRkIChzYW5vLCBzZWd1cm8geSBwcm9kdWN0aXZvLCBsaWJyZSBkZWwgY29uc3VtbyBkZSB0YWJhY28sIGFsY29ob2wgeSBkcm9nYXMgZW4gdG9kYXMgc3VzIGFyZWFzLikgVGogRVQKQlQgL0YyIDkuNSBUZiA1MCA1ODIgVGQgKDIuIERJUkVDVFJJQ0VTIFkgUFJPSElCSUNJT05FUykgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA1NjYgVGQgKC0gU2UgcHJvaGliZSBwcmVzZW50YXJzZSBhIGxhYm9yYXIgYmFqbyBlbCBlZmVjdG8gZGUgYWxjb2hvbCwgc3VzdGFuY2lhcyBwc2ljb2FjdGl2YXMgbyBlc3R1cGVmYWNpZW50ZXMuKSBUaiBFVApCVCAvRjEgOC41IFRmIDY1IDU1MyBUZCAoLSBTZSBwcm9oaWJlIGxhIHBvc2VzaW9uLCBkaXN0cmlidWNpb24sIGNvbWVyY2lhbGl6YWNpb24gbyBjb25zdW1vIGRlIGVzdGFzIHN1c3RhbmNpYXMgZW4gaW5zdGFsYWNpb25lcy4pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjUgNTQwIFRkICgtIFF1ZWRhIHByb2hpYmlkbyBmdW1hciBlbiB0b2RhcyBsYXMgaW5zdGFsYWNpb25lcyBkZSBsYSBvcmdhbml6YWNpb24gKEVzcGFjaW8gMTAwJSBMaWJyZSBkZSBIdW1vKS4pIFRqIEVUCkJUIC9GMSA4LjUgVGYgNjUgNTI3IFRkICgtIExhIGVtcHJlc2EgcHJvbW92ZXJhIHByb2dyYW1hcyBkZSBlc3RpbG9zIGRlIHZpZGEgc2FsdWRhYmxlcyB5IHBhdXNhcyBhY3RpdmFzIHBhcmEgbG9zIGNvbGFib3JhZG9yZXMuKSBUaiBFVApCVCAvRjIgOS41IFRmIDUwIDUwNiBUZCAoMy4gU0FOQ0lPTkVTIFkgRVZBTFVBQ0lPTikgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA0OTAgVGQgKC0gRWwgaW5jdW1wbGltaWVudG8gZGUgZXN0YSBwb2xpdGljYSBjb25zdGl0dXllIGZhbHRhIGdyYXZlIHNlZ3VuIGVsIFJlZ2xhbWVudG8gSW50ZXJubyBkZSBUcmFiYWpvLikgVGogRVQKQlQgL0YxIDguNSBUZiA2NSA0NzcgVGQgKC0gU2UgcmVhbGl6YXJhbiBwcnVlYmFzIGRlIGNvbnRyb2wgeSB0YW1pemFqZSBwcmV2ZW50aXZvIG9yaWVudGFkYXMgYSBsYSBwcm90ZWNjaW9uIGludGVncmFsIGRlbCB0cmFiYWphZG9yLikgVGogRVQKMC43IDAuNyAwLjcgUkcgMSB3IDUwIDIxMCAyMzAgOTAgcmUgUwowLjcgMC43IDAuNyBSRyAxIHcgMzMyIDIxMCAyMzAgOTAgcmUgUwowLjEgMC4yIDAuNSByZyBCVCAvRjMgMTAgVGYgNjUgMjcwIFRkIChbRE9DVU1FTlRPIEZJUk1BRE8gRElHSVRBTE1FTlRFXSkgVGogRVQKMCAwIDAgcmcgQlQgL0YyIDguNSBUZiA2NSAyNDUgVGQgKEpBSU1FIEFMQkVSVE8gT0NIT0EgTUFSVElORVopIFRqIEVUCkJUIC9GMSA3LjUgVGYgNjUgMjMzIFRkIChSZXByZXNlbnRhbnRlIExlZ2FsKSBUaiBFVApCVCAvRjEgNy41IFRmIDY1IDIyMSBUZCAoQy5DLiA3OS41NDQuMTU2IGRlIEJvZ290YSBELkMuKSBUaiBFVAowLjEgMC4yIDAuNSByZyBCVCAvRjMgMTAgVGYgMzQ3IDI3MCBUZCAoW0RPQ1VNRU5UTyBGSVJNQURPIERJR0lUQUxNRU5URV0pIFRqIEVUCjAgMCAwIHJnIEJUIC9GMiA4LjUgVGYgMzQ3IDI0NSBUZCAoSVZBTiBEQVJJTyBHT05aQUxFWiBEIFNJTFZBKSBUaiBFVApCVCAvRjEgNy41IFRmIDM0NyAyMzMgVGQgKFJlc3BvbnNhYmxlIGRlbCBTRy1TU1QpIFRqIEVUCkJUIC9GMSA3LjUgVGYgMzQ3IDIyMSBUZCAoTGljZW5jaWEgU1NUIE5vLiAxNDIwNS0yMDIyKSBUaiBFVAowLjIgMC40IDAuNiBSRyAxIHcgNTAgOTAgbSA1NjIgOTAgbCBTCjAuNCAwLjQgMC40IHJnIEJUIC9GMSA3LjUgVGYgNTAgNzUgVGQgKERPQ1RPUiBQWU1FIFNHLVNTVCAtIEV2aWRlbmNpYSBkZSBDdW1wbGltaWVudG8gRXN0YW5kYXIgMy4xLjcuMSAtIEFyY2hpdm8gT2ZpY2lhbCBQcm90ZWdpZG8pIFRqIEVUCkJUIC9GMSA3LjUgVGYgNTAgNjMgVGQgKERvY3VtZW50byBjb24gdmFsb3IgcHJvYmF0b3JpbyBsYWJvcmFsIHkgcmVnbGFtZW50YXJpbyBwYXJhIGF1ZGl0b3JpYXMgZGUgTWluaXN0ZXJpbyBkZWwgVHJhYmFqbyB5IEFSTCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgOAowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1OCAwMDAwMCBuIAowMDAwMDAwMTE1IDAwMDAwIG4gCjAwMDAwMDAyNjEgMDAwMDAgbiAKMDAwMDAwMDMzMSAwMDAwMCBuIAowMDAwMDAwNDA2IDAwMDAwIG4gCjAwMDAwMDA0ODQgMDAwMDAgbiAKdHJhaWxlciA8PCAvU2l6ZSA4IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgozMTMxCiUlRU9GCg==",
+            "tipo": "application/pdf",
+            "tamanio": 3355,
+            "fechaCargue": "2026-01-15T14:30:00.000Z"
+          },
+          "fuentes": [
+            {
+              "id": "f-pdf-3_1_7_1",
+              "url": "/uploads/20260115_093000_3_1_7_1_Politica_Prevencion_Alcohol_Tabaco_SPA_Firmada.pdf",
+              "titulo": "📄 Política de Prevención Tabaco, Alcohol y SPA (Firmada).pdf"
+            },
+            {
+              "id": "f-gdoc-3_1_7_1",
+              "url": "https://docs.google.com/document/d/1vfHlhlNkl3thBA5VrxDOoYrR_lb93BAMUjNfJ_L5x8A/edit?usp=sharing",
+              "titulo": "Plantilla Editable (Google Docs)"
+            }
+          ]
+        },
+        "3.1.7.2": {
+          "estado": "CUMPLE",
+          "justificacion": "Programa de estilos de vida y entornos saludables (Prevención y Promoción de salud Pública): tabaquismo, alcoholismo, farmacodependencia, salud mental, alimentación saludable, pausas activas, ergonomía y control de enfermedades.",
+          "linkGuia": "https://docs.google.com/document/d/1vfHlhlNkl3thBA5VrxDOoYrR_lb93BAMUjNfJ_L5x8A/edit?usp=sharing",
+          "updatedAt": "2026-10-05T19:08:56.576Z"
+        },
+        "3.1.8": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T16:26:10.195Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "3.1.9": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T16:27:01.464Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "3.2.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T16:43:43.716Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "3.2.3": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T16:56:08.876Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "3.2.2": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-09-30T16:56:11.177Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "4.1.1": {
+          "linkGuia": "https://docs.google.com/spreadsheets/d/1r5uCJkbwY8cRiAMk82XuHngf9iIATwZrU39Mtf1TpVU/edit?usp=sharing",
+          "updatedAt": "2026-09-30T16:56:57.184Z",
+          "estado": "CUMPLE",
+          "justificacion": ""
+        },
+        "4.1.2": {
+          "linkGuia": "https://docs.google.com/spreadsheets/d/1r5uCJkbwY8cRiAMk82XuHngf9iIATwZrU39Mtf1TpVU/edit?usp=sharing",
+          "updatedAt": "2026-10-03T16:09:46.480Z",
+          "estado": "CUMPLE",
+          "justificacion": ""
+        },
+        "4.1.3": {
+          "linkGuia": "https://drive.google.com/drive/folders/19I3DB87qxUcNDLaxh8EmCgbGP-Xi9EaW",
+          "updatedAt": "2026-10-03T16:09:58.659Z",
+          "estado": "CUMPLE",
+          "justificacion": ""
+        },
+        "2.8.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T16:08:40.752Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "4.1.4": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T16:10:08.692Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "4.2.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T16:10:20.858Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "4.2.2": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T16:10:39.407Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "4.2.3": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T16:10:44.507Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "4.2.4": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T16:13:01.772Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "4.2.6": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "4.2.5": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T16:20:36.662Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "5.1.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T16:20:45.845Z",
+          "linkGuia": "https://drive.google.com/file/d/17S8G1u-aBV7Hhr2T5PVzT_zRtYqSxPif/view?usp=drive_link",
+          "justificacion": ""
+        },
+        "5.1.2": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T16:21:15.345Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "6.1.2": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T16:21:45.878Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "6.1.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T16:21:47.563Z",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "3.3.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-05T19:55:48.856Z",
+          "linkGuia": "https://docs.google.com/spreadsheets/d/15m279FowJpNTtXc23roPiruQzYMYUNdVp7qnKeNUrfQ/edit?usp=sharing",
+          "justificacion": ""
+        },
+        "3.3.2": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "3.3.3": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "3.3.4": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "3.3.5": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "3.3.6": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "6.1.3": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "6.1.4": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "7.1.1": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "7.1.2": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "7.1.3": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
+        },
+        "7.1.4": {
+          "estado": "CUMPLE",
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         }
       }
     },
@@ -1354,26 +1547,33 @@
         },
         "1.1.5": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T14:21:48.824Z"
+          "updatedAt": "2026-09-30T14:21:48.824Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "1.1.6": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T15:10:21.337Z"
+          "updatedAt": "2026-09-30T15:10:21.337Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "1.1.7": {
           "linkGuia": "https://docs.google.com/presentation/d/1Pogtv62k7U8Uc9Y-q6-CkoSIkZ9GPeYoTO4ytHBhkYM/edit?usp=sharing",
           "updatedAt": "2026-09-30T15:11:34.119Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "1.1.8": {
           "estado": "CUMPLE",
           "updatedAt": "2026-09-30T15:30:55.824Z",
-          "linkGuia": ""
+          "linkGuia": "",
+          "justificacion": ""
         },
         "1.2.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/16xBhbhxgWSB7zUBTaOiCFslyKDhKLlQgcmEBI4v7fb0/edit?usp=sharing",
           "updatedAt": "2026-09-30T15:34:42.535Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "1.2.2": {
           "estado": "NO_APLICA",
@@ -1404,22 +1604,27 @@
         },
         "1.2.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T15:41:38.428Z"
+          "updatedAt": "2026-09-30T15:41:38.428Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "2.2.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?gid=1312744091#gid=1312744091",
           "updatedAt": "2026-09-30T15:54:38.557Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.3.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1y2GNo3owQiyUmRa_WM9EwyQEjwGy9yOZtuHbCBXoTg0/edit?usp=sharing",
           "updatedAt": "2026-09-30T15:54:35.640Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.4.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1JOwYHHi-ba1Jts79jWLNT8xqExg03bgIZxOMi0XAl0U/edit?usp=sharing",
           "updatedAt": "2026-09-30T15:59:55.306Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.5.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1gaamZRZIqd1B1IdnF6S3vwqVzUR68izYt2IbmaJJVCk/edit?usp=sharing",
@@ -1431,186 +1636,261 @@
               "url": "https://docs.google.com/spreadsheets/d/1gaamZRZIqd1B1IdnF6S3vwqVzUR68izYt2IbmaJJVCk/edit?usp=sharing",
               "titulo": "PROCEDIMIENTO DE INDUCCIÓN EN SEGURIDAD Y SALUD EN EL TRABAJO"
             }
-          ]
+          ],
+          "justificacion": ""
         },
         "2.9.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:02:55.021Z"
+          "updatedAt": "2026-09-30T16:02:55.021Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "2.10.1": {
           "estado": "NO_CUMPLE",
           "updatedAt": "2026-09-30T16:04:08.458Z",
-          "planAccion": "crear manual de contratistas "
+          "planAccion": "crear manual de contratistas ",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "2.11.1": {
           "estado": "NO_APLICA",
-          "updatedAt": "2026-09-30T16:04:20.075Z"
+          "updatedAt": "2026-09-30T16:04:20.075Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "2.7.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1DxsrXdYgG99KxXvZg9XMpNL1dQuTfYrzaXw0TNeKh9k/edit?usp=sharing",
           "updatedAt": "2026-09-30T16:06:04.760Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.6.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:06:58.019Z"
+          "updatedAt": "2026-09-30T16:06:58.019Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.1": {
           "estado": "CUMPLE",
           "updatedAt": "2026-09-30T16:09:31.778Z",
-          "linkGuia": "https://docs.google.com/spreadsheets/d/1pWHmc5DCNYd93LPwt9vJ0RJE7tDX_bq_xm06MZrcs18/edit?gid=1747483566#gid=1747483566"
+          "linkGuia": "https://docs.google.com/spreadsheets/d/1pWHmc5DCNYd93LPwt9vJ0RJE7tDX_bq_xm06MZrcs18/edit?gid=1747483566#gid=1747483566",
+          "justificacion": ""
         },
         "3.1.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:14:29.179Z"
+          "updatedAt": "2026-09-30T16:14:29.179Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.4": {
           "estado": "CUMPLE",
           "updatedAt": "2026-09-30T16:16:21.173Z",
-          "justificacion": "Soportado con Certificado de Aptitud Médica Ocupacional de Ingreso en Expediente Laboral Digital."
+          "justificacion": "Soportado con Certificado de Aptitud Médica Ocupacional de Ingreso en Expediente Laboral Digital.",
+          "linkGuia": ""
         },
         "3.1.5": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:20:17.860Z"
+          "updatedAt": "2026-09-30T16:20:17.860Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.6": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:25:06.929Z"
+          "updatedAt": "2026-09-30T16:25:06.929Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.8": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:26:10.195Z"
+          "updatedAt": "2026-09-30T16:26:10.195Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.9": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:27:01.464Z"
+          "updatedAt": "2026-09-30T16:27:01.464Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.2.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:43:43.716Z"
+          "updatedAt": "2026-09-30T16:43:43.716Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.2.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:56:08.876Z"
+          "updatedAt": "2026-09-30T16:56:08.876Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.2.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:56:11.177Z"
+          "updatedAt": "2026-09-30T16:56:11.177Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.1.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1r5uCJkbwY8cRiAMk82XuHngf9iIATwZrU39Mtf1TpVU/edit?usp=sharing",
           "updatedAt": "2026-09-30T16:56:57.184Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "4.1.2": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1r5uCJkbwY8cRiAMk82XuHngf9iIATwZrU39Mtf1TpVU/edit?usp=sharing",
           "updatedAt": "2026-09-30T16:57:06.085Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "4.1.3": {
           "linkGuia": "https://drive.google.com/drive/folders/19I3DB87qxUcNDLaxh8EmCgbGP-Xi9EaW",
           "updatedAt": "2026-09-30T16:57:40.228Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.8.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.1": {
           "estado": "CUMPLE",
           "updatedAt": "2026-10-03T11:37:49-05:00",
           "linkGuia": "https://docs.google.com/spreadsheets/d/15m279FowJpNTtXc23roPiruQzYMYUNdVp7qnKeNUrfQ/edit?usp=sharing",
-          "justificacion": null
+          "justificacion": ""
         },
         "3.3.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.5": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.6": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.1.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.5": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.6": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "5.1.1": {
           "estado": "CUMPLE",
           "updatedAt": "2026-10-03T11:37:49-05:00",
           "linkGuia": "https://drive.google.com/file/d/17S8G1u-aBV7Hhr2T5PVzT_zRtYqSxPif/view?usp=drive_link",
-          "justificacion": null
+          "justificacion": ""
         },
         "5.1.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "6.1.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "6.1.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "6.1.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "6.1.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "7.1.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "7.1.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "7.1.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "7.1.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "cargo_operario_de_arrime_endague_y_cargue_horno_2_manual": {
           "estado": "CUMPLE",
@@ -1774,26 +2054,33 @@
         },
         "1.1.5": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T14:21:48.824Z"
+          "updatedAt": "2026-09-30T14:21:48.824Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "1.1.6": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T15:10:21.337Z"
+          "updatedAt": "2026-09-30T15:10:21.337Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "1.1.7": {
           "linkGuia": "https://docs.google.com/presentation/d/1Pogtv62k7U8Uc9Y-q6-CkoSIkZ9GPeYoTO4ytHBhkYM/edit?usp=sharing",
           "updatedAt": "2026-09-30T15:11:34.119Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "1.1.8": {
           "estado": "CUMPLE",
           "updatedAt": "2026-09-30T15:30:55.824Z",
-          "linkGuia": ""
+          "linkGuia": "",
+          "justificacion": ""
         },
         "1.2.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/16xBhbhxgWSB7zUBTaOiCFslyKDhKLlQgcmEBI4v7fb0/edit?usp=sharing",
           "updatedAt": "2026-10-05T14:22:45.022Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "1.2.2": {
           "estado": "NO_APLICA",
@@ -1824,22 +2111,27 @@
         },
         "1.2.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T15:41:38.428Z"
+          "updatedAt": "2026-09-30T15:41:38.428Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "2.2.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/153Ov4yABAp5INyO68ii9eOSiqsmWN39PS3_mUyOMO-E/edit?gid=1312744091#gid=1312744091",
           "updatedAt": "2026-09-30T15:54:38.557Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.3.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1y2GNo3owQiyUmRa_WM9EwyQEjwGy9yOZtuHbCBXoTg0/edit?usp=sharing",
           "updatedAt": "2026-09-30T15:54:35.640Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.4.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1JOwYHHi-ba1Jts79jWLNT8xqExg03bgIZxOMi0XAl0U/edit?usp=sharing",
           "updatedAt": "2026-09-30T15:59:55.306Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.5.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1gaamZRZIqd1B1IdnF6S3vwqVzUR68izYt2IbmaJJVCk/edit?usp=sharing",
@@ -1851,51 +2143,69 @@
               "url": "https://docs.google.com/spreadsheets/d/1gaamZRZIqd1B1IdnF6S3vwqVzUR68izYt2IbmaJJVCk/edit?usp=sharing",
               "titulo": "PROCEDIMIENTO DE INDUCCIÓN EN SEGURIDAD Y SALUD EN EL TRABAJO"
             }
-          ]
+          ],
+          "justificacion": ""
         },
         "2.9.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:02:55.021Z"
+          "updatedAt": "2026-09-30T16:02:55.021Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "2.10.1": {
           "estado": "NO_CUMPLE",
           "updatedAt": "2026-10-05T15:53:44.090Z",
-          "planAccion": "crear manual de contratistas "
+          "planAccion": "crear manual de contratistas ",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "2.11.1": {
           "estado": "NO_APLICA",
-          "updatedAt": "2026-09-30T16:04:20.075Z"
+          "updatedAt": "2026-09-30T16:04:20.075Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "2.7.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1DxsrXdYgG99KxXvZg9XMpNL1dQuTfYrzaXw0TNeKh9k/edit?usp=sharing",
           "updatedAt": "2026-09-30T16:06:04.760Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.6.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:06:58.019Z"
+          "updatedAt": "2026-09-30T16:06:58.019Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.1": {
           "estado": "CUMPLE",
           "updatedAt": "2026-09-30T16:09:31.778Z",
-          "linkGuia": "https://docs.google.com/spreadsheets/d/1pWHmc5DCNYd93LPwt9vJ0RJE7tDX_bq_xm06MZrcs18/edit?gid=1747483566#gid=1747483566"
+          "linkGuia": "https://docs.google.com/spreadsheets/d/1pWHmc5DCNYd93LPwt9vJ0RJE7tDX_bq_xm06MZrcs18/edit?gid=1747483566#gid=1747483566",
+          "justificacion": ""
         },
         "3.1.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:14:29.179Z"
+          "updatedAt": "2026-09-30T16:14:29.179Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.4": {
           "estado": "CUMPLE",
           "updatedAt": "2026-09-30T16:16:21.173Z",
-          "justificacion": "Soportado con Certificado de Aptitud Médica Ocupacional de Ingreso en Expediente Laboral Digital."
+          "justificacion": "Soportado con Certificado de Aptitud Médica Ocupacional de Ingreso en Expediente Laboral Digital.",
+          "linkGuia": ""
         },
         "3.1.5": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:20:17.860Z"
+          "updatedAt": "2026-09-30T16:20:17.860Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.6": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:25:06.929Z"
+          "updatedAt": "2026-09-30T16:25:06.929Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.7.1": {
           "estado": "CUMPLE",
@@ -1932,136 +2242,195 @@
         },
         "3.1.8": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:26:10.195Z"
+          "updatedAt": "2026-09-30T16:26:10.195Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.1.9": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:27:01.464Z"
+          "updatedAt": "2026-09-30T16:27:01.464Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.2.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:43:43.716Z"
+          "updatedAt": "2026-09-30T16:43:43.716Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.2.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:56:08.876Z"
+          "updatedAt": "2026-09-30T16:56:08.876Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.2.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-09-30T16:56:11.177Z"
+          "updatedAt": "2026-09-30T16:56:11.177Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.1.1": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1r5uCJkbwY8cRiAMk82XuHngf9iIATwZrU39Mtf1TpVU/edit?usp=sharing",
           "updatedAt": "2026-09-30T16:56:57.184Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "4.1.2": {
           "linkGuia": "https://docs.google.com/spreadsheets/d/1r5uCJkbwY8cRiAMk82XuHngf9iIATwZrU39Mtf1TpVU/edit?usp=sharing",
           "updatedAt": "2026-10-03T16:09:46.480Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "4.1.3": {
           "linkGuia": "https://drive.google.com/drive/folders/19I3DB87qxUcNDLaxh8EmCgbGP-Xi9EaW",
           "updatedAt": "2026-10-03T16:09:58.659Z",
-          "estado": "CUMPLE"
+          "estado": "CUMPLE",
+          "justificacion": ""
         },
         "2.8.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:08:40.752Z"
+          "updatedAt": "2026-10-03T16:08:40.752Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.1.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:10:08.692Z"
+          "updatedAt": "2026-10-03T16:10:08.692Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:10:20.858Z"
+          "updatedAt": "2026-10-03T16:10:20.858Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:10:39.407Z"
+          "updatedAt": "2026-10-03T16:10:39.407Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:10:44.507Z"
+          "updatedAt": "2026-10-03T16:10:44.507Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:13:01.772Z"
+          "updatedAt": "2026-10-03T16:13:01.772Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.6": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "4.2.5": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:20:36.662Z"
+          "updatedAt": "2026-10-03T16:20:36.662Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "5.1.1": {
           "estado": "CUMPLE",
           "updatedAt": "2026-10-03T16:20:45.845Z",
-          "linkGuia": "https://drive.google.com/file/d/17S8G1u-aBV7Hhr2T5PVzT_zRtYqSxPif/view?usp=drive_link"
+          "linkGuia": "https://drive.google.com/file/d/17S8G1u-aBV7Hhr2T5PVzT_zRtYqSxPif/view?usp=drive_link",
+          "justificacion": ""
         },
         "5.1.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:21:15.345Z"
+          "updatedAt": "2026-10-03T16:21:15.345Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "6.1.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:21:45.878Z"
+          "updatedAt": "2026-10-03T16:21:45.878Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "6.1.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T16:21:47.563Z"
+          "updatedAt": "2026-10-03T16:21:47.563Z",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.1": {
           "estado": "CUMPLE",
           "updatedAt": "2026-10-05T19:55:48.856Z",
-          "linkGuia": "https://docs.google.com/spreadsheets/d/15m279FowJpNTtXc23roPiruQzYMYUNdVp7qnKeNUrfQ/edit?usp=sharing"
+          "linkGuia": "https://docs.google.com/spreadsheets/d/15m279FowJpNTtXc23roPiruQzYMYUNdVp7qnKeNUrfQ/edit?usp=sharing",
+          "justificacion": ""
         },
         "3.3.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.5": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "3.3.6": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "6.1.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "6.1.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "7.1.1": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "7.1.2": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "7.1.3": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         },
         "7.1.4": {
           "estado": "CUMPLE",
-          "updatedAt": "2026-10-03T11:37:49-05:00"
+          "updatedAt": "2026-10-03T11:37:49-05:00",
+          "justificacion": "",
+          "linkGuia": ""
         }
       }
     },
@@ -2247,6 +2616,25 @@
     }
   },
   "evidencias": [
+    {
+      "id": "evid-emp-1792009016839-3.1.4-trab-1794226912885-medico",
+      "companyId": "emp-1792009016839",
+      "tenant_id": "emp-1792009016839",
+      "numeral": "3.1.4",
+      "nombre": "CERTIFICADO DE APTITUD MÉDICA OCUPACIONAL (INGRESO) - OSCAR JAVIER GONZALEZ BECERRA [Expediente Laboral]",
+      "titulo": "Evaluación Médica Ocupacional de Ingreso - OSCAR JAVIER GONZALEZ BECERRA",
+      "tipo": "application/pdf",
+      "tamanio": 250000,
+      "url": "/uploads/tenants/emp-1792009016839/workers/trab-1794226912885/examenes_medicos/1794227013_EM_-_JAVIER_GONZALEZ.pdf",
+      "file_s3_key": "tenants/emp-1792009016839/workers/trab-1794226912885/examenes_medicos/1794227013_EM_-_JAVIER_GONZALEZ.pdf",
+      "trabajadorId": "trab-1794226912885",
+      "trabajadorNombre": "OSCAR JAVIER GONZALEZ BECERRA",
+      "cargo": "AYUDANTE DE OBRA",
+      "fecha": "2026-11-09T12:23:33.465Z",
+      "fechaCargue": "2026-11-09T12:23:33.465Z",
+      "anio": "2026",
+      "origen": "EXPEDIENTE LABORAL DIGITAL (CUMPLIMIENTO RES. 0312 ESTÁNDAR 3.1.4 / DEC. 1072)"
+    },
     {
       "id": "evid-emp-1792009016839-3.1.4-trab-1793733974262-medico",
       "companyId": "emp-1792009016839",
@@ -4086,6 +4474,32 @@
       "cargo_id": "jp-emp-1792009016839-1793729781035-llj",
       "user_id": "usr-worker-trab-1793745034177",
       "signature_image_url": "/uploads/tenants/emp-1792009016839/workers/trab-1793745034177/firma_base.png"
+    },
+    {
+      "id": "trab-1794226912885",
+      "companyId": "emp-1792009016839",
+      "job_position_id": "jp-emp-1792009016839-1793729781035-llj",
+      "nombre": "OSCAR JAVIER GONZALEZ BECERRA",
+      "identificacion": "1070327665",
+      "cedula": "1070327665",
+      "cargo": "AYUDANTE DE OBRA",
+      "salario": 1750905,
+      "tipoContrato": "Término Fijo",
+      "fechaContrato": "2026-11-07",
+      "fechaIngreso": "2026-11-07",
+      "fechaFinContrato": "2027-02-07",
+      "estado": "Activo",
+      "area": "Operaciones",
+      "correo": "mao-1120@hotmail.com",
+      "telefono": "3182009822",
+      "eps": "Compensar EPS",
+      "afp": "PORVENIR S.A.",
+      "arl": "Sura ARL",
+      "duracionMeses": null,
+      "prorrogas": [
+
+      ],
+      "estadoPreaviso": "Pendiente"
     }
   ],
   "perfiles_cargo": [
@@ -17994,5 +18408,82 @@
       "cryptographic_evidence_hash": "70a686700503f77ac4c8f44349e94fce0eba6ebf9f1f8cc5bdb8d9720ffa2c4e"
     }
   ],
-  "updatedAt": "2026-11-07T11:16:43-05:00"
+  "updatedAt": "2026-11-09T07:24:49-05:00",
+  "equipos": [
+
+  ],
+  "mantenimientos": [
+
+  ],
+  "firmas": [
+
+  ],
+  "reportesPeligro": [
+
+  ],
+  "reportesPreoperacional": [
+
+  ],
+  "employee_document_signatures": [
+
+  ],
+  "employee_folder_documents": [
+    {
+      "id": "fdoc-1794227081-2372",
+      "tenant_id": "emp-1792009016839",
+      "companyId": "emp-1792009016839",
+      "employee_id": "trab-1794226912885",
+      "trabajadorId": "trab-1794226912885",
+      "document_category": "CURSO_ALTURAS",
+      "document_title": "Anexo 6: Curso de Alturas (Certificado Trabajo Seguro en Alturas)",
+      "file_name": "CA - JAVIER GONZALEZ.pdf",
+      "file_size_bytes": 347856,
+      "mime_type": "application/pdf",
+      "file_url": "/uploads/tenants/emp-1792009016839/workers/trab-1794226912885/expediente/curso_alturas/1794227081_CA_-_JAVIER_GONZALEZ.pdf",
+      "file_s3_key": "tenants/emp-1792009016839/workers/trab-1794226912885/expediente/curso_alturas/1794227081_CA_-_JAVIER_GONZALEZ.pdf",
+      "issue_date": "2026-11-06",
+      "expiration_date": "2028-05-05",
+      "uploaded_by_user_id": "admin",
+      "created_at": "2026-11-09T07:24:41-05:00",
+      "retention_legal_until": "2046-11-04T07:24:41-05:00"
+    },
+    {
+      "id": "fdoc-1794227013-9521",
+      "tenant_id": "emp-1792009016839",
+      "companyId": "emp-1792009016839",
+      "employee_id": "trab-1794226912885",
+      "trabajadorId": "trab-1794226912885",
+      "document_category": "EXAMEN_MEDICO_INGRESO",
+      "document_title": "Certificado de Aptitud Médica (Ingreso)",
+      "file_name": "EM - JAVIER GONZALEZ.pdf",
+      "file_size_bytes": 281965,
+      "mime_type": "application/pdf",
+      "file_url": "/uploads/tenants/emp-1792009016839/workers/trab-1794226912885/examenes_medicos/1794227013_EM_-_JAVIER_GONZALEZ.pdf",
+      "file_s3_key": "tenants/emp-1792009016839/workers/trab-1794226912885/examenes_medicos/1794227013_EM_-_JAVIER_GONZALEZ.pdf",
+      "issue_date": "2026-11-06",
+      "expiration_date": "2027-11-05",
+      "uploaded_by_user_id": "admin",
+      "created_at": "2026-11-09T07:23:33-05:00",
+      "retention_legal_until": "2046-11-04T07:23:33-05:00"
+    },
+    {
+      "id": "fdoc-1794226967-3707",
+      "tenant_id": "emp-1792009016839",
+      "companyId": "emp-1792009016839",
+      "employee_id": "trab-1794226912885",
+      "trabajadorId": "trab-1794226912885",
+      "document_category": "CEDULA_CIUDADANIA",
+      "document_title": "Cédula de Ciudadanía",
+      "file_name": "CEDULA - JAVIER GONZALEZ.pdf",
+      "file_size_bytes": 1133363,
+      "mime_type": "application/pdf",
+      "file_url": "/uploads/tenants/emp-1792009016839/workers/trab-1794226912885/expediente/cedula_ciudadania/1794226967_CEDULA_-_JAVIER_GONZALEZ.pdf",
+      "file_s3_key": "tenants/emp-1792009016839/workers/trab-1794226912885/expediente/cedula_ciudadania/1794226967_CEDULA_-_JAVIER_GONZALEZ.pdf",
+      "issue_date": "2008-09-10",
+      "expiration_date": null,
+      "uploaded_by_user_id": "admin",
+      "created_at": "2026-11-09T07:22:47-05:00",
+      "retention_legal_until": "2046-11-04T07:22:47-05:00"
+    }
+  ]
 }
