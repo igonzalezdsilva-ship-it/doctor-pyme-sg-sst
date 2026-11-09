@@ -3,10 +3,19 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
+      "package_name": "co.doctorpyme.app",
+      "sha256_cert_fingerprints": [
+        "8B:63:4A:75:24:CC:19:7B:2E:37:C4:36:D4:91:60:41:F1:59:45:CF:4D:6D:85:C0:AE:FB:07:4F:C0:37:0E:80"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
       "package_name": "co.doctorpyme.sst",
       "sha256_cert_fingerprints": [
-        "14:6D:E9:EB:7B:67:74:61:47:6F:A9:A0:67:8B:67:64:33:04:78:E8:13:B9:4C:E6:E5:6B:85:69:89:C8:42:3E",
-        "A1:B2:C3:D4:E5:F6:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23"
+        "8B:63:4A:75:24:CC:19:7B:2E:37:C4:36:D4:91:60:41:F1:59:45:CF:4D:6D:85:C0:AE:FB:07:4F:C0:37:0E:80"
       ]
     }
   }

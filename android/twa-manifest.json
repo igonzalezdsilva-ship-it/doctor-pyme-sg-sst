@@ -1,0 +1,43 @@
+{
+  "packageId": "co.doctorpyme.app",
+  "host": "doctorpyme.co",
+  "name": "Dr Pyme",
+  "launcherName": "Dr Pyme",
+  "display": "standalone",
+  "themeColor": "#0d9488",
+  "themeColorDark": "#0b1a2d",
+  "navigationColor": "#0b1a2d",
+  "navigationColorDark": "#060d17",
+  "navigationDividerColor": "#1e293b",
+  "navigationDividerColorDark": "#0f172a",
+  "backgroundColor": "#0b1a2d",
+  "enableNotifications": true,
+  "startUrl": "/app",
+  "iconUrl": "https://doctorpyme.co/assets/playstore/icon-512.png",
+  "maskableIconUrl": "https://doctorpyme.co/assets/playstore/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./keystore/doctorpyme-release.keystore",
+    "alias": "doctorpyme"
+  },
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://doctorpyme.co/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": {
+      "enabled": false
+    },
+    "playBilling": {
+      "enabled": false
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false
+}

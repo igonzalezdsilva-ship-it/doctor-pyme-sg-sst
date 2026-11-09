@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060d17"/>
+      <stop offset="50%" stop-color="#0b1a2d"/>
+      <stop offset="100%" stop-color="#081423"/>
+    </linearGradient>
+
+    <!-- Accent Gradient -->
+    <linearGradient id="primaryGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+
+    <!-- Card Gradient -->
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+
+    <!-- Filter for Shadow -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="500" fill="url(#bg)"/>
+
+  <!-- Subtle glow circles -->
+  <circle cx="200" cy="100" r="180" fill="#0d9488" opacity="0.12" filter="blur(60px)"/>
+  <circle cx="850" cy="380" r="220" fill="#10b981" opacity="0.10" filter="blur(70px)"/>
+
+  <!-- Left Side: Branding & Value Proposition -->
+  <g transform="translate(80, 110)">
+    <!-- Badge -->
+    <rect width="210" height="32" rx="16" fill="#10b981" fill-opacity="0.15" stroke="#10b981" stroke-width="1.5"/>
+    <text x="105" y="21" fill="#34d399" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="800" text-anchor="middle" letter-spacing="1">SG-SST COLOMBIA</text>
+
+    <!-- App Title -->
+    <text x="0" y="85" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="900" letter-spacing="-1">DOCTOR PYME</text>
+
+    <!-- Subtitle -->
+    <text x="0" y="125" fill="#34d399" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="700">Portal del Trabajador &amp; Operario</text>
+
+    <!-- Tagline description -->
+    <text x="0" y="165" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="500">
+      Autogestión SST, Firma de Documentos, Entrega de EPP
+    </text>
+    <text x="0" y="190" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="500">
+      e Inspecciones Preoperacionales en Obra y Planta.
+    </text>
+
+    <!-- Normative Pills -->
+    <g transform="translate(0, 230)">
+      <rect width="180" height="36" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+      <text x="90" y="23" fill="#cbd5e1" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" text-anchor="middle">⚖️ Dec. 1072 de 2015</text>
+
+      <rect x="195" width="180" height="36" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+      <text x="285" y="23" fill="#cbd5e1" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" text-anchor="middle">🔒 Ley 1581 (Habeas Data)</text>
+    </g>
+  </g>
+
+  <!-- Right Side: Phone Mockup Card -->
+  <g transform="translate(680, 50)" filter="url(#shadow)">
+    <!-- Device Frame -->
+    <rect width="250" height="400" rx="36" fill="#0f172a" stroke="#334155" stroke-width="4"/>
+    
+    <!-- Screen Header -->
+    <rect x="4" y="4" width="242" height="64" rx="32" fill="#0b1a2d"/>
+    <circle cx="36" cy="36" r="16" fill="#10b981" fill-opacity="0.2"/>
+    <text x="36" y="42" fill="#10b981" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle">🛡️</text>
+    <text x="64" y="33" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="800">Mi Turno SST</text>
+    <text x="64" y="48" fill="#34d399" font-family="sans-serif" font-size="10" font-weight="600">● Operario Activo</text>
+
+    <!-- Card 1: Documentos por Firmar -->
+    <g transform="translate(18, 85)">
+      <rect width="214" height="68" rx="16" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+      <circle cx="28" cy="34" r="16" fill="#f59e0b" fill-opacity="0.2"/>
+      <text x="28" y="40" fill="#f59e0b" font-family="sans-serif" font-size="14" text-anchor="middle">⚠️</text>
+      <text x="56" y="28" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="700">Mi Cargo &amp; Docs</text>
+      <text x="56" y="44" fill="#fbbf24" font-family="sans-serif" font-size="10" font-weight="700">Toca para firmar</text>
+      <rect x="160" y="24" width="40" height="20" rx="10" fill="#f59e0b" fill-opacity="0.2"/>
+      <text x="180" y="38" fill="#fbbf24" font-family="sans-serif" font-size="10" font-weight="800" text-anchor="middle">0/4</text>
+    </g>
+
+    <!-- Card 2: Preoperacional Hoy -->
+    <g transform="translate(18, 168)">
+      <rect width="214" height="68" rx="16" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+      <circle cx="28" cy="34" r="16" fill="#10b981" fill-opacity="0.2"/>
+      <text x="28" y="40" fill="#10b981" font-family="sans-serif" font-size="14" text-anchor="middle">✅</text>
+      <text x="56" y="28" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="700">Preoperacional</text>
+      <text x="56" y="44" fill="#34d399" font-family="sans-serif" font-size="10" font-weight="600">Completado Hoy</text>
+      <rect x="150" y="24" width="50" height="20" rx="10" fill="#10b981" fill-opacity="0.2"/>
+      <text x="175" y="38" fill="#34d399" font-family="sans-serif" font-size="10" font-weight="800" text-anchor="middle">Apto</text>
+    </g>
+
+    <!-- Card 3: Dotación y EPP -->
+    <g transform="translate(18, 251)">
+      <rect width="214" height="68" rx="16" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+      <circle cx="28" cy="34" r="16" fill="#38bdf8" fill-opacity="0.2"/>
+      <text x="28" y="40" fill="#38bdf8" font-family="sans-serif" font-size="14" text-anchor="middle">🥾</text>
+      <text x="56" y="28" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="700">Entrega de EPP</text>
+      <text x="56" y="44" fill="#7dd3fc" font-family="sans-serif" font-size="10" font-weight="600">Dotación al día</text>
+      <rect x="150" y="24" width="50" height="20" rx="10" fill="#38bdf8" fill-opacity="0.2"/>
+      <text x="175" y="38" fill="#7dd3fc" font-family="sans-serif" font-size="10" font-weight="800" text-anchor="middle">Activo</text>
+    </g>
+
+    <!-- Button -->
+    <g transform="translate(18, 335)">
+      <rect width="214" height="42" rx="14" fill="url(#primaryGlow)"/>
+      <text x="107" y="26" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="900" text-anchor="middle">ABRIR PORTAL</text>
+    </g>
+  </g>
+</svg>
