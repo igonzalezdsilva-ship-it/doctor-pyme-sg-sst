@@ -443,6 +443,31 @@ mount_api(server, '/app') do |req, res|
   end
 end
 
+# Ruta pública para la Política de Privacidad y Tratamiento de Datos (Google Play & Ley 1581)
+mount_api(server, '/politica-privacidad') do |req, res|
+  add_cors_headers(res)
+  policy_file = File.join(root, 'politica-privacidad.html')
+  if File.exist?(policy_file)
+    res['Content-Type'] = 'text/html; charset=utf-8'
+    res.body = File.read(policy_file)
+  else
+    res.status = 404
+    res.body = "Política de privacidad no encontrada"
+  end
+end
+
+mount_api(server, '/privacy') do |req, res|
+  add_cors_headers(res)
+  policy_file = File.join(root, 'politica-privacidad.html')
+  if File.exist?(policy_file)
+    res['Content-Type'] = 'text/html; charset=utf-8'
+    res.body = File.read(policy_file)
+  else
+    res.status = 404
+    res.body = "Privacy policy not found"
+  end
+end
+
 # Verificación Pública de Carné SST del Trabajador (Vía Escaneo QR en Portería o ARL)
 mount_api(server, '/verify-worker') do |req, res|
   add_cors_headers(res)
