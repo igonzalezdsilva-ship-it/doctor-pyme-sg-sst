@@ -24,12 +24,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: 🐘 Compilar y Firmar AAB con Gradle
+      - name: 🐘 Configurar Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.5'
-          build-root-directory: android
-          arguments: bundleRelease
+          cache-disabled: false
+
+      - name: 🤖 Compilar y Firmar AAB
+        run: |
+          cd android
+          gradle bundleRelease --stacktrace
 
       - name: 📤 Publicar Artefacto .AAB para Google Play Console
         uses: actions/upload-artifact@v4
