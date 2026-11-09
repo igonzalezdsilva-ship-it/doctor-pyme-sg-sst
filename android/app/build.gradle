@@ -1,0 +1,51 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'co.doctorpyme.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "co.doctorpyme.app"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+
+        manifestPlaceholders = [
+            hostName: "doctorpyme.co",
+            defaultUrl: "https://doctorpyme.co/app",
+            launcherName: "Dr Pyme",
+            themeColor: "#0d9488",
+            navigationColor: "#0b1a2d",
+            backgroundColor: "#0b1a2d"
+        ]
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("../../keystore/doctorpyme-release.keystore")
+            storePassword "DoctorPyme2026*"
+            keyAlias "doctorpyme"
+            keyPassword "DoctorPyme2026*"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.5.0'
+}

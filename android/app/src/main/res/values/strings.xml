@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Dr Pyme</string>
+    <string name="asset_statements">[{\"relation\": [\"delegate_permission/common.handle_all_urls\"], \"target\": {\"namespace\": \"android_app\", \"package_name\": \"co.doctorpyme.app\", \"sha256_cert_fingerprints\": [\"8B:63:4A:75:24:CC:19:7B:2E:37:C4:36:D4:91:60:41:F1:59:45:CF:4D:6D:85:C0:AE:FB:07:4F:C0:37:0E:80\"]}}]</string>
+</resources>

@@ -7,12 +7,11 @@ on:
       - main
     paths:
       - 'android/**'
-      - '.well-known/**'
-      - 'manifest.json'
+      - '.github/workflows/build-android-bundle.yml'
 
 jobs:
   build-aab:
-    name: Compilar y Firmar AAB (TWA Bubblewrap)
+    name: Compilar y Firmar AAB (TWA Oficial Google)
     runs-on: ubuntu-latest
 
     steps:
@@ -25,32 +24,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: 🤖 Configurar Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: 🟢 Configurar Node.js 20
-        uses: actions/setup-node@v4
+      - name: 🐘 Compilar y Firmar AAB con Gradle
+        uses: gradle/actions/setup-gradle@v3
         with:
-          node-version: 20
-
-      - name: 📦 Instalar Bubblewrap CLI
-        run: |
-          npm install -g @bubblewrap/cli
-
-      - name: 🛠️ Generar y Compilar Proyecto Android TWA
-        env:
-          KEYSTORE_PASSWORD: "DoctorPyme2026*"
-          KEY_PASSWORD: "DoctorPyme2026*"
-        run: |
-          cd android
-          # Crear configuración Bubblewrap si no existe
-          bubblewrap build --skipPwaValidation || true
+          gradle-version: '8.5'
+          build-root-directory: android
+          arguments: bundleRelease
 
       - name: 📤 Publicar Artefacto .AAB para Google Play Console
         uses: actions/upload-artifact@v4
         with:
           name: DoctorPyme-Release-AAB
-          path: |
-            android/*.aab
-            android/app/build/outputs/bundle/release/*.aab
-          if-no-files-found: warn
+          path: android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
