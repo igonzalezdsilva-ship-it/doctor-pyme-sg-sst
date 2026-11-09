@@ -25,7 +25,11 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("../../keystore/doctorpyme-release.keystore")
+            def ks = file("doctorpyme-release.keystore")
+            if (!ks.exists()) {
+                ks = file("../keystore/doctorpyme-release.keystore")
+            }
+            storeFile ks
             storePassword "DoctorPyme2026*"
             keyAlias "doctorpyme"
             keyPassword "DoctorPyme2026*"
