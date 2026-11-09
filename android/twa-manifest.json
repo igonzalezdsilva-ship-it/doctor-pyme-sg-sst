@@ -20,8 +20,8 @@
     "path": "./keystore/doctorpyme-release.keystore",
     "alias": "doctorpyme"
   },
-  "appVersionCode": 1,
-  "appVersionName": "1.0.0",
+  "appVersionCode": 2,
+  "appVersionName": "1.0.1",
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://doctorpyme.co/manifest.json",
