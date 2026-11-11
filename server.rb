@@ -660,7 +660,7 @@ mount_api(server, '/admin/legal-compliance-repository') do |req, res|
 end
 
 # Rutas amigables para navegación directa en navegador
-['/procesos', '/empresas', '/evaluacion', '/documentos', '/cargos', '/matriz'].each do |route_path|
+['/procesos', '/empresas', '/evaluacion', '/documentos', '/cargos', '/matriz', '/copasst-ccl'].each do |route_path|
   mount_api(server, route_path) do |req, res|
     add_cors_headers(res)
     index_file = File.join(root, 'index.html')
