@@ -4551,6 +4551,22 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
                 </div>
                 <span class="text-rose-300 text-base flex-shrink-0">➔</span>
               </button>
+
+              <!-- 🤝 CANAL CONFIDENCIAL CCL: REPORTE DE ACOSO O CONVIVENCIA -->
+              <button 
+                type="button" 
+                onclick="window.abrirModalReporteConvivenciaWorker('${trabajador.id}')"
+                class="w-full min-h-[54px] py-3.5 px-4 bg-gradient-to-r from-purple-950/80 via-indigo-950/80 to-slate-900 hover:from-purple-900/90 hover:to-indigo-900/90 text-purple-100 border border-purple-500/60 rounded-2xl font-bold text-[16px] flex items-center justify-between transition cursor-pointer active:scale-95 shadow-md shadow-purple-950/40"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="text-2xl">🤝</span>
+                  <div class="text-left">
+                    <span class="block text-[15px] font-bold text-white leading-tight">Sana Convivencia / Canal Confidencial CCL</span>
+                    <span class="text-xs font-normal text-purple-200 block">Reporte reservado de acoso o maltrato (Ley 1010)</span>
+                  </div>
+                </div>
+                <span class="px-2.5 py-1 bg-purple-500/25 text-purple-300 border border-purple-500/40 rounded-xl text-xs font-bold flex-shrink-0">🔒 Privado</span>
+              </button>
             </div>
 
             <!-- Regla de Oro SST del Día -->
@@ -5176,6 +5192,32 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
               <p class="text-[11px] text-slate-300 leading-relaxed">
                 Notifica en 3 pasos cualquier daño en maquinaria, piso resbaloso, falta de iluminación o acto inseguro en planta.
               </p>
+            </div>
+
+            <!-- Banner Especial: Canal Confidencial Convivencia / Acoso Laboral (CCL) -->
+            <div class="bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 p-4 rounded-2xl border border-purple-500/50 space-y-2.5 shadow-lg">
+              <div class="flex items-center justify-between">
+                <span class="text-[9px] font-black uppercase tracking-wider text-purple-300 block">
+                  Ley 1010 de 2006 • Canal Confidencial y Reservado
+                </span>
+                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40">
+                  🔒 Bóveda CCL
+                </span>
+              </div>
+              <div>
+                <h3 class="text-sm font-black text-white">¿Sientes acoso, maltrato o conflicto en el trabajo?</h3>
+                <p class="text-[11px] text-purple-200 leading-relaxed mt-0.5">
+                  Radica tu caso bajo estricta reserva directamente al Comité de Convivencia Laboral. Tienes protección legal contra represalias (Art. 11 Ley 1010).
+                </p>
+              </div>
+              <button 
+                type="button" 
+                onclick="window.abrirModalReporteConvivenciaWorker('${trabajador.id}')"
+                class="w-full py-2.5 px-3 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              >
+                <span>🤝</span>
+                <span>Reportar Caso de Acoso o Maltrato (Canal Confidencial CCL)</span>
+              </button>
             </div>
 
             <!-- Formulario Wizard de 3 Pasos -->
@@ -9893,4 +9935,340 @@ window.imprimirCarneDigital = function() {
     </html>
   `);
   win.document.close();
+};
+
+// =============================================================================
+// BLOQUE 4: CANAL CONFIDENCIAL DE REPORTE DE ACOSO Y CONVIVENCIA LABORAL (CCL)
+// Ley 1010 de 2006, Resoluciones 652 y 1356 de 2012, Decreto 1072 de 2015
+// =============================================================================
+window.abrirModalReporteConvivenciaWorker = function(trabajadorId) {
+  const trabajador = store.getTrabajadorPorId(trabajadorId) || {};
+  const empresa = resolverEmpresaTrabajador(trabajador);
+
+  const modalId = 'modal-reporte-convivencia-worker';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn';
+
+  modalEl.innerHTML = `
+    <div id="ccl-modal-card" class="bg-slate-900 border border-purple-500/50 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden my-auto flex flex-col max-h-[92vh] text-slate-100">
+      
+      <!-- Cabecera Confidencial -->
+      <div class="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 p-4 border-b border-purple-800/60 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl">🤝</span>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[9px] font-black uppercase tracking-wider bg-purple-500/30 text-purple-200 border border-purple-500/40 px-2 py-0.5 rounded">
+                Canal Confidencial CCL
+              </span>
+              <span class="text-[9px] text-purple-300 font-mono">Ley 1010/2006</span>
+            </div>
+            <h3 class="font-black text-sm text-white mt-0.5">Reporte de Convivencia y Protección Laboral</h3>
+          </div>
+        </div>
+        <button onclick="document.getElementById('${modalId}').remove()" class="text-slate-400 hover:text-white text-lg font-bold p-1 cursor-pointer">✕</button>
+      </div>
+
+      <!-- Contenedor Scrollable del Formulario -->
+      <form id="form-reporte-ccl-worker" class="p-5 overflow-y-auto flex-1 space-y-4 text-xs">
+        
+        <!-- Mensaje de Tranquilidad y Respaldo Legal Obligatorio (Art. 11 Ley 1010) -->
+        <div class="bg-purple-950/60 border border-purple-500/40 p-3.5 rounded-2xl space-y-1 text-purple-100">
+          <div class="flex items-center gap-1.5 font-bold text-amber-300 text-[11px]">
+            <span>🛡️</span>
+            <span>Garantía de Confidencialidad y Protección contra Represalias:</span>
+          </div>
+          <p class="text-[11px] leading-relaxed text-slate-300">
+            Este reporte es estrictamente confidencial y será recibido únicamente por el Comité de Convivencia Laboral para proteger tu dignidad y garantizar un ambiente de trabajo seguro y respetuoso (Estabilidad y protección contra represalias Art. 11 Ley 1010 de 2006).
+          </p>
+        </div>
+
+        <!-- Trabajador que reporta (Auto-precargado) -->
+        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+          <div>
+            <span class="text-[10px] text-slate-400 block">Reportante Protegido:</span>
+            <span class="font-bold text-white text-xs">${escapeHtml(trabajador.nombre || 'Trabajador')}</span>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-slate-400 block">Cédula:</span>
+            <span class="font-mono text-xs text-purple-300 font-bold">${escapeHtml(trabajador.identificacion || trabajador.cedula || 'Registrada')}</span>
+          </div>
+        </div>
+
+        <!-- 1. Tipo de Situación -->
+        <div class="space-y-1">
+          <label class="block font-black text-purple-300 text-xs">1. Tipo de Situación a Reportar *</label>
+          <select id="ccl-tipo-incidente" required class="w-full px-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl font-bold text-white text-xs focus:ring-2 focus:ring-purple-500">
+            <option value="CONFLICTO_INTERPERSONAL_CONVIVENCIA">Conflicto que afecta la sana convivencia laboral</option>
+            <option value="MALTRATO_LABORAL">Maltrato verbal, psicológico o físico (Insultos, gritos)</option>
+            <option value="PERSECUCION_LABORAL">Acoso o persecución laboral reiterada</option>
+            <option value="DISCRIMINACION_LABORAL">Trato discriminatorio (Género, origen, religión, etc.)</option>
+            <option value="ENTORPECIMIENTO_LABORAL">Obstaculización o entorpecimiento del trabajo</option>
+            <option value="INEQUIDAD_LABORAL">Inequidad manifiesta en asignación de funciones o cargas</option>
+            <option value="DESPROTECCION_LABORAL">Desprotección o exposición deliberada a riesgos</option>
+          </select>
+        </div>
+
+        <!-- 2. Fecha y Lugar -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 text-xs mb-1">Fecha aproximada de los hechos *</label>
+            <input type="date" id="ccl-fecha-incidente" value="${new Date().toISOString().split('T')[0]}" required class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl font-mono text-xs text-white">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 text-xs mb-1">Lugar o área de los hechos *</label>
+            <input type="text" id="ccl-lugar-incidente" placeholder="Ej: Planta 2, Comedor, Bodega..." required class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white">
+          </div>
+        </div>
+
+        <!-- 3. Persona Involucrada -->
+        <div>
+          <label class="block font-bold text-slate-300 text-xs mb-1">Persona(s) involucrada(s) (Nombre o cargo) *</label>
+          <input type="text" id="ccl-persona-involucrada" placeholder="Nombre completo o cargo de la persona involucrada" required class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white">
+        </div>
+
+        <!-- 4. Descripción Detallada -->
+        <div>
+          <label class="block font-bold text-slate-300 text-xs mb-1">Descripción detallada de la situación *</label>
+          <textarea id="ccl-descripcion" rows="3" required placeholder="Describe con tus propias palabras qué ocurrió, cuándo inició y de qué forma está afectando tu bienestar o la sana convivencia..." class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white leading-relaxed"></textarea>
+        </div>
+
+        <!-- 5. Adjuntar Evidencia (Opcional) -->
+        <div class="space-y-1.5">
+          <label class="block font-bold text-slate-300 text-xs">Adjuntar Pruebas o Evidencias (Opcional)</label>
+          <div class="flex items-center gap-2">
+            <label class="flex-1 min-h-[44px] py-2 px-3 bg-slate-950 hover:bg-slate-800 border border-dashed border-slate-700 rounded-xl text-center cursor-pointer flex items-center justify-center gap-2">
+              <span class="text-lg">📷</span>
+              <span class="text-slate-300 text-xs font-bold" id="ccl-evidencia-label">Subir foto, captura o documento</span>
+              <input type="file" id="ccl-archivo-evidencia" accept="image/*,.pdf" class="hidden">
+            </label>
+          </div>
+          <div id="ccl-preview-evidencia-box" class="hidden p-2 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
+            <span class="text-[11px] text-emerald-400 font-bold" id="ccl-preview-evidencia-nombre"></span>
+            <button type="button" id="ccl-btn-quitar-evidencia" class="text-rose-400 text-xs font-bold">Quitar</button>
+          </div>
+        </div>
+
+        <!-- 6. Firma Digital del Trabajador -->
+        <div class="space-y-1.5 pt-2 border-t border-slate-800">
+          <div class="flex items-center justify-between">
+            <label class="block font-black text-purple-300 text-xs">Firma Digital del Trabajador *</label>
+            <button type="button" id="ccl-limpiar-firma" class="text-[11px] text-amber-400 hover:underline">Limpiar Trazo</button>
+          </div>
+          <div class="bg-white rounded-2xl overflow-hidden border border-slate-700 touch-none">
+            <canvas id="ccl-canvas-firma" width="400" height="120" class="w-full h-[120px] bg-white cursor-crosshair"></canvas>
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-slate-400">
+            <span>Dibuja tu firma con el dedo en el recuadro blanco</span>
+            <span class="font-mono text-purple-300">Estampa Colombia UTC-5</span>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="pt-4 border-t border-slate-800 flex items-center justify-end gap-2">
+          <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white">
+            Cancelar
+          </button>
+          <button type="submit" id="ccl-btn-enviar" class="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs rounded-xl shadow-lg shadow-purple-950/50 flex items-center gap-2 cursor-pointer active:scale-95">
+            <span>🔒</span>
+            <span>Radicar Reporte Confidencial</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modalEl);
+
+  // Inicializar Canvas de Firma
+  const canvas = document.getElementById('ccl-canvas-firma');
+  let ctx = canvas ? canvas.getContext('2d') : null;
+  let dibujando = false;
+  let huboTrazo = false;
+
+  if (canvas && ctx) {
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
+    }
+
+    function empezarTrazo(e) {
+      dibujando = true;
+      huboTrazo = true;
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      if (e.cancelable) e.preventDefault();
+    }
+
+    function dibujar(e) {
+      if (!dibujando) return;
+      const pos = getPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      if (e.cancelable) e.preventDefault();
+    }
+
+    function terminarTrazo() {
+      dibujando = false;
+    }
+
+    canvas.addEventListener('mousedown', empezarTrazo);
+    canvas.addEventListener('mousemove', dibujar);
+    window.addEventListener('mouseup', terminarTrazo);
+
+    canvas.addEventListener('touchstart', empezarTrazo, { passive: false });
+    canvas.addEventListener('touchmove', dibujar, { passive: false });
+    window.addEventListener('touchend', terminarTrazo);
+
+    document.getElementById('ccl-limpiar-firma')?.addEventListener('click', () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      huboTrazo = false;
+    });
+  }
+
+  // Manejo de archivo adjunto
+  let base64Adjunto = null;
+  const fileInput = document.getElementById('ccl-archivo-evidencia');
+  const boxPrev = document.getElementById('ccl-preview-evidencia-box');
+  const labelPrev = document.getElementById('ccl-preview-evidencia-nombre');
+
+  if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        base64Adjunto = reader.result;
+        if (boxPrev && labelPrev) {
+          labelPrev.textContent = `📎 ${file.name} (${Math.round(file.size / 1024)} KB)`;
+          boxPrev.classList.remove('hidden');
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('ccl-btn-quitar-evidencia')?.addEventListener('click', () => {
+      fileInput.value = '';
+      base64Adjunto = null;
+      boxPrev?.classList.add('hidden');
+    });
+  }
+
+  // Envío del Reporte
+  document.getElementById('form-reporte-ccl-worker').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const btn = document.getElementById('ccl-btn-enviar');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span><span>Cifrando y Radicando...</span>';
+    }
+
+    let firmaData = null;
+    if (huboTrazo && canvas) {
+      firmaData = canvas.toDataURL('image/png');
+    }
+
+    const payload = {
+      tenant_id: empresa.id,
+      companyId: empresa.id,
+      reporter_employee_id: trabajador.id,
+      reporter_name: trabajador.nombre,
+      reporter_cedula: trabajador.identificacion || trabajador.cedula,
+      reported_person_name_or_id: document.getElementById('ccl-persona-involucrada').value,
+      incident_type: document.getElementById('ccl-tipo-incidente').value,
+      incident_date: document.getElementById('ccl-fecha-incidente').value,
+      incident_place: document.getElementById('ccl-lugar-incidente').value,
+      detailed_description: document.getElementById('ccl-descripcion').value,
+      evidence_base64: base64Adjunto,
+      reporter_signature_data: firmaData
+    };
+
+    try {
+      const response = await fetch('/api/worker/convivencia-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const resData = await response.json();
+
+      if (resData.status === 'ok' && resData.case) {
+        // Almacenar en store local de inmediato para sincronía reactiva
+        store.data.ccl_convivencia_reports = store.data.ccl_convivencia_reports || [];
+        store.data.ccl_convivencia_reports.unshift(resData.case);
+        store.saveToStorage();
+
+        // Mostrar Comprobante Oficial de Radicación en Pantalla
+        const modalCard = document.getElementById('ccl-modal-card');
+        if (modalCard) {
+          modalCard.innerHTML = `
+            <div class="p-6 text-center space-y-4">
+              <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-3xl flex items-center justify-center mx-auto text-3xl">
+                🛡️
+              </div>
+              <div class="space-y-1">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500 text-slate-950">
+                  Radicación Exitosa y Protegida
+                </span>
+                <h2 class="text-lg font-black text-white">Tu reporte ha sido radicado con éxito</h2>
+                <p class="text-xs text-slate-300">Conserva el número oficial de radicado para tu tranquilidad y seguimiento:</p>
+              </div>
+
+              <div class="bg-slate-950 p-4 rounded-2xl border border-purple-500/40 space-y-1">
+                <span class="text-[10px] text-slate-400 uppercase font-mono block">Número Oficial de Radicado CCL:</span>
+                <span class="text-xl font-black font-mono text-amber-400 tracking-wider">${resData.radicado}</span>
+                <span class="text-[10px] text-slate-400 block">${resData.case.created_at_bogota || new Date().toLocaleString()}</span>
+              </div>
+
+              <div class="bg-purple-950/40 border border-purple-500/30 p-3.5 rounded-2xl text-[11px] text-left text-purple-200 leading-relaxed space-y-1">
+                <strong>Próximos Pasos Legales:</strong>
+                <p>1. La Secretaría del CCL verificará la queja en un plazo máximo de 5 días hábiles.</p>
+                <p>2. Se citará de manera separada e individual para escuchar tu versión con total confidencialidad.</p>
+                <p>3. Cuentas con amparo legal de estabilidad laboral frente a represalias (Art. 11 Ley 1010 de 2006).</p>
+              </div>
+
+              <button 
+                type="button" 
+                onclick="document.getElementById('${modalId}').remove()"
+                class="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer"
+              >
+                Entendido y Cerrar Comprobante
+              </button>
+            </div>
+          `;
+        }
+      } else {
+        alert(resData.error || 'Ocurrió un inconveniente al radicar el caso');
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>🔒</span><span>Radicar Reporte Confidencial</span>';
+        }
+      }
+    } catch (err) {
+      alert('Error de conexión al servidor: ' + err.message);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🔒</span><span>Radicar Reporte Confidencial</span>';
+      }
+    }
+  });
 };

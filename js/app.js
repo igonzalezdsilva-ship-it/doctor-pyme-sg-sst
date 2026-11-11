@@ -21,6 +21,7 @@ import { renderLegalComplianceRepository, renderLegalConsentScreen } from './com
 import { renderSuperAdmins } from './components/superAdmins.js';
 import { renderMasterRepository } from './components/masterRepository.js';
 import { renderBudget } from './components/budget.js';
+import { renderCopasstCcl } from './components/copasstCcl.js';
 import { abrirModalIA } from './components/aiAssistant.js';
 import './components/diagramViewer.js';
 import './components/documentViewer.js';
@@ -37,6 +38,8 @@ const routes = {
   '#presupuesto': renderBudget,
   '#plan-trabajo': renderWorkPlan,
   '#accidentes': renderAccidents,
+  '#copasst-ccl': renderCopasstCcl,
+  '#sst/copasst-ccl': renderCopasstCcl,
   '#reportes': renderReports,
   '#documentos': renderDocumentation,
   '#capacitaciones': renderTraining,

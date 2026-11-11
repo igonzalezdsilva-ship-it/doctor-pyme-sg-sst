@@ -140,10 +140,10 @@
       "legal_rep_name": "José Iván González Mora",
       "legal_rep_id_number": "3.004.889",
       "legal_rep_signature_s3_key": "tenants/emp-1792009016839/signatures/rep_legal.png",
-      "legal_rep_signature_url": "/uploads/sig_inst_rep_legal_emp-1792009016839.png?v=1794400988",
-      "legal_rep_signature_registered_at": "2026-11-11T07:43:08-05:00",
-      "legal_rep_signature_registered_bogota": "11/11/2026 a las 07:43:08 (Hora Legal Colombia UTC-5)",
-      "legal_rep_signature_sha256": "223c2ad8604ee2e0c60aae0ae9af9a4d0eda60868a8ccf731699fc081c1bd538",
+      "legal_rep_signature_url": "/uploads/sig_inst_rep_legal_emp-1792009016839.png?v=1794401243",
+      "legal_rep_signature_registered_at": "2026-11-11T07:47:23-05:00",
+      "legal_rep_signature_registered_bogota": "11/11/2026 a las 07:47:23 (Hora Legal Colombia UTC-5)",
+      "legal_rep_signature_sha256": "9afe14b3813a687d6eef939285be2634fb8c32671a8c86fb274d8b808e7727cf",
       "sst_coordinator_name": "Ing. Iván David González Silva",
       "sst_coordinator_id_number": "1018423987",
       "sst_coordinator_sst_license": "RESOLUCIÓN No. 6514 de 19/10/2022 (Vigencia 10 Años - Res. 0754/2021)",
@@ -18411,7 +18411,7 @@
       "cryptographic_evidence_hash": "70a686700503f77ac4c8f44349e94fce0eba6ebf9f1f8cc5bdb8d9720ffa2c4e"
     }
   ],
-  "updatedAt": "2026-11-11T07:30:52-05:00",
+  "updatedAt": "2026-11-11T07:47:24-05:00",
   "equipos": [
 
   ],
@@ -18487,6 +18487,47 @@
       "uploaded_by_user_id": "admin",
       "created_at": "2026-11-09T07:22:47-05:00",
       "retention_legal_until": "2046-11-04T07:22:47-05:00"
+    }
+  ],
+  "sst_committees": [
+    {
+      "tenant_id": "emp-1790438946268",
+      "committee_type": "COPASST",
+      "period_start_date": "2026-01-15",
+      "status": "ACTIVO_VIGENTE",
+      "period_end_date": "2028-01-15",
+      "constitution_act_number": "ACTA-CONF-COPASST-2026-01",
+      "id": "comm-1794402981-b30567",
+      "updated_at": "2026-11-11T08:16:21-05:00"
+    }
+  ],
+  "ccl_convivencia_reports": [
+    {
+      "id": "ccl-rep-1794402993-d2d32b",
+      "tenant_id": "emp-1790438946268",
+      "companyId": "emp-1790438946268",
+      "case_radicado": "CASO-CCL-2026-0001",
+      "reporter_employee_id": "trab-001",
+      "reporter_name": "Carlos Mendoza",
+      "reporter_cedula": "1018234567",
+      "reported_person_name_or_id": "Jefe de Patio",
+      "incident_type": "CONFLICTO_INTERPERSONAL_CONVIVENCIA",
+      "incident_date": "2026-11-11",
+      "incident_place": "Planta 1",
+      "detailed_description": "Discusión reiterada y sobrecarga de turnos sin previo aviso.",
+      "evidence_attachments_s3": [
+
+      ],
+      "evidence_attachments": [
+
+      ],
+      "case_status": "RADICADO_NUEVO",
+      "ccl_meeting_id": null,
+      "conciliation_commitments": "",
+      "confidentiality_seal": true,
+      "reporter_signature_url": null,
+      "created_at": "2026-11-11T08:16:33-05:00",
+      "created_at_bogota": "2026-11-11 08:16:33 (UTC-5)"
     }
   ]
 }

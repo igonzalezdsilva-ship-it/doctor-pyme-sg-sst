@@ -968,6 +968,11 @@ class Store {
           if (!Array.isArray(this.data.epp_dotacion_deliveries)) this.data.epp_dotacion_deliveries = [];
           if (!Array.isArray(this.data.epp_dotacion_delivery_items)) this.data.epp_dotacion_delivery_items = [];
           if (!Array.isArray(this.data.employee_document_signatures)) this.data.employee_document_signatures = [];
+          if (!Array.isArray(this.data.sst_committees)) this.data.sst_committees = [];
+          if (!Array.isArray(this.data.sst_committee_members)) this.data.sst_committee_members = [];
+          if (!Array.isArray(this.data.sst_committee_meetings)) this.data.sst_committee_meetings = [];
+          if (!Array.isArray(this.data.sst_committee_tasks)) this.data.sst_committee_tasks = [];
+          if (!Array.isArray(this.data.ccl_convivencia_reports)) this.data.ccl_convivencia_reports = [];
           if (!Array.isArray(this.data.super_admins)) {
             this.data.super_admins = [
               {
@@ -1364,6 +1369,11 @@ class Store {
           if (!Array.isArray(this.data.epp_dotacion_deliveries)) this.data.epp_dotacion_deliveries = [];
           if (!Array.isArray(this.data.epp_dotacion_delivery_items)) this.data.epp_dotacion_delivery_items = [];
           if (!Array.isArray(this.data.employee_document_signatures)) this.data.employee_document_signatures = [];
+          if (!Array.isArray(this.data.sst_committees)) this.data.sst_committees = [];
+          if (!Array.isArray(this.data.sst_committee_members)) this.data.sst_committee_members = [];
+          if (!Array.isArray(this.data.sst_committee_meetings)) this.data.sst_committee_meetings = [];
+          if (!Array.isArray(this.data.sst_committee_tasks)) this.data.sst_committee_tasks = [];
+          if (!Array.isArray(this.data.ccl_convivencia_reports)) this.data.ccl_convivencia_reports = [];
           if (!Array.isArray(this.data.super_admins)) {
             this.data.super_admins = [
               {
@@ -6002,6 +6012,229 @@ class Store {
 
     this.saveToStorage();
     return true;
+  }
+
+  // =============================================================================
+  // BLOQUE 6: MÓDULO 6 - COPASST & COMITÉ DE CONVIVENCIA LABORAL (CCL)
+  // Normativa: Res. 2013/1986, Ley 1010/2006, Res. 652 y 1356/2012, Dec. 1072/2015
+  // =============================================================================
+  getCopasstCclData(companyId = null) {
+    const cid = companyId || this.getEmpresaActivaId();
+    this.data.sst_committees = this.data.sst_committees || [];
+    this.data.sst_committee_members = this.data.sst_committee_members || [];
+    this.data.sst_committee_meetings = this.data.sst_committee_meetings || [];
+    this.data.sst_committee_tasks = this.data.sst_committee_tasks || [];
+    this.data.ccl_convivencia_reports = this.data.ccl_convivencia_reports || [];
+
+    const isMatch = (item) => !cid || item.tenant_id === cid || item.companyId === cid || item.empresaId === cid;
+
+    return {
+      committees: this.data.sst_committees.filter(isMatch),
+      members: this.data.sst_committee_members.filter(isMatch),
+      meetings: this.data.sst_committee_meetings.filter(isMatch),
+      tasks: this.data.sst_committee_tasks.filter(isMatch),
+      reports: this.data.ccl_convivencia_reports.filter(isMatch)
+    };
+  }
+
+  async saveCommittee(committee) {
+    if (!this.data) return null;
+    this.data.sst_committees = this.data.sst_committees || [];
+    const cid = committee.tenant_id || committee.companyId || this.getEmpresaActivaId();
+    committee.tenant_id = cid;
+    committee.companyId = cid;
+
+    const idx = this.data.sst_committees.findIndex(c => c.id === committee.id || (c.tenant_id === cid && c.committee_type === committee.committee_type));
+    if (idx >= 0) {
+      this.data.sst_committees[idx] = { ...this.data.sst_committees[idx], ...committee };
+      committee = this.data.sst_committees[idx];
+    } else {
+      committee.id = committee.id || `comm-${Date.now()}`;
+      this.data.sst_committees.push(committee);
+    }
+
+    this.saveToStorage();
+
+    try {
+      await fetch('/api/copasst-ccl/committee', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(committee)
+      });
+    } catch (e) {
+      console.warn('Sync committee server warning:', e);
+    }
+    return committee;
+  }
+
+  async saveCommitteeMembers(committeeId, membersList) {
+    if (!this.data || !Array.isArray(membersList)) return [];
+    this.data.sst_committee_members = this.data.sst_committee_members || [];
+    const cid = this.getEmpresaActivaId();
+
+    membersList.forEach(mem => {
+      mem.id = mem.id || `mem-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
+      mem.committee_id = committeeId;
+      mem.tenant_id = cid;
+      mem.companyId = cid;
+
+      const idx = this.data.sst_committee_members.findIndex(m => m.id === mem.id);
+      if (idx >= 0) {
+        this.data.sst_committee_members[idx] = { ...this.data.sst_committee_members[idx], ...mem };
+      } else {
+        this.data.sst_committee_members.push(mem);
+      }
+    });
+
+    this.saveToStorage();
+
+    try {
+      await fetch('/api/copasst-ccl/members', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ committee_id: committeeId, tenant_id: cid, members: membersList })
+      });
+    } catch (e) {
+      console.warn('Sync members warning:', e);
+    }
+    return membersList;
+  }
+
+  async deleteCommitteeMember(memberId) {
+    if (!this.data) return;
+    this.data.sst_committee_members = (this.data.sst_committee_members || []).filter(m => m.id !== memberId);
+    this.saveToStorage();
+
+    try {
+      await fetch(`/api/copasst-ccl/members?id=${encodeURIComponent(memberId)}`, { method: 'DELETE' });
+    } catch (e) {
+      console.warn('Delete member warning:', e);
+    }
+  }
+
+  async saveCommitteeMeeting(meeting) {
+    if (!this.data) return null;
+    this.data.sst_committee_meetings = this.data.sst_committee_meetings || [];
+    const cid = meeting.tenant_id || meeting.companyId || this.getEmpresaActivaId();
+    meeting.tenant_id = cid;
+    meeting.companyId = cid;
+
+    const idx = this.data.sst_committee_meetings.findIndex(m => m.id === meeting.id || (m.tenant_id === cid && m.committee_type === meeting.committee_type && m.meeting_year === meeting.meeting_year && m.meeting_month === meeting.meeting_month));
+    if (idx >= 0) {
+      this.data.sst_committee_meetings[idx] = { ...this.data.sst_committee_meetings[idx], ...meeting };
+      meeting = this.data.sst_committee_meetings[idx];
+    } else {
+      meeting.id = meeting.id || `meet-${Date.now()}`;
+      this.data.sst_committee_meetings.push(meeting);
+    }
+
+    this.saveToStorage();
+
+    try {
+      await fetch('/api/copasst-ccl/meetings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(meeting)
+      });
+    } catch (e) {
+      console.warn('Sync meeting server warning:', e);
+    }
+    return meeting;
+  }
+
+  async saveCommitteeTask(task) {
+    if (!this.data) return null;
+    this.data.sst_committee_tasks = this.data.sst_committee_tasks || [];
+    const cid = task.tenant_id || task.companyId || this.getEmpresaActivaId();
+    task.tenant_id = cid;
+    task.companyId = cid;
+
+    const idx = this.data.sst_committee_tasks.findIndex(t => t.id === task.id);
+    if (idx >= 0) {
+      this.data.sst_committee_tasks[idx] = { ...this.data.sst_committee_tasks[idx], ...task };
+      task = this.data.sst_committee_tasks[idx];
+    } else {
+      task.id = task.id || `tsk-${Date.now()}`;
+      this.data.sst_committee_tasks.push(task);
+    }
+
+    this.saveToStorage();
+
+    try {
+      await fetch('/api/copasst-ccl/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(task)
+      });
+    } catch (e) {
+      console.warn('Sync task server warning:', e);
+    }
+    return task;
+  }
+
+  async deleteCommitteeTask(taskId) {
+    if (!this.data) return;
+    this.data.sst_committee_tasks = (this.data.sst_committee_tasks || []).filter(t => t.id !== taskId);
+    this.saveToStorage();
+
+    try {
+      await fetch(`/api/copasst-ccl/tasks?id=${encodeURIComponent(taskId)}`, { method: 'DELETE' });
+    } catch (e) {
+      console.warn('Delete task warning:', e);
+    }
+  }
+
+  async updateConvivenciaReportStatus(reportId, newStatus, commitments = '', meetingId = null) {
+    if (!this.data) return;
+    this.data.ccl_convivencia_reports = this.data.ccl_convivencia_reports || [];
+    const rep = this.data.ccl_convivencia_reports.find(r => r.id === reportId || r.case_radicado === reportId);
+    if (rep) {
+      rep.case_status = newStatus;
+      if (commitments) rep.conciliation_commitments = commitments;
+      if (meetingId) rep.ccl_meeting_id = meetingId;
+      rep.updated_at = new Date().toISOString();
+      this.saveToStorage();
+
+      try {
+        await fetch('/api/copasst-ccl/case-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: rep.id, case_status: newStatus, conciliation_commitments: commitments, ccl_meeting_id: meetingId })
+        });
+      } catch (e) {
+        console.warn('Sync case status warning:', e);
+      }
+    }
+  }
+
+  linkCommitteePdfToStandards(docType, docName, fileUrl, sha256, numeral, companyId = null) {
+    const cid = companyId || this.getEmpresaActivaId();
+    const currentYear = this.getAnioActivo() || '2026';
+    if (!this.data.evaluaciones) this.data.evaluaciones = {};
+    if (!this.data.evaluaciones[cid]) this.data.evaluaciones[cid] = {};
+    if (!this.data.evaluaciones[cid][currentYear]) this.data.evaluaciones[cid][currentYear] = {};
+
+    this.data.evaluaciones[cid][currentYear][numeral] = {
+      estado: 'CUMPLE',
+      justificacion: `Soportado oficialmente con ${docName} debidamente firmado y radicado bajo Ley 527/1999.`,
+      linkGuia: fileUrl,
+      archivoAdjunto: {
+        nombre: docName,
+        url: fileUrl,
+        tipo: 'application/pdf',
+        fechaCargue: new Date().toISOString(),
+        sha256: sha256 || ''
+      },
+      fuentes: [
+        {
+          id: `f-cop-${Date.now()}`,
+          url: fileUrl,
+          titulo: `📄 ${docName}`
+        }
+      ]
+    };
+
+    this.saveToStorage();
   }
 
   resetearDatosDemo() {

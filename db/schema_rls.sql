@@ -1069,6 +1069,191 @@ CREATE INDEX IF NOT EXISTS idx_maint_exec_tenant_tool ON maintenance_executions(
 CREATE INDEX IF NOT EXISTS idx_maint_exec_tenant_fecha ON maintenance_executions(tenant_id, fecha_programada);
 
 -- ==============================================================================
+-- 13. BLOQUE 6: COPASST & COMITÉ DE CONVIVENCIA LABORAL (CCL)
+--     Normativa: Res. 2013/1986, Ley 1010/2006, Res. 652/2012, Res. 1356/2012, Dec. 1072/2015
+-- ==============================================================================
+
+DO $$ BEGIN
+  CREATE TYPE committee_type_enum AS ENUM ('COPASST', 'VIGIA_SST', 'CCL');
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE committee_status_enum AS ENUM ('EN_CONFORMACION', 'ACTIVO_VIGENTE', 'VENCIDO', 'HISTORICO');
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE representation_side_enum AS ENUM ('EMPLEADOR_DESIGNADO', 'TRABAJADORES_ELEGIDO', 'VIGIA_UNICO');
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE member_category_enum AS ENUM ('PRINCIPAL', 'SUPLENTE');
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE committee_role_enum AS ENUM ('PRESIDENTE', 'SECRETARIO', 'MIEMBRO_VOCAL', 'VIGIA');
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE committee_meeting_type_enum AS ENUM ('ORDINARIA_MENSUAL', 'EXTRAORDINARIA_ATEL', 'EXTRAORDINARIA_CONVIVENCIA');
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE meeting_status_enum AS ENUM ('PROGRAMADA', 'EN_SESION', 'CERRADA_FIRMADA');
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE committee_task_category_enum AS ENUM (
+    'INSPECCION_SST',
+    'INVESTIGACION_ATEL',
+    'SEGUIMIENTO_PLAN_TRABAJO',
+    'CAPACITACION_CONVIVENCIA',
+    'GESTION_CASO_ACOSO',
+    'VERIFICACION_MEDIDAS_CONTROL',
+    'OTRA'
+  );
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE committee_task_status_enum AS ENUM ('PENDIENTE', 'EN_EJECUCION', 'COMPLETADA', 'VENCIDA');
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE ccl_incident_type_enum AS ENUM (
+    'MALTRATO_LABORAL',
+    'PERSECUCION_LABORAL',
+    'DISCRIMINACION_LABORAL',
+    'ENTORPECIMIENTO_LABORAL',
+    'INEQUIDAD_LABORAL',
+    'DESPROTECCION_LABORAL',
+    'CONFLICTO_INTERPERSONAL_CONVIVENCIA'
+  );
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE ccl_case_status_enum AS ENUM (
+    'RADICADO_NUEVO',
+    'EN_REVISION_SECRET_CCL',
+    'CITACION_DESCARGOS_ESCUCHA',
+    'EN_CONCILIACION_PLAN_MEJORA',
+    'CERRADO_CON_ACUERDO',
+    'REMITIDO_ALTA_DIRECCION_O_MINTRABAJO'
+  );
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+-- 1. Conformación y Vigencia de Comités
+CREATE TABLE IF NOT EXISTS sst_committees (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  committee_type committee_type_enum NOT NULL,
+  period_start_date DATE NOT NULL,
+  period_end_date DATE NOT NULL,
+  status committee_status_enum NOT NULL DEFAULT 'ACTIVO_VIGENTE',
+  constitution_act_number VARCHAR(100) NOT NULL,
+  functions_and_responsibilities_html TEXT,
+  signed_constitution_pdf_s3_key TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_sst_committees_tenant_type ON sst_committees(tenant_id, committee_type);
+
+-- 2. Integrantes, Roles y Responsabilidades
+CREATE TABLE IF NOT EXISTS sst_committee_members (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  committee_id UUID NOT NULL REFERENCES sst_committees(id) ON DELETE CASCADE,
+  employee_id UUID REFERENCES employees(id) ON DELETE SET NULL,
+  employee_name VARCHAR(255) NOT NULL,
+  employee_id_number VARCHAR(50),
+  employee_position VARCHAR(150),
+  representation_side representation_side_enum NOT NULL,
+  member_category member_category_enum NOT NULL DEFAULT 'PRINCIPAL',
+  committee_role committee_role_enum NOT NULL,
+  specific_responsibilities TEXT,
+  accepted_and_signed BOOLEAN NOT NULL DEFAULT false,
+  signature_data TEXT,
+  signed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_sst_comm_members_tenant ON sst_committee_members(tenant_id, committee_id);
+
+-- 3. Gestión de Reuniones Mensuales y Actas
+CREATE TABLE IF NOT EXISTS sst_committee_meetings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  committee_id UUID NOT NULL REFERENCES sst_committees(id) ON DELETE CASCADE,
+  committee_type committee_type_enum NOT NULL,
+  act_consecutive VARCHAR(100) NOT NULL,
+  meeting_month INTEGER NOT NULL CHECK (meeting_month BETWEEN 1 AND 12),
+  meeting_year INTEGER NOT NULL,
+  meeting_date DATE NOT NULL,
+  start_time TIME,
+  end_time TIME,
+  location_or_modality VARCHAR(100) DEFAULT 'Presencial',
+  meeting_type committee_meeting_type_enum NOT NULL DEFAULT 'ORDINARIA_MENSUAL',
+  quorum_verified BOOLEAN NOT NULL DEFAULT false,
+  attendees_json JSONB NOT NULL DEFAULT '[]'::jsonb,
+  agenda_points JSONB NOT NULL DEFAULT '[]'::jsonb,
+  development_and_discussions TEXT,
+  previous_tasks_review JSONB NOT NULL DEFAULT '[]'::jsonb,
+  status meeting_status_enum NOT NULL DEFAULT 'PROGRAMADA',
+  pdf_act_s3_key TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_sst_comm_meetings_tenant ON sst_committee_meetings(tenant_id, committee_type, meeting_year, meeting_month);
+
+-- 4. Motor de Ejecución y Seguimiento de Tareas / Compromisos
+CREATE TABLE IF NOT EXISTS sst_committee_tasks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  committee_id UUID NOT NULL REFERENCES sst_committees(id) ON DELETE CASCADE,
+  meeting_id UUID REFERENCES sst_committee_meetings(id) ON DELETE SET NULL,
+  committee_type committee_type_enum NOT NULL,
+  task_category committee_task_category_enum NOT NULL,
+  task_title VARCHAR(255) NOT NULL,
+  task_description TEXT,
+  responsible_employee_id UUID REFERENCES employees(id) ON DELETE SET NULL,
+  responsible_name VARCHAR(255) NOT NULL,
+  due_date DATE NOT NULL,
+  completed_at TIMESTAMPTZ,
+  progress_percentage INTEGER NOT NULL DEFAULT 0 CHECK (progress_percentage BETWEEN 0 AND 100),
+  status committee_task_status_enum NOT NULL DEFAULT 'PENDIENTE',
+  evidence_notes TEXT,
+  evidence_file_s3_key TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_sst_comm_tasks_tenant ON sst_committee_tasks(tenant_id, committee_type, status);
+
+-- 5. Canal Confidencial de Reporte de Acoso, Maltrato y Sana Convivencia (CCL)
+CREATE TABLE IF NOT EXISTS ccl_convivencia_reports (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  case_radicado VARCHAR(100) UNIQUE NOT NULL,
+  reporter_employee_id UUID REFERENCES employees(id) ON DELETE SET NULL,
+  reporter_name VARCHAR(255) NOT NULL,
+  reporter_cedula VARCHAR(50),
+  reported_person_name_or_id VARCHAR(255) NOT NULL,
+  incident_type ccl_incident_type_enum NOT NULL,
+  incident_date DATE NOT NULL,
+  incident_place VARCHAR(255) NOT NULL,
+  detailed_description TEXT NOT NULL,
+  evidence_attachments_s3 JSONB NOT NULL DEFAULT '[]'::jsonb,
+  case_status ccl_case_status_enum NOT NULL DEFAULT 'RADICADO_NUEVO',
+  ccl_meeting_id UUID REFERENCES sst_committee_meetings(id) ON DELETE SET NULL,
+  conciliation_commitments TEXT,
+  confidentiality_seal BOOLEAN NOT NULL DEFAULT true,
+  reporter_signature_data TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ccl_reports_tenant_status ON ccl_convivencia_reports(tenant_id, case_status);
+
+-- ==============================================================================
 -- 14. BLOQUE 3: ACTIVACIÓN DE ROW-LEVEL SECURITY (RLS) Y FORZADO ESTRICTO
 --     EN TODAS LAS TABLAS CON tenant_id
 -- ==============================================================================
@@ -1112,7 +1297,13 @@ BEGIN
       'epp_dotacion_catalog',
       'job_position_epp_matrix',
       'epp_dotacion_deliveries',
-      'epp_dotacion_delivery_items'
+      'epp_dotacion_delivery_items',
+      -- Tablas COPASST & CCL (Módulo 6)
+      'sst_committees',
+      'sst_committee_members',
+      'sst_committee_meetings',
+      'sst_committee_tasks',
+      'ccl_convivencia_reports'
     ])
   LOOP
     -- 1. Activar y Forzar RLS (incluso para el propietario de la tabla)

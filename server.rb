@@ -887,7 +887,7 @@ def merge_database_safely(existing_db, incoming_payload)
   end
 
   # 5. Proteger colecciones operativas y tablas multitenant RLS: preservar registros existentes si el cliente no envió la clave o envió scope parcial
-  ['tenants', 'users', 'user_tenant_memberships', 'matriz', 'planTrabajo', 'accidentes', 'trabajadores', 'perfiles_cargo', 'tools_inventory', 'tools_sst', 'tools_maintenance_plan', 'tools_assignments', 'tools_interventions_log', 'data_privacy_consents', 'legal_policy_versions', 'process_maps', 'processes', 'process_activities', 'job_positions', 'process_activity_positions', 'job_position_documents', 'capacitaciones', 'worker_evaluations', 'epp_dotacion_catalog', 'job_position_epp_matrix', 'epp_dotacion_deliveries', 'epp_dotacion_delivery_items'].each do |col|
+  ['tenants', 'users', 'user_tenant_memberships', 'matriz', 'planTrabajo', 'accidentes', 'trabajadores', 'perfiles_cargo', 'tools_inventory', 'tools_sst', 'tools_maintenance_plan', 'tools_assignments', 'tools_interventions_log', 'data_privacy_consents', 'legal_policy_versions', 'process_maps', 'processes', 'process_activities', 'job_positions', 'process_activity_positions', 'job_position_documents', 'capacitaciones', 'worker_evaluations', 'epp_dotacion_catalog', 'job_position_epp_matrix', 'epp_dotacion_deliveries', 'epp_dotacion_delivery_items', 'sst_committees', 'sst_committee_members', 'sst_committee_meetings', 'sst_committee_tasks', 'ccl_convivencia_reports'].each do |col|
     if existing_db[col].is_a?(Array) && merged[col].nil?
       merged[col] = existing_db[col]
     elsif existing_db[col].is_a?(Array) && merged[col].is_a?(Array)
@@ -5877,6 +5877,490 @@ mount_api(server, '/api/budget') do |req, res|
     end
     res['Content-Type'] = 'application/json; charset=utf-8'
     res.body = { status: 'ok', message: 'Rubro eliminado' }.to_json
+  end
+end
+
+# =============================================================================
+# BLOQUE 6: ENDPOINTS PARA MÓDULO 6 COPASST & CCL (RES. 2013/1986, RES. 652/2012, LEY 1010/2006)
+# =============================================================================
+
+# 1. Obtener todos los datos del módulo para un tenant
+mount_api(server, '/api/copasst-ccl/data') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'GET'
+    tenant_id = req.query['tenant_id'] || req.query['companyId'] || req.query['company_id']
+    db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+    
+    committees = (db['sst_committees'] || []).select { |c| c['tenant_id'] == tenant_id || c['companyId'] == tenant_id }
+    members = (db['sst_committee_members'] || []).select { |m| m['tenant_id'] == tenant_id || m['companyId'] == tenant_id }
+    meetings = (db['sst_committee_meetings'] || []).select { |m| m['tenant_id'] == tenant_id || m['companyId'] == tenant_id }
+    tasks = (db['sst_committee_tasks'] || []).select { |t| t['tenant_id'] == tenant_id || t['companyId'] == tenant_id }
+    reports = (db['ccl_convivencia_reports'] || []).select { |r| r['tenant_id'] == tenant_id || r['companyId'] == tenant_id }
+
+    res['Content-Type'] = 'application/json; charset=utf-8'
+    res.body = {
+      status: 'ok',
+      committees: committees,
+      members: members,
+      meetings: meetings,
+      tasks: tasks,
+      reports: reports
+    }.to_json
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# 2. Guardar o actualizar comité (COPASST, VIGIA_SST, CCL)
+mount_api(server, '/api/copasst-ccl/committee') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body) rescue {}
+      committee = payload['committee'] || payload
+      tenant_id = committee['tenant_id'] || committee['companyId']
+      type = committee['committee_type'] || 'COPASST'
+      
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      db['sst_committees'] ||= []
+      
+      # Calcular vigencia legal a 2 años exactos
+      start_date_str = committee['period_start_date'] || Time.now.strftime('%Y-%m-%d')
+      begin
+        s_date = Date.parse(start_date_str)
+        e_date = s_date.next_year(2)
+        committee['period_start_date'] = s_date.to_s
+        committee['period_end_date'] ||= e_date.to_s
+      rescue
+        committee['period_start_date'] = start_date_str
+        committee['period_end_date'] ||= (Time.now + 2*365*86400).strftime('%Y-%m-%d')
+      end
+
+      # Consecutivo de Acta de Constitución
+      year = committee['period_start_date'][0..3]
+      committee['constitution_act_number'] ||= "ACTA-CONF-#{type}-#{year}-01"
+      committee['id'] ||= "comm-#{Time.now.to_i}-#{SecureRandom.hex(3)}"
+      committee['tenant_id'] = tenant_id
+      committee['updated_at'] = Time.now.iso8601
+
+      idx = db['sst_committees'].find_index { |c| c['id'] == committee['id'] || (c['tenant_id'] == tenant_id && c['committee_type'] == type) }
+      if idx
+        db['sst_committees'][idx] = db['sst_committees'][idx].merge(committee)
+        committee = db['sst_committees'][idx]
+      else
+        db['sst_committees'] << committee
+      end
+
+      File.write(DB_FILE, JSON.pretty_generate(db))
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { status: 'ok', committee: committee }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: err.message }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# 3. Guardar integrantes del comité
+mount_api(server, '/api/copasst-ccl/members') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body) rescue {}
+      members = payload['members'] || [payload['member'] || payload]
+      tenant_id = payload['tenant_id'] || payload['companyId']
+      committee_id = payload['committee_id']
+
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      db['sst_committee_members'] ||= []
+
+      saved_members = []
+      members.each do |mem|
+        next unless mem.is_a?(Hash)
+        mem['id'] ||= "mem-#{Time.now.to_i}-#{SecureRandom.hex(3)}"
+        mem['tenant_id'] ||= tenant_id
+        mem['committee_id'] ||= committee_id
+        mem['updated_at'] = Time.now.iso8601
+        
+        idx = db['sst_committee_members'].find_index { |m| m['id'] == mem['id'] }
+        if idx
+          db['sst_committee_members'][idx] = db['sst_committee_members'][idx].merge(mem)
+          saved_members << db['sst_committee_members'][idx]
+        else
+          db['sst_committee_members'] << mem
+          saved_members << mem
+        end
+      end
+
+      File.write(DB_FILE, JSON.pretty_generate(db))
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { status: 'ok', members: saved_members }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: err.message }.to_json
+    end
+  elsif req.request_method == 'DELETE'
+    member_id = req.query['id']
+    if member_id
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      db['sst_committee_members'] = (db['sst_committee_members'] || []).reject { |m| m['id'] == member_id }
+      File.write(DB_FILE, JSON.pretty_generate(db))
+    end
+    res['Content-Type'] = 'application/json; charset=utf-8'
+    res.body = { status: 'ok', message: 'Miembro retirado' }.to_json
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# 4. Guardar actas y reuniones mensuales
+mount_api(server, '/api/copasst-ccl/meetings') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body) rescue {}
+      meeting = payload['meeting'] || payload
+      tenant_id = meeting['tenant_id'] || meeting['companyId']
+      comm_type = meeting['committee_type'] || 'COPASST'
+      year = (meeting['meeting_year'] || Time.now.year).to_i
+      month = (meeting['meeting_month'] || Time.now.month).to_i
+
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      db['sst_committee_meetings'] ||= []
+
+      prefix = comm_type == 'CCL' ? 'ACTA-CCL' : 'ACTA-COP'
+      meeting['act_consecutive'] ||= "#{prefix}-#{year}-#{sprintf('%03d', month)}"
+      meeting['id'] ||= "meet-#{Time.now.to_i}-#{SecureRandom.hex(3)}"
+      meeting['tenant_id'] = tenant_id
+      meeting['updated_at'] = Time.now.iso8601
+
+      idx = db['sst_committee_meetings'].find_index { |m| m['id'] == meeting['id'] || (m['tenant_id'] == tenant_id && m['committee_type'] == comm_type && m['meeting_year'] == year && m['meeting_month'] == month) }
+      if idx
+        db['sst_committee_meetings'][idx] = db['sst_committee_meetings'][idx].merge(meeting)
+        meeting = db['sst_committee_meetings'][idx]
+      else
+        db['sst_committee_meetings'] << meeting
+      end
+
+      File.write(DB_FILE, JSON.pretty_generate(db))
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { status: 'ok', meeting: meeting }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: err.message }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# 5. Tareas y compromisos de los comités
+mount_api(server, '/api/copasst-ccl/tasks') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body) rescue {}
+      task = payload['task'] || payload
+      tenant_id = task['tenant_id'] || task['companyId']
+
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      db['sst_committee_tasks'] ||= []
+
+      task['id'] ||= "tsk-#{Time.now.to_i}-#{SecureRandom.hex(3)}"
+      task['tenant_id'] = tenant_id
+      task['progress_percentage'] = (task['progress_percentage'] || 0).to_i
+      task['status'] ||= task['progress_percentage'] >= 100 ? 'COMPLETADA' : 'PENDIENTE'
+      task['updated_at'] = Time.now.iso8601
+
+      idx = db['sst_committee_tasks'].find_index { |t| t['id'] == task['id'] }
+      if idx
+        db['sst_committee_tasks'][idx] = db['sst_committee_tasks'][idx].merge(task)
+        task = db['sst_committee_tasks'][idx]
+      else
+        db['sst_committee_tasks'] << task
+      end
+
+      File.write(DB_FILE, JSON.pretty_generate(db))
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { status: 'ok', task: task }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: err.message }.to_json
+    end
+  elsif req.request_method == 'DELETE'
+    task_id = req.query['id']
+    if task_id
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      db['sst_committee_tasks'] = (db['sst_committee_tasks'] || []).reject { |t| t['id'] == task_id }
+      File.write(DB_FILE, JSON.pretty_generate(db))
+    end
+    res['Content-Type'] = 'application/json; charset=utf-8'
+    res.body = { status: 'ok', message: 'Tarea eliminada' }.to_json
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# 6. Canal Confidencial CCL: Reporte desde la App del Trabajador
+mount_api(server, '/api/worker/convivencia-report') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body) rescue {}
+      tenant_id = payload['tenant_id'] || payload['companyId'] || payload['empresaId']
+      clean_tenant = tenant_id.to_s.gsub(/[^a-zA-Z0-9_-]/, '')
+      clean_tenant = 'default' if clean_tenant.empty?
+
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      db['ccl_convivencia_reports'] ||= []
+
+      year = Time.now.year
+      # Generar radicado único CASO-CCL-YYYY-XXXX
+      existing_cases = db['ccl_convivencia_reports'].select { |c| c['case_radicado'] && c['case_radicado'].include?("CASO-CCL-#{year}") }
+      next_num = existing_cases.size + 1
+      radicado = "CASO-CCL-#{year}-#{sprintf('%04d', next_num)}"
+
+      upload_dir = File.join(UPLOADS_DIR, 'tenants', clean_tenant, 'convivencia')
+      FileUtils.mkdir_p(upload_dir)
+
+      # Almacenar soporte de evidencia si se envía base64
+      evidences_list = []
+      if payload['evidence_base64'] && payload['evidence_base64'].to_s.start_with?('data:')
+        header, b64 = payload['evidence_base64'].split(',', 2)
+        ext = 'png'
+        ext = 'jpg' if header.include?('jpeg')
+        ext = 'pdf' if header.include?('pdf')
+        ev_filename = "evidencia_#{radicado}_#{Time.now.to_i}.#{ext}"
+        ev_path = File.join(upload_dir, ev_filename)
+        File.open(ev_path, 'wb') { |f| f.write(Base64.decode64(b64)) }
+        evidences_list << "/uploads/tenants/#{clean_tenant}/convivencia/#{ev_filename}"
+      elsif payload['evidence_attachments'].is_a?(Array)
+        evidences_list = payload['evidence_attachments']
+      end
+
+      # Almacenar firma digital del trabajador
+      sig_url = nil
+      if payload['reporter_signature_data'] && payload['reporter_signature_data'].to_s.start_with?('data:')
+        _, b64_sig = payload['reporter_signature_data'].split(',', 2)
+        sig_filename = "firma_trabajador_#{radicado}.png"
+        sig_path = File.join(upload_dir, sig_filename)
+        File.open(sig_path, 'wb') { |f| f.write(Base64.decode64(b64_sig)) }
+        sig_url = "/uploads/tenants/#{clean_tenant}/convivencia/#{sig_filename}"
+      end
+
+      bogota_time = Time.now.getlocal('-05:00').strftime('%Y-%m-%d %H:%M:%S (UTC-5)')
+      new_report = {
+        'id' => "ccl-rep-#{Time.now.to_i}-#{SecureRandom.hex(3)}",
+        'tenant_id' => tenant_id,
+        'companyId' => tenant_id,
+        'case_radicado' => radicado,
+        'reporter_employee_id' => payload['reporter_employee_id'],
+        'reporter_name' => payload['reporter_name'] || 'Trabajador Protegido',
+        'reporter_cedula' => payload['reporter_cedula'] || '',
+        'reported_person_name_or_id' => payload['reported_person_name_or_id'] || 'No especificado',
+        'incident_type' => payload['incident_type'] || 'CONFLICTO_INTERPERSONAL_CONVIVENCIA',
+        'incident_date' => payload['incident_date'] || Time.now.strftime('%Y-%m-%d'),
+        'incident_place' => payload['incident_place'] || 'Instalaciones de la empresa',
+        'detailed_description' => payload['detailed_description'] || '',
+        'evidence_attachments_s3' => evidences_list,
+        'evidence_attachments' => evidences_list,
+        'case_status' => 'RADICADO_NUEVO',
+        'ccl_meeting_id' => nil,
+        'conciliation_commitments' => '',
+        'confidentiality_seal' => true,
+        'reporter_signature_url' => sig_url,
+        'created_at' => Time.now.iso8601,
+        'created_at_bogota' => bogota_time
+      }
+
+      db['ccl_convivencia_reports'].unshift(new_report)
+      File.write(DB_FILE, JSON.pretty_generate(db))
+
+      # Auditoría inmutable de radicación confidencial
+      client_ip = '127.0.0.1'
+      begin
+        client_ip = req.peeraddr[3] if req.peeraddr && req.peeraddr[3]
+      rescue
+      end
+      audit_entry = {
+        'timestamp' => Time.now.iso8601,
+        'event' => 'CCL_CONVIVENCIA_REPORT_CREATED',
+        'tenant_id' => tenant_id,
+        'radicado' => radicado,
+        'incident_type' => new_report['incident_type'],
+        'client_ip' => client_ip
+      }
+      File.open(AUDIT_FILE, 'a:UTF-8') { |f| f.puts(audit_entry.to_json) } rescue nil
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = {
+        status: 'ok',
+        radicado: radicado,
+        message: 'Reporte confidencial radicado exitosamente ante el Comité de Convivencia Laboral',
+        case: new_report
+      }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: "Error radicando caso CCL: #{err.message}" }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# 7. Actualización de estado de caso CCL y conciliación
+mount_api(server, '/api/copasst-ccl/case-status') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body) rescue {}
+      case_id = payload['case_id'] || payload['id']
+      new_status = payload['case_status'] || payload['status']
+      commitments = payload['conciliation_commitments']
+      meeting_id = payload['ccl_meeting_id']
+
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      db['ccl_convivencia_reports'] ||= []
+
+      rep = db['ccl_convivencia_reports'].find { |c| c['id'] == case_id || c['case_radicado'] == case_id }
+      if rep
+        rep['case_status'] = new_status if new_status
+        rep['conciliation_commitments'] = commitments if commitments
+        rep['ccl_meeting_id'] = meeting_id if meeting_id
+        rep['updated_at'] = Time.now.iso8601
+
+        File.write(DB_FILE, JSON.pretty_generate(db))
+
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { status: 'ok', report: rep }.to_json
+      else
+        res.status = 404
+        res.body = { error: 'Caso no encontrado' }.to_json
+      end
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: err.message }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# 8. Guardar PDF oficial sellado y vincular automáticamente con Estándares Mínimos (Res. 0312/2019)
+mount_api(server, '/api/copasst-ccl/save-pdf') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body) rescue {}
+      tenant_id = payload['tenant_id'] || payload['companyId']
+      clean_tenant = tenant_id.to_s.gsub(/[^a-zA-Z0-9_-]/, '')
+      clean_tenant = 'default' if clean_tenant.empty?
+
+      doc_type = payload['doc_type'] || 'ACTA'
+      consecutive = payload['consecutive'] || Time.now.to_i.to_s
+      doc_name = payload['doc_name'] || "#{doc_type}_#{consecutive}.pdf"
+      pdf_base64 = payload['pdf_base64']
+      numeral_0312 = payload['numeral_0312'] # e.g. "1.1.6", "1.1.7", "1.1.8"
+
+      upload_dir = File.join(UPLOADS_DIR, 'tenants', clean_tenant, 'copasst-ccl')
+      FileUtils.mkdir_p(upload_dir)
+
+      clean_filename = "#{doc_type}_#{consecutive.gsub(/[^a-zA-Z0-9_-]/, '_')}_#{Time.now.to_i}.pdf"
+      file_path = File.join(upload_dir, clean_filename)
+      file_url = "/uploads/tenants/#{clean_tenant}/copasst-ccl/#{clean_filename}"
+
+      sha256 = ''
+      if pdf_base64 && pdf_base64.to_s.start_with?('data:')
+        _, b64 = pdf_base64.split(',', 2)
+        binary = Base64.decode64(b64)
+        sha256 = Digest::SHA256.hexdigest(binary)
+        File.open(file_path, 'wb') { |f| f.write(binary) }
+      else
+        sha256 = Digest::SHA256.hexdigest(file_url)
+      end
+
+      # Conexión con Estándares Mínimos (Resolución 0312 de 2019)
+      db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+      if numeral_0312 && tenant_id
+        current_year = Time.now.year.to_s
+        db['evaluaciones'] ||= {}
+        db['evaluaciones'][tenant_id] ||= {}
+        db['evaluaciones'][tenant_id][current_year] ||= {}
+
+        db['evaluaciones'][tenant_id][current_year][numeral_0312] = {
+          'estado' => 'CUMPLE',
+          'justificacion' => "Soportado oficialmente con #{doc_name} debidamente firmado y radicado bajo Ley 527/1999.",
+          'linkGuia' => file_url,
+          'archivoAdjunto' => {
+            'nombre' => doc_name,
+            'url' => file_url,
+            'tipo' => 'application/pdf',
+            'fechaCargue' => Time.now.iso8601,
+            'sha256' => sha256
+          },
+          'fuentes' => [
+            {
+              'id' => "f-cop-#{Time.now.to_i}",
+              'url' => file_url,
+              'titulo' => "📄 #{doc_name}"
+            }
+          ]
+        }
+      end
+
+      File.write(DB_FILE, JSON.pretty_generate(db))
+
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = {
+        status: 'ok',
+        url: file_url,
+        sha256: sha256,
+        doc_name: doc_name,
+        numeral_0312: numeral_0312
+      }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { error: "Error guardando PDF: #{err.message}" }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
   end
 end
 
