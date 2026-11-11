@@ -4158,6 +4158,22 @@ mount_api(server, '/api/companies/institutional-signatures') do |req, res|
         next
       end
 
+      rep_sig_disk = if File.exist?(File.join(UPLOADS_DIR, "sig_inst_rep_legal_#{emp['id']}.png"))
+        "/uploads/sig_inst_rep_legal_#{emp['id']}.png"
+      elsif File.exist?(File.join(UPLOADS_DIR, "sig_inst_rep_legal_#{emp['id']}.svg"))
+        "/uploads/sig_inst_rep_legal_#{emp['id']}.svg"
+      else
+        nil
+      end
+
+      sst_sig_disk = if File.exist?(File.join(UPLOADS_DIR, "sig_inst_coord_sst_#{emp['id']}.png"))
+        "/uploads/sig_inst_coord_sst_#{emp['id']}.png"
+      elsif File.exist?(File.join(UPLOADS_DIR, "sig_inst_coord_sst_#{emp['id']}.svg"))
+        "/uploads/sig_inst_coord_sst_#{emp['id']}.svg"
+      else
+        nil
+      end
+
       res.status = 200
       res['Content-Type'] = 'application/json; charset=utf-8'
       res.body = {
@@ -4166,19 +4182,19 @@ mount_api(server, '/api/companies/institutional-signatures') do |req, res|
         company_name: emp['razonSocial'],
         legal_rep: {
           name: emp['legal_rep_name'] || emp['representanteLegal']&.split('-')&.first&.strip,
-          id_number: emp['legal_rep_id_number'] || '',
-          signature_s3_key: emp['legal_rep_signature_s3_key'],
-          signature_url: emp['legal_rep_signature_url'],
+          id_number: emp['legal_rep_id_number'] || emp['representanteLegalCedula'] || '',
+          signature_s3_key: emp['legal_rep_signature_s3_key'] || "tenants/#{emp['id']}/signatures/rep_legal.png",
+          signature_url: emp['legal_rep_signature_url'] || rep_sig_disk,
           registered_at: emp['legal_rep_signature_registered_at'],
           registered_bogota: emp['legal_rep_signature_registered_bogota'],
           sha256: emp['legal_rep_signature_sha256']
         },
         sst_coordinator: {
           name: emp['sst_coordinator_name'] || emp['responsableSST']&.split('-')&.first&.strip,
-          id_number: emp['sst_coordinator_id_number'] || '',
-          sst_license: emp['sst_coordinator_sst_license'] || '',
-          signature_s3_key: emp['sst_coordinator_signature_s3_key'],
-          signature_url: emp['sst_coordinator_signature_url'],
+          id_number: emp['sst_coordinator_id_number'] || emp['responsableSSTCedula'] || '',
+          sst_license: emp['sst_coordinator_sst_license'] || emp['responsableSSTLicencia'] || '',
+          signature_s3_key: emp['sst_coordinator_signature_s3_key'] || "tenants/#{emp['id']}/signatures/coord_sst.png",
+          signature_url: emp['sst_coordinator_signature_url'] || sst_sig_disk,
           registered_at: emp['sst_coordinator_signature_registered_at'],
           registered_bogota: emp['sst_coordinator_signature_registered_bogota'],
           sha256: emp['sst_coordinator_signature_sha256']
@@ -4209,48 +4225,73 @@ mount_api(server, '/api/companies/institutional-signatures') do |req, res|
       bogota_time = (timestamp_now.utc - 5*3600).strftime('%d/%m/%Y a las %H:%M:%S (Hora Legal Colombia UTC-5)')
 
       # 1. Procesar Firma Representante Legal si viene nueva
-      if payload['legal_rep_name']
+      if payload['legal_rep_name'] && !payload['legal_rep_name'].to_s.strip.empty?
         emp['legal_rep_name'] = payload['legal_rep_name'].to_s.strip
+        emp['representanteLegal'] = payload['legal_rep_name'].to_s.strip
       end
-      if payload['legal_rep_id_number']
+      if payload['legal_rep_id_number'] && !payload['legal_rep_id_number'].to_s.strip.empty?
         emp['legal_rep_id_number'] = payload['legal_rep_id_number'].to_s.strip
+        emp['representanteLegalCedula'] = payload['legal_rep_id_number'].to_s.strip
       end
-      if payload['legal_rep_signature_base64'] && !payload['legal_rep_signature_base64'].empty?
-        raw_b64 = payload['legal_rep_signature_base64'].to_s
-        raw_b64 = raw_b64.split(',', 2)[1] if raw_b64.include?(',')
-        png_data = Base64.decode64(raw_b64)
-        filename = "sig_inst_rep_legal_#{company_id}.png"
+
+      sig_rep = payload['legal_rep_signature_data'] || payload['legal_rep_signature_base64'] || payload['legal_rep_signature']
+      if sig_rep && !sig_rep.to_s.strip.empty?
+        raw_b64 = sig_rep.to_s
+        is_svg = raw_b64.include?('image/svg') || raw_b64.include?('<svg')
+        ext = is_svg ? 'svg' : 'png'
+        raw_b64_clean = raw_b64.include?(',') ? raw_b64.split(',', 2)[1] : raw_b64
+        file_bytes = is_svg && !raw_b64.include?(';base64,') ? raw_b64 : Base64.decode64(raw_b64_clean)
+        
+        filename = "sig_inst_rep_legal_#{company_id}.#{ext}"
         file_path = File.join(UPLOADS_DIR, filename)
-        File.open(file_path, 'wb') { |f| f.write(png_data) }
-        emp['legal_rep_signature_s3_key'] = "tenants/#{company_id}/signatures/rep_legal.png"
-        emp['legal_rep_signature_url'] = "/uploads/#{filename}"
+        FileUtils.mkdir_p(UPLOADS_DIR)
+        File.open(file_path, 'wb') { |f| f.write(file_bytes) }
+        
+        emp['legal_rep_signature_s3_key'] = "tenants/#{company_id}/signatures/rep_legal.#{ext}"
+        emp['legal_rep_signature_url'] = "/uploads/#{filename}?v=#{timestamp_now.to_i}"
         emp['legal_rep_signature_registered_at'] = timestamp_iso
         emp['legal_rep_signature_registered_bogota'] = bogota_time
-        emp['legal_rep_signature_sha256'] = Digest::SHA256.hexdigest("REP_LEGAL_#{company_id}_#{timestamp_iso}_#{png_data.length}")
+        emp['legal_rep_signature_sha256'] = Digest::SHA256.hexdigest("REP_LEGAL_#{company_id}_#{timestamp_iso}_#{file_bytes.length}")
       end
 
       # 2. Procesar Firma Coordinador SST si viene nueva
-      if payload['sst_coordinator_name']
+      if payload['sst_coordinator_name'] && !payload['sst_coordinator_name'].to_s.strip.empty?
         emp['sst_coordinator_name'] = payload['sst_coordinator_name'].to_s.strip
+        emp['responsableSST'] = payload['sst_coordinator_name'].to_s.strip
       end
-      if payload['sst_coordinator_id_number']
+      if payload['sst_coordinator_id_number'] && !payload['sst_coordinator_id_number'].to_s.strip.empty?
         emp['sst_coordinator_id_number'] = payload['sst_coordinator_id_number'].to_s.strip
+        emp['responsableSSTCedula'] = payload['sst_coordinator_id_number'].to_s.strip
       end
-      if payload['sst_coordinator_sst_license']
+      if payload['sst_coordinator_sst_license'] && !payload['sst_coordinator_sst_license'].to_s.strip.empty?
         emp['sst_coordinator_sst_license'] = payload['sst_coordinator_sst_license'].to_s.strip
+        emp['responsableSSTLicencia'] = payload['sst_coordinator_sst_license'].to_s.strip
       end
-      if payload['sst_coordinator_signature_base64'] && !payload['sst_coordinator_signature_base64'].empty?
-        raw_b64 = payload['sst_coordinator_signature_base64'].to_s
-        raw_b64 = raw_b64.split(',', 2)[1] if raw_b64.include?(',')
-        png_data = Base64.decode64(raw_b64)
-        filename = "sig_inst_coord_sst_#{company_id}.png"
+
+      sig_sst = payload['sst_coordinator_signature_data'] || payload['sst_coordinator_signature_base64'] || payload['sst_coordinator_signature']
+      if sig_sst && !sig_sst.to_s.strip.empty?
+        raw_b64 = sig_sst.to_s
+        is_svg = raw_b64.include?('image/svg') || raw_b64.include?('<svg')
+        ext = is_svg ? 'svg' : 'png'
+        raw_b64_clean = raw_b64.include?(',') ? raw_b64.split(',', 2)[1] : raw_b64
+        file_bytes = is_svg && !raw_b64.include?(';base64,') ? raw_b64 : Base64.decode64(raw_b64_clean)
+        
+        filename = "sig_inst_coord_sst_#{company_id}.#{ext}"
         file_path = File.join(UPLOADS_DIR, filename)
-        File.open(file_path, 'wb') { |f| f.write(png_data) }
-        emp['sst_coordinator_signature_s3_key'] = "tenants/#{company_id}/signatures/coord_sst.png"
-        emp['sst_coordinator_signature_url'] = "/uploads/#{filename}"
+        FileUtils.mkdir_p(UPLOADS_DIR)
+        File.open(file_path, 'wb') { |f| f.write(file_bytes) }
+        
+        emp['sst_coordinator_signature_s3_key'] = "tenants/#{company_id}/signatures/coord_sst.#{ext}"
+        emp['sst_coordinator_signature_url'] = "/uploads/#{filename}?v=#{timestamp_now.to_i}"
         emp['sst_coordinator_signature_registered_at'] = timestamp_iso
         emp['sst_coordinator_signature_registered_bogota'] = bogota_time
-        emp['sst_coordinator_signature_sha256'] = Digest::SHA256.hexdigest("COORD_SST_#{company_id}_#{timestamp_iso}_#{png_data.length}")
+        emp['sst_coordinator_signature_sha256'] = Digest::SHA256.hexdigest("COORD_SST_#{company_id}_#{timestamp_iso}_#{file_bytes.length}")
+      end
+
+      # Sincronizar en db['empresas']
+      emp_idx = db['empresas'].find_index { |e| e['id'] == company_id }
+      if emp_idx
+        db['empresas'][emp_idx] = emp
       end
 
       # Guardar base de datos
@@ -4274,7 +4315,27 @@ mount_api(server, '/api/companies/institutional-signatures') do |req, res|
       res.body = {
         status: 'ok',
         message: 'Firmas institucionales actualizadas y blindadas exitosamente.',
-        company: emp
+        company: emp,
+        empresa: emp,
+        legal_rep: {
+          name: emp['legal_rep_name'] || emp['representanteLegal'],
+          id_number: emp['legal_rep_id_number'] || emp['representanteLegalCedula'],
+          signature_s3_key: emp['legal_rep_signature_s3_key'],
+          signature_url: emp['legal_rep_signature_url'],
+          registered_at: emp['legal_rep_signature_registered_at'],
+          registered_bogota: emp['legal_rep_signature_registered_bogota'],
+          sha256: emp['legal_rep_signature_sha256']
+        },
+        sst_coordinator: {
+          name: emp['sst_coordinator_name'] || emp['responsableSST'],
+          id_number: emp['sst_coordinator_id_number'] || emp['responsableSSTCedula'],
+          sst_license: emp['sst_coordinator_sst_license'] || emp['responsableSSTLicencia'],
+          signature_s3_key: emp['sst_coordinator_signature_s3_key'],
+          signature_url: emp['sst_coordinator_signature_url'],
+          registered_at: emp['sst_coordinator_signature_registered_at'],
+          registered_bogota: emp['sst_coordinator_signature_registered_bogota'],
+          sha256: emp['sst_coordinator_signature_sha256']
+        }
       }.to_json
     rescue => err
       res.status = 500

@@ -2177,7 +2177,7 @@ Salud, Seguridad y Ambiente • Colombia`;
     return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  function initSignaturePadHelper(canvasId) {
+  function initSignaturePadHelper(canvasId, onDrawCallback = null) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return null;
     const ctx = canvas.getContext('2d');
@@ -2186,6 +2186,7 @@ Salud, Seguridad y Ambiente • Colombia`;
     let lastPos = null;
 
     function resize() {
+      if (hasSigned) return;
       const rect = canvas.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
       const targetW = Math.max(Math.round((rect.width || 300) * dpr), 300);
@@ -2222,6 +2223,7 @@ Salud, Seguridad y Ambiente • Colombia`;
       ctx.fillStyle = ctx.strokeStyle;
       ctx.fill();
       hasSigned = true;
+      if (typeof onDrawCallback === 'function') onDrawCallback();
     }
 
     function move(e) {
@@ -2481,15 +2483,38 @@ Salud, Seguridad y Ambiente • Colombia`;
 
     document.body.appendChild(modal);
 
-    // Inicializar Canvas Pads para Representante Legal y Coordinador SST
-    const padRep = initSignaturePadHelper('canvas-inst-rep-sig');
-    const padSst = initSignaturePadHelper('canvas-inst-sst-sig');
-
-    document.getElementById('btn-clear-rep-canvas')?.addEventListener('click', () => padRep?.clear());
-    document.getElementById('btn-clear-sst-canvas')?.addEventListener('click', () => padSst?.clear());
-
     let fileRepData = null;
     let fileSstData = null;
+
+    // Inicializar Canvas Pads con callback para limpiar archivo subido si dibuja
+    const padRep = initSignaturePadHelper('canvas-inst-rep-sig', () => {
+      fileRepData = null;
+      const fileInput = document.getElementById('file-inst-rep-sig');
+      if (fileInput) fileInput.value = '';
+    });
+    const padSst = initSignaturePadHelper('canvas-inst-sst-sig', () => {
+      fileSstData = null;
+      const fileInput = document.getElementById('file-inst-sst-sig');
+      if (fileInput) fileInput.value = '';
+    });
+
+    document.getElementById('btn-clear-rep-canvas')?.addEventListener('click', () => {
+      padRep?.clear();
+      fileRepData = null;
+      const fileInput = document.getElementById('file-inst-rep-sig');
+      if (fileInput) fileInput.value = '';
+      const prev = document.getElementById('preview-inst-rep-img');
+      if (prev) prev.src = repLegal.signature_url || '';
+    });
+
+    document.getElementById('btn-clear-sst-canvas')?.addEventListener('click', () => {
+      padSst?.clear();
+      fileSstData = null;
+      const fileInput = document.getElementById('file-inst-sst-sig');
+      if (fileInput) fileInput.value = '';
+      const prev = document.getElementById('preview-inst-sst-img');
+      if (prev) prev.src = sstCoord.signature_url || '';
+    });
 
     document.getElementById('file-inst-rep-sig')?.addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -2497,8 +2522,12 @@ Salud, Seguridad y Ambiente • Colombia`;
       const reader = new FileReader();
       reader.onload = (re) => {
         fileRepData = re.target.result;
+        padRep?.clear(); // Limpiar canvas si se seleccionó archivo PNG
         const prev = document.getElementById('preview-inst-rep-img');
-        if (prev) prev.src = fileRepData;
+        if (prev) {
+          prev.src = fileRepData;
+          prev.style.display = 'block';
+        }
       };
       reader.readAsDataURL(file);
     });
@@ -2509,8 +2538,12 @@ Salud, Seguridad y Ambiente • Colombia`;
       const reader = new FileReader();
       reader.onload = (re) => {
         fileSstData = re.target.result;
+        padSst?.clear(); // Limpiar canvas si se seleccionó archivo PNG
         const prev = document.getElementById('preview-inst-sst-img');
-        if (prev) prev.src = fileSstData;
+        if (prev) {
+          prev.src = fileSstData;
+          prev.style.display = 'block';
+        }
       };
       reader.readAsDataURL(file);
     });
@@ -2521,7 +2554,7 @@ Salud, Seguridad y Ambiente • Colombia`;
       btn.disabled = true;
       btn.innerHTML = `
         <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-        Guardando en MinIO y Sellando...
+        Guardando en Bóveda y Sellando...
       `;
 
       try {
@@ -2544,10 +2577,16 @@ Salud, Seguridad y Ambiente • Colombia`;
           sst_coordinator_sst_license: sstLic
         };
 
-        if (repSigData) payload.legal_rep_signature_data = repSigData;
-        if (sstSigData) payload.sst_coordinator_signature_data = sstSigData;
+        if (repSigData) {
+          payload.legal_rep_signature_data = repSigData;
+          payload.legal_rep_signature_base64 = repSigData;
+        }
+        if (sstSigData) {
+          payload.sst_coordinator_signature_data = sstSigData;
+          payload.sst_coordinator_signature_base64 = sstSigData;
+        }
 
-        await store.guardarFirmasInstitucionales(targetCid, payload);
+        const resData = await store.guardarFirmasInstitucionales(targetCid, payload);
 
         modal.remove();
         if (window.mostrarNotificacion) {

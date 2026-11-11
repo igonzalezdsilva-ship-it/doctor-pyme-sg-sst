@@ -5796,7 +5796,7 @@ class Store {
   async getFirmasInstitucionales(empresaId = null) {
     const targetCid = empresaId || this.getEmpresaActivaId();
     try {
-      const res = await fetch(`/api/companies/institutional-signatures?company_id=${encodeURIComponent(targetCid)}`);
+      const res = await fetch(this.getApiUrl(`/companies/institutional-signatures?company_id=${encodeURIComponent(targetCid)}`));
       if (res.ok) {
         const data = await res.json();
         return data;
@@ -5808,7 +5808,7 @@ class Store {
     return {
       status: 'ok',
       company_id: targetCid,
-      company_name: emp.nombre || 'Empresa',
+      company_name: emp.nombre || emp.razonSocial || 'Empresa',
       legal_rep: {
         name: emp.legal_rep_name || emp.representanteLegal || 'José Iván González Mora',
         id_number: emp.legal_rep_id_number || emp.representanteLegalCedula || emp.nit || '3.004.889',
@@ -5839,7 +5839,7 @@ class Store {
       ...payload
     };
     try {
-      const res = await fetch('/api/companies/institutional-signatures', {
+      const res = await fetch(this.getApiUrl('/companies/institutional-signatures'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bodyPayload)
@@ -5848,11 +5848,15 @@ class Store {
       if (!res.ok) throw new Error(data.error || 'Error al persistir firmas institucionales');
 
       // Actualizar en el estado en memoria de store
+      const empData = data.company || data.empresa;
       if (Array.isArray(this.data.empresas)) {
         const emp = this.data.empresas.find(e => e.id === targetCid);
-        if (emp && data.empresa) {
-          Object.assign(emp, data.empresa);
+        if (emp && empData) {
+          Object.assign(emp, empData);
         }
+      }
+      if (this.data.empresa && this.data.empresa.id === targetCid && empData) {
+        Object.assign(this.data.empresa, empData);
       }
       this.saveToStorage();
       this.notify();
