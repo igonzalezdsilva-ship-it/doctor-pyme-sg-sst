@@ -121,7 +121,8 @@ function router() {
   });
 
   try {
-    const res = renderFn();
+    const container = document.getElementById('main-content');
+    const res = renderFn(container);
     if (res instanceof Promise) {
       res.catch(err => {
         console.error("Error en renderizado asíncrono:", err);

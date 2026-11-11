@@ -31,7 +31,9 @@ function escapeHtml(text) {
     .replace(/'/g, '&#039;');
 }
 
-export function renderCopasstCcl(container) {
+export function renderCopasstCcl(targetContainer = null) {
+  const container = targetContainer || document.getElementById('main-content');
+  if (!container) return;
   const empresaActiva = store.getEmpresaActiva() || {
     id: 'emp-1790438946268',
     razonSocial: 'LADRILLOS OCHOA LTDA',
@@ -245,8 +247,8 @@ export function renderCopasstCcl(container) {
     renderCopasstCcl(container);
   };
 
-  window.abrirModalAsistenteReunion = (mesSugerido = null) => {
-    abrirModalSesionEnVivo(container, empresaActiva, esModoVigia, copasstComm, cclComm, members, tasks, currentYear, mesSugerido);
+  window.abrirModalAsistenteReunion = (mesSugerido = null, commTypeOverride = null) => {
+    abrirModalSesionEnVivo(container, empresaActiva, esModoVigia, copasstComm, cclComm, members, tasks, currentYear, mesSugerido, commTypeOverride);
   };
 
   window.abrirModalAgregarMiembro = (committeeType = 'COPASST') => {
@@ -266,6 +268,46 @@ export function renderCopasstCcl(container) {
 
   window.cambiarEstadoCasoCcl = (caseId, nuevoEstado) => {
     abrirModalGestionCasoCcl(container, caseId, nuevoEstado);
+  };
+
+  window.completarTareaRapida = async (taskId) => {
+    const t = tasks.find(item => item.id === taskId);
+    if (t) {
+      t.progress_percentage = 100;
+      t.status = 'COMPLETADA';
+      t.completed_at = new Date().toISOString();
+      await store.saveCommitteeTask(t);
+      renderCopasstCcl(container);
+    }
+  };
+
+  window.eliminarTarea = async (taskId) => {
+    if (confirm('¿Desea eliminar este compromiso del comité?')) {
+      await store.deleteCommitteeTask(taskId);
+      renderCopasstCcl(container);
+    }
+  };
+
+  window.verActaGeneradaPdf = (meetId) => {
+    const meet = meetings.find(m => m.id === meetId);
+    if (meet) {
+      generarActaReunionPdf(meet, empresaActiva, members);
+    }
+  };
+
+  window.abrirModalNuevaTarea = (commType = 'COPASST') => {
+    abrirModalFormTarea(container, empresaActiva, commType, trabajadores);
+  };
+
+  window.abrirModalNuevoReporteManual = () => {
+    abrirModalReporteManualCcl(container, empresaActiva, trabajadores);
+  };
+
+  window.generarActaConciliacionPdf = (caseId) => {
+    const rep = reports.find(r => r.id === caseId || r.case_radicado === caseId);
+    if (rep) {
+      generarPdfActaConciliacion(rep, empresaActiva, members);
+    }
   };
 }
 
@@ -1610,6 +1652,277 @@ function abrirModalGestionCasoCcl(container, caseId, nuevoEstado) {
     store.updateConvivenciaReportStatus(caseId, nuevoEstado, compromiso);
     renderCopasstCcl(container);
   }
+}
+
+// -----------------------------------------------------------------------------
+// MODAL: FORMULARIO DE NUEVA TAREA / COMPROMISO
+// -----------------------------------------------------------------------------
+function abrirModalFormTarea(container, empresa, commType, trabajadores) {
+  const modal = document.createElement('div');
+  modal.id = 'modal-tarea-form';
+  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn';
+
+  modal.innerHTML = `
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div>
+          <span class="text-[10px] font-black uppercase text-amber-500">Compromisos &amp; Tareas</span>
+          <h2 class="text-sm font-black text-slate-800 dark:text-white">Nuevo Compromiso - ${commType === 'CCL' ? 'CCL' : 'COPASST'}</h2>
+        </div>
+        <button type="button" onclick="document.getElementById('modal-tarea-form').remove()" class="text-slate-400 hover:text-white font-bold">✕</button>
+      </div>
+
+      <form id="form-nueva-tarea-modal" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Título de la Tarea / Compromiso *</label>
+          <input type="text" id="t-titulo" required placeholder="Ej: Inspección de extintores y botiquines en planta" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Categoría *</label>
+            <select id="t-categoria" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+              <option value="INSPECCION_SST">Inspección de Seguridad</option>
+              <option value="INVESTIGACION_ATEL">Investigación ATEL</option>
+              <option value="SEGUIMIENTO_PLAN_TRABAJO">Plan de Trabajo Anual</option>
+              <option value="CAPACITACION_CONVIVENCIA">Capacitación / Convivencia</option>
+              <option value="GESTION_CASO_ACOSO">Gestión de Caso CCL</option>
+              <option value="VERIFICACION_MEDIDAS_CONTROL">Medidas de Control</option>
+              <option value="OTRA">Otra Acción Correctiva</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Fecha Límite *</label>
+            <input type="date" id="t-fecha" required value="${new Date(Date.now() + 15*86400000).toISOString().split('T')[0]}" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-mono text-xs text-slate-800 dark:text-white">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Responsable *</label>
+          <input type="text" id="t-responsable" required placeholder="Nombre de la persona o cargo responsable" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Descripción / Observaciones</label>
+          <textarea id="t-descripcion" rows="2" placeholder="Detalle de las acciones a realizar..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white"></textarea>
+        </div>
+
+        <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2">
+          <button type="button" onclick="document.getElementById('modal-tarea-form').remove()" class="px-3 py-2 rounded-xl text-xs text-slate-500">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow cursor-pointer">Guardar Compromiso</button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  document.getElementById('form-nueva-tarea-modal').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nuevaTarea = {
+      tenant_id: empresa.id,
+      companyId: empresa.id,
+      committee_type: commType,
+      task_category: document.getElementById('t-categoria').value,
+      task_title: document.getElementById('t-titulo').value,
+      task_description: document.getElementById('t-descripcion').value,
+      responsible_name: document.getElementById('t-responsable').value,
+      due_date: document.getElementById('t-fecha').value,
+      progress_percentage: 0,
+      status: 'PENDIENTE'
+    };
+
+    await store.saveCommitteeTask(nuevaTarea);
+    modal.remove();
+    renderCopasstCcl(container);
+  });
+}
+
+// -----------------------------------------------------------------------------
+// MODAL: FORMULARIO DE REPORTE CONFIDENCIAL MANUAL CCL
+// -----------------------------------------------------------------------------
+function abrirModalReporteManualCcl(container, empresa, trabajadores) {
+  const modal = document.createElement('div');
+  modal.id = 'modal-reporte-manual-ccl';
+  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn';
+
+  modal.innerHTML = `
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div>
+          <span class="text-[10px] font-black uppercase text-indigo-500">Bóveda Confidencial CCL</span>
+          <h2 class="text-sm font-black text-slate-800 dark:text-white">Radicar Caso de Convivencia Manualmente</h2>
+        </div>
+        <button type="button" onclick="document.getElementById('modal-reporte-manual-ccl').remove()" class="text-slate-400 hover:text-white font-bold">✕</button>
+      </div>
+
+      <form id="form-reporte-manual-modal" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Trabajador que Presenta la Queja *</label>
+          <input type="text" id="rm-trabajador-nombre" required placeholder="Nombre del trabajador afectado" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Cédula</label>
+            <input type="text" id="rm-trabajador-cedula" placeholder="Cédula de ciudadanía" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-mono text-xs text-slate-800 dark:text-white">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Fecha de los Hechos *</label>
+            <input type="date" id="rm-fecha" value="${new Date().toISOString().split('T')[0]}" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-mono text-xs text-slate-800 dark:text-white">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Persona o Cargo Involucrado *</label>
+          <input type="text" id="rm-involucrado" required placeholder="Nombre o cargo de la persona involucrada" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tipología de la Queja (Ley 1010/2006) *</label>
+          <select id="rm-tipo" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+            <option value="CONFLICTO_INTERPERSONAL_CONVIVENCIA">Conflicto interpersonal de convivencia</option>
+            <option value="MALTRATO_LABORAL">Maltrato verbal o psicológico</option>
+            <option value="PERSECUCION_LABORAL">Persecución o acoso laboral reiterado</option>
+            <option value="DISCRIMINACION_LABORAL">Trato discriminatorio</option>
+            <option value="ENTORPECIMIENTO_LABORAL">Entorpecimiento laboral</option>
+            <option value="INEQUIDAD_LABORAL">Inequidad manifiesta</option>
+            <option value="DESPROTECCION_LABORAL">Desprotección laboral</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Relato Detallado de los Hechos *</label>
+          <textarea id="rm-descripcion" rows="3" required placeholder="Descripción de los hechos acontecidos..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white"></textarea>
+        </div>
+
+        <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2">
+          <button type="button" onclick="document.getElementById('modal-reporte-manual-ccl').remove()" class="px-3 py-2 rounded-xl text-xs text-slate-500">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold shadow cursor-pointer">Radicar Caso</button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  document.getElementById('form-reporte-manual-modal').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const payload = {
+      tenant_id: empresa.id,
+      companyId: empresa.id,
+      reporter_name: document.getElementById('rm-trabajador-nombre').value,
+      reporter_cedula: document.getElementById('rm-trabajador-cedula').value,
+      reported_person_name_or_id: document.getElementById('rm-involucrado').value,
+      incident_type: document.getElementById('rm-tipo').value,
+      incident_date: document.getElementById('rm-fecha').value,
+      incident_place: 'Instalaciones de la empresa',
+      detailed_description: document.getElementById('rm-descripcion').value
+    };
+
+    try {
+      const resp = await fetch('/api/worker/convivencia-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await resp.json();
+      if (data.status === 'ok' && data.case) {
+        store.data.ccl_convivencia_reports = store.data.ccl_convivencia_reports || [];
+        store.data.ccl_convivencia_reports.unshift(data.case);
+        store.saveToStorage();
+        modal.remove();
+        renderCopasstCcl(container);
+      }
+    } catch (err) {
+      alert('Error radicando caso: ' + err.message);
+    }
+  });
+}
+
+// -----------------------------------------------------------------------------
+// GENERADOR DE ACTA DE CONCILIACIÓN CCL EN PDF
+// -----------------------------------------------------------------------------
+function generarPdfActaConciliacion(report, empresa, members) {
+  const printArea = document.createElement('div');
+  printArea.className = 'fixed -left-[9999px] top-0 bg-white p-8 max-w-[800px] text-slate-900 font-sans text-xs leading-relaxed';
+
+  printArea.innerHTML = `
+    <div style="font-family: Arial, sans-serif; color: #1e293b; padding: 20px; line-height: 1.5;">
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #0f172a; margin-bottom: 20px;">
+        <tr>
+          <td style="width: 30%; text-align: center; border: 1px solid #0f172a; padding: 10px;">
+            <div style="font-size: 11px; font-weight: bold;">${escapeHtml(empresa.razonSocial || empresa.razon_social)}</div>
+            <div style="font-size: 9px; color: #64748b;">NIT: ${empresa.nit}</div>
+          </td>
+          <td style="width: 45%; text-align: center; border: 1px solid #0f172a; padding: 10px;">
+            <div style="font-size: 11px; font-weight: bold; color: #0f172a;">COMITÉ DE CONVIVENCIA LABORAL</div>
+            <div style="font-size: 12px; font-weight: 900; color: #4338ca; margin-top: 4px;">ACTA OFICIAL DE CONCILIACIÓN Y COMPROMISOS</div>
+            <div style="font-size: 9px; color: #475569;">Ley 1010 de 2006 &amp; Res. 652 de 2012</div>
+          </td>
+          <td style="width: 25%; font-size: 9px; border: 1px solid #0f172a; padding: 8px;">
+            <div><strong>Radicado:</strong> ${escapeHtml(report.case_radicado)}</div>
+            <div><strong>Fecha:</strong> ${report.incident_date || new Date().toISOString().split('T')[0]}</div>
+            <div><strong>Estado:</strong> ${report.case_status}</div>
+          </td>
+        </tr>
+      </table>
+
+      <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 11px;">
+        <div><strong>Partes Involucradas:</strong> ${escapeHtml(report.reporter_name)} (Afectado/a) y ${escapeHtml(report.reported_person_name_or_id)} (Involucrado/a)</div>
+        <div style="margin-top: 4px;"><strong>Tipología:</strong> ${escapeHtml(report.incident_type)}</div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <div style="font-weight: bold; background: #e2e8f0; padding: 6px 10px; border-radius: 4px; margin-bottom: 8px;">RELATO DE LOS HECHOS OBJETO DE CONCILIACIÓN</div>
+        <div style="text-align: justify; font-size: 11px; font-style: italic;">"${escapeHtml(report.detailed_description || 'Sin descripción')}"</div>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <div style="font-weight: bold; background: #e0e7ff; color: #3730a3; padding: 6px 10px; border-radius: 4px; margin-bottom: 8px;">ACUERDOS Y COMPROMISOS PACTADOS DE SANA CONVIVENCIA</div>
+        <div style="text-align: justify; font-size: 11px; font-weight: bold;">${escapeHtml(report.conciliation_commitments || 'Las partes acuerdan restablecer el trato respetuoso, los canales de comunicación asertiva y abstenerse de cualquier conducta que vulnere la dignidad laboral conforme a la Ley 1010 de 2006.')}</div>
+      </div>
+
+      <div style="margin-top: 40px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 10px;">
+          <tr>
+            <td style="width: 33%; padding: 10px; vertical-align: top;">
+              <div style="border-top: 1.5px solid #0f172a; padding-top: 6px;">
+                <div style="font-weight: bold;">${escapeHtml(report.reporter_name)}</div>
+                <div style="color: #64748b;">Trabajador(a) / Parte Afectada</div>
+              </div>
+            </td>
+            <td style="width: 33%; padding: 10px; vertical-align: top;">
+              <div style="border-top: 1.5px solid #0f172a; padding-top: 6px;">
+                <div style="font-weight: bold;">${escapeHtml(report.reported_person_name_or_id)}</div>
+                <div style="color: #64748b;">Persona Involucrada</div>
+              </div>
+            </td>
+            <td style="width: 33%; padding: 10px; vertical-align: top;">
+              <div style="border-top: 1.5px solid #0f172a; padding-top: 6px;">
+                <div style="font-weight: bold;">Presidente / Secretario CCL</div>
+                <div style="color: #64748b;">Por el Comité de Convivencia</div>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(printArea);
+
+  if (typeof html2pdf !== 'undefined') {
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: `ACTA_CONCILIACION_${report.case_radicado}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(printArea).save();
+  }
+  setTimeout(() => printArea.remove(), 2000);
 }
 
 function sprintf(format, ...args) {
