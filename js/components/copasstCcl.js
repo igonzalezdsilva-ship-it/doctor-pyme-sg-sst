@@ -75,23 +75,23 @@ export function renderCopasstCcl(targetContainer = null) {
     <div class="space-y-6 pb-20">
       
       <!-- =================================================================== -->
-      <!-- CABECERA Y DASHBOARD GERENCIAL DE COMITÉS SST                      -->
+      <!-- CABECERA Y DASHBOARD GERENCIAL DE COMITÉS SST (CLARO & SUAVE)       -->
       <!-- =================================================================== -->
-      <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 p-6 rounded-3xl border border-slate-700/60 shadow-xl text-white relative overflow-hidden">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs relative overflow-hidden">
         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div class="flex items-center gap-2 mb-1">
-              <span class="px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200/80">
                 Módulo 6 SST • Resolución 2013/1986 &amp; Ley 1010/2006
               </span>
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${esModoVigia ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-teal-500/20 text-teal-300 border border-teal-500/30'}">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${esModoVigia ? 'bg-purple-50 text-purple-700 border border-purple-200/80' : 'bg-teal-50 text-teal-700 border border-teal-200/80'}">
                 ${esModoVigia ? '🔍 Régimen Vigía SST (< 10 trabajadores)' : '👥 Régimen COPASST Paritario (≥ 10 trabajadores)'}
               </span>
             </div>
-            <h1 class="text-2xl font-black tracking-tight">COPASST &amp; Comité de Convivencia Laboral (CCL)</h1>
-            <p class="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
-              Gestión legal, actas mensuales, compromisos inmutables y canal confidencial de protección a la sana convivencia laboral para 
-              <span class="font-bold text-white">${escapeHtml(empresaActiva.razonSocial || empresaActiva.razon_social)}</span>.
+            <h1 class="text-2xl font-bold text-slate-800 tracking-tight">COPASST &amp; Comité de Convivencia Laboral (CCL)</h1>
+            <p class="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
+              Gestión legal, actas mensuales, compromisos y canal confidencial de protección a la sana convivencia laboral para 
+              <span class="font-semibold text-slate-700">${escapeHtml(empresaActiva.razonSocial || empresaActiva.razon_social)}</span>.
             </p>
           </div>
 
@@ -99,7 +99,7 @@ export function renderCopasstCcl(targetContainer = null) {
             <button 
               type="button" 
               onclick="window.abrirModalAsistenteReunion()"
-              class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 flex items-center gap-2 transition cursor-pointer active:scale-95"
+              class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-xs flex items-center gap-2 transition cursor-pointer active:scale-95"
             >
               <span>⚡</span>
               <span>Llevar a cabo Sesión Mensual</span>
@@ -108,74 +108,74 @@ export function renderCopasstCcl(targetContainer = null) {
         </div>
 
         <!-- 4 TARJETAS KPIS SUPERIORES -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-6 pt-6 border-t border-slate-700/60">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-6 pt-5 border-t border-slate-100">
           
           <!-- KPI 1: COPASST -->
-          <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-700">
-            <div class="flex items-center justify-between text-slate-400 text-xs">
+          <div class="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/70 hover:border-amber-200 transition">
+            <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
               <span>Reuniones COPASST ${currentYear}</span>
               <span class="text-base">🛡️</span>
             </div>
             <div class="flex items-baseline gap-2 mt-1.5">
-              <span class="text-2xl font-black text-white">${copasstMeetingsYear.length}</span>
-              <span class="text-xs text-slate-400 font-bold">/ 12 sesiones</span>
+              <span class="text-2xl font-bold text-slate-800">${copasstMeetingsYear.length}</span>
+              <span class="text-xs text-slate-400 font-medium">/ 12 sesiones</span>
             </div>
-            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-              <div class="bg-amber-400 h-full rounded-full transition-all" style="width: ${Math.min(100, Math.round((copasstMeetingsYear.length / 12) * 100))}%"></div>
+            <div class="w-full bg-slate-200 h-1.5 rounded-full mt-2 overflow-hidden">
+              <div class="bg-amber-500 h-full rounded-full transition-all" style="width: ${Math.min(100, Math.round((copasstMeetingsYear.length / 12) * 100))}%"></div>
             </div>
-            <span class="text-[10px] text-amber-300 font-semibold block mt-1">
+            <span class="text-[10px] text-amber-700 font-medium block mt-1">
               ${copasstMeetingsYear.length >= 12 ? '✅ Meta legal cumplida' : `${12 - copasstMeetingsYear.length} sesiones restantes`}
             </span>
           </div>
 
           <!-- KPI 2: CCL -->
-          <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-700">
-            <div class="flex items-center justify-between text-slate-400 text-xs">
+          <div class="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/70 hover:border-indigo-200 transition">
+            <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
               <span>Reuniones CCL ${currentYear}</span>
               <span class="text-base">🤝</span>
             </div>
             <div class="flex items-baseline gap-2 mt-1.5">
-              <span class="text-2xl font-black text-white">${cclMeetingsYear.length}</span>
-              <span class="text-xs text-slate-400 font-bold">sesiones registradas</span>
+              <span class="text-2xl font-bold text-slate-800">${cclMeetingsYear.length}</span>
+              <span class="text-xs text-slate-400 font-medium">sesiones registradas</span>
             </div>
-            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-              <div class="bg-indigo-400 h-full rounded-full transition-all" style="width: ${Math.min(100, Math.round((cclMeetingsYear.length / 12) * 100))}%"></div>
+            <div class="w-full bg-slate-200 h-1.5 rounded-full mt-2 overflow-hidden">
+              <div class="bg-indigo-500 h-full rounded-full transition-all" style="width: ${Math.min(100, Math.round((cclMeetingsYear.length / 12) * 100))}%"></div>
             </div>
-            <span class="text-[10px] text-indigo-300 font-semibold block mt-1">
+            <span class="text-[10px] text-indigo-700 font-medium block mt-1">
               Sesiones ordinarias y extraordinarias
             </span>
           </div>
 
           <!-- KPI 3: TAREAS -->
-          <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-700">
-            <div class="flex items-center justify-between text-slate-400 text-xs">
+          <div class="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/70 hover:border-emerald-200 transition">
+            <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
               <span>Compromisos &amp; Tareas</span>
               <span class="text-base">🎯</span>
             </div>
             <div class="flex items-baseline gap-2 mt-1.5">
-              <span class="text-2xl font-black text-white">${tasksPercentage}%</span>
-              <span class="text-xs text-slate-400 font-bold">${completedTasks}/${totalTasks} listas</span>
+              <span class="text-2xl font-bold text-slate-800">${tasksPercentage}%</span>
+              <span class="text-xs text-slate-400 font-medium">${completedTasks}/${totalTasks} listas</span>
             </div>
-            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-              <div class="bg-emerald-400 h-full rounded-full transition-all" style="width: ${tasksPercentage}%"></div>
+            <div class="w-full bg-slate-200 h-1.5 rounded-full mt-2 overflow-hidden">
+              <div class="bg-emerald-500 h-full rounded-full transition-all" style="width: ${tasksPercentage}%"></div>
             </div>
-            <span class="text-[10px] text-emerald-300 font-semibold block mt-1">
+            <span class="text-[10px] text-emerald-700 font-medium block mt-1">
               ${totalTasks - completedTasks} compromisos pendientes
             </span>
           </div>
 
           <!-- KPI 4: CASOS CONVIVENCIA -->
-          <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-700">
-            <div class="flex items-center justify-between text-slate-400 text-xs">
+          <div class="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/70 hover:border-rose-200 transition">
+            <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
               <span>Canal Confidencial CCL</span>
               <span class="text-base">🔒</span>
             </div>
             <div class="flex items-baseline gap-2 mt-1.5">
-              <span class="text-2xl font-black ${nuevosCasosCcl > 0 ? 'text-rose-400 animate-pulse' : 'text-white'}">${nuevosCasosCcl}</span>
-              <span class="text-xs text-slate-400 font-bold">nuevos sin revisar</span>
+              <span class="text-2xl font-bold ${nuevosCasosCcl > 0 ? 'text-rose-600' : 'text-slate-800'}">${nuevosCasosCcl}</span>
+              <span class="text-xs text-slate-400 font-medium">nuevos sin revisar</span>
             </div>
             <div class="flex items-center gap-1.5 mt-2">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${nuevosCasosCcl > 0 ? 'bg-rose-500 text-white' : 'bg-slate-800 text-slate-300'}">
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${nuevosCasosCcl > 0 ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-600'}">
                 ${casosActivos} casos en trámite
               </span>
             </div>
@@ -190,15 +190,15 @@ export function renderCopasstCcl(targetContainer = null) {
       <!-- =================================================================== -->
       <!-- PESTAÑAS PRINCIPALES (TABS): COPASST vs CCL                         -->
       <!-- =================================================================== -->
-      <div class="flex border-b border-slate-200 dark:border-slate-800 gap-2">
+      <div class="flex border-b border-slate-200 gap-2">
         <button 
           type="button" 
           onclick="window.cambiarMainTabCopasstCcl('copasst')"
-          class="flex items-center gap-2 px-5 py-3 border-b-2 text-sm font-black transition cursor-pointer ${activeMainTab === 'copasst' ? 'border-amber-500 text-amber-600 dark:text-amber-400 bg-amber-50/50 dark:bg-amber-950/20 rounded-t-xl' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'}"
+          class="flex items-center gap-2 px-5 py-3 border-b-2 text-xs font-bold transition cursor-pointer ${activeMainTab === 'copasst' ? 'border-amber-500 text-amber-800 bg-amber-50/40 rounded-t-xl' : 'border-transparent text-slate-500 hover:text-slate-800'}"
         >
           <span class="text-base">🛡️</span>
           <span>1. ${esModoVigia ? 'Vigía en SST' : 'COPASST (Comité Paritario)'}</span>
-          <span class="ml-1 text-[11px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">
+          <span class="ml-1 text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-mono font-medium">
             ${copasstMeetingsYear.length}/12
           </span>
         </button>
@@ -206,17 +206,17 @@ export function renderCopasstCcl(targetContainer = null) {
         <button 
           type="button" 
           onclick="window.cambiarMainTabCopasstCcl('ccl')"
-          class="flex items-center gap-2 px-5 py-3 border-b-2 text-sm font-black transition cursor-pointer relative ${activeMainTab === 'ccl' ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/20 rounded-t-xl' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'}"
+          class="flex items-center gap-2 px-5 py-3 border-b-2 text-xs font-bold transition cursor-pointer relative ${activeMainTab === 'ccl' ? 'border-indigo-600 text-indigo-700 bg-indigo-50/40 rounded-t-xl' : 'border-transparent text-slate-500 hover:text-slate-800'}"
         >
           <span class="text-base">🤝</span>
           <span>2. Comité de Convivencia Laboral (CCL)</span>
           ${nuevosCasosCcl > 0 ? `
-            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping absolute top-2 right-2"></span>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white ml-1">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping absolute top-2.5 right-2"></span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200 ml-1">
               ${nuevosCasosCcl} Nuevo${nuevosCasosCcl > 1 ? 's' : ''}
             </span>
           ` : `
-            <span class="ml-1 text-[11px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">
+            <span class="ml-1 text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-mono font-medium">
               ${reports.length}
             </span>
           `}
@@ -327,25 +327,25 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
     <div class="space-y-6">
       
       <!-- Sub-navegación COPASST -->
-      <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800/60 p-1.5 rounded-2xl w-fit">
+      <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl w-fit border border-slate-200/60">
         <button 
           type="button" 
           onclick="window.cambiarSubTabCopasst('conformacion')"
-          class="px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${activeSubTabCopasst === 'conformacion' ? 'bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${activeSubTabCopasst === 'conformacion' ? 'bg-white text-slate-800 shadow-xs border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'}"
         >
           📋 1.1 Conformación &amp; Responsabilidades
         </button>
         <button 
           type="button" 
           onclick="window.cambiarSubTabCopasst('reuniones')"
-          class="px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${activeSubTabCopasst === 'reuniones' ? 'bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${activeSubTabCopasst === 'reuniones' ? 'bg-white text-slate-800 shadow-xs border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'}"
         >
           🗓️ 1.2 Reuniones Mensuales (Ene - Dic)
         </button>
         <button 
           type="button" 
           onclick="window.cambiarSubTabCopasst('tareas')"
-          class="px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${activeSubTabCopasst === 'tareas' ? 'bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${activeSubTabCopasst === 'tareas' ? 'bg-white text-slate-800 shadow-xs border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'}"
         >
           🎯 1.3 Tablero de Compromisos (${commTasks.length})
         </button>
@@ -356,22 +356,22 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
         <div class="space-y-6">
           
           <!-- Banner de Período y Estado Legal -->
-          <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="space-y-1">
               <div class="flex items-center gap-2">
-                <span class="text-xs font-black uppercase text-amber-600 dark:text-amber-400">
+                <span class="text-xs font-bold uppercase text-amber-800">
                   ${esModoVigia ? 'Vigía en Seguridad y Salud en el Trabajo' : 'Comité Paritario de Seguridad y Salud en el Trabajo'}
                 </span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                   Activo y Vigente
                 </span>
               </div>
-              <h2 class="text-lg font-black text-slate-800 dark:text-white">
-                Período Legal de Vigencia: ${startPeriod} al ${endPeriod} (2 Años)
+              <h2 class="text-base font-bold text-slate-800">
+                Período Legal de Vigencia: <span class="text-slate-900 font-extrabold">${startPeriod} al ${endPeriod} (2 Años)</span>
               </h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400">
+              <p class="text-xs text-slate-500">
                 Resolución 2013 de 1986 y Decreto 1072 de 2015 Art. 2.2.4.6.29. Consecutivo: 
-                <span class="font-mono font-bold text-slate-700 dark:text-slate-200">${committee?.constitution_act_number || `ACTA-CONF-${commType}-${currentYear}-01`}</span>
+                <span class="font-mono font-medium text-slate-700">${committee?.constitution_act_number || `ACTA-CONF-${commType}-${currentYear}-01`}</span>
               </p>
             </div>
 
@@ -380,7 +380,7 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
               <button 
                 type="button" 
                 onclick="window.generarDocumentoConstitucion('VOTACION')"
-                class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+                class="px-3.5 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
                 title="Generar Convocatoria y Acta de Votación de Trabajadores"
               >
                 <span>🗳️</span>
@@ -390,7 +390,7 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
               <button 
                 type="button" 
                 onclick="window.generarDocumentoConstitucion('CONFORMACION_COPASST')"
-                class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+                class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
                 title="Generar Acta Oficial de Conformación debidamente sellada"
               >
                 <span>📜</span>
@@ -400,7 +400,7 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
               <button 
                 type="button" 
                 onclick="window.generarDocumentoConstitucion('MANUAL_FUNCIONES')"
-                class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+                class="px-3.5 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
                 title="Ver Manual Legal de Funciones del Comité, Presidente y Secretario"
               >
                 <span>📖</span>
@@ -410,12 +410,12 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
           </div>
 
           <!-- Marco Normativo Precargado de Funciones Legales -->
-          <div class="bg-amber-500/10 border border-amber-500/30 p-4 rounded-2xl text-xs space-y-2 text-slate-700 dark:text-slate-300">
-            <div class="flex items-center gap-2 font-black text-amber-800 dark:text-amber-300">
+          <div class="bg-amber-50/70 border border-amber-200/80 p-4 rounded-xl text-xs space-y-2 text-amber-950">
+            <div class="flex items-center gap-2 font-bold text-amber-900">
               <span>⚖️</span>
               <span>Funciones Principales según Art. 11 Res. 2013 de 1986 &amp; Dec. 1072 de 2015:</span>
             </div>
-            <ul class="grid grid-cols-1 md:grid-cols-2 gap-2 list-disc list-inside text-[11px] leading-relaxed">
+            <ul class="grid grid-cols-1 md:grid-cols-2 gap-2 list-disc list-inside text-[11px] text-amber-900/80 leading-relaxed">
               <li>Investigar las causas de todos los accidentes e incidentes de trabajo y enfermedades laborales (ATEL).</li>
               <li>Realizar inspecciones periódicas de seguridad en instalaciones, maquinaria, herramientas y puestos de trabajo.</li>
               <li>Servir como organismo de coordinación entre el empleador y los trabajadores en temas de SG-SST.</li>
@@ -426,13 +426,13 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
           </div>
 
           <!-- Tabla de Integrantes del Comité -->
-          <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <div>
-                <h3 class="text-sm font-black text-slate-800 dark:text-white">
+                <h3 class="text-sm font-bold text-slate-800">
                   ${esModoVigia ? 'Vigía Designado en SST' : 'Integrantes Paritarios del COPASST'}
                 </h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400">
+                <p class="text-xs text-slate-500">
                   ${esModoVigia ? 'Representante único de SST para empresas de menos de 10 trabajadores' : 'Igual número de representantes designados por el Empleador y elegidos por los Trabajadores'}
                 </p>
               </div>
@@ -440,7 +440,7 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
               <button 
                 type="button" 
                 onclick="window.abrirModalAgregarMiembro('${commType}')"
-                class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+                class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
               >
                 <span>➕</span>
                 <span>Asignar Integrante</span>
@@ -449,7 +449,7 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
 
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 border-b border-slate-200 dark:border-slate-800 font-bold">
+                <thead class="bg-slate-50 text-slate-600 border-b border-slate-200 font-semibold text-[11px] uppercase tracking-wider">
                   <tr>
                     <th class="p-3.5">Integrante / Cédula</th>
                     <th class="p-3.5">Representación</th>
@@ -459,7 +459,7 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
                     <th class="p-3.5 text-right">Acciones</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody class="divide-y divide-slate-100">
                   ${commMembers.length === 0 ? `
                     <tr>
                       <td colspan="6" class="p-8 text-center text-slate-400">
@@ -467,34 +467,34 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
                       </td>
                     </tr>
                   ` : commMembers.map(m => `
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition">
+                    <tr class="hover:bg-slate-50/60 transition">
                       <td class="p-3.5">
-                        <span class="font-bold text-slate-900 dark:text-white block">${escapeHtml(m.employee_name)}</span>
-                        <span class="text-[11px] text-slate-500 font-mono">C.C. ${escapeHtml(m.employee_id_number || 'No registrada')} • ${escapeHtml(m.employee_position || 'Cargo')}</span>
+                        <span class="font-semibold text-slate-800 block">${escapeHtml(m.employee_name)}</span>
+                        <span class="text-[11px] text-slate-400 font-mono">C.C. ${escapeHtml(m.employee_id_number || 'No registrada')} • ${escapeHtml(m.employee_position || 'Cargo')}</span>
                       </td>
                       <td class="p-3.5">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${m.representation_side === 'EMPLEADOR_DESIGNADO' ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400' : m.representation_side === 'TRABAJADORES_ELEGIDO' ? 'bg-teal-500/20 text-teal-600 dark:text-teal-400' : 'bg-purple-500/20 text-purple-600 dark:text-purple-400'}">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-medium ${m.representation_side === 'EMPLEADOR_DESIGNADO' ? 'bg-blue-50 text-blue-700 border border-blue-200/70' : m.representation_side === 'TRABAJADORES_ELEGIDO' ? 'bg-teal-50 text-teal-700 border border-teal-200/70' : 'bg-purple-50 text-purple-700 border border-purple-200/70'}">
                           ${m.representation_side === 'EMPLEADOR_DESIGNADO' ? '🏢 Empleador' : m.representation_side === 'TRABAJADORES_ELEGIDO' ? '👥 Trabajadores' : '🔍 Vigía Único'}
                         </span>
                       </td>
                       <td class="p-3.5">
-                        <span class="font-bold text-slate-700 dark:text-slate-300">
+                        <span class="font-medium text-slate-700">
                           ${m.member_category || 'PRINCIPAL'}
                         </span>
                       </td>
                       <td class="p-3.5">
-                        <span class="font-black px-2 py-0.5 rounded-lg text-[10px] ${m.committee_role === 'PRESIDENTE' ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300' : m.committee_role === 'SECRETARIO' ? 'bg-indigo-500/20 text-indigo-700 dark:text-indigo-300' : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}">
+                        <span class="font-medium px-2 py-0.5 rounded-md text-[10px] ${m.committee_role === 'PRESIDENTE' ? 'bg-amber-50 text-amber-800 border border-amber-200/70' : m.committee_role === 'SECRETARIO' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/70' : 'bg-slate-100 text-slate-700 border border-slate-200/70'}">
                           ${m.committee_role || 'MIEMBRO_VOCAL'}
                         </span>
                       </td>
                       <td class="p-3.5">
                         ${m.accepted_and_signed ? `
-                          <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                          <span class="text-emerald-700 font-medium flex items-center gap-1 text-[11px]">
                             <span>✅</span>
                             <span>Firmado Digitalmente</span>
                           </span>
                         ` : `
-                          <span class="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
+                          <span class="text-amber-700 font-medium flex items-center gap-1 text-[11px]">
                             <span>⏳</span>
                             <span>Pendiente de Firma</span>
                           </span>
@@ -504,7 +504,7 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
                         <button 
                           type="button" 
                           onclick="window.eliminarMiembro('${m.id}')"
-                          class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition"
+                          class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition"
                           title="Retirar miembro"
                         >
                           🗑️
@@ -524,12 +524,12 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
       ${activeSubTabCopasst === 'reuniones' ? `
         <div class="space-y-6">
           
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between flex-wrap gap-3">
             <div>
-              <h2 class="text-base font-black text-slate-800 dark:text-white">
+              <h2 class="text-base font-bold text-slate-800">
                 Matriz de Control Mensual de Sesiones (${currentYear})
               </h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400">
+              <p class="text-xs text-slate-500">
                 12 reuniones ordinarias anuales obligatorias según Resolución 2013 de 1986 Art. 7.
               </p>
             </div>
@@ -537,7 +537,7 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
             <button 
               type="button" 
               onclick="window.abrirModalAsistenteReunion()"
-              class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow-sm transition flex items-center gap-2 cursor-pointer"
+              class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer"
             >
               <span>⚡</span>
               <span>Iniciar Sesión del Mes Actual</span>
@@ -558,19 +558,19 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
               else if (esPasado) estado = 'VENCIDA';
 
               return `
-                <div class="p-4 rounded-3xl border transition-all ${estado === 'EJECUTADA' ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800' : estado === 'PROGRAMADA' ? 'bg-amber-50/40 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800' : estado === 'VENCIDA' ? 'bg-rose-50/40 dark:bg-rose-950/20 border-rose-300 dark:border-rose-800' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'}">
+                <div class="p-4 rounded-2xl border transition-all ${estado === 'EJECUTADA' ? 'bg-emerald-50/50 border-emerald-200 text-slate-800 shadow-xs' : estado === 'PROGRAMADA' ? 'bg-amber-50/50 border-amber-200 text-slate-800 shadow-xs' : estado === 'VENCIDA' ? 'bg-rose-50/40 border-rose-200 text-slate-800 shadow-xs' : 'bg-white border-slate-200 text-slate-800 shadow-xs'}">
                   
                   <div class="flex items-center justify-between">
-                    <span class="text-xs font-black uppercase ${esActual ? 'text-amber-500' : 'text-slate-600 dark:text-slate-400'}">
+                    <span class="text-xs font-bold uppercase ${esActual ? 'text-amber-800' : 'text-slate-600'}">
                       Mes ${mesNum} • ${nombreMes}
                     </span>
-                    <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${estado === 'EJECUTADA' ? 'bg-emerald-500 text-white' : estado === 'PROGRAMADA' ? 'bg-amber-500 text-slate-950' : estado === 'VENCIDA' ? 'bg-rose-500 text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'}">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${estado === 'EJECUTADA' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : estado === 'PROGRAMADA' ? 'bg-amber-100 text-amber-800 border border-amber-200' : estado === 'VENCIDA' ? 'bg-rose-100 text-rose-800 border border-rose-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}">
                       ${estado}
                     </span>
                   </div>
 
                   <div class="mt-3 space-y-1">
-                    <span class="text-sm font-black text-slate-800 dark:text-white block">
+                    <span class="text-sm font-bold text-slate-800 block">
                       ${meet?.act_consecutive || `Acta Mensual ${nombreMes}`}
                     </span>
                     <span class="text-[11px] text-slate-500 block">
@@ -578,12 +578,12 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
                     </span>
                   </div>
 
-                  <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                  <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
                     ${meet && meet.status === 'CERRADA_FIRMADA' ? `
                       <button 
                         type="button" 
                         onclick="window.verActaGeneradaPdf('${meet.id}')"
-                        class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+                        class="text-[11px] font-semibold text-emerald-700 hover:underline flex items-center gap-1"
                       >
                         <span>📄</span>
                         <span>Ver Acta PDF</span>
@@ -593,7 +593,7 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
                       <button 
                         type="button" 
                         onclick="window.abrirModalAsistenteReunion(${mesNum})"
-                        class="w-full py-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
+                        class="w-full py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200"
                       >
                         <span>⚡</span>
                         <span>Llevar a Cabo Sesión</span>
@@ -612,12 +612,12 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
       <!-- SUBTAB 1.3: TABLERO DE COMPROMISOS & TAREAS -->
       ${activeSubTabCopasst === 'tareas' ? `
         <div class="space-y-6">
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between flex-wrap gap-3">
             <div>
-              <h2 class="text-base font-black text-slate-800 dark:text-white">
+              <h2 class="text-base font-bold text-slate-800">
                 Compromisos &amp; Tareas del COPASST / Vigía
               </h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400">
+              <p class="text-xs text-slate-500">
                 Seguimiento continuo a inspecciones, investigación de accidentes, medidas de control y plan de trabajo.
               </p>
             </div>
@@ -625,17 +625,17 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
             <button 
               type="button" 
               onclick="window.abrirModalNuevaTarea('COPASST')"
-              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
             >
               <span>➕</span>
               <span>Nuevo Compromiso</span>
             </button>
           </div>
 
-          <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 border-b border-slate-200 dark:border-slate-800 font-bold">
+                <thead class="bg-slate-50 text-slate-600 border-b border-slate-200 font-semibold text-[11px] uppercase tracking-wider">
                   <tr>
                     <th class="p-3.5">Categoría / Tarea</th>
                     <th class="p-3.5">Responsable</th>
@@ -645,7 +645,7 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
                     <th class="p-3.5 text-right">Acciones</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody class="divide-y divide-slate-100">
                   ${commTasks.length === 0 ? `
                     <tr>
                       <td colspan="6" class="p-8 text-center text-slate-400">
@@ -653,30 +653,30 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
                       </td>
                     </tr>
                   ` : commTasks.map(t => `
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition">
+                    <tr class="hover:bg-slate-50/60 transition">
                       <td class="p-3.5">
-                        <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-700">
+                        <span class="px-2 py-0.5 rounded text-[9px] font-semibold uppercase bg-slate-100 text-slate-700 border border-slate-200">
                           ${t.task_category || 'INSPECCION_SST'}
                         </span>
-                        <span class="font-bold text-slate-800 dark:text-white block mt-1">${escapeHtml(t.task_title)}</span>
+                        <span class="font-semibold text-slate-800 block mt-1">${escapeHtml(t.task_title)}</span>
                         ${t.task_description ? `<span class="text-[11px] text-slate-500 block">${escapeHtml(t.task_description)}</span>` : ''}
                       </td>
-                      <td class="p-3.5 font-bold text-slate-700 dark:text-slate-300">
+                      <td class="p-3.5 font-medium text-slate-700">
                         ${escapeHtml(t.responsible_name || 'Sin asignar')}
                       </td>
-                      <td class="p-3.5 font-mono text-slate-600 dark:text-slate-400">
+                      <td class="p-3.5 font-mono text-slate-600">
                         ${t.due_date || 'Inmediata'}
                       </td>
                       <td class="p-3.5 w-32">
                         <div class="flex items-center gap-2">
-                          <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                            <div class="bg-indigo-500 h-full rounded-full" style="width: ${t.progress_percentage || 0}%"></div>
+                          <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200">
+                            <div class="bg-indigo-600 h-full rounded-full" style="width: ${t.progress_percentage || 0}%"></div>
                           </div>
-                          <span class="font-bold text-[11px] text-slate-700 dark:text-slate-300 font-mono">${t.progress_percentage || 0}%</span>
+                          <span class="font-medium text-[11px] text-slate-700 font-mono">${t.progress_percentage || 0}%</span>
                         </div>
                       </td>
                       <td class="p-3.5">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${t.status === 'COMPLETADA' ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' : t.status === 'EN_EJECUCION' ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300'}">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-medium ${t.status === 'COMPLETADA' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : t.status === 'EN_EJECUCION' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}">
                           ${t.status || 'PENDIENTE'}
                         </span>
                       </td>
@@ -684,7 +684,7 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
                         <button 
                           type="button" 
                           onclick="window.completarTareaRapida('${t.id}')"
-                          class="p-1.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded-lg transition"
+                          class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition"
                           title="Marcar como cumplida al 100%"
                         >
                           ✔️
@@ -692,7 +692,7 @@ function renderSeccionCopasst(empresa, esModoVigia, committee, members, meetings
                         <button 
                           type="button" 
                           onclick="window.eliminarTarea('${t.id}')"
-                          class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition"
+                          class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition"
                           title="Eliminar tarea"
                         >
                           🗑️
@@ -724,34 +724,34 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
     <div class="space-y-6">
       
       <!-- Sub-navegación CCL -->
-      <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800/60 p-1.5 rounded-2xl w-fit">
+      <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl w-fit border border-slate-200/60">
         <button 
           type="button" 
           onclick="window.cambiarSubTabCcl('bandeja')"
-          class="px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer relative ${activeSubTabCcl === 'bandeja' ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer relative ${activeSubTabCcl === 'bandeja' ? 'bg-white text-slate-800 shadow-xs border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'}"
         >
-          🔒 2.4 Bandeja Confidencial de Casos (${reports.length})
+          🔒 2.4 Bandeja Confidencial (${reports.length})
         </button>
         <button 
           type="button" 
           onclick="window.cambiarSubTabCcl('conformacion')"
-          class="px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${activeSubTabCcl === 'conformacion' ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${activeSubTabCcl === 'conformacion' ? 'bg-white text-slate-800 shadow-xs border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'}"
         >
-          📋 2.1 Conformación &amp; Acuerdo de Confidencialidad
+          📋 2.1 Conformación &amp; Confidencialidad
         </button>
         <button 
           type="button" 
           onclick="window.cambiarSubTabCcl('reuniones')"
-          class="px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${activeSubTabCcl === 'reuniones' ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${activeSubTabCcl === 'reuniones' ? 'bg-white text-slate-800 shadow-xs border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'}"
         >
           🗓️ 2.2 Reuniones Trimestrales / Mensuales
         </button>
         <button 
           type="button" 
           onclick="window.cambiarSubTabCcl('tareas')"
-          class="px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${activeSubTabCcl === 'tareas' ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}"
+          class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${activeSubTabCcl === 'tareas' ? 'bg-white text-slate-800 shadow-xs border border-slate-200/80 font-bold' : 'text-slate-600 hover:text-slate-900'}"
         >
-          🤝 2.3 Actividades Preventivas de Convivencia
+          🤝 2.3 Actividades Preventivas
         </button>
       </div>
 
@@ -759,18 +759,18 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
       ${activeSubTabCcl === 'bandeja' ? `
         <div class="space-y-6">
           
-          <div class="bg-indigo-950/20 border border-indigo-500/30 p-5 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="bg-indigo-50/60 border border-indigo-200/70 p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="space-y-1">
               <div class="flex items-center gap-2">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-indigo-500 text-white">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-indigo-100 text-indigo-800 border border-indigo-200">
                   🔒 Canal Estricto de Reserva y Secreto Profesional
                 </span>
-                <span class="text-xs text-slate-500 font-mono">Ley 1010 de 2006 • Res. 652/2012</span>
+                <span class="text-xs text-indigo-900/70 font-mono">Ley 1010 de 2006 • Res. 652/2012</span>
               </div>
-              <h2 class="text-lg font-black text-slate-800 dark:text-white">
+              <h2 class="text-base font-bold text-slate-800">
                 Bandeja de Quejas y Solicitudes de Convivencia Laboral
               </h2>
-              <p class="text-xs text-slate-600 dark:text-slate-300">
+              <p class="text-xs text-slate-600">
                 Los casos radicados desde la Aplicación del Trabajador ingresan automáticamente con radicado oficial protegido y estampa de tiempo UTC-5.
               </p>
             </div>
@@ -779,7 +779,7 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
               <button 
                 type="button" 
                 onclick="window.abrirModalNuevoReporteManual()"
-                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
               >
                 <span>➕</span>
                 <span>Radicar Caso Manualmente</span>
@@ -790,11 +790,11 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
           <!-- Listado de Casos y Procedimiento Guiado 4 Pasos -->
           <div class="space-y-4">
             ${reports.length === 0 ? `
-              <div class="bg-white dark:bg-slate-900 p-12 rounded-3xl border border-slate-200 dark:border-slate-800 text-center space-y-3">
-                <div class="w-14 h-14 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-500 rounded-2xl flex items-center justify-center mx-auto text-2xl font-bold">
+              <div class="bg-white p-12 rounded-2xl border border-slate-200 text-center space-y-3 shadow-xs">
+                <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto text-2xl font-bold border border-emerald-100">
                   🤝
                 </div>
-                <h3 class="text-base font-bold text-slate-800 dark:text-white">
+                <h3 class="text-base font-bold text-slate-800">
                   Ambiente Laboral Armónico
                 </h3>
                 <p class="text-xs text-slate-500 max-w-md mx-auto">
@@ -802,86 +802,86 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
                 </p>
               </div>
             ` : reports.map(r => `
-              <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+              <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
                 
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="font-mono font-bold text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+                    <span class="font-mono font-bold text-xs px-2.5 py-1 rounded-lg bg-slate-100 text-slate-800 border border-slate-200">
                       ${escapeHtml(r.case_radicado)}
                     </span>
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${r.case_status === 'RADICADO_NUEVO' ? 'bg-rose-500 text-white' : r.case_status === 'EN_CONCILIACION_PLAN_MEJORA' ? 'bg-amber-500 text-slate-950' : r.case_status === 'CERRADO_CON_ACUERDO' ? 'bg-emerald-500 text-white' : 'bg-indigo-500 text-white'}">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${r.case_status === 'RADICADO_NUEVO' ? 'bg-rose-100 text-rose-800 border border-rose-200' : r.case_status === 'EN_CONCILIACION_PLAN_MEJORA' ? 'bg-amber-100 text-amber-800 border border-amber-200' : r.case_status === 'CERRADO_CON_ACUERDO' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-indigo-100 text-indigo-800 border border-indigo-200'}">
                       ${r.case_status}
                     </span>
-                    <span class="text-xs text-slate-500 font-mono">
+                    <span class="text-xs text-slate-400 font-mono">
                       📅 ${r.incident_date || r.created_at_bogota || r.created_at}
                     </span>
                   </div>
 
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-bold text-slate-500">Paso Actual:</span>
-                    <span class="text-xs font-black text-indigo-600 dark:text-indigo-400">
+                    <span class="text-[10px] font-medium text-slate-400">Paso Actual:</span>
+                    <span class="text-xs font-bold text-indigo-700">
                       ${r.case_status === 'RADICADO_NUEVO' ? 'Paso 1: Recepción & Verificación' : r.case_status === 'CITACION_DESCARGOS_ESCUCHA' ? 'Paso 2: Citación y Escucha' : r.case_status === 'EN_CONCILIACION_PLAN_MEJORA' ? 'Paso 3: Conciliación y Acuerdos' : 'Paso 4: Cierre o Remisión'}
                     </span>
                   </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                  <div class="bg-slate-50 dark:bg-slate-800/40 p-3 rounded-2xl">
-                    <span class="text-[10px] text-slate-400 uppercase font-bold block">Trabajador Afectado (Confidencial)</span>
-                    <span class="font-bold text-slate-900 dark:text-white block mt-0.5">${escapeHtml(r.reporter_name)}</span>
-                    <span class="text-slate-500 font-mono text-[11px]">C.C. ${escapeHtml(r.reporter_cedula || 'Oculta')}</span>
+                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-100">
+                    <span class="text-[10px] text-slate-400 uppercase font-semibold block">Trabajador Afectado (Confidencial)</span>
+                    <span class="font-semibold text-slate-800 block mt-0.5">${escapeHtml(r.reporter_name)}</span>
+                    <span class="text-slate-400 font-mono text-[11px]">C.C. ${escapeHtml(r.reporter_cedula || 'Oculta')}</span>
                   </div>
 
-                  <div class="bg-slate-50 dark:bg-slate-800/40 p-3 rounded-2xl">
-                    <span class="text-[10px] text-slate-400 uppercase font-bold block">Persona o Cargo Involucrado</span>
-                    <span class="font-bold text-slate-900 dark:text-white block mt-0.5">${escapeHtml(r.reported_person_name_or_id)}</span>
-                    <span class="text-slate-500 text-[11px]">Lugar: ${escapeHtml(r.incident_place || 'Empresa')}</span>
+                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-100">
+                    <span class="text-[10px] text-slate-400 uppercase font-semibold block">Persona o Cargo Involucrado</span>
+                    <span class="font-semibold text-slate-800 block mt-0.5">${escapeHtml(r.reported_person_name_or_id)}</span>
+                    <span class="text-slate-400 text-[11px]">Lugar: ${escapeHtml(r.incident_place || 'Empresa')}</span>
                   </div>
 
-                  <div class="bg-slate-50 dark:bg-slate-800/40 p-3 rounded-2xl">
-                    <span class="text-[10px] text-slate-400 uppercase font-bold block">Tipología de la Queja (Ley 1010)</span>
-                    <span class="font-bold text-rose-600 dark:text-rose-400 block mt-0.5">${escapeHtml(r.incident_type)}</span>
-                    <span class="text-slate-500 text-[11px]">${(r.evidence_attachments_s3 || []).length} archivos adjuntos</span>
+                  <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-100">
+                    <span class="text-[10px] text-slate-400 uppercase font-semibold block">Tipología de la Queja (Ley 1010)</span>
+                    <span class="font-semibold text-rose-700 block mt-0.5">${escapeHtml(r.incident_type)}</span>
+                    <span class="text-slate-400 text-[11px]">${(r.evidence_attachments_s3 || []).length} archivos adjuntos</span>
                   </div>
                 </div>
 
-                <div class="bg-slate-50 dark:bg-slate-800/30 p-3.5 rounded-2xl text-xs space-y-1">
-                  <span class="text-[10px] text-slate-400 uppercase font-bold block">Relato de los Hechos:</span>
-                  <p class="text-slate-700 dark:text-slate-300 leading-relaxed italic">
+                <div class="bg-slate-50/70 p-3.5 rounded-xl border border-slate-100 text-xs space-y-1">
+                  <span class="text-[10px] text-slate-400 uppercase font-semibold block">Relato de los Hechos:</span>
+                  <p class="text-slate-700 leading-relaxed italic">
                     "${escapeHtml(r.detailed_description || 'Sin descripción detallada')}"
                   </p>
                 </div>
 
                 ${r.conciliation_commitments ? `
-                  <div class="bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-500/30 p-3.5 rounded-2xl text-xs space-y-1">
-                    <span class="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase font-black block">Acta de Acuerdos y Compromisos de Conciliación:</span>
-                    <p class="text-slate-700 dark:text-slate-300 leading-relaxed font-semibold">
+                  <div class="bg-emerald-50/60 border border-emerald-200/70 p-3.5 rounded-xl text-xs space-y-1">
+                    <span class="text-[10px] text-emerald-800 uppercase font-bold block">Acta de Acuerdos y Compromisos de Conciliación:</span>
+                    <p class="text-slate-800 leading-relaxed font-semibold">
                       ${escapeHtml(r.conciliation_commitments)}
                     </p>
                   </div>
                 ` : ''}
 
                 <!-- Acciones del Flujo Legal Ley 1010/2006 -->
-                <div class="pt-2 flex flex-wrap items-center justify-between gap-2">
+                <div class="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100">
                   <div class="flex items-center gap-1.5 flex-wrap">
                     <button 
                       type="button" 
                       onclick="window.cambiarEstadoCasoCcl('${r.id}', 'CITACION_DESCARGOS_ESCUCHA')"
-                      class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition"
+                      class="px-3 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 border border-slate-200 transition"
                     >
                       🗣️ Convocar Audiencias Separadas
                     </button>
                     <button 
                       type="button" 
                       onclick="window.cambiarEstadoCasoCcl('${r.id}', 'EN_CONCILIACION_PLAN_MEJORA')"
-                      class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 text-xs font-bold text-indigo-600 dark:text-indigo-400 transition"
+                      class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-xs font-semibold text-indigo-700 border border-indigo-200 transition"
                     >
                       ✍️ Levantar Acta de Conciliación
                     </button>
                     <button 
                       type="button" 
                       onclick="window.cambiarEstadoCasoCcl('${r.id}', 'CERRADO_CON_ACUERDO')"
-                      class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 text-xs font-bold text-emerald-600 dark:text-emerald-400 transition"
+                      class="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-xs font-semibold text-emerald-700 border border-emerald-200 transition"
                     >
                       ✅ Cerrar con Acuerdo Cumplido
                     </button>
@@ -891,7 +891,7 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
                     <button 
                       type="button" 
                       onclick="window.generarActaConciliacionPdf('${r.id}')"
-                      class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                      class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold transition flex items-center gap-1 cursor-pointer"
                     >
                       <span>📑</span>
                       <span>Acta Legal PDF</span>
@@ -909,12 +909,12 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
       <!-- SUBTAB 2.1: CONFORMACIÓN & ACUERDO DE CONFIDENCIALIDAD -->
       ${activeSubTabCcl === 'conformacion' ? `
         <div class="space-y-6">
-          <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="space-y-1">
-              <span class="text-xs font-black uppercase text-indigo-600 dark:text-indigo-400">
+              <span class="text-xs font-bold uppercase text-indigo-700">
                 Resoluciones 652 y 1356 de 2012 • Ministerio del Trabajo
               </span>
-              <h2 class="text-lg font-black text-slate-800 dark:text-white">
+              <h2 class="text-base font-bold text-slate-800">
                 Comité de Convivencia Laboral (CCL)
               </h2>
               <p class="text-xs text-slate-500">
@@ -922,11 +922,11 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
               </p>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               <button 
                 type="button" 
                 onclick="window.generarDocumentoConstitucion('CONFORMACION_CCL')"
-                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
               >
                 <span>📜</span>
                 <span>Acta de Conformación CCL</span>
@@ -934,7 +934,7 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
               <button 
                 type="button" 
                 onclick="window.generarDocumentoConstitucion('CONFIDENCIALIDAD_CCL')"
-                class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl transition flex items-center gap-1.5 cursor-pointer"
+                class="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
               >
                 <span>🔏</span>
                 <span>Acuerdo de Confidencialidad</span>
@@ -943,17 +943,17 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
           </div>
 
           <!-- Tabla de Miembros del CCL -->
-          <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <div>
-                <h3 class="text-sm font-black text-slate-800 dark:text-white">Miembros del Comité de Convivencia</h3>
+                <h3 class="text-sm font-bold text-slate-800">Miembros del Comité de Convivencia</h3>
                 <p class="text-xs text-slate-500">Representantes designados por la Alta Dirección y elegidos por votación libre de los trabajadores.</p>
               </div>
 
               <button 
                 type="button" 
                 onclick="window.abrirModalAgregarMiembro('CCL')"
-                class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+                class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
               >
                 <span>➕</span>
                 <span>Asignar Miembro CCL</span>
@@ -962,7 +962,7 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
 
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 border-b border-slate-200 dark:border-slate-800 font-bold">
+                <thead class="bg-slate-50 text-slate-600 border-b border-slate-200 font-semibold text-[11px] uppercase tracking-wider">
                   <tr>
                     <th class="p-3.5">Miembro</th>
                     <th class="p-3.5">Representación</th>
@@ -971,7 +971,7 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
                     <th class="p-3.5 text-right">Acciones</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody class="divide-y divide-slate-100">
                   ${cclMembers.length === 0 ? `
                     <tr>
                       <td colspan="5" class="p-8 text-center text-slate-400">
@@ -979,23 +979,23 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
                       </td>
                     </tr>
                   ` : cclMembers.map(m => `
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition">
+                    <tr class="hover:bg-slate-50/60 transition">
                       <td class="p-3.5">
-                        <span class="font-bold text-slate-900 dark:text-white block">${escapeHtml(m.employee_name)}</span>
-                        <span class="text-[11px] text-slate-500 font-mono">C.C. ${escapeHtml(m.employee_id_number || 'N/A')}</span>
+                        <span class="font-semibold text-slate-800 block">${escapeHtml(m.employee_name)}</span>
+                        <span class="text-[11px] text-slate-400 font-mono">C.C. ${escapeHtml(m.employee_id_number || 'N/A')}</span>
                       </td>
                       <td class="p-3.5">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${m.representation_side === 'EMPLEADOR_DESIGNADO' ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400' : 'bg-teal-500/20 text-teal-600 dark:text-teal-400'}">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-medium ${m.representation_side === 'EMPLEADOR_DESIGNADO' ? 'bg-blue-50 text-blue-700 border border-blue-200/70' : 'bg-teal-50 text-teal-700 border border-teal-200/70'}">
                           ${m.representation_side === 'EMPLEADOR_DESIGNADO' ? '🏢 Empleador' : '👥 Trabajadores'}
                         </span>
                       </td>
                       <td class="p-3.5">
-                        <span class="font-black px-2 py-0.5 rounded-lg text-[10px] ${m.committee_role === 'PRESIDENTE' ? 'bg-indigo-500/20 text-indigo-700 dark:text-indigo-300' : m.committee_role === 'SECRETARIO' ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300' : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}">
+                        <span class="font-medium px-2 py-0.5 rounded-md text-[10px] ${m.committee_role === 'PRESIDENTE' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/70' : m.committee_role === 'SECRETARIO' ? 'bg-amber-50 text-amber-800 border border-amber-200/70' : 'bg-slate-100 text-slate-700 border border-slate-200/70'}">
                           ${m.committee_role || 'MIEMBRO_VOCAL'}
                         </span>
                       </td>
                       <td class="p-3.5">
-                        <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                        <span class="text-emerald-700 font-medium flex items-center gap-1 text-[11px]">
                           <span>🔒</span>
                           <span>Firmado &amp; Sellado</span>
                         </span>
@@ -1004,7 +1004,7 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
                         <button 
                           type="button" 
                           onclick="window.eliminarMiembro('${m.id}')"
-                          class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition"
+                          class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition"
                         >
                           🗑️
                         </button>
@@ -1021,15 +1021,15 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
       <!-- SUBTAB 2.2: REUNIONES TRIMESTRALES / MENSUALES CCL -->
       ${activeSubTabCcl === 'reuniones' ? `
         <div class="space-y-6">
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between flex-wrap gap-3">
             <div>
-              <h2 class="text-base font-black text-slate-800 dark:text-white">Sesiones Ordinarias y Extraordinarias del CCL (${currentYear})</h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400">Sesiones ordinarias cada tres (3) meses según Res. 652/2012, o extraordinarias cuando se requiera por queja radicada.</p>
+              <h2 class="text-base font-bold text-slate-800">Sesiones Ordinarias y Extraordinarias del CCL (${currentYear})</h2>
+              <p class="text-xs text-slate-500">Sesiones ordinarias cada tres (3) meses según Res. 652/2012, o extraordinarias cuando se requiera por queja radicada.</p>
             </div>
             <button 
               type="button" 
               onclick="window.abrirModalAsistenteReunion(null, 'CCL')"
-              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
             >
               <span>⚡</span>
               <span>Llevar a Cabo Sesión CCL</span>
@@ -1045,23 +1045,23 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
             ].map(t => {
               const meet = cclMeetings.find(m => m.meeting_month === t.mes);
               return `
-                <div class="p-4 rounded-3xl border ${meet ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'} space-y-3">
+                <div class="p-4 rounded-2xl border ${meet ? 'bg-emerald-50/40 border-emerald-200 text-slate-800 shadow-xs' : 'bg-white border-slate-200 text-slate-800 shadow-xs'} space-y-3">
                   <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold text-slate-700 dark:text-slate-300">${t.trimestre}</span>
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold ${meet ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'}">
+                    <span class="text-xs font-semibold text-slate-700">${t.trimestre}</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${meet ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}">
                       ${meet ? 'Ejecutada' : 'Pendiente'}
                     </span>
                   </div>
-                  <span class="text-sm font-black text-slate-900 dark:text-white block">
+                  <span class="text-sm font-bold text-slate-800 block">
                     ${meet?.act_consecutive || 'Acta Ordinaria'}
                   </span>
-                  <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <div class="pt-2 border-t border-slate-100">
                     ${meet ? `
-                      <button type="button" onclick="window.verActaGeneradaPdf('${meet.id}')" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+                      <button type="button" onclick="window.verActaGeneradaPdf('${meet.id}')" class="text-xs font-semibold text-indigo-700 hover:underline">
                         📄 Ver Acta Oficial Firmada
                       </button>
                     ` : `
-                      <button type="button" onclick="window.abrirModalAsistenteReunion(${t.mes}, 'CCL')" class="w-full py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition">
+                      <button type="button" onclick="window.abrirModalAsistenteReunion(${t.mes}, 'CCL')" class="w-full py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 transition">
                         Realizar Sesión
                       </button>
                     `}
@@ -1076,15 +1076,15 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
       <!-- SUBTAB 2.3: ACTIVIDADES PREVENTIVAS DE CONVIVENCIA -->
       ${activeSubTabCcl === 'tareas' ? `
         <div class="space-y-6">
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between flex-wrap gap-3">
             <div>
-              <h2 class="text-base font-black text-slate-800 dark:text-white">Plan Preventivo de Convivencia y Clima Laboral</h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400">Talleres de comunicación asertiva, campañas de buen trato y encuestas de riesgo psicosocial.</p>
+              <h2 class="text-base font-bold text-slate-800">Plan Preventivo de Convivencia y Clima Laboral</h2>
+              <p class="text-xs text-slate-500">Talleres de comunicación asertiva, campañas de buen trato y encuestas de riesgo psicosocial.</p>
             </div>
             <button 
               type="button" 
               onclick="window.abrirModalNuevaTarea('CCL')"
-              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
             >
               <span>➕</span>
               <span>Nueva Campaña / Actividad</span>
@@ -1092,25 +1092,25 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
               <span class="text-xl">🗣️</span>
-              <h3 class="text-sm font-bold text-slate-900 dark:text-white">Taller de Comunicación Asertiva</h3>
+              <h3 class="text-sm font-bold text-slate-800">Taller de Comunicación Asertiva</h3>
               <p class="text-xs text-slate-500 leading-relaxed">Capacitación sobre resolución pacífica de conflictos y manejo de emociones en el entorno laboral.</p>
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">Programada Semestre I</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Programada Semestre I</span>
             </div>
 
-            <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
               <span class="text-xl">🤝</span>
-              <h3 class="text-sm font-bold text-slate-900 dark:text-white">Campaña de Buen Trato y Respeto</h3>
+              <h3 class="text-sm font-bold text-slate-800">Campaña de Buen Trato y Respeto</h3>
               <p class="text-xs text-slate-500 leading-relaxed">Divulgación visual y digital de la política de tolerancia cero frente al acoso y maltrato.</p>
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-600 dark:text-indigo-400">Activa Permanente</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Activa Permanente</span>
             </div>
 
-            <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
               <span class="text-xl">📊</span>
-              <h3 class="text-sm font-bold text-slate-900 dark:text-white">Informe Anual de Gestión a Gerencia</h3>
+              <h3 class="text-sm font-bold text-slate-800">Informe Anual de Gestión a Gerencia</h3>
               <p class="text-xs text-slate-500 leading-relaxed">Consolidado estadístico confidencial de casos y recomendaciones preventivas para la Dirección.</p>
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400">Cierre Diciembre</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">Cierre Diciembre</span>
             </div>
           </div>
         </div>
@@ -1127,7 +1127,7 @@ function renderSeccionCcl(empresa, committee, members, meetings, tasks, reports,
 function abrirModalSesionEnVivo(container, empresa, esModoVigia, copasstComm, cclComm, members, tasks, currentYear, mesSugerido = null) {
   const modal = document.createElement('div');
   modal.id = 'modal-sesion-en-vivo';
-  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto animate-fadeIn';
+  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs overflow-y-auto animate-fadeIn';
 
   const mesActual = mesSugerido || (new Date().getMonth() + 1);
   const nombreMes = MESES[mesActual - 1];
@@ -1138,42 +1138,42 @@ function abrirModalSesionEnVivo(container, empresa, esModoVigia, copasstComm, cc
   const tareasAnteriores = tasks.filter(t => t.status !== 'COMPLETADA');
 
   modal.innerHTML = `
-    <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden my-8">
+    <div class="bg-white w-full max-w-3xl rounded-2xl border border-slate-200 shadow-xl overflow-hidden my-8">
       
       <!-- Cabecera -->
-      <div class="p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white flex items-center justify-between">
+      <div class="p-5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
         <div class="space-y-1">
           <div class="flex items-center gap-2">
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500 text-slate-950">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200">
               Asistente de Sesión en Vivo
             </span>
-            <span class="text-xs text-slate-300 font-mono">${consecutivoSugerido}</span>
+            <span class="text-xs text-slate-500 font-mono font-medium">${consecutivoSugerido}</span>
           </div>
-          <h2 class="text-lg font-black tracking-tight">
+          <h2 class="text-base font-bold text-slate-800 tracking-tight">
             ${commType === 'CCL' ? 'Reunión Oficial del Comité de Convivencia' : (esModoVigia ? 'Sesión Mensual de Inspección y Control Vigía SST' : 'Reunión Mensual Ordinaria del COPASST')} - ${nombreMes} ${currentYear}
           </h2>
         </div>
-        <button type="button" onclick="document.getElementById('modal-sesion-en-vivo').remove()" class="p-2 text-slate-400 hover:text-white rounded-xl text-lg font-bold">
+        <button type="button" onclick="document.getElementById('modal-sesion-en-vivo').remove()" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg text-lg font-bold">
           ✕
         </button>
       </div>
 
       <!-- Formulario Guiado de los 6 Puntos Normativos -->
-      <form id="form-sesion-en-vivo" class="p-6 space-y-6 max-h-[75vh] overflow-y-auto text-xs">
+      <form id="form-sesion-en-vivo" class="p-6 space-y-5 max-h-[75vh] overflow-y-auto text-xs">
         
         <!-- Datos Generales de la Sesión -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Fecha de la Reunión *</label>
-            <input type="date" id="sesion-fecha" value="${new Date().toISOString().split('T')[0]}" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-mono text-xs text-slate-900 dark:text-white">
+            <label class="block font-semibold text-slate-700 mb-1">Fecha de la Reunión *</label>
+            <input type="date" id="sesion-fecha" value="${new Date().toISOString().split('T')[0]}" required class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-mono text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
           </div>
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Hora Inicio *</label>
-            <input type="time" id="sesion-hora-inicio" value="09:00" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-mono text-xs text-slate-900 dark:text-white">
+            <label class="block font-semibold text-slate-700 mb-1">Hora Inicio *</label>
+            <input type="time" id="sesion-hora-inicio" value="09:00" required class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-mono text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
           </div>
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Modalidad *</label>
-            <select id="sesion-modalidad" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white">
+            <label class="block font-semibold text-slate-700 mb-1">Modalidad *</label>
+            <select id="sesion-modalidad" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
               <option value="Presencial">Presencial (Sede Principal)</option>
               <option value="Virtual">Virtual / Remota</option>
               <option value="Mixta">Híbrida / Mixta</option>
@@ -1183,18 +1183,18 @@ function abrirModalSesionEnVivo(container, empresa, esModoVigia, copasstComm, cc
 
         <!-- 6 PUNTOS DE LA AGENDA INTELIGENTE SST -->
         <div class="space-y-4">
-          <h3 class="text-xs font-black uppercase text-amber-600 dark:text-amber-400 tracking-wider">
+          <h3 class="text-xs font-bold uppercase text-amber-800 tracking-wider">
             Orden del Día Normativo (Resolución 2013/1986 &amp; Dec. 1072/2015)
           </h3>
 
           <!-- Punto 1: Quórum -->
-          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-2">
-            <span class="font-bold text-slate-800 dark:text-white block">1. Verificación de Quórum y Asistencia</span>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
+            <span class="font-bold text-slate-800 block">1. Verificación de Quórum y Asistencia</span>
             <div class="space-y-1.5">
               ${members.map(m => `
                 <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" name="sesion-asistente" value="${m.id}" checked class="rounded text-amber-500 focus:ring-amber-500">
-                  <span class="text-slate-700 dark:text-slate-300 font-bold">${escapeHtml(m.employee_name)}</span>
+                  <input type="checkbox" name="sesion-asistente" value="${m.id}" checked class="rounded text-amber-600 focus:ring-amber-500">
+                  <span class="text-slate-700 font-semibold">${escapeHtml(m.employee_name)}</span>
                   <span class="text-slate-400 font-mono text-[10px]">(${m.committee_role || 'Miembro'})</span>
                 </label>
               `).join('')}
@@ -1202,45 +1202,45 @@ function abrirModalSesionEnVivo(container, empresa, esModoVigia, copasstComm, cc
           </div>
 
           <!-- Punto 2: Compromisos Anteriores -->
-          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-2">
-            <span class="font-bold text-slate-800 dark:text-white block">2. Revisión del Estado de Compromisos del Mes Anterior</span>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
+            <span class="font-bold text-slate-800 block">2. Revisión del Estado de Compromisos del Mes Anterior</span>
             <p class="text-[11px] text-slate-500 leading-relaxed">
               ${tareasAnteriores.length > 0 ? `Se identifican ${tareasAnteriores.length} compromisos pendientes de meses anteriores. Indique las acciones tomadas.` : 'Todos los compromisos previos fueron reportados como cumplidos.'}
             </p>
-            <textarea id="sesion-revision-tareas" rows="2" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white" placeholder="Ej: Se completó la dotación de guantes y se programó la inspección de extintores para la próxima semana."></textarea>
+            <textarea id="sesion-revision-tareas" rows="2" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" placeholder="Ej: Se completó la dotación de guantes y se programó la inspección de extintores para la próxima semana."></textarea>
           </div>
 
           <!-- Punto 3: Plan de Trabajo y Capacitaciones -->
-          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-2">
-            <span class="font-bold text-slate-800 dark:text-white block">3. Seguimiento al Plan Anual de Trabajo y Capacitaciones</span>
-            <textarea id="sesion-plan-trabajo" rows="2" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white" placeholder="Indicar avances en capacitaciones del mes, porcentaje de cumplimiento del cronograma SST."></textarea>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
+            <span class="font-bold text-slate-800 block">3. Seguimiento al Plan Anual de Trabajo y Capacitaciones</span>
+            <textarea id="sesion-plan-trabajo" rows="2" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" placeholder="Indicar avances en capacitaciones del mes, porcentaje de cumplimiento del cronograma SST."></textarea>
           </div>
 
           <!-- Punto 4: Inspecciones de Seguridad -->
-          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-2">
-            <span class="font-bold text-slate-800 dark:text-white block">4. Hallazgos de Inspecciones de Seguridad (Locativas, EPP, Máquinas)</span>
-            <textarea id="sesion-inspecciones" rows="2" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white" placeholder="Reporte de condiciones inseguras detectadas, estado de orden y aseo, EPP en buen estado."></textarea>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
+            <span class="font-bold text-slate-800 block">4. Hallazgos de Inspecciones de Seguridad (Locativas, EPP, Máquinas)</span>
+            <textarea id="sesion-inspecciones" rows="2" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" placeholder="Reporte de condiciones inseguras detectadas, estado de orden y aseo, EPP en buen estado."></textarea>
           </div>
 
           <!-- Punto 5: Análisis ATEL -->
-          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-2">
-            <span class="font-bold text-slate-800 dark:text-white block">5. Análisis de Accidentalidad e Investigación ATEL / Incidentes</span>
-            <textarea id="sesion-atel" rows="2" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white" placeholder="Durante el mes: cero accidentes incapacitantes. Se investigó un casi-accidente reportado desde el portal móvil."></textarea>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
+            <span class="font-bold text-slate-800 block">5. Análisis de Accidentalidad e Investigación ATEL / Incidentes</span>
+            <textarea id="sesion-atel" rows="2" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" placeholder="Durante el mes: cero accidentes incapacitantes. Se investigó un casi-accidente reportado desde el portal móvil."></textarea>
           </div>
 
           <!-- Punto 6: Proposiciones y Asignación de Tareas -->
-          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-2">
-            <span class="font-bold text-slate-800 dark:text-white block">6. Proposiciones y Asignación de Nuevos Compromisos</span>
-            <textarea id="sesion-proposiciones" rows="2" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white" placeholder="Nuevas tareas asignadas con responsable y fecha de entrega."></textarea>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
+            <span class="font-bold text-slate-800 block">6. Proposiciones y Asignación de Nuevos Compromisos</span>
+            <textarea id="sesion-proposiciones" rows="2" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" placeholder="Nuevas tareas asignadas con responsable y fecha de entrega."></textarea>
           </div>
         </div>
 
         <!-- Botones de Acción -->
-        <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-3">
-          <button type="button" onclick="document.getElementById('modal-sesion-en-vivo').remove()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800">
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button type="button" onclick="document.getElementById('modal-sesion-en-vivo').remove()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900">
             Cancelar
           </button>
-          <button type="submit" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 cursor-pointer">
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs shadow-xs cursor-pointer">
             💾 Cerrar Sesión y Generar Acta Oficial PDF
           </button>
         </div>
@@ -1471,23 +1471,23 @@ function generarDocumentoOficial(tipo, empresa, esModoVigia, copasstComm, cclCom
 
   const modal = document.createElement('div');
   modal.id = 'modal-doc-preview';
-  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto animate-fadeIn';
+  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs overflow-y-auto animate-fadeIn';
 
   modal.innerHTML = `
-    <div class="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden my-8">
-      <div class="p-6 bg-slate-900 text-white flex items-center justify-between">
+    <div class="bg-white w-full max-w-4xl rounded-2xl border border-slate-200 shadow-xl overflow-hidden my-8">
+      <div class="p-5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
         <div>
-          <span class="text-[10px] font-black uppercase text-amber-400">Documento Oficial SG-SST</span>
-          <h2 class="text-base font-black">${title}</h2>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800">Documento Oficial SG-SST</span>
+          <h2 class="text-base font-bold text-slate-800">${title}</h2>
         </div>
-        <button type="button" onclick="document.getElementById('modal-doc-preview').remove()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+        <button type="button" onclick="document.getElementById('modal-doc-preview').remove()" class="p-1.5 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
       </div>
 
-      <div id="doc-to-download" class="p-8 space-y-4 text-xs text-slate-800 dark:text-slate-200 max-h-[70vh] overflow-y-auto leading-relaxed">
-        <div class="text-center pb-4 border-b border-slate-200 dark:border-slate-800 space-y-1">
-          <h1 class="text-base font-black uppercase">${escapeHtml(empresa.razonSocial || empresa.razon_social)}</h1>
+      <div id="doc-to-download" class="p-8 space-y-4 text-xs text-slate-800 max-h-[70vh] overflow-y-auto leading-relaxed bg-white">
+        <div class="text-center pb-4 border-b border-slate-200 space-y-1">
+          <h1 class="text-base font-bold uppercase text-slate-900">${escapeHtml(empresa.razonSocial || empresa.razon_social)}</h1>
           <p class="text-xs text-slate-500 font-mono">NIT: ${empresa.nit} • Sistema de Gestión de Seguridad y Salud en el Trabajo</p>
-          <h2 class="text-sm font-bold text-amber-600 dark:text-amber-400 pt-2">${title.toUpperCase()}</h2>
+          <h2 class="text-sm font-bold text-amber-800 pt-2">${title.toUpperCase()}</h2>
         </div>
 
         <div class="space-y-3 text-justify">
@@ -1511,7 +1511,7 @@ function generarDocumentoOficial(tipo, empresa, esModoVigia, copasstComm, cclCom
           `}
         </div>
 
-        <div class="pt-8 border-t border-slate-200 dark:border-slate-800 grid grid-cols-2 gap-8 text-center text-[11px]">
+        <div class="pt-8 border-t border-slate-200 grid grid-cols-2 gap-8 text-center text-[11px]">
           <div>
             <div class="border-t border-slate-400 pt-2 font-bold">${escapeHtml(empresa.representanteLegal || 'Representante Legal')}</div>
             <div class="text-slate-500">Representante Legal (Patronal)</div>
@@ -1523,9 +1523,9 @@ function generarDocumentoOficial(tipo, empresa, esModoVigia, copasstComm, cclCom
         </div>
       </div>
 
-      <div class="p-4 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex items-center justify-end gap-3">
-        <button type="button" onclick="document.getElementById('modal-doc-preview').remove()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500">Cerrar</button>
-        <button type="button" onclick="window.descargarPdfElemento('doc-to-download', '${tipo}.pdf')" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md cursor-pointer">
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
+        <button type="button" onclick="document.getElementById('modal-doc-preview').remove()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900">Cerrar</button>
+        <button type="button" onclick="window.descargarPdfElemento('doc-to-download', '${tipo}.pdf')" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs cursor-pointer">
           Descargar PDF Firmado
         </button>
       </div>
@@ -1554,22 +1554,22 @@ function generarDocumentoOficial(tipo, empresa, esModoVigia, copasstComm, cclCom
 function abrirModalFormMiembro(container, empresa, commType, trabajadores) {
   const modal = document.createElement('div');
   modal.id = 'modal-miembro-form';
-  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn';
+  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-fadeIn';
 
   modal.innerHTML = `
-    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden p-6 space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+    <div class="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-xl overflow-hidden p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
         <div>
-          <span class="text-[10px] font-black uppercase text-amber-500">Asignación de Roles</span>
-          <h2 class="text-sm font-black text-slate-800 dark:text-white">Agregar Integrante a ${commType === 'CCL' ? 'CCL' : 'COPASST'}</h2>
+          <span class="text-[10px] font-bold uppercase text-amber-700">Asignación de Roles</span>
+          <h2 class="text-sm font-bold text-slate-800">Agregar Integrante a ${commType === 'CCL' ? 'CCL' : 'COPASST'}</h2>
         </div>
-        <button type="button" onclick="document.getElementById('modal-miembro-form').remove()" class="text-slate-400 hover:text-white font-bold">✕</button>
+        <button type="button" onclick="document.getElementById('modal-miembro-form').remove()" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
       </div>
 
       <form id="form-nuevo-miembro" class="space-y-3 text-xs">
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Seleccionar Trabajador *</label>
-          <select id="m-trabajador-id" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+          <label class="block font-semibold text-slate-700 mb-1">Seleccionar Trabajador *</label>
+          <select id="m-trabajador-id" required class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
             <option value="">-- Seleccionar de la nómina --</option>
             ${trabajadores.map(t => `
               <option value="${t.id}" data-nombre="${t.nombre}" data-cedula="${t.identificacion || t.cedula || ''}" data-cargo="${t.cargo || ''}">
@@ -1581,16 +1581,16 @@ function abrirModalFormMiembro(container, empresa, commType, trabajadores) {
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Representación *</label>
-            <select id="m-representacion" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+            <label class="block font-semibold text-slate-700 mb-1">Representación *</label>
+            <select id="m-representacion" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
               <option value="EMPLEADOR_DESIGNADO">Designado por Empleador</option>
               <option value="TRABAJADORES_ELEGIDO">Elegido por Trabajadores</option>
               <option value="VIGIA_UNICO">Vigía Único SST</option>
             </select>
           </div>
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Categoría *</label>
-            <select id="m-categoria" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+            <label class="block font-semibold text-slate-700 mb-1">Categoría *</label>
+            <select id="m-categoria" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
               <option value="PRINCIPAL">Principal</option>
               <option value="SUPLENTE">Suplente</option>
             </select>
@@ -1598,8 +1598,8 @@ function abrirModalFormMiembro(container, empresa, commType, trabajadores) {
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Rol en el Comité *</label>
-          <select id="m-rol" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+          <label class="block font-semibold text-slate-700 mb-1">Rol en el Comité *</label>
+          <select id="m-rol" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
             <option value="MIEMBRO_VOCAL">Miembro Vocal</option>
             <option value="PRESIDENTE">Presidente del Comité</option>
             <option value="SECRETARIO">Secretario del Comité</option>
@@ -1607,9 +1607,9 @@ function abrirModalFormMiembro(container, empresa, commType, trabajadores) {
           </select>
         </div>
 
-        <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2">
-          <button type="button" onclick="document.getElementById('modal-miembro-form').remove()" class="px-3 py-2 rounded-xl text-xs text-slate-500">Cancelar</button>
-          <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow cursor-pointer">Guardar Integrante</button>
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" onclick="document.getElementById('modal-miembro-form').remove()" class="px-3 py-2 rounded-xl text-xs text-slate-500 hover:text-slate-800">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs cursor-pointer">Guardar Integrante</button>
         </div>
       </form>
     </div>
@@ -1660,28 +1660,28 @@ function abrirModalGestionCasoCcl(container, caseId, nuevoEstado) {
 function abrirModalFormTarea(container, empresa, commType, trabajadores) {
   const modal = document.createElement('div');
   modal.id = 'modal-tarea-form';
-  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn';
+  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-fadeIn';
 
   modal.innerHTML = `
-    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden p-6 space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+    <div class="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-xl overflow-hidden p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
         <div>
-          <span class="text-[10px] font-black uppercase text-amber-500">Compromisos &amp; Tareas</span>
-          <h2 class="text-sm font-black text-slate-800 dark:text-white">Nuevo Compromiso - ${commType === 'CCL' ? 'CCL' : 'COPASST'}</h2>
+          <span class="text-[10px] font-bold uppercase text-amber-700">Compromisos &amp; Tareas</span>
+          <h2 class="text-sm font-bold text-slate-800">Nuevo Compromiso - ${commType === 'CCL' ? 'CCL' : 'COPASST'}</h2>
         </div>
-        <button type="button" onclick="document.getElementById('modal-tarea-form').remove()" class="text-slate-400 hover:text-white font-bold">✕</button>
+        <button type="button" onclick="document.getElementById('modal-tarea-form').remove()" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
       </div>
 
       <form id="form-nueva-tarea-modal" class="space-y-3 text-xs">
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Título de la Tarea / Compromiso *</label>
-          <input type="text" id="t-titulo" required placeholder="Ej: Inspección de extintores y botiquines en planta" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+          <label class="block font-semibold text-slate-700 mb-1">Título de la Tarea / Compromiso *</label>
+          <input type="text" id="t-titulo" required placeholder="Ej: Inspección de extintores y botiquines en planta" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Categoría *</label>
-            <select id="t-categoria" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+            <label class="block font-semibold text-slate-700 mb-1">Categoría *</label>
+            <select id="t-categoria" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
               <option value="INSPECCION_SST">Inspección de Seguridad</option>
               <option value="INVESTIGACION_ATEL">Investigación ATEL</option>
               <option value="SEGUIMIENTO_PLAN_TRABAJO">Plan de Trabajo Anual</option>
@@ -1692,24 +1692,24 @@ function abrirModalFormTarea(container, empresa, commType, trabajadores) {
             </select>
           </div>
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Fecha Límite *</label>
-            <input type="date" id="t-fecha" required value="${new Date(Date.now() + 15*86400000).toISOString().split('T')[0]}" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-mono text-xs text-slate-800 dark:text-white">
+            <label class="block font-semibold text-slate-700 mb-1">Fecha Límite *</label>
+            <input type="date" id="t-fecha" required value="${new Date(Date.now() + 15*86400000).toISOString().split('T')[0]}" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-mono text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
           </div>
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Responsable *</label>
-          <input type="text" id="t-responsable" required placeholder="Nombre de la persona o cargo responsable" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+          <label class="block font-semibold text-slate-700 mb-1">Responsable *</label>
+          <input type="text" id="t-responsable" required placeholder="Nombre de la persona o cargo responsable" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Descripción / Observaciones</label>
-          <textarea id="t-descripcion" rows="2" placeholder="Detalle de las acciones a realizar..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white"></textarea>
+          <label class="block font-semibold text-slate-700 mb-1">Descripción / Observaciones</label>
+          <textarea id="t-descripcion" rows="2" placeholder="Detalle de las acciones a realizar..." class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
         </div>
 
-        <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2">
-          <button type="button" onclick="document.getElementById('modal-tarea-form').remove()" class="px-3 py-2 rounded-xl text-xs text-slate-500">Cancelar</button>
-          <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow cursor-pointer">Guardar Compromiso</button>
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" onclick="document.getElementById('modal-tarea-form').remove()" class="px-3 py-2 rounded-xl text-xs text-slate-500 hover:text-slate-800">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs cursor-pointer">Guardar Compromiso</button>
         </div>
       </form>
     </div>
@@ -1744,43 +1744,43 @@ function abrirModalFormTarea(container, empresa, commType, trabajadores) {
 function abrirModalReporteManualCcl(container, empresa, trabajadores) {
   const modal = document.createElement('div');
   modal.id = 'modal-reporte-manual-ccl';
-  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn';
+  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-fadeIn';
 
   modal.innerHTML = `
-    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden p-6 space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+    <div class="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-xl overflow-hidden p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
         <div>
-          <span class="text-[10px] font-black uppercase text-indigo-500">Bóveda Confidencial CCL</span>
-          <h2 class="text-sm font-black text-slate-800 dark:text-white">Radicar Caso de Convivencia Manualmente</h2>
+          <span class="text-[10px] font-bold uppercase text-indigo-700">Bóveda Confidencial CCL</span>
+          <h2 class="text-sm font-bold text-slate-800">Radicar Caso de Convivencia Manualmente</h2>
         </div>
-        <button type="button" onclick="document.getElementById('modal-reporte-manual-ccl').remove()" class="text-slate-400 hover:text-white font-bold">✕</button>
+        <button type="button" onclick="document.getElementById('modal-reporte-manual-ccl').remove()" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
       </div>
 
       <form id="form-reporte-manual-modal" class="space-y-3 text-xs">
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Trabajador que Presenta la Queja *</label>
-          <input type="text" id="rm-trabajador-nombre" required placeholder="Nombre del trabajador afectado" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+          <label class="block font-semibold text-slate-700 mb-1">Trabajador que Presenta la Queja *</label>
+          <input type="text" id="rm-trabajador-nombre" required placeholder="Nombre del trabajador afectado" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Cédula</label>
-            <input type="text" id="rm-trabajador-cedula" placeholder="Cédula de ciudadanía" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-mono text-xs text-slate-800 dark:text-white">
+            <label class="block font-semibold text-slate-700 mb-1">Cédula</label>
+            <input type="text" id="rm-trabajador-cedula" placeholder="Cédula de ciudadanía" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-mono text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
           </div>
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Fecha de los Hechos *</label>
-            <input type="date" id="rm-fecha" value="${new Date().toISOString().split('T')[0]}" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-mono text-xs text-slate-800 dark:text-white">
+            <label class="block font-semibold text-slate-700 mb-1">Fecha de los Hechos *</label>
+            <input type="date" id="rm-fecha" value="${new Date().toISOString().split('T')[0]}" required class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-mono text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
           </div>
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Persona o Cargo Involucrado *</label>
-          <input type="text" id="rm-involucrado" required placeholder="Nombre o cargo de la persona involucrada" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+          <label class="block font-semibold text-slate-700 mb-1">Persona o Cargo Involucrado *</label>
+          <input type="text" id="rm-involucrado" required placeholder="Nombre o cargo de la persona involucrada" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tipología de la Queja (Ley 1010/2006) *</label>
-          <select id="rm-tipo" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white">
+          <label class="block font-semibold text-slate-700 mb-1">Tipología de la Queja (Ley 1010/2006) *</label>
+          <select id="rm-tipo" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
             <option value="CONFLICTO_INTERPERSONAL_CONVIVENCIA">Conflicto interpersonal de convivencia</option>
             <option value="MALTRATO_LABORAL">Maltrato verbal o psicológico</option>
             <option value="PERSECUCION_LABORAL">Persecución o acoso laboral reiterado</option>
@@ -1792,13 +1792,13 @@ function abrirModalReporteManualCcl(container, empresa, trabajadores) {
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Relato Detallado de los Hechos *</label>
-          <textarea id="rm-descripcion" rows="3" required placeholder="Descripción de los hechos acontecidos..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-white"></textarea>
+          <label class="block font-semibold text-slate-700 mb-1">Relato Detallado de los Hechos *</label>
+          <textarea id="rm-descripcion" rows="3" required placeholder="Descripción de los hechos acontecidos..." class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
         </div>
 
-        <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2">
-          <button type="button" onclick="document.getElementById('modal-reporte-manual-ccl').remove()" class="px-3 py-2 rounded-xl text-xs text-slate-500">Cancelar</button>
-          <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold shadow cursor-pointer">Radicar Caso</button>
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" onclick="document.getElementById('modal-reporte-manual-ccl').remove()" class="px-3 py-2 rounded-xl text-xs text-slate-500 hover:text-slate-800">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs cursor-pointer">Radicar Caso</button>
         </div>
       </form>
     </div>

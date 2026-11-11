@@ -22,6 +22,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
@@ -309,11 +310,11 @@
   </div>
 
   <!-- SCRIPT PRINCIPAL DE LA APLICACIÓN -->
-  <script type="module" src="./js/app.js?v=9.2"></script>
+  <script type="module" src="./js/app.js?v=9.3"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.7').then((reg) => {
+        navigator.serviceWorker.register('./sw.js?v=2.8').then((reg) => {
           console.log('[PWA] Service Worker registrado en scope:', reg.scope);
           reg.update();
         }).catch((err) => {
