@@ -1290,6 +1290,12 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
       icono: '📝',
       color: 'teal'
     },
+    recomendaciones: {
+      nombre: '7. Formato de Recomendaciones Médicas Laborales',
+      norma: 'Resolución 2346 de 2007 • Dec. 1072 Art. 2.2.4.6.24 • Res. 0312',
+      icono: '🩺',
+      color: 'purple'
+    },
     contrato: {
       nombre: 'Contrato Individual de Trabajo',
       norma: 'Código Sustantivo del Trabajo (CST Arts. 37-47)',
@@ -1453,6 +1459,10 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
             <button id="tab-inst-anexo" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'anexo' ? 'bg-white text-teal-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
               <span>📝</span>
               <span>6. Anexo SST</span>
+            </button>
+            <button id="tab-inst-recomendaciones" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'recomendaciones' ? 'bg-white text-purple-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
+              <span>🩺</span>
+              <span>7. Recomendaciones</span>
             </button>
             <button id="tab-inst-contrato" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'contrato' ? 'bg-white text-blue-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
               <span>📄</span>
@@ -2083,6 +2093,7 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
     document.getElementById('tab-inst-profesiograma')?.addEventListener('click', () => { instrumentoActivo = 'profesiograma'; renderModalContent(); });
     document.getElementById('tab-inst-epp')?.addEventListener('click', () => { instrumentoActivo = 'epp'; renderModalContent(); });
     document.getElementById('tab-inst-anexo')?.addEventListener('click', () => { instrumentoActivo = 'anexo'; renderModalContent(); });
+    document.getElementById('tab-inst-recomendaciones')?.addEventListener('click', () => { instrumentoActivo = 'recomendaciones'; renderModalContent(); });
   };
 
   await renderModalContent();
@@ -2193,6 +2204,8 @@ window.ejecutarGeneracionPdfModal = function(tipo, trabajadorId, cargoName) {
     if (window.imprimirMatrizEPP) window.imprimirMatrizEPP(targetCargoId);
   } else if (tipo === 'anexo') {
     if (window.imprimirAnexoContractual) window.imprimirAnexoContractual(targetCargoId);
+  } else if (tipo === 'recomendaciones') {
+    if (window.imprimirRecomendacionesMedicas) window.imprimirRecomendacionesMedicas(targetCargoId, trabajadorId);
   }
 };
 

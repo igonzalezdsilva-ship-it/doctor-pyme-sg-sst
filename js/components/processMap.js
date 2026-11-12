@@ -124,6 +124,18 @@ const CATALOGO_6_DOCS_CARGO = [
     modoVerificacion: 'Verificar el anexo contractual firmado donde se notifican los peligros del puesto y las cláusulas de obligatorio cumplimiento en SG-SST.',
     icon: '📝',
     printFn: 'imprimirAnexoContractual'
+  },
+  {
+    key: 'recomendaciones',
+    num: 7,
+    codigo: 'DOC-CARGO-07',
+    corto: '7. Recomendaciones Médicas',
+    subtitulo: 'Res. 2346 & Dec. 1072',
+    tituloCompleto: 'Formato Oficial de Recomendaciones y Restricciones Médicas Laborales',
+    norma: 'Resolución 2346 de 2007 • Dec. 1072 Art. 2.2.4.6.24 • Ley 776 de 2002 • Estándar 3.1.5',
+    modoVerificacion: 'Constatar el formato oficial y acta de seguimiento a las recomendaciones y restricciones médico-laborales emitidas por médico especialista en SST/IPS, EPS o ARL, con constancia de suscripción y adaptación del puesto.',
+    icon: '🩺',
+    printFn: 'imprimirRecomendacionesMedicas'
   }
 ];
 
@@ -751,8 +763,8 @@ export async function renderProcessMap() {
                             </span>
                           </div>
 
-                          <!-- Selector de los 6 Documentos del Cargo -->
-                          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-4">
+                          <!-- Selector de los 7 Documentos Oficiales del Cargo -->
+                          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 mb-4">
                             ${CATALOGO_6_DOCS_CARGO.map(d => {
                               const isSelected = d.key === docMeta.key;
                               const tagItem = `cargo_${cargoSlug}_${d.key}`;
@@ -1480,6 +1492,127 @@ export async function renderProcessMap() {
                                       placeholder="Domicilio contractual, acuerdo total y constancia formal de suscripción..."
                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition shadow-2xs"
                                     >${escapeHtmlCargo(configCargo.anexoContractual?.clausula9_domicilio_firmas || '')}</textarea>
+                                  </div>
+                                </div>
+                              ` : ''}
+
+                              ${docMeta.key === 'recomendaciones' ? `
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
+                                  <!-- Fila 1: Origen, Entidad Emisora, Vigencia -->
+                                  <div>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
+                                      <span>I. Tipo de Evaluación y Origen</span>
+                                      <span class="text-[9px] font-semibold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded">Res. 2346</span>
+                                    </label>
+                                    <input 
+                                      type="text" 
+                                      id="est-rec-origen-${cargo.id}" 
+                                      placeholder="Ej: Ingreso / Periódico / Post-Incapacidad / Reintegro Laboral"
+                                      value="${escapeHtmlCargo(configCargo.recomendacionesMedicas?.tipoEvaluacion || 'Examen Médico Ocupacional Periódico / Seguimiento a Condiciones de Salud')}" 
+                                      class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none transition shadow-2xs"
+                                    >
+                                  </div>
+                                  <div>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
+                                      <span>II. Entidad Emisora & Médico Especialista</span>
+                                      <span class="text-[9px] font-semibold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded">IPS / Licencia</span>
+                                    </label>
+                                    <input 
+                                      type="text" 
+                                      id="est-rec-entidad-${cargo.id}" 
+                                      placeholder="Ej: IPS Salud Ocupacional / Médico Especialista SST / EPS / ARL"
+                                      value="${escapeHtmlCargo(configCargo.recomendacionesMedicas?.entidadEmisora || 'IPS de Salud Ocupacional Autorizada • Médico Especialista en SST')}" 
+                                      class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none transition shadow-2xs"
+                                    >
+                                  </div>
+                                  <div>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
+                                      <span>III. Vigencia y Periodicidad de Control</span>
+                                      <span class="text-[9px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">Temporalidad</span>
+                                    </label>
+                                    <input 
+                                      type="text" 
+                                      id="est-rec-vigencia-${cargo.id}" 
+                                      placeholder="Ej: 6 meses / 12 meses / Hasta nueva revaloración médica"
+                                      value="${escapeHtmlCargo(configCargo.recomendacionesMedicas?.vigencia || 'Vigencia de 12 meses o hasta nueva valoración médico-ocupacional')}" 
+                                      class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none transition shadow-2xs"
+                                    >
+                                  </div>
+
+                                  <!-- Fila 2: Biomecánica, Restricciones Laborales, Adaptación de Puesto -->
+                                  <div>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
+                                      <span>IV. Recomendaciones Ergonómicas & Biomecánicas</span>
+                                      <span class="text-[9px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">Higiene Postural</span>
+                                    </label>
+                                    <textarea 
+                                      id="est-rec-biomecanicas-${cargo.id}" 
+                                      rows="4"
+                                      placeholder="Pausas activas cada 2 horas, alternancia postural bípeda/sedente, higiene postural..."
+                                      class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none transition shadow-2xs"
+                                    >${escapeHtmlCargo(configCargo.recomendacionesMedicas?.recomendacionesBiomecanicas || '• Realizar pausas activas obligatorias de 5 minutos cada 2 horas laborales enfocado en miembros superiores y columna.\n• Alternar posturas de trabajo evitando sedestación o bipedestación prolongada mayor a 90 minutos continuos.\n• Aplicar técnicas de higiene postural y manejo de cargas con flexión de rodillas sin superar límites permisibles.')}</textarea>
+                                  </div>
+                                  <div>
+                                    <label class="block text-[11px] font-bold text-rose-700 mb-1 flex items-center justify-between">
+                                      <span>V. Restricciones Laborales y Actividades Limitadas</span>
+                                      <span class="text-[9px] font-semibold text-rose-700 bg-rose-100 px-1.5 py-0.5 rounded">Restricciones</span>
+                                    </label>
+                                    <textarea 
+                                      id="est-rec-restricciones-${cargo.id}" 
+                                      rows="4"
+                                      placeholder="Restricciones específicas de carga, alturas, movimientos repetitivos o exposición a factores de riesgo..."
+                                      class="w-full px-3 py-2 bg-rose-50/50 border border-rose-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-rose-500 focus:outline-none transition shadow-2xs"
+                                    >${escapeHtmlCargo(configCargo.recomendacionesMedicas?.restriccionesLaborales || '• No levantar ni transportar manualmente cargas superiores a 12.5 kg de forma individual.\n• Evitar movimientos de hiperextensión, torsión brusca o flexión forzada de tronco.\n• Restricción temporal de trabajos que demanden sobreesfuerzo osteomuscular no controlado.')}</textarea>
+                                  </div>
+                                  <div>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
+                                      <span>VI. Medidas de Adaptación del Puesto (Ajustes Razonables)</span>
+                                      <span class="text-[9px] font-semibold text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded">Adaptación</span>
+                                    </label>
+                                    <textarea 
+                                      id="est-rec-adaptacion-${cargo.id}" 
+                                      rows="4"
+                                      placeholder="Ajuste de plano de trabajo, silla ergonómica, apoyapiés, iluminación, organización de tareas..."
+                                      class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none transition shadow-2xs"
+                                    >${escapeHtmlCargo(configCargo.recomendacionesMedicas?.adaptacionPuesto || '• Dotar puesto con silla ergonómica graduable en altura, soporte lumbar y apoyabrazos ajustables.\n• Ubicar herramientas y materiales de uso frecuente dentro de la zona de alcance óptimo (35-45 cm).\n• Implementar ayudas mecánicas o carretillas para el desplazamiento de materiales pesados.')}</textarea>
+                                  </div>
+
+                                  <!-- Fila 3: EPP Médico, Plan de Seguimiento, Compromiso Legal -->
+                                  <div>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
+                                      <span>VII. EPP Específico y Protección Médica Ocupacional</span>
+                                      <span class="text-[9px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">EPP Clínico</span>
+                                    </label>
+                                    <textarea 
+                                      id="est-rec-epp-${cargo.id}" 
+                                      rows="4"
+                                      placeholder="EPP prescrito o recomendado: faja lumbar, muñequera, calzado antifatiga, protección respiratoria..."
+                                      class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none transition shadow-2xs"
+                                    >${escapeHtmlCargo(configCargo.recomendacionesMedicas?.eppProteccion || '• Calzado de seguridad con plantilla ergonómica antifatiga y absorción de impacto en talón.\n• Uso riguroso de guantes con protección mecánica y atenuación de vibraciones en tareas operativas.\n• Protección auditiva y respiratoria certificada según matriz de EPP del puesto.')}</textarea>
+                                  </div>
+                                  <div>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
+                                      <span>VIII. Seguimiento SST y Citas de Control Médico</span>
+                                      <span class="text-[9px] font-semibold text-cyan-700 bg-cyan-50 px-1.5 py-0.5 rounded">Control SST</span>
+                                    </label>
+                                    <textarea 
+                                      id="est-rec-seguimiento-${cargo.id}" 
+                                      rows="4"
+                                      placeholder="Seguimiento bimestral/semestral por SST, asistencia a citas médicas EPS/ARL, reporte de síntomas..."
+                                      class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none transition shadow-2xs"
+                                    >${escapeHtmlCargo(configCargo.recomendacionesMedicas?.seguimientoControl || '• Inspección y seguimiento mensual al cumplimiento de recomendaciones por parte del Responsable del SG-SST y COPASST.\n• Obligación del trabajador de asistir puntualmente a citas de control médico con su EPS y remitir constancia al SG-SST.\n• Reporte inmediato ante el COPASST o jefe de cualquier síntoma de dolor osteomuscular o molestia en la labor.')}</textarea>
+                                  </div>
+                                  <div>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
+                                      <span>IX. Compromiso Legal, Autocuidado y Notificación</span>
+                                      <span class="text-[9px] font-semibold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">Dec. 1072</span>
+                                    </label>
+                                    <textarea 
+                                      id="est-rec-compromiso-${cargo.id}" 
+                                      rows="4"
+                                      placeholder="Declaración formal de notificación, custodia confidencial y compromiso de cumplimiento..."
+                                      class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none transition shadow-2xs"
+                                    >${escapeHtmlCargo(configCargo.recomendacionesMedicas?.compromisoLegal || 'El trabajador declara que ha sido notificado formalmente por el Empleador y el Responsable del SG-SST del contenido de las recomendaciones y restricciones médicas emitidas para su cargo, comprometiéndose bajo el principio de autocuidado (Dec. 1072/2015 Art. 2.2.4.6.10) a cumplirlas rigurosamente.')}</textarea>
                                   </div>
                                 </div>
                               ` : ''}
@@ -4247,6 +4380,157 @@ window.imprimirAnexoContractual = function(cargoId) {
   abrirVentanaImpresion(`Contrato_Anexo_${cargo.code}`, html);
 };
 
+// 7. FORMATO OFICIAL DE RECOMENDACIONES Y RESTRICCIONES MÉDICAS LABORALES (RES. 2346 / DEC. 1072)
+window.imprimirRecomendacionesMedicas = function(cargoId, trabajadorId) {
+  const empresa = store.getEmpresaActiva();
+  const cargo = store.getJobPosition(cargoId);
+  if (!empresa || !cargo) return;
+
+  const configCargo = store.getPerfilCargo(cargo.title, empresa.id);
+  const recCfg = configCargo?.recomendacionesMedicas || {};
+  let trabajador = trabajadorId ? store.getTrabajadorPorId(trabajadorId) : null;
+  if (!trabajador && cargo) {
+    const list = store.getTrabajadores(empresa.id).filter(t => t.job_position_id === cargo.id || (t.cargo || '').toLowerCase().trim() === (cargo.title || '').toLowerCase().trim());
+    if (list.length === 1) trabajador = list[0];
+  }
+
+  const tipoEval = recCfg.tipoEvaluacion || 'Examen Médico Ocupacional Periódico / Seguimiento a Condiciones de Salud';
+  const entidad = recCfg.entidadEmisora || 'IPS de Salud Ocupacional Autorizada • Médico Especialista en SST';
+  const vigencia = recCfg.vigencia || 'Vigencia de 12 meses o hasta nueva valoración médica';
+  const biomecanicas = recCfg.recomendacionesBiomecanicas || '• Realizar pausas activas obligatorias de 5 minutos cada 2 horas laborales enfocado en miembros superiores y columna.\n• Alternar posturas de trabajo evitando sedestación o bipedestación prolongada mayor a 90 minutos continuos.\n• Aplicar técnicas de higiene postural y manejo de cargas con flexión de rodillas sin superar límites permisibles.';
+  const restricciones = recCfg.restriccionesLaborales || '• No levantar ni transportar manualmente cargas superiores a 12.5 kg de forma individual.\n• Evitar movimientos de hiperextensión, torsión brusca o flexión forzada de tronco.\n• Restricción temporal de trabajos que demanden sobreesfuerzo osteomuscular no controlado.';
+  const adaptacion = recCfg.adaptacionPuesto || '• Dotar puesto con silla ergonómica graduable en altura, soporte lumbar y apoyabrazos ajustables.\n• Ubicar herramientas y materiales de uso frecuente dentro de la zona de alcance óptimo (35-45 cm).\n• Implementar ayudas mecánicas o carretillas para el desplazamiento de materiales pesados.';
+  const epp = recCfg.eppProteccion || '• Calzado de seguridad con plantilla ergonómica antifatiga y absorción de impacto en talón.\n• Uso riguroso de guantes con protección mecánica y atenuación de vibraciones en tareas operativas.\n• Protección auditiva y respiratoria certificada según matriz de EPP del puesto.';
+  const seguimiento = recCfg.seguimientoControl || '• Inspección y seguimiento mensual al cumplimiento de recomendaciones por parte del Responsable del SG-SST y COPASST.\n• Obligación del trabajador de asistir puntualmente a citas de control médico con su EPS y remitir constancia al SG-SST.\n• Reporte inmediato ante el COPASST o jefe de cualquier síntoma de dolor osteomuscular o molestia en la labor.';
+  const compromiso = recCfg.compromisoLegal || 'El trabajador declara que ha sido notificado formalmente por el Empleador y el Responsable del SG-SST del contenido de las recomendaciones y restricciones médicas emitidas para su cargo, comprometiéndose bajo el principio de autocuidado (Dec. 1072/2015 Art. 2.2.4.6.10) a cumplirlas rigurosamente.';
+
+  const html = `
+    <table class="header-table">
+      <tr>
+        <td style="width: 25%; text-align: center; vertical-align: middle;">
+          ${generarCeldaLogoEmpresa(empresa, 'Medicina Preventiva & Del Trabajo')}
+        </td>
+        <td style="width: 50%;">
+          <div class="doc-title">FORMATO OFICIAL DE NOTIFICACIÓN Y SEGUIMIENTO A RECOMENDACIONES MÉDICAS LABORALES</div>
+          <div class="doc-subtitle">Resolución 2346 de 2007 • Decreto 1072 de 2015 Art. 2.2.4.6.24 • Ley 776 de 2002 • Res. 0312 Estándar 3.1.5</div>
+        </td>
+        <td style="width: 25%; font-size: 8pt; line-height: 1.4;">
+          <strong>CÓDIGO:</strong> DOC-CARGO-07<br>
+          <strong>VERSIÓN:</strong> 01 (Vigente)<br>
+          <strong>FECHA:</strong> ${new Date().toLocaleDateString('es-CO')}<br>
+          <strong>EMPRESA:</strong> ${empresa.razonSocial}
+        </td>
+      </tr>
+    </table>
+
+    <div class="section-box" style="margin-bottom: 12px; padding: 10px 14px; background-color: #f8fafc;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 8.5pt;">
+        <tr>
+          <td style="width: 50%; padding: 3px 0;"><strong>CARGO EVALUADO:</strong> ${cargo.title} (${cargo.code || 'CARG'})</td>
+          <td style="width: 50%; padding: 3px 0;"><strong>ÁREA / DEPARTAMENTO:</strong> ${cargo.department || 'Operaciones y Producción'}</td>
+        </tr>
+        <tr>
+          <td style="padding: 3px 0;"><strong>TRABAJADOR:</strong> ${trabajador ? `${trabajador.nombre} (C.C. ${trabajador.identificacion})` : '____________________________________ (Por Asignar)'}</td>
+          <td style="padding: 3px 0;"><strong>NIVEL DE RIESGO ARL:</strong> Clase ${empresa.riesgoARL || 'I/II/III/IV/V'}</td>
+        </tr>
+        <tr>
+          <td style="padding: 3px 0;"><strong>TIPO DE EVALUACIÓN:</strong> ${tipoEval}</td>
+          <td style="padding: 3px 0;"><strong>VIGENCIA RECOMENDACIONES:</strong> ${vigencia}</td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding: 3px 0;"><strong>ENTIDAD EMISORA / IPS:</strong> ${entidad}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- SECCIÓN I -->
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px;">1. RECOMENDACIONES ERGONÓMICAS, POSTURALES Y BIOMECÁNICAS</div>
+      <div style="font-size: 8.5pt; line-height: 1.45; white-space: pre-line; text-align: justify;">
+        ${biomecanicas}
+      </div>
+    </div>
+
+    <!-- SECCIÓN II -->
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px; color: #b91c1c;">2. RESTRICCIONES LABORALES ESPECÍFICAS Y ACTIVIDADES CONTRAINDICADAS</div>
+      <div style="font-size: 8.5pt; line-height: 1.45; white-space: pre-line; text-align: justify; color: #7f1d1d; background: #fff5f5; padding: 8px 10px; border-radius: 6px; border: 1px solid #fecaca;">
+        ${restricciones}
+      </div>
+    </div>
+
+    <!-- SECCIÓN III -->
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px;">3. MEDIDAS DE ADAPTACIÓN DEL PUESTO DE TRABAJO (AJUSTES RAZONABLES)</div>
+      <div style="font-size: 8.5pt; line-height: 1.45; white-space: pre-line; text-align: justify;">
+        ${adaptacion}
+      </div>
+    </div>
+
+    <!-- SECCIÓN IV -->
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px;">4. ELEMENTOS DE PROTECCIÓN PERSONAL (EPP) Y PROTECCIÓN ESPECÍFICA</div>
+      <div style="font-size: 8.5pt; line-height: 1.45; white-space: pre-line; text-align: justify;">
+        ${epp}
+      </div>
+    </div>
+
+    <!-- SECCIÓN V -->
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px;">5. PLAN DE SEGUIMIENTO MÉDICO-OCUPACIONAL Y PERIODICIDAD DE CONTROL</div>
+      <div style="font-size: 8.5pt; line-height: 1.45; white-space: pre-line; text-align: justify;">
+        ${seguimiento}
+      </div>
+    </div>
+
+    <!-- SECCIÓN VI: DECLARACIÓN Y COMPROMISO LEGAL -->
+    <div class="section-box" style="margin-bottom: 11px; padding: 10px 14px; background: #f0fdf4; border: 1px solid #bbf7d0;">
+      <div class="section-title" style="font-size: 9pt; margin-bottom: 5px; color: #166534;">6. DECLARACIÓN DE NOTIFICACIÓN, AUTOCUIDADO Y CUMPLIMIENTO OBLIGATORIO</div>
+      <p style="font-size: 8.5pt; line-height: 1.45; margin: 0; text-align: justify; color: #14532d;">
+        ${compromiso}
+      </p>
+      <p style="font-size: 8pt; line-height: 1.4; margin-top: 6px; color: #166534; font-style: italic;">
+        Nota de Confidencialidad: En estricto cumplimiento de la Resolución 2346 de 2007 y Ley 1581 de 2012, el diagnóstico clínico e historia médica ocupacional están sujetos a reserva legal; el presente documento consigna únicamente el concepto de aptitud, las recomendaciones y restricciones para la adaptación del puesto.
+      </p>
+    </div>
+
+    <div style="font-size: 8.5pt; margin: 16px 0 24px 0; text-align: justify;">
+      Para constancia formal de notificación y compromiso mutuo entre las partes, se firma a los ${new Date().getDate()} días del mes de ${new Intl.DateTimeFormat('es-CO', { month: 'long' }).format(new Date())} de ${new Date().getFullYear()}.
+    </div>
+
+    <div class="sig-container" style="display: flex; justify-content: space-between; margin-top: 25px; page-break-inside: avoid;">
+      <div class="sig-block" style="width: 31%; text-align: center;">
+        <div class="sig-line" style="margin-top: 48px;"></div>
+        <strong>${trabajador ? trabajador.nombre : 'FIRMA DEL TRABAJADOR'}</strong><br>
+        <span style="font-size: 7.5pt; color: #475569;">C.C. ${trabajador ? trabajador.identificacion : '______________________'}</span><br>
+        <span style="font-size: 8pt; color: #64748b;">TRABAJADOR NOTIFICADO</span>
+      </div>
+
+      <div class="sig-block" style="width: 31%; text-align: center;">
+        <div style="min-height: 48px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 4px;">
+          <img src="${empresa.legal_rep_signature_url || `/uploads/sig_inst_rep_legal_${empresa.id}.svg`}" alt="Firma Representante Legal" style="max-height: 42px; max-width: 130px; object-fit: contain;">
+        </div>
+        <div class="sig-line"></div>
+        <strong>${empresa.legal_rep_name || empresa.representanteLegal || empresa.razonSocial}</strong><br>
+        <span style="font-size: 7.5pt; color: #475569;">C.C. ${empresa.legal_rep_id_number || empresa.representanteLegalCedula || empresa.nit}</span><br>
+        <span style="font-size: 8pt; color: #64748b;">EL EMPLEADOR (Representante Legal)</span>
+      </div>
+
+      <div class="sig-block" style="width: 31%; text-align: center;">
+        <div style="min-height: 48px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 4px;">
+          <img src="${empresa.sst_responsible_signature_url || `/uploads/sig_inst_resp_sst_${empresa.id}.svg`}" alt="Firma Responsable SST" style="max-height: 42px; max-width: 130px; object-fit: contain;">
+        </div>
+        <div class="sig-line"></div>
+        <strong>${empresa.sst_responsible_name || 'Especialista / Coordinador SG-SST'}</strong><br>
+        <span style="font-size: 7.5pt; color: #475569;">Lic. SST: ${empresa.sst_responsible_license || 'Resolución Vigente'}</span><br>
+        <span style="font-size: 8pt; color: #64748b;">RESPONSABLE DEL SG-SST</span>
+      </div>
+    </div>
+  `;
+
+  abrirVentanaImpresion(`Recomendaciones_Medicas_${cargo.code}`, html);
+};
+
 // =============================================================================
 // GESTIÓN DE ESTRUCTURA Y REPOSITORIO DOCUMENTAL DEL CATÁLOGO DE CARGOS
 // (ESTRUCTURA IDÉNTICA A LA EVALUACIÓN DE ESTÁNDARES MÍNIMOS RES. 0312)
@@ -4410,6 +4694,29 @@ window.guardarEstructuraDocCargo = function(cargoId, docKey) {
       notificacionRiesgos: c1Val,
       clausulaPrincipal: c4Val,
       regimenSancionatorio: c5Val
+    };
+  } else if (docKey === 'recomendaciones') {
+    const origenVal = document.getElementById(`est-rec-origen-${cargoId}`)?.value.trim() || '';
+    const entidadVal = document.getElementById(`est-rec-entidad-${cargoId}`)?.value.trim() || '';
+    const vigenciaVal = document.getElementById(`est-rec-vigencia-${cargoId}`)?.value.trim() || '';
+    const biomecanicasVal = document.getElementById(`est-rec-biomecanicas-${cargoId}`)?.value.trim() || '';
+    const restriccionesVal = document.getElementById(`est-rec-restricciones-${cargoId}`)?.value.trim() || '';
+    const adaptacionVal = document.getElementById(`est-rec-adaptacion-${cargoId}`)?.value.trim() || '';
+    const eppVal = document.getElementById(`est-rec-epp-${cargoId}`)?.value.trim() || '';
+    const seguimientoVal = document.getElementById(`est-rec-seguimiento-${cargoId}`)?.value.trim() || '';
+    const compromisoVal = document.getElementById(`est-rec-compromiso-${cargoId}`)?.value.trim() || '';
+
+    configCargo.recomendacionesMedicas = {
+      ...(configCargo.recomendacionesMedicas || {}),
+      tipoEvaluacion: origenVal,
+      entidadEmisora: entidadVal,
+      vigencia: vigenciaVal,
+      recomendacionesBiomecanicas: biomecanicasVal,
+      restriccionesLaborales: restriccionesVal,
+      adaptacionPuesto: adaptacionVal,
+      eppProteccion: eppVal,
+      seguimientoControl: seguimientoVal,
+      compromisoLegal: compromisoVal
     };
   }
 

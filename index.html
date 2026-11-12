@@ -310,11 +310,11 @@
   </div>
 
   <!-- SCRIPT PRINCIPAL DE LA APLICACIÓN -->
-  <script type="module" src="./js/app.js?v=9.3"></script>
+  <script type="module" src="./js/app.js?v=9.4"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=2.8').then((reg) => {
+        navigator.serviceWorker.register('./sw.js?v=2.9').then((reg) => {
           console.log('[PWA] Service Worker registrado en scope:', reg.scope);
           reg.update();
         }).catch((err) => {

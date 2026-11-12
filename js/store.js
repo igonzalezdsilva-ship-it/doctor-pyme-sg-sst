@@ -2972,6 +2972,13 @@ class Store {
           url: 'https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing'
         }
       ],
+      recomendaciones: [
+        {
+          id: 'f-rec-' + Date.now(),
+          titulo: 'Formato Oficial de Notificación y Seguimiento a Recomendaciones Médicas Res. 2346 (Google Docs)',
+          url: 'https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing'
+        }
+      ],
       contrato: [
         {
           id: 'f-contrato-' + Date.now(),
