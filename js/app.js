@@ -530,6 +530,7 @@ async function initApp() {
   store.onSaveStatus((info) => {
     const dot = document.getElementById('save-status-dot');
     const text = document.getElementById('save-status-text');
+    const badge = document.getElementById('save-status-badge');
     const btn = document.getElementById('header-save-indicator');
     if (!dot || !text || !btn) return;
 
@@ -537,13 +538,40 @@ async function initApp() {
       dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse';
       btn.className = 'flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-bold transition shadow-2xs cursor-pointer group';
       const hora = new Date(info.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      text.innerText = `Guardado (${hora})`;
-    } else if (info.status === 'warning') {
-      dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping';
+      text.innerText = `100% Sincronizado en Servidor Nube + Respaldo Local (${hora})`;
+      if (badge) {
+        badge.innerText = 'Nube + Local';
+        badge.className = 'text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-semibold hidden md:inline';
+      }
+    } else if (info.status === 'syncing') {
+      dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping';
       btn.className = 'flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 rounded-xl text-xs font-bold transition shadow-2xs cursor-pointer group';
-      text.innerText = `Guardado en Respaldo`;
+      text.innerText = 'Sincronizando cambios con el servidor...';
+      if (badge) {
+        badge.innerText = 'Sincronizando';
+        badge.className = 'text-[10px] text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded font-semibold hidden md:inline';
+      }
+    } else {
+      dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse';
+      btn.className = 'flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-900 rounded-xl text-xs font-bold transition shadow-2xs cursor-pointer group';
+      text.innerText = 'Modo Offline (Pendiente de sincronizar)';
+      if (badge) {
+        badge.innerText = 'Pendiente Sync';
+        badge.className = 'text-[10px] text-rose-800 bg-rose-100 px-1.5 py-0.5 rounded font-semibold hidden md:inline';
+      }
     }
   });
+
+  window.forzarSincronizacionManual = async function() {
+    const ok = await store.forzarSincronizacion();
+    actualizarSelectorCabecera();
+    router();
+    if (ok) {
+      window.mostrarNotificacion?.('🟢 100% Sincronizado con Servidor Central');
+    } else {
+      window.mostrarNotificacion?.('🔴 Sin conexión con el servidor. Cambios protegidos en caché local.');
+    }
+  };
 
   // Backup & Restore
   document.getElementById('btn-exportar-backup')?.addEventListener('click', () => {
@@ -706,11 +734,33 @@ window.mostrarDiagnosticoAlmacenamiento = function() {
             </div>
           </div>
 
-          <!-- Acciones de Descarga de Respaldo -->
-          <div class="flex gap-2 pt-1 flex-shrink-0">
-            <button onclick="store.exportarJSON();" class="flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm cursor-pointer">
+          <!-- Acciones de Descarga de Respaldo y Sincronización -->
+          <div class="border border-amber-200 bg-amber-50/70 rounded-xl p-3 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-900">🗑️ Bóveda de Recuperación (Papelera 30 días)</span>
+              <span class="text-[10px] font-bold text-amber-700">${store.getDeletedVault(empresa?.id).length} registros</span>
+            </div>
+            <div class="max-h-28 overflow-y-auto space-y-1">
+              ${
+                store.getDeletedVault(empresa?.id).length > 0
+                  ? store.getDeletedVault(empresa?.id).slice(0, 6).map(v => `
+                    <div class="flex items-center justify-between bg-white px-2.5 py-1.5 rounded-lg border border-amber-200 text-[11px]">
+                      <span class="truncate font-semibold text-slate-700">[${v.type}] ${v.label}</span>
+                      <button onclick="window.restaurarDesdeBoveda('${v.vault_id}')" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold text-[10px] cursor-pointer">♻️ Restaurar</button>
+                    </div>
+                  `).join('')
+                  : '<div class="text-[11px] text-slate-500">No hay empresas ni trabajadores eliminados en los últimos 30 días.</div>'
+              }
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2 pt-1 flex-shrink-0">
+            <button onclick="window.forzarSincronizacionManual()" class="py-2.5 px-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+              🔄 Forzar Sincronización Ahora
+            </button>
+            <button onclick="store.exportarRespaldoCompleto();" class="flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm cursor-pointer">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-              Descargar Respaldo Manual (.json)
+              Descargar Respaldo Completo (.dpbackup)
             </button>
             <button onclick="document.getElementById('${modalId}').remove();" class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer">
               Cerrar
@@ -724,6 +774,16 @@ window.mostrarDiagnosticoAlmacenamiento = function() {
   `;
 
   document.body.insertAdjacentHTML('beforeend', modalHtml);
+};
+
+window.restaurarDesdeBoveda = function(vaultId) {
+  if (store.restoreFromVault(vaultId)) {
+    document.getElementById('modal-diagnostico-almacenamiento')?.remove();
+    window.mostrarDiagnosticoAlmacenamiento();
+    actualizarSelectorCabecera();
+    router();
+    window.mostrarNotificacion?.('♻️ Registro restaurado desde la Bóveda de Recuperación.');
+  }
 };
 
 // Cargar listado de backups físicos disponibles en el servidor

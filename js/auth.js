@@ -18,15 +18,6 @@ const USUARIOS_VALIDOS = [
     esSuperAdmin: true
   },
   {
-    email: 'auditor@mintrabajo.gov.co',
-    aliases: ['auditor'],
-    password: 'pyme2026',
-    nombre: 'Dr. Fernando Salazar',
-    cargo: 'Inspector Técnico de Trabajo - MinTrabajo Territorial',
-    rol: 'Auditor',
-    esSuperAdmin: false
-  },
-  {
     email: 'demo@doctorpyme.com',
     aliases: ['demo', 'demouser', 'demo@doctorpyme.co'],
     password: 'demo2026',
@@ -65,7 +56,23 @@ class Auth {
     }
     if (raw) {
       try {
-        this.session = JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        const pEmail = (parsed?.email || '').toLowerCase().trim();
+        const pNombre = (parsed?.nombre || '').trim();
+        // Limpiar sesión fantasma quemada ("Dr. Fernando Salazar") o sesiones escaladas ilegítimas
+        if (pEmail === 'auditor@mintrabajo.gov.co' || pNombre.includes('Fernando Salazar')) {
+          this.session = null;
+          storage.removeItem(AUTH_KEY);
+          storage.removeItem('DOCTOR_PYME_SESSION_V1');
+        } else {
+          if (pEmail !== 'i.gonzalez.dsilva@gmail.com' && parsed?.esSuperAdmin) {
+            parsed.esSuperAdmin = false;
+            if (parsed.rol === 'Super Administrador SST' || parsed.rol === 'SUPER_ADMIN') {
+              parsed.rol = 'Administrador Empresa';
+            }
+          }
+          this.session = parsed;
+        }
       } catch (e) {
         this.session = null;
       }
@@ -574,8 +581,6 @@ class Auth {
       return this.login('sstmineroambientall8a@gmail.com', 'Ochoa2026*');
     } else if (tipo === 'trabajador') {
       return this.login('jospina@ladrillosochoa.com.co', 'pyme2026');
-    } else if (tipo === 'auditor') {
-      return this.login('auditor@mintrabajo.gov.co', 'pyme2026');
     }
     return { ok: false };
   }

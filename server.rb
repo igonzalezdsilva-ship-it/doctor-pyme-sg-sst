@@ -1085,6 +1085,72 @@ mount_api(server, '/api/save') do |req, res|
 end
 
 # -----------------------------------------------------------------------------
+# API: Respaldo Completo (.dpbackup) con Base de Datos + Archivos en Disco
+# -----------------------------------------------------------------------------
+mount_api(server, '/api/backup/full') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'GET'
+    begin
+      server_files = {}
+      ['uploads', 'firmas', 'evidencias', 'worker_docs', 'documentos'].each do |sub|
+        dir_path = File.join(DATA_DIR, sub)
+        next unless Dir.exist?(dir_path)
+        Dir.glob(File.join(dir_path, '**', '*')).each do |f|
+          next unless File.file?(f)
+          next if File.size(f) > 5 * 1024 * 1024 # Evitar archivos > 5MB en un solo JSON
+          rel = f.sub("#{DATA_DIR}/", '')
+          server_files[rel] = Base64.strict_encode64(File.binread(f))
+        end
+      end
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { ok: true, serverFiles: server_files, fileCount: server_files.size }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { ok: false, error: err.message }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+mount_api(server, '/api/backup/restore-files') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      payload = JSON.parse(req.body) rescue {}
+      files_hash = payload['serverFiles']
+      restored = 0
+      if files_hash.is_a?(Hash)
+        data_root = File.expand_path(DATA_DIR)
+        files_hash.each do |rel_path, b64|
+          next if rel_path.to_s.include?('..')
+          target = File.expand_path(File.join(data_root, rel_path.to_s))
+          next unless target.start_with?(data_root + '/')
+          FileUtils.mkdir_p(File.dirname(target))
+          File.binwrite(target, Base64.strict_decode64(b64.to_s))
+          restored += 1
+        end
+      end
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { ok: true, restored: restored }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { ok: false, error: err.message }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+# -----------------------------------------------------------------------------
 # API: Listar Copias de Seguridad Disponibles
 # -----------------------------------------------------------------------------
 mount_api(server, '/api/backups') do |req, res|

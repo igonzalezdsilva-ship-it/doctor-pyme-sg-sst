@@ -904,13 +904,22 @@ class Store {
     this.saveStatusListeners = [];
     this.lastSaved = new Date();
     this.serverSynced = false;
+    this.syncState = 'syncing';
+    this.pendingSync = false;
+    this._syncInFlight = false;
     setEvidenceStoreRef(this);
     this.init();
     this.sincronizarConServidorFisico();
 
-    // Sincronización automática periódica y reactiva a cambios de pestaña o foco
+    // Sincronización automática periódica y reactiva a cambios de pestaña, foco o reconexión
     if (typeof window !== 'undefined') {
       window.addEventListener('focus', () => this.sincronizarConServidorFisico());
+      window.addEventListener('online', () => this.forzarSincronizacion());
+      window.addEventListener('offline', () => {
+        this.syncState = 'offline';
+        this.serverSynced = false;
+        this.notifySaveStatus({ status: 'offline', serverSynced: false, timestamp: this.lastSaved });
+      });
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
           this.sincronizarConServidorFisico();
@@ -1278,17 +1287,155 @@ class Store {
     return `${prefix}${cleanEndpoint}`;
   }
 
-  async sincronizarConServidorFisico() {
-    if (typeof fetch === 'undefined') return;
+  mergeLocalAndServerData(localData, serverData) {
+    if (!localData || typeof localData !== 'object') {
+      return { merged: JSON.parse(JSON.stringify(serverData || {})), needsPush: false };
+    }
+    if (!serverData || typeof serverData !== 'object') {
+      return { merged: JSON.parse(JSON.stringify(localData)), needsPush: true };
+    }
+
+    const merged = JSON.parse(JSON.stringify(serverData));
+    let needsPush = false;
+
+    const deletedVault = Array.isArray(merged.deleted_records_vault) ? merged.deleted_records_vault : [];
+    const localVault = Array.isArray(localData.deleted_records_vault) ? localData.deleted_records_vault : [];
+    const nowMs = Date.now();
+    const vaultMap = new Map();
+    [...deletedVault, ...localVault].forEach((v) => {
+      if (!v || !v.id) return;
+      if (v.expires_at && new Date(v.expires_at).getTime() < nowMs) return;
+      vaultMap.set(`${v.type || 'record'}:${v.id}`, v);
+    });
+    merged.deleted_records_vault = Array.from(vaultMap.values());
+    const deletedIds = new Set(merged.deleted_records_vault.map((v) => `${v.type || 'record'}:${v.id}`));
+
+    const getTs = (obj) => {
+      if (!obj || typeof obj !== 'object') return 0;
+      const raw = obj.updatedAt || obj.updated_at || obj.fechaActualizacion || obj.modifiedAt || obj.createdAt || obj.created_at;
+      const t = raw ? new Date(raw).getTime() : 0;
+      return Number.isFinite(t) ? t : 0;
+    };
+
+    const getRichness = (obj) => {
+      if (!obj || typeof obj !== 'object') return 0;
+      let score = 0;
+      if (Array.isArray(obj.documentos)) score += obj.documentos.length * 10;
+      if (obj.documentos && typeof obj.documentos === 'object' && !Array.isArray(obj.documentos)) {
+        score += Object.keys(obj.documentos).length * 10;
+      }
+      if (obj.firma_base64 || obj.signature_svg || obj.firma_digital_url || obj.signature_url) score += 20;
+      if (Number(obj.salario) > 0) score += 5;
+      return score;
+    };
+
+    const arrayKeys = [
+      'empresas', 'trabajadores', 'firmas', 'evidencias', 'capacitaciones',
+      'equipos', 'mantenimientos', 'reportesPeligro', 'reportesPreoperacional',
+      'tools_inventory', 'tools_sst', 'tools_maintenance_plan', 'tools_assignments',
+      'data_privacy_consents', 'legal_policy_versions', 'legal_acceptance_repository',
+      'perfiles_cargo', 'process_maps', 'processes', 'process_activities',
+      'job_positions', 'process_activity_positions', 'job_position_documents',
+      'epp_dotacion_catalog', 'job_position_epp_matrix', 'epp_dotacion_deliveries',
+      'epp_dotacion_delivery_items', 'employee_document_signatures',
+      'sst_committees', 'sst_committee_members', 'sst_committee_meetings',
+      'sst_committee_tasks', 'ccl_convivencia_reports', 'users', 'user_tenant_memberships',
+      'matriz', 'planTrabajo', 'accidentes'
+    ];
+
+    arrayKeys.forEach((key) => {
+      const sArr = Array.isArray(merged[key]) ? merged[key] : [];
+      const lArr = Array.isArray(localData[key]) ? localData[key] : [];
+      if (lArr.length === 0) {
+        merged[key] = sArr;
+        return;
+      }
+
+      const byId = new Map();
+      sArr.forEach((item, idx) => {
+        const id = item?.id || `__idx_${idx}`;
+        byId.set(id, item);
+      });
+
+      const typeKey = key === 'trabajadores' ? 'trabajador' : key === 'empresas' ? 'empresa' : key;
+      lArr.forEach((lItem) => {
+        if (!lItem) return;
+        const id = lItem.id;
+        if (!id) return;
+        if (id === 'emp-demo' || lItem.is_demo) return;
+        if (deletedIds.has(`${typeKey}:${id}`)) return;
+
+        const sItem = byId.get(id);
+        if (!sItem) {
+          byId.set(id, lItem);
+          needsPush = true;
+        } else {
+          const lTs = getTs(lItem);
+          const sTs = getTs(sItem);
+          const lRich = getRichness(lItem);
+          const sRich = getRichness(sItem);
+          if (lTs > sTs || (lTs === sTs && lRich > sRich)) {
+            byId.set(id, { ...sItem, ...lItem });
+            needsPush = true;
+          }
+        }
+      });
+
+      merged[key] = Array.from(byId.values());
+    });
+
+    // Fusionar evaluaciones por empresa y vigencia sin perder numerales
+    if (localData.evaluaciones && typeof localData.evaluaciones === 'object') {
+      merged.evaluaciones = merged.evaluaciones || {};
+      Object.keys(localData.evaluaciones).forEach((tid) => {
+        if (tid === 'emp-demo') return;
+        merged.evaluaciones[tid] = merged.evaluaciones[tid] || {};
+        const lYears = localData.evaluaciones[tid] || {};
+        Object.keys(lYears).forEach((yr) => {
+          merged.evaluaciones[tid][yr] = merged.evaluaciones[tid][yr] || {};
+          const lNums = lYears[yr] || {};
+          Object.keys(lNums).forEach((num) => {
+            const lEval = lNums[num];
+            const sEval = merged.evaluaciones[tid][yr][num];
+            if (!sEval) {
+              merged.evaluaciones[tid][yr][num] = lEval;
+              needsPush = true;
+            } else if (getTs(lEval) > getTs(sEval)) {
+              merged.evaluaciones[tid][yr][num] = { ...sEval, ...lEval };
+              needsPush = true;
+            }
+          });
+        });
+      });
+    }
+
+    return { merged, needsPush };
+  }
+
+  async forzarSincronizacion() {
+    this.syncState = 'syncing';
+    this.notifySaveStatus({ status: 'syncing', serverSynced: false, timestamp: this.lastSaved });
+    await this.sincronizarConServidorFisico(true);
+    return this.serverSynced;
+  }
+
+  async sincronizarConServidorFisico(forcePush = false) {
+    if (typeof fetch === 'undefined' || this._syncInFlight) return;
+    this._syncInFlight = true;
+    this.syncState = 'syncing';
+    this.notifySaveStatus({ status: 'syncing', serverSynced: this.serverSynced, timestamp: this.lastSaved });
+
     try {
       const resp = await fetch(this.getApiUrl('/data'));
       if (resp.ok) {
         const serverData = await resp.json();
         if (serverData && Array.isArray(serverData.empresas) && serverData.empresas.length > 0) {
-          // El servidor físico (data/database.json) es la única fuente autoritativa de verdad
-          console.log("✓ Sincronizado con Base de Datos Física en Disco (data/database.json)");
-          this.data = serverData;
+          // Motor Bidireccional Anti-Wipe: fusiona cambios locales pendientes con el servidor central
+          const { merged, needsPush } = this.mergeLocalAndServerData(this.data, serverData);
+          console.log("✓ Sincronizado bidireccionalmente con Servidor Central (Anti-Wipe)", { needsPush });
+          this.data = merged;
           this.serverSynced = true;
+          this.syncState = 'synced';
           this.lastSaved = new Date();
 
           // Asegurar estructura de acceso en todas las empresas
@@ -1509,19 +1656,34 @@ class Store {
             }
           } catch {}
 
+          this.pendingSync = false;
           this.notify();
           this.notifySaveStatus({
             status: 'ok',
             serverSynced: true,
             timestamp: this.lastSaved,
-            source: 'disco_fisico'
+            source: 'servidor_central'
           });
+
+          if ((needsPush || forcePush) && !(typeof window !== 'undefined' && window.auth?.isDemo?.())) {
+            this.enviarAlServidorFisico(true);
+          }
         }
+      } else {
+        this.syncState = 'offline';
+        this.serverSynced = false;
+        this.pendingSync = true;
+        this.notifySaveStatus({ status: 'offline', serverSynced: false, timestamp: this.lastSaved });
       }
     } catch (e) {
-      console.warn("Servidor físico en espera, operando con almacenamiento local:", e);
+      console.warn("Servidor físico en espera, operando en Modo Offline:", e);
       this.serverSynced = false;
+      this.syncState = 'offline';
+      this.pendingSync = true;
       this._bloqueoGuardado = false;
+      this.notifySaveStatus({ status: 'offline', serverSynced: false, timestamp: this.lastSaved });
+    } finally {
+      this._syncInFlight = false;
     }
   }
 
@@ -1559,6 +1721,8 @@ class Store {
         if (!this.data.updatedAt) {
           this.data.updatedAt = new Date().toISOString();
         }
+        this.syncState = 'syncing';
+        this.notifySaveStatus({ status: 'syncing', serverSynced: this.serverSynced, timestamp: this.lastSaved });
         const authHeaders = (typeof window !== 'undefined' && window.auth && window.auth.getAuthHeaders)
           ? window.auth.getAuthHeaders({ 'Content-Type': 'application/json' })
           : { 'Content-Type': 'application/json' };
@@ -1570,18 +1734,27 @@ class Store {
         if (resp.ok) {
           const resJson = await resp.json();
           this.serverSynced = true;
+          this.syncState = 'synced';
+          this.pendingSync = false;
+          this.lastSaved = new Date(resJson.timestamp || Date.now());
           this.notifySaveStatus({
             status: 'ok',
             serverSynced: true,
-            timestamp: new Date(resJson.timestamp || Date.now()),
+            timestamp: this.lastSaved,
             bytes: resJson.bytes,
             backupCreated: resJson.backupCreated
           });
         } else {
           this.serverSynced = false;
+          this.syncState = 'offline';
+          this.pendingSync = true;
+          this.notifySaveStatus({ status: 'offline', serverSynced: false, timestamp: this.lastSaved });
         }
       } catch (e) {
         this.serverSynced = false;
+        this.syncState = 'offline';
+        this.pendingSync = true;
+        this.notifySaveStatus({ status: 'offline', serverSynced: false, timestamp: this.lastSaved });
         console.warn("Servidor físico desconectado, datos preservados en almacenamiento local:", e);
       }
     };
@@ -2262,7 +2435,9 @@ class Store {
   }
 
   deleteEmpresa(id) {
-    if (confirm("¿Estás seguro de eliminar esta empresa cliente y todos sus registros asociados?")) {
+    if (confirm("¿Estás seguro de eliminar esta empresa cliente? Se guardará una copia de seguridad en la Bóveda de Recuperación durante 30 días.")) {
+      const empObj = (this.data.empresas || []).find(e => e.id === id);
+      if (empObj) this.softDeleteRecord('empresa', empObj, id);
       this.data.empresas = this.data.empresas.filter(e => e.id !== id);
       this.data.matriz = this.data.matriz.filter(m => m.companyId !== id);
       this.data.planTrabajo = this.data.planTrabajo.filter(p => p.companyId !== id);
@@ -2782,45 +2957,153 @@ class Store {
     this.saveToStorage();
   }
 
-  // --- EXPORTACIÓN E IMPORTACIÓN ---
-  exportarJSON() {
-    const dataStr = JSON.stringify(this.data, null, 2);
+  // --- EXPORTACIÓN, IMPORTACIÓN COMPLETA (.dpbackup) Y BÓVEDA DE RECUPERACIÓN 30 DÍAS ---
+  softDeleteRecord(type, record, tenantId = null) {
+    if (!record) return;
+    if (!Array.isArray(this.data.deleted_records_vault)) {
+      this.data.deleted_records_vault = [];
+    }
+    const now = Date.now();
+    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+    this.data.deleted_records_vault = this.data.deleted_records_vault.filter(
+      (v) => v && (!v.expires_at || new Date(v.expires_at).getTime() >= now)
+    );
+    this.data.deleted_records_vault.unshift({
+      vault_id: `vault-${type}-${record.id || now}-${now}`,
+      id: record.id || `${type}-${now}`,
+      type,
+      tenant_id: tenantId || record.companyId || record.tenant_id || null,
+      label: record.razonSocial || record.nombre || record.titulo || record.id || type,
+      deleted_at: new Date(now).toISOString(),
+      expires_at: new Date(now + thirtyDaysMs).toISOString(),
+      record: JSON.parse(JSON.stringify(record))
+    });
+  }
+
+  getDeletedVault(tenantId = null) {
+    const now = Date.now();
+    const vault = Array.isArray(this.data.deleted_records_vault) ? this.data.deleted_records_vault : [];
+    const active = vault.filter((v) => v && (!v.expires_at || new Date(v.expires_at).getTime() >= now));
+    if (!tenantId || tenantId === 'todas') return active;
+    return active.filter((v) => !v.tenant_id || v.tenant_id === tenantId);
+  }
+
+  restoreFromVault(vaultId) {
+    if (!Array.isArray(this.data.deleted_records_vault)) return false;
+    const idx = this.data.deleted_records_vault.findIndex((v) => v.vault_id === vaultId || v.id === vaultId);
+    if (idx === -1) return false;
+    const entry = this.data.deleted_records_vault[idx];
+    const rec = JSON.parse(JSON.stringify(entry.record || {}));
+    delete rec.deleted_at;
+
+    if (entry.type === 'empresa') {
+      if (!Array.isArray(this.data.empresas)) this.data.empresas = [];
+      if (!this.data.empresas.some((e) => e.id === rec.id)) {
+        this.data.empresas.push(rec);
+      }
+    } else if (entry.type === 'trabajador') {
+      if (!Array.isArray(this.data.trabajadores)) this.data.trabajadores = [];
+      if (!this.data.trabajadores.some((t) => t.id === rec.id)) {
+        this.data.trabajadores.push(rec);
+      }
+    } else if (entry.type === 'evidencia' || entry.type === 'documento') {
+      if (!Array.isArray(this.data.evidencias)) this.data.evidencias = [];
+      if (!this.data.evidencias.some((ev) => ev.id === rec.id)) {
+        this.data.evidencias.push(rec);
+      }
+    }
+
+    this.data.deleted_records_vault.splice(idx, 1);
+    this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
+    return true;
+  }
+
+  async exportarRespaldoCompleto() {
+    let serverFiles = {};
+    try {
+      if (typeof fetch !== 'undefined') {
+        const authHeaders = (typeof window !== 'undefined' && window.auth?.getAuthHeaders)
+          ? window.auth.getAuthHeaders()
+          : {};
+        const resp = await fetch(this.getApiUrl('/backup/full'), { headers: authHeaders });
+        if (resp.ok) {
+          const fullJson = await resp.json();
+          if (fullJson && fullJson.serverFiles) {
+            serverFiles = fullJson.serverFiles;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("Exportando respaldo local sin archivos binarios adicionales de disco:", e);
+    }
+
+    const envelope = {
+      format: 'DOCTOR_PYME_BACKUP_V2',
+      exportedAt: new Date().toISOString(),
+      sourceOrigin: typeof window !== 'undefined' ? window.location.origin : 'local',
+      serverFiles,
+      data: this.data
+    };
+
+    const dataStr = JSON.stringify(envelope, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `SG_SST_Copia_Seguridad_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `DoctorPyme_Respaldo_Total_${new Date().toISOString().split('T')[0]}.dpbackup`;
     a.click();
     URL.revokeObjectURL(url);
+    return true;
+  }
+
+  exportarJSON() {
+    return this.exportarRespaldoCompleto();
   }
 
   importarJSON(jsonString) {
     try {
       const parsed = JSON.parse(jsonString);
-      if (parsed.empresas && Array.isArray(parsed.empresas)) {
-        this.data = {
-          empresas: parsed.empresas,
-          matriz: Array.isArray(parsed.matriz) ? parsed.matriz : [...MATRIZ_RIESGOS_DEMO],
-          planTrabajo: Array.isArray(parsed.planTrabajo) ? parsed.planTrabajo : [...PLAN_TRABAJO_DEMO],
-          accidentes: Array.isArray(parsed.accidentes) ? parsed.accidentes : [...ACCIDENTES_DEMO],
-          evaluaciones: parsed.evaluaciones || {}
-        };
+      const importedData = (parsed?.format === 'DOCTOR_PYME_BACKUP_V2' && parsed?.data)
+        ? parsed.data
+        : parsed;
+
+      if (importedData && Array.isArray(importedData.empresas)) {
+        // Fusión inteligente no destructiva (Upsert) preservando trabajadores, carpetas, firmas y archivos
+        const { merged } = this.mergeLocalAndServerData(importedData, this.data);
+        this.data = merged;
+        this.serverSynced = true;
         this.saveToStorage();
+        this.enviarAlServidorFisico(true);
+
+        if (parsed?.serverFiles && typeof parsed.serverFiles === 'object' && Object.keys(parsed.serverFiles).length > 0 && typeof fetch !== 'undefined') {
+          const authHeaders = (typeof window !== 'undefined' && window.auth?.getAuthHeaders)
+            ? window.auth.getAuthHeaders({ 'Content-Type': 'application/json' })
+            : { 'Content-Type': 'application/json' };
+          fetch(this.getApiUrl('/backup/restore-files'), {
+            method: 'POST',
+            headers: authHeaders,
+            body: JSON.stringify({ serverFiles: parsed.serverFiles })
+          }).catch(() => {});
+        }
+
+        this.notify();
         return true;
       }
     } catch (e) {
-      console.error("Error al importar archivo JSON", e);
+      console.error("Error al importar archivo de respaldo:", e);
     }
     return false;
   }
 
-  // --- CRUD TRABAJADORES CON AISLAMIENTO MULTI-TENANT ESTRICTO ---
+  // --- CRUD TRABAJADORES CON AISLAMIENTO MULTI-TENANT ESTRICTO Y PERSISTENCIA TRANSVERSAL ---
   getTrabajadores(companyId = null) {
     const lockedId = this.getSessionTenantLock();
     const cid = lockedId || ((companyId !== null && companyId !== undefined) ? companyId : this.getEmpresaActivaId());
-    const lista = Array.isArray(this.data?.trabajadores) ? this.data.trabajadores : [];
+    const lista = (Array.isArray(this.data?.trabajadores) ? this.data.trabajadores : []).filter(t => t && !t.deleted_at);
     if (cid === 'todas' && !lockedId) return lista;
-    // Aislamiento estricto por tenant_id / companyId
+    // Aislamiento estricto por tenant_id / companyId (transversal a vigencias 2025, 2026+)
     return lista.filter(t => t && (t.companyId === cid || ((cid === 'emp-004' || cid === 'emp-1790438946268') && (t.companyId === 'emp-1790438946268' || t.companyId === 'emp-004'))));
   }
 
@@ -2981,6 +3264,8 @@ class Store {
   async deleteTrabajador(id) {
     if (!id) return;
     if (Array.isArray(this.data.trabajadores)) {
+      const target = this.data.trabajadores.find(t => t.id === id);
+      if (target) this.softDeleteRecord('trabajador', target, target.companyId);
       this.data.trabajadores = this.data.trabajadores.filter(t => t.id !== id);
     }
     try {
