@@ -973,6 +973,8 @@ class Store {
           if (!Array.isArray(this.data.sst_committee_meetings)) this.data.sst_committee_meetings = [];
           if (!Array.isArray(this.data.sst_committee_tasks)) this.data.sst_committee_tasks = [];
           if (!Array.isArray(this.data.ccl_convivencia_reports)) this.data.ccl_convivencia_reports = [];
+          if (!Array.isArray(this.data.users)) this.data.users = [];
+          if (!Array.isArray(this.data.user_tenant_memberships)) this.data.user_tenant_memberships = [];
           if (!Array.isArray(this.data.super_admins)) {
             this.data.super_admins = [
               {
@@ -986,48 +988,11 @@ class Store {
                 estado: 'ACTIVO',
                 creadoEn: '2026-10-10T00:00:00.000Z',
                 ultimoIngreso: new Date().toISOString()
-              },
-              {
-                id: 'sa-002',
-                email: 'serviciosivangonzalez@gmail.com',
-                nombre: 'Ing. Iván David González Silva',
-                cargo: 'Super Administrador & Consultor Principal SST',
-                licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
-                telefono: '3144001787',
-                password: 'Stoner200',
-                estado: 'ACTIVO',
-                creadoEn: '2026-10-10T00:00:00.000Z',
-                ultimoIngreso: new Date().toISOString()
               }
             ];
-          }
-          if (!Array.isArray(this.data.super_admins)) {
-            this.data.super_admins = [
-              {
-                id: 'sa-001',
-                email: 'i.gonzalez.dsilva@gmail.com',
-                nombre: 'Ing. Iván David González Silva',
-                cargo: 'Super Administrador & Consultor Principal SST',
-                licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
-                telefono: '3144001787',
-                password: 'Stoner200',
-                estado: 'ACTIVO',
-                creadoEn: '2026-10-10T00:00:00.000Z',
-                ultimoIngreso: new Date().toISOString()
-              },
-              {
-                id: 'sa-002',
-                email: 'serviciosivangonzalez@gmail.com',
-                nombre: 'Ing. Iván David González Silva',
-                cargo: 'Super Administrador & Consultor Principal SST',
-                licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
-                telefono: '3144001787',
-                password: 'Stoner200',
-                estado: 'ACTIVO',
-                creadoEn: '2026-10-10T00:00:00.000Z',
-                ultimoIngreso: new Date().toISOString()
-              }
-            ];
+          } else {
+            // Blindaje RBAC: Único Super Administrador autorizado en la plataforma
+            this.data.super_admins = this.data.super_admins.filter(sa => (sa.email || '').toLowerCase().trim() === 'i.gonzalez.dsilva@gmail.com');
           }
           if (!this.data.evaluaciones || typeof this.data.evaluaciones !== 'object') this.data.evaluaciones = {};
 
@@ -1374,6 +1339,8 @@ class Store {
           if (!Array.isArray(this.data.sst_committee_meetings)) this.data.sst_committee_meetings = [];
           if (!Array.isArray(this.data.sst_committee_tasks)) this.data.sst_committee_tasks = [];
           if (!Array.isArray(this.data.ccl_convivencia_reports)) this.data.ccl_convivencia_reports = [];
+          if (!Array.isArray(this.data.users)) this.data.users = [];
+          if (!Array.isArray(this.data.user_tenant_memberships)) this.data.user_tenant_memberships = [];
           if (!Array.isArray(this.data.super_admins)) {
             this.data.super_admins = [
               {
@@ -1387,20 +1354,10 @@ class Store {
                 estado: 'ACTIVO',
                 creadoEn: '2026-10-10T00:00:00.000Z',
                 ultimoIngreso: new Date().toISOString()
-              },
-              {
-                id: 'sa-002',
-                email: 'serviciosivangonzalez@gmail.com',
-                nombre: 'Ing. Iván David González Silva',
-                cargo: 'Super Administrador & Consultor Principal SST',
-                licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
-                telefono: '3144001787',
-                password: 'Stoner200',
-                estado: 'ACTIVO',
-                creadoEn: '2026-10-10T00:00:00.000Z',
-                ultimoIngreso: new Date().toISOString()
               }
             ];
+          } else {
+            this.data.super_admins = this.data.super_admins.filter(sa => (sa.email || '').toLowerCase().trim() === 'i.gonzalez.dsilva@gmail.com');
           }
 
           // Garantizar 1 único registro de Política de Tratamiento de Datos por empresa (Ley 1581 / Ley 527)
@@ -1790,43 +1747,74 @@ class Store {
   }
 
   // --- GESTIÓN DE EMPRESA ACTIVA Y AISLAMIENTO MULTI-TENANT ---
+  getActiveSessionObject() {
+    try {
+      const raw = storage.getItem('DOCTOR_PYME_SESSION_V2') || storage.getItem('DOCTOR_PYME_SESSION_V1') || (typeof localStorage !== 'undefined' ? (localStorage.getItem('SG_SST_USER_SESSION') || localStorage.getItem('SG_SST_SESSION')) : null);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (e) {
+      return null;
+    }
+  }
+
   isSuperAdminSession() {
     try {
-      const raw = storage.getItem('DOCTOR_PYME_SESSION_V2') || storage.getItem('DOCTOR_PYME_SESSION_V1');
-      if (!raw) return false;
-      const session = JSON.parse(raw);
-      if (!session) return false;
+      const session = this.getActiveSessionObject();
+      if (!session || session.is_demo) return false;
       const email = (session.email || '').toLowerCase().trim();
-      if (session.esSuperAdmin === true || email === 'i.gonzalez.dsilva@gmail.com' || email === 'serviciosivangonzalez@gmail.com') {
-        return true;
-      }
-      const superAdmins = this.getSuperAdmins();
-      return superAdmins.some(sa => (sa.email || '').toLowerCase().trim() === email && (sa.estado || 'ACTIVO').toUpperCase() === 'ACTIVO');
+      // BLINDAJE CRÍTICO: Único Super Administrador autorizado en toda la plataforma
+      return email === 'i.gonzalez.dsilva@gmail.com' && (session.rol === 'Super Administrador SST' || session.rol_rls === 'SUPER_ADMIN' || session.esSuperAdmin === true);
     } catch (e) {
       return false;
     }
   }
 
+  getAllowedTenantIdsForSession() {
+    const session = this.getActiveSessionObject();
+    if (!session) return [];
+    if (this.isSuperAdminSession()) return null; // Acceso global irrestricto
+    if (session.is_demo) return [session.empresaId || 'emp-demo'];
+
+    const rol = (session.rol || '').toUpperCase();
+    const rolRls = (session.rol_rls || '').toUpperCase();
+
+    // Consultor SST: empresas asignadas explícitamente en tenant_memberships
+    if (rol.includes('CONSULTOR') || rolRls === 'CONSULTOR_SST') {
+      const uid = session.user_id || session.id;
+      const memberships = (this.data?.user_tenant_memberships || []).filter(m =>
+        (m.user_id === uid || (session.email && (this.data?.users || []).some(u => u.id === m.user_id && (u.email || '').toLowerCase().trim() === session.email.toLowerCase().trim()))) &&
+        m.is_active !== false &&
+        m.activo !== false
+      );
+      const memIds = memberships.map(m => m.tenant_id).filter(Boolean);
+      const tokenIds = Array.isArray(session.allowed_tenant_ids) ? session.allowed_tenant_ids : [];
+      return Array.from(new Set([...memIds, ...tokenIds]));
+    }
+
+    // Trabajador o Administrador Empresa (ADMIN_PYME): bloqueado exclusivamente a su empresa
+    const lockedId = session.tenant_id || session.empresaId || session.companyId || session.company?.id || session.active_tenant?.id;
+    return lockedId ? [lockedId] : [];
+  }
+
   getSessionTenantLock() {
     try {
-      // Si la sesión activa es de Super Administrador, nunca bloquear
-      if (this.isSuperAdminSession()) {
-        return null;
-      }
-      // Si estamos en la plataforma de escritorio (auditoría, evaluación, dashboard), no bloquear la navegación global
-      if (typeof window !== 'undefined' && !window.location.hash.startsWith('#portal-trabajador') && !document.body.classList.contains('mobile-app-mode')) {
-        return null;
-      }
-      const raw = storage.getItem('DOCTOR_PYME_SESSION_V2') || storage.getItem('DOCTOR_PYME_SESSION_V1') || (typeof localStorage !== 'undefined' ? (localStorage.getItem('SG_SST_USER_SESSION') || localStorage.getItem('SG_SST_SESSION')) : null);
-      if (!raw) return null;
-      const session = JSON.parse(raw);
+      if (this.isSuperAdminSession()) return null;
+      const session = this.getActiveSessionObject();
       if (!session) return null;
-      // Solo bloquear si la sesión activa es de tipo TRABAJADOR en su portal móvil
-      if (session.rol === 'TRABAJADOR' || session.tipo === 'trabajador') {
-        const lockedId = session.tenant_id || session.empresaId || session.companyId || session.company?.id || session.active_tenant?.id;
-        if (lockedId) {
-          return lockedId;
-        }
+      if (session.is_demo) return session.empresaId || 'emp-demo';
+
+      const rol = (session.rol || '').toUpperCase();
+      const rolRls = (session.rol_rls || '').toUpperCase();
+
+      // Si es Consultor SST y tiene múltiples empresas, no bloquear a 1 sola sino a su subconjunto en getEmpresas()
+      if (rol.includes('CONSULTOR') || rolRls === 'CONSULTOR_SST') {
+        const allowed = this.getAllowedTenantIdsForSession();
+        return allowed.length === 1 ? allowed[0] : null;
+      }
+
+      // Empresa Cliente (ADMIN_PYME / Administrador Empresa) y Trabajador: aislamiento estricto incluso en escritorio
+      if (rol === 'ADMINISTRADOR EMPRESA' || rolRls === 'ADMIN_PYME' || rol === 'TRABAJADOR' || rolRls === 'TRABAJADOR' || session.tipo === 'empresa' || session.tipo === 'trabajador') {
+        return session.tenant_id || session.empresaId || session.companyId || session.company?.id || session.active_tenant?.id || null;
       }
       return null;
     } catch (e) {
@@ -1834,7 +1822,7 @@ class Store {
     }
   }
 
-  // --- GESTIÓN DE SUPER ADMINISTRADORES ---
+  // --- GESTIÓN DE SUPER ADMINISTRADOR ÚNICO ---
   getSuperAdmins() {
     if (!this.data) this.data = {};
     if (!Array.isArray(this.data.super_admins)) {
@@ -1850,20 +1838,10 @@ class Store {
           estado: 'ACTIVO',
           creadoEn: '2026-10-10T00:00:00.000Z',
           ultimoIngreso: new Date().toISOString()
-        },
-        {
-          id: 'sa-002',
-          email: 'serviciosivangonzalez@gmail.com',
-          nombre: 'Ing. Iván David González Silva',
-          cargo: 'Super Administrador & Consultor Principal SST',
-          licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022',
-          telefono: '3144001787',
-          password: 'Stoner200',
-          estado: 'ACTIVO',
-          creadoEn: '2026-10-10T00:00:00.000Z',
-          ultimoIngreso: new Date().toISOString()
         }
       ];
+    } else {
+      this.data.super_admins = this.data.super_admins.filter(sa => (sa.email || '').toLowerCase().trim() === 'i.gonzalez.dsilva@gmail.com');
     }
     return this.data.super_admins;
   }
@@ -1928,6 +1906,133 @@ class Store {
     return admin.estado;
   }
 
+  // --- GESTIÓN DE CONSULTORES SST, USUARIOS Y MEMBRESÍAS MULTITENANT ---
+  getConsultoresYUsuarios() {
+    if (!this.data) this.data = {};
+    if (!Array.isArray(this.data.users)) this.data.users = [];
+    // Retornar usuarios administrativos / consultores / empresas (excluyendo trabajadores masivos sin email corporativo si se desea)
+    return this.data.users.filter(u => {
+      const r = (u.role || u.rol || '').toUpperCase();
+      return r === 'SUPER_ADMIN' || r === 'CONSULTOR_SST' || r === 'ADMIN_PYME' || (u.email && !String(u.id).startsWith('usr-worker-'));
+    });
+  }
+
+  getUserTenantMemberships(userId = null) {
+    if (!this.data) this.data = {};
+    if (!Array.isArray(this.data.user_tenant_memberships)) this.data.user_tenant_memberships = [];
+    if (!userId) return this.data.user_tenant_memberships;
+    return this.data.user_tenant_memberships.filter(m => m.user_id === userId && m.is_active !== false && m.activo !== false);
+  }
+
+  saveConsultorUsuario(userData) {
+    if (!this.data) this.data = {};
+    if (!Array.isArray(this.data.users)) this.data.users = [];
+    const cleanEmail = (userData.email || '').trim().toLowerCase();
+    if (!cleanEmail) return { ok: false, error: 'El correo electrónico es obligatorio.' };
+
+    // Blindaje: Ningún usuario distinto a i.gonzalez.dsilva@gmail.com puede recibir rol SUPER_ADMIN
+    let targetRole = (userData.role || userData.rol || 'CONSULTOR_SST').toUpperCase();
+    if (cleanEmail === 'i.gonzalez.dsilva@gmail.com') {
+      targetRole = 'SUPER_ADMIN';
+    } else if (targetRole === 'SUPER_ADMIN' || targetRole === 'SUPERADMIN') {
+      targetRole = 'CONSULTOR_SST';
+    }
+
+    const idxExistente = this.data.users.findIndex(u =>
+      (userData.id && u.id === userData.id) ||
+      ((u.email || '').toLowerCase().trim() === cleanEmail)
+    );
+    const nowIso = new Date().toISOString();
+    let savedUser;
+
+    if (idxExistente >= 0) {
+      const actual = this.data.users[idxExistente];
+      savedUser = {
+        ...actual,
+        nombre_completo: userData.nombre_completo || userData.nombre || actual.nombre_completo,
+        cedula: userData.cedula !== undefined ? userData.cedula : actual.cedula,
+        telefono: userData.telefono !== undefined ? userData.telefono : actual.telefono,
+        email: cleanEmail,
+        role: targetRole,
+        rol: targetRole,
+        password: userData.password ? userData.password : actual.password,
+        estado: userData.estado || actual.estado || 'ACTIVO',
+        activo: (userData.estado || actual.estado || 'ACTIVO').toUpperCase() === 'ACTIVO',
+        updated_at: nowIso
+      };
+      this.data.users[idxExistente] = savedUser;
+    } else {
+      const newId = userData.id || `usr-${targetRole.toLowerCase()}-${Date.now()}`;
+      savedUser = {
+        id: newId,
+        email: cleanEmail,
+        cedula: userData.cedula || null,
+        telefono: userData.telefono || null,
+        nombre_completo: userData.nombre_completo || userData.nombre || cleanEmail,
+        role: targetRole,
+        rol: targetRole,
+        password: userData.password || 'Consultor2026*',
+        estado: userData.estado || 'ACTIVO',
+        activo: (userData.estado || 'ACTIVO').toUpperCase() === 'ACTIVO',
+        created_at: nowIso
+      };
+      this.data.users.push(savedUser);
+    }
+
+    this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
+    return { ok: true, user: savedUser };
+  }
+
+  deleteConsultorUsuario(userId) {
+    if (!this.data) return { ok: false };
+    const target = (this.data.users || []).find(u => u.id === userId);
+    if (target && (target.email || '').toLowerCase().trim() === 'i.gonzalez.dsilva@gmail.com') {
+      return { ok: false, error: 'No se puede eliminar al Super Administrador único del sistema.' };
+    }
+    this.data.users = (this.data.users || []).filter(u => u.id !== userId);
+    this.data.user_tenant_memberships = (this.data.user_tenant_memberships || []).filter(m => m.user_id !== userId);
+    this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
+    return { ok: true };
+  }
+
+  setUserTenantMemberships(userId, tenantIds = [], assignedBy = 'usr-superadmin-1') {
+    if (!this.data) this.data = {};
+    if (!Array.isArray(this.data.user_tenant_memberships)) this.data.user_tenant_memberships = [];
+
+    const targetUser = (this.data.users || []).find(u => u.id === userId);
+    const assignedRole = targetUser ? (targetUser.role || targetUser.rol || 'CONSULTOR_SST') : 'CONSULTOR_SST';
+    const nowIso = new Date().toISOString();
+
+    // Eliminar membresías anteriores de ese usuario y reemplazar transaccionalmente
+    this.data.user_tenant_memberships = this.data.user_tenant_memberships.filter(m => m.user_id !== userId);
+
+    const uniqueTenants = Array.from(new Set(tenantIds.filter(Boolean)));
+    uniqueTenants.forEach(tid => {
+      this.data.user_tenant_memberships.push({
+        id: `mem-${userId}-${tid}`,
+        user_id: userId,
+        tenant_id: tid,
+        rol: assignedRole,
+        assigned_role: assignedRole,
+        assigned_by: assignedBy,
+        assigned_at: nowIso,
+        cargo_id: null,
+        is_active: true,
+        activo: true,
+        created_at: nowIso
+      });
+    });
+
+    this.saveToStorage();
+    this.enviarAlServidorFisico(true);
+    this.notify();
+    return { ok: true, count: uniqueTenants.length };
+  }
+
   getEvidencias(companyId = null, anio = null) {
     if (!this.data) return [];
     const cid = companyId || this.getEmpresaActivaId();
@@ -1948,12 +2053,25 @@ class Store {
       }
       return lockedId;
     }
+    if (!this.isSuperAdminSession()) {
+      const allowed = this.getAllowedTenantIdsForSession();
+      if (allowed.length > 0 && (!this.empresaActivaId || this.empresaActivaId === 'todas' || !allowed.includes(this.empresaActivaId))) {
+        this.empresaActivaId = allowed[0];
+        storage.setItem(ACTIVE_COMPANY_KEY, allowed[0]);
+      }
+    }
     return this.empresaActivaId;
   }
 
   setEmpresaActivaId(id) {
     const lockedId = this.getSessionTenantLock();
-    const targetId = lockedId ? lockedId : id;
+    let targetId = lockedId ? lockedId : id;
+    if (!this.isSuperAdminSession() && !lockedId) {
+      const allowed = this.getAllowedTenantIdsForSession();
+      if (allowed.length > 0 && (targetId === 'todas' || !allowed.includes(targetId))) {
+        targetId = allowed[0];
+      }
+    }
     this.empresaActivaId = targetId;
     storage.setItem(ACTIVE_COMPANY_KEY, targetId);
     this.notify();
@@ -2036,11 +2154,27 @@ class Store {
     if (this.isSuperAdminSession()) {
       return todas;
     }
+    const session = this.getActiveSessionObject();
+    if (!session) return [];
+
+    const rol = (session.rol || '').toUpperCase();
+    const rolRls = (session.rol_rls || '').toUpperCase();
+
+    if (rol.includes('CONSULTOR') || rolRls === 'CONSULTOR_SST') {
+      const allowedIds = this.getAllowedTenantIdsForSession();
+      return todas.filter(e => allowedIds.includes(e.id));
+    }
+
     const lockedId = this.getSessionTenantLock();
     if (lockedId) {
       return todas.filter(e => e.id === lockedId || ((lockedId === 'emp-004' || lockedId === 'emp-1790438946268') && (e.id === 'emp-1790438946268' || e.id === 'emp-004')));
     }
-    return todas;
+
+    if (rol === 'AUDITOR') {
+      return todas;
+    }
+
+    return [];
   }
 
   getEmpresa(id) {

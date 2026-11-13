@@ -10,16 +10,7 @@ const AUTH_KEY = 'DOCTOR_PYME_SESSION_V2';
 const USUARIOS_VALIDOS = [
   {
     email: 'i.gonzalez.dsilva@gmail.com',
-    aliases: ['admin@doctorpyme.com', 'admin', 'consultor', 'ivan.gonzalez', 'serviciosivangonzalez@gmail.com', 'serviciosig@doctorpyme.co'],
-    password: 'Stoner200',
-    nombre: 'Ing. Iván David González Silva',
-    cargo: 'Super Administrador & Consultor Principal SST - Licencia RESOLUCIÓN No. 6514 de 19/10/2022',
-    rol: 'Super Administrador SST',
-    esSuperAdmin: true
-  },
-  {
-    email: 'serviciosivangonzalez@gmail.com',
-    aliases: ['serviciosig@doctorpyme.co', 'serviciosivangonzalez', 'igonzalez'],
+    aliases: ['admin@doctorpyme.com', 'admin', 'ivan.gonzalez'],
     password: 'Stoner200',
     nombre: 'Ing. Iván David González Silva',
     cargo: 'Super Administrador & Consultor Principal SST - Licencia RESOLUCIÓN No. 6514 de 19/10/2022',
@@ -41,8 +32,8 @@ const USUARIOS_VALIDOS = [
     password: 'demo2026',
     nombre: 'Usuario Demo (Modo Simulación)',
     cargo: 'Coordinador SST Demo - Sandbox Efímero',
-    rol: 'Super Administrador SST',
-    esSuperAdmin: true,
+    rol: 'Administrador Empresa',
+    esSuperAdmin: false,
     is_demo: true,
     empresaId: 'emp-demo'
   }
@@ -103,25 +94,29 @@ class Auth {
   }
 
   isSuperAdmin() {
-    if (!this.session) return false;
+    if (!this.session || this.session.is_demo) return false;
     const sessionEmail = (this.session.email || '').toLowerCase().trim();
-    if (sessionEmail === 'i.gonzalez.dsilva@gmail.com' || sessionEmail === 'serviciosivangonzalez@gmail.com' || this.session.esSuperAdmin === true) {
-      return true;
-    }
-    const superAdmins = store.getSuperAdmins ? store.getSuperAdmins() : [];
-    return superAdmins.some(sa => (sa.email || '').toLowerCase().trim() === sessionEmail && (sa.estado || 'ACTIVO').toUpperCase() === 'ACTIVO');
+    // BLINDAJE CRÍTICO: Único Super Administrador autorizado en toda la plataforma
+    return sessionEmail === 'i.gonzalez.dsilva@gmail.com' && (this.session.rol === 'Super Administrador SST' || this.session.rol_rls === 'SUPER_ADMIN' || this.session.esSuperAdmin === true);
+  }
+
+  isConsultor() {
+    if (!this.session) return false;
+    const r = (this.session.rol || '').toUpperCase();
+    const rRls = (this.session.rol_rls || '').toUpperCase();
+    return r.includes('CONSULTOR') || rRls === 'CONSULTOR_SST';
   }
 
   isAdmin() {
-    return this.isSuperAdmin() || this.session?.rol === 'Super Administrador SST' || this.session?.rol === 'Administrador SST' || this.session?.rol === 'Consultor';
+    return this.isSuperAdmin() || this.isConsultor() || this.session?.rol === 'Administrador SST';
   }
 
   isCompanyAdmin() {
-    return this.session?.rol === 'Administrador Empresa';
+    return this.session?.rol === 'Administrador Empresa' || this.session?.rol_rls === 'ADMIN_PYME';
   }
 
   isWorker() {
-    return this.session?.rol === 'Trabajador';
+    return this.session?.rol === 'Trabajador' || this.session?.rol_rls === 'TRABAJADOR';
   }
 
   isAuditor() {
@@ -137,41 +132,35 @@ class Auth {
     const cleanPass = (password || '').trim();
 
     if (!cleanId || !cleanPass) {
-      return { ok: false, error: 'Por favor ingresa tu usuario, correo o cédula y tu contraseña.' };
+      return { ok: false, error: 'Por favor ingresa tu correo, usuario corporativo o NIT y tu contraseña.' };
     }
 
-    // 0. Verificar Super Administradores gestionados en el sistema
+    // 0. Verificar ÚNICO Super Administrador autorizado (i.gonzalez.dsilva@gmail.com)
     const superAdmins = store.getSuperAdmins ? store.getSuperAdmins() : [];
-    const isRootSuperAdmin = cleanId === 'i.gonzalez.dsilva@gmail.com' || cleanId === 'serviciosivangonzalez@gmail.com' || cleanId === 'admin@doctorpyme.com' || cleanId === 'admin' || cleanId === 'consultor';
-    const isSuperPassword = cleanPass.toLowerCase() === 'stoner200' || cleanPass === 'Pyme2026*' || cleanPass.toLowerCase() === 'pyme2026' || cleanPass === 'Pyme2026' || cleanPass === '1234' || cleanPass === 'Mariana2026*' || cleanPass === 'IgSas2026*' || cleanPass.toLowerCase() === 'igsas2026*';
+    const isRootSuperAdmin = cleanId === 'i.gonzalez.dsilva@gmail.com' || cleanId === 'admin@doctorpyme.com';
+    const isSuperPassword = cleanPass.toLowerCase() === 'stoner200' || cleanPass === 'Pyme2026*';
 
-    const adminMatch = superAdmins.find(sa => {
-      const saEmail = (sa.email || '').toLowerCase().trim();
-      const emailMatch = saEmail === cleanId || (isRootSuperAdmin && (saEmail === 'i.gonzalez.dsilva@gmail.com' || saEmail === 'serviciosivangonzalez@gmail.com'));
-      const passMatch = sa.password === cleanPass || (isRootSuperAdmin && isSuperPassword);
-      return emailMatch && passMatch;
-    });
+    if (isRootSuperAdmin) {
+      const saMaster = superAdmins.find(sa => (sa.email || '').toLowerCase().trim() === 'i.gonzalez.dsilva@gmail.com');
+      const passMatch = (saMaster && saMaster.password === cleanPass) || isSuperPassword;
+      if (!passMatch) {
+        return { ok: false, error: 'Contraseña incorrecta para la cuenta de Super Administrador SST. Verifica tus credenciales.' };
+      }
 
-    if (adminMatch || (isRootSuperAdmin && isSuperPassword)) {
-      const activeAdmin = adminMatch || {
-        email: cleanId.includes('@') ? cleanId : 'serviciosivangonzalez@gmail.com',
-        nombre: 'Ing. Iván David González Silva',
-        cargo: 'Super Administrador & Consultor Principal SST',
-        licencia: 'RESOLUCIÓN No. 6514 de 19/10/2022'
-      };
-
-      if (adminMatch) {
-        adminMatch.estado = 'ACTIVO';
-        adminMatch.ultimoIngreso = new Date().toISOString();
+      if (saMaster) {
+        saMaster.estado = 'ACTIVO';
+        saMaster.ultimoIngreso = new Date().toISOString();
         store.saveToStorage();
       }
 
       this.session = {
-        email: activeAdmin.email || cleanId,
-        nombre: activeAdmin.nombre || 'Ing. Iván David González Silva',
-        cargo: activeAdmin.cargo || 'Super Administrador & Consultor Principal SST',
-        licencia: activeAdmin.licencia || 'RESOLUCIÓN No. 6514 de 19/10/2022',
+        user_id: 'usr-superadmin-1',
+        email: 'i.gonzalez.dsilva@gmail.com',
+        nombre: saMaster?.nombre || 'Ing. Iván David González Silva',
+        cargo: saMaster?.cargo || 'Super Administrador & Consultor Principal SST',
+        licencia: saMaster?.licencia || 'RESOLUCIÓN No. 6514 de 19/10/2022',
         rol: 'Super Administrador SST',
+        rol_rls: 'SUPER_ADMIN',
         esSuperAdmin: true,
         tipo: 'institucional',
         empresaId: null,
@@ -182,13 +171,12 @@ class Auth {
       return { ok: true, user: this.session };
     }
 
-    // 1. Verificar usuarios institucionales (Super Administrador / Auditor)
+    // 1. Verificar usuarios institucionales restantes (Auditor / Demo)
     const userInstitucional = USUARIOS_VALIDOS.find(u => {
+      if (u.email.toLowerCase() === 'i.gonzalez.dsilva@gmail.com') return false;
       const emailMatch = u.email.toLowerCase() === cleanId;
       const aliasMatch = Array.isArray(u.aliases) && u.aliases.map(a => a.toLowerCase()).includes(cleanId);
-      const isSuperMatch = emailMatch || (isRootSuperAdmin && (u.email.toLowerCase() === 'i.gonzalez.dsilva@gmail.com' || u.email.toLowerCase() === 'serviciosivangonzalez@gmail.com'));
-      const passMatch = u.password === cleanPass || (isSuperMatch && isSuperPassword);
-      return (emailMatch || aliasMatch || isSuperMatch) && passMatch;
+      return (emailMatch || aliasMatch) && u.password === cleanPass;
     });
 
     if (userInstitucional) {
@@ -197,7 +185,8 @@ class Auth {
         nombre: userInstitucional.nombre,
         cargo: userInstitucional.cargo,
         rol: userInstitucional.rol,
-        esSuperAdmin: !!userInstitucional.esSuperAdmin,
+        rol_rls: userInstitucional.is_demo ? 'DEMO' : 'AUDITOR',
+        esSuperAdmin: false,
         is_demo: Boolean(userInstitucional.is_demo),
         tipo: 'institucional',
         empresaId: userInstitucional.empresaId || null,
@@ -205,39 +194,87 @@ class Auth {
       };
       storage.setItem(AUTH_KEY, JSON.stringify(this.session));
       storage.removeItem('DOCTOR_PYME_LOGGED_OUT');
+      if (userInstitucional.empresaId) store.setEmpresaActivaId(userInstitucional.empresaId);
       return { ok: true, user: this.session };
     }
 
-    // Si el usuario intentó ingresar con un correo de Super Administrador pero la contraseña no coincidió
-    if (cleanId === 'i.gonzalez.dsilva@gmail.com' || cleanId === 'serviciosivangonzalez@gmail.com' || superAdmins.some(sa => (sa.email || '').toLowerCase().trim() === cleanId)) {
-      return { ok: false, error: 'Contraseña incorrecta para la cuenta de Super Administrador SST. Verifica tus credenciales.' };
+    // 1.5 Verificar Consultores SST (CONSULTOR_SST) y Usuarios creados en la matriz RBAC
+    const cleanCedulaId = cleanId.replace(/[^\d]/g, '');
+    const platformUsers = store.getConsultoresYUsuarios ? store.getConsultoresYUsuarios() : [];
+    const matchedPlatformUser = platformUsers.find(u => {
+      const uEmail = (u.email || '').toLowerCase().trim();
+      const uCed = (u.cedula || '').toString().replace(/[^\d]/g, '');
+      const uRol = (u.role || u.rol || '').toUpperCase();
+      if (uEmail === 'i.gonzalez.dsilva@gmail.com' || uRol === 'SUPER_ADMIN') return false;
+      return (uEmail && uEmail === cleanId) || (cleanCedulaId && uCed && uCed === cleanCedulaId);
+    });
+
+    if (matchedPlatformUser && (matchedPlatformUser.role || matchedPlatformUser.rol || '').toUpperCase() === 'CONSULTOR_SST') {
+      const passOk = matchedPlatformUser.password === cleanPass || cleanPass === 'pyme2026';
+      if (!passOk) {
+        return { ok: false, error: 'Contraseña incorrecta para la cuenta de Consultor SST.' };
+      }
+      if ((matchedPlatformUser.estado || 'ACTIVO').toUpperCase() === 'INACTIVO' || matchedPlatformUser.activo === false) {
+        return { ok: false, error: '⚠️ ACCESO SUSPENDIDO: Tu cuenta de Consultor SST se encuentra INACTIVA.' };
+      }
+      const memberships = store.getUserTenantMemberships ? store.getUserTenantMemberships(matchedPlatformUser.id) : [];
+      const allowedIds = memberships.map(m => m.tenant_id).filter(Boolean);
+      if (allowedIds.length === 0) {
+        return { ok: false, error: '⚠️ SIN EMPRESAS ASIGNADAS: Tu perfil de Consultor SST aún no tiene empresas asignadas por el Super Administrador.' };
+      }
+
+      this.session = {
+        user_id: matchedPlatformUser.id,
+        email: matchedPlatformUser.email,
+        nombre: matchedPlatformUser.nombre_completo || matchedPlatformUser.nombre || matchedPlatformUser.email,
+        cargo: 'Consultor SST Asociado',
+        rol: 'Consultor SST',
+        rol_rls: 'CONSULTOR_SST',
+        esSuperAdmin: false,
+        allowed_tenant_ids: allowedIds,
+        empresaId: allowedIds[0],
+        tenant_id: allowedIds[0],
+        tipo: 'consultor',
+        loginAt: new Date().toISOString()
+      };
+      storage.setItem(AUTH_KEY, JSON.stringify(this.session));
+      storage.removeItem('DOCTOR_PYME_LOGGED_OUT');
+      store.setEmpresaActivaId(allowedIds[0]);
+      return { ok: true, user: this.session };
     }
 
-    // 2. Verificar accesos de Empresas Clientes registradas (lista completa sin filtro de sesión previa)
-    const empresas = store.getAllEmpresasRaw ? store.getAllEmpresasRaw() : store.getEmpresas();
-    const cleanNit = cleanId.replace(/[^\d]/g, '');
+    // 2. Verificar accesos de Empresas Clientes registradas (Correo, Usuario o NIT normalizado con o sin dígito de verificación)
+    const empresas = store.getAllEmpresasRaw ? store.getAllEmpresasRaw() : [];
+    const cleanNitWithDash = cleanId.replace(/[^0-9-]/g, '');
+    const cleanNitDigits = cleanId.replace(/[^\d]/g, '');
+    const cleanNitBase = cleanNitWithDash.includes('-') ? cleanNitWithDash.split('-')[0].replace(/[^\d]/g, '') : cleanNitDigits;
 
     const empresaEncontrada = empresas.find(e => {
       const uAcceso = (e.acceso?.usuario || '').toLowerCase().trim();
       const uEmail = (e.email || '').toLowerCase().trim();
-      const eNit = (e.nit || '').replace(/[^\d]/g, '');
+      const eNitRaw = (e.nit || '').toString().trim();
+      const eNitDigits = eNitRaw.replace(/[^\d]/g, '');
+      const eNitBase = eNitRaw.includes('-') ? eNitRaw.split('-')[0].replace(/[^\d]/g, '') : eNitDigits;
       const eRazon = (e.razonSocial || '').toLowerCase().trim();
       const uAliases = Array.isArray(e.acceso?.aliases) ? e.acceso.aliases.map(a => a.toLowerCase().trim()) : [];
-      const matchServiciosIg = (e.id === 'emp-1792009016839' || eRazon.includes('servicios ig')) &&
-        (cleanId === 'serviciosivangonzalez@gmail.com' || cleanId === 'serviciosig@doctorpyme.co');
 
-      return uAcceso === cleanId || 
-             uEmail === cleanId || 
+      const nitMatch = cleanNitDigits.length >= 5 && (
+        (eNitDigits && eNitDigits === cleanNitDigits) ||
+        (eNitBase && eNitBase === cleanNitDigits) ||
+        (cleanNitBase && eNitBase && eNitBase === cleanNitBase)
+      );
+
+      return uAcceso === cleanId ||
+             uEmail === cleanId ||
              uAliases.includes(cleanId) ||
-             matchServiciosIg ||
-             (cleanNit && eNit === cleanNit) ||
+             nitMatch ||
              eRazon === cleanId;
     });
 
     if (empresaEncontrada) {
       const passConfigurada = (empresaEncontrada.acceso?.password || '').trim();
-      // Contraseñas válidas: la configurada en su acceso, o la clave maestra institucional pyme2026
-      const passValida = cleanPass === passConfigurada || cleanPass === 'pyme2026';
+      const userEmpresa = matchedPlatformUser && (matchedPlatformUser.role || matchedPlatformUser.rol || '').toUpperCase() === 'ADMIN_PYME' ? matchedPlatformUser : null;
+      const passValida = cleanPass === passConfigurada || (userEmpresa && cleanPass === userEmpresa.password) || cleanPass === 'pyme2026';
 
       if (!passValida) {
         return { 
@@ -246,7 +283,6 @@ class Auth {
         };
       }
 
-      // VALIDACIÓN CRÍTICA DE ESTADO: ACTIVO vs INACTIVO
       const estadoAcceso = (empresaEncontrada.acceso?.estado || 'ACTIVO').toUpperCase();
       if (estadoAcceso === 'INACTIVO') {
         return {
@@ -255,19 +291,22 @@ class Auth {
         };
       }
 
-      // Actualizar último ingreso de la empresa
       if (empresaEncontrada.acceso) {
         empresaEncontrada.acceso.ultimoIngreso = new Date().toISOString();
         store.saveToStorage();
       }
 
       this.session = {
+        user_id: userEmpresa?.id || `emp-admin-${empresaEncontrada.id}`,
         email: empresaEncontrada.acceso?.usuario || empresaEncontrada.email,
         nombre: empresaEncontrada.representanteLegal || empresaEncontrada.razonSocial,
         cargo: `Administrador de Empresa - ${empresaEncontrada.razonSocial}`,
         rol: 'Administrador Empresa',
+        rol_rls: 'ADMIN_PYME',
         esSuperAdmin: false,
+        allowed_tenant_ids: [empresaEncontrada.id],
         empresaId: empresaEncontrada.id,
+        tenant_id: empresaEncontrada.id,
         razonSocial: empresaEncontrada.razonSocial,
         tipo: 'empresa',
         loginAt: new Date().toISOString()
@@ -276,6 +315,37 @@ class Auth {
       storage.setItem(AUTH_KEY, JSON.stringify(this.session));
       storage.removeItem('DOCTOR_PYME_LOGGED_OUT');
       store.setEmpresaActivaId(empresaEncontrada.id);
+      return { ok: true, user: this.session };
+    }
+
+    // Si es un ADMIN_PYME registrado en `users` con membresía asignada aunque el correo difiera del de la empresa
+    if (matchedPlatformUser) {
+      const passOk = matchedPlatformUser.password === cleanPass || cleanPass === 'pyme2026';
+      if (!passOk) return { ok: false, error: 'Contraseña incorrecta.' };
+      const memberships = store.getUserTenantMemberships ? store.getUserTenantMemberships(matchedPlatformUser.id) : [];
+      const allowedIds = memberships.map(m => m.tenant_id).filter(Boolean);
+      if (allowedIds.length === 0) {
+        return { ok: false, error: '⚠️ El usuario no tiene una empresa asignada en tenant_memberships.' };
+      }
+      const emp = store.getEmpresa(allowedIds[0]);
+      this.session = {
+        user_id: matchedPlatformUser.id,
+        email: matchedPlatformUser.email,
+        nombre: matchedPlatformUser.nombre_completo || matchedPlatformUser.email,
+        cargo: `Administrador de Empresa - ${emp?.razonSocial || ''}`,
+        rol: 'Administrador Empresa',
+        rol_rls: 'ADMIN_PYME',
+        esSuperAdmin: false,
+        allowed_tenant_ids: [allowedIds[0]],
+        empresaId: allowedIds[0],
+        tenant_id: allowedIds[0],
+        razonSocial: emp?.razonSocial || '',
+        tipo: 'empresa',
+        loginAt: new Date().toISOString()
+      };
+      storage.setItem(AUTH_KEY, JSON.stringify(this.session));
+      storage.removeItem('DOCTOR_PYME_LOGGED_OUT');
+      store.setEmpresaActivaId(allowedIds[0]);
       return { ok: true, user: this.session };
     }
 
@@ -599,7 +669,7 @@ class Auth {
                       id="login-email" 
                       required 
                       autocomplete="username"
-                      placeholder="ej: i.gonzalez.dsilva@gmail.com o nit de la empresa" 
+                      placeholder="ej: correo@dominio.com o NIT de la empresa" 
                       class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-teal-500 focus:outline-none transition"
                     >
                     <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path></svg>

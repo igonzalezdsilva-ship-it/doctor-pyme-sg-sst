@@ -314,11 +314,16 @@ def resolve_authorized_tenant!(req, payload, db)
     else
       # Consultor SST / SuperAdmin / Admin Empresa: validar en user_tenant_memberships
       target_tenant = client_tenant.empty? ? token_tenant : client_tenant
+      is_master_super_admin = (claims['email'].to_s.strip.downcase == 'i.gonzalez.dsilva@gmail.com') &&
+                              ['SUPERADMIN', 'SUPER_ADMIN'].include?(token_rol.to_s.upcase)
       has_membership = memberships.any? do |m|
-        m['user_id'] == token_user_id && m['tenant_id'] == target_tenant && m['activo'] != false
+        m['user_id'] == token_user_id &&
+          m['tenant_id'] == target_tenant &&
+          m['activo'] != false &&
+          m['is_active'] != false
       end
-      unless has_membership || token_rol == 'SUPERADMIN'
-        raise SecurityTenantIsolationError, "Acceso denegado (RLS): El usuario no tiene membresía activa para el tenant #{target_tenant}."
+      unless is_master_super_admin || (!target_tenant.empty? && has_membership)
+        raise SecurityTenantIsolationError, "Acceso denegado: Aislamiento de Seguridad Empresarial para tenant #{target_tenant}."
       end
       Thread.current[:app_current_tenant_id] = target_tenant
       return target_tenant
@@ -2146,6 +2151,99 @@ mount_api(server, '/api/tenants') do |req, res|
   add_cors_headers(res)
   if req.request_method == 'OPTIONS'
     res.status = 200
+  elsif req.request_method == 'GET' && req.path =~ %r{\A(?:/sst)?/api/tenants/?\z}
+    begin
+      auth_header = req['Authorization'] || req['authorization'] || (req.query && req.query['token'])
+      claims = verify_jwt_token(auth_header)
+      unless claims
+        res.status = 401
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { ok: false, error: 'No autorizado. Token requerido.' }.to_json
+      else
+        db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+        empresas = db['empresas'] || []
+        memberships = db['user_tenant_memberships'] || []
+        email = claims['email'].to_s.strip.downcase
+        rol = (claims['rol'] || claims['role'] || '').to_s.upcase
+        user_id = claims['user_id'].to_s
+
+        if email == 'i.gonzalez.dsilva@gmail.com' && ['SUPERADMIN', 'SUPER_ADMIN'].include?(rol)
+          allowed_empresas = empresas
+        else
+          allowed_ids = memberships
+            .select { |m| m['user_id'] == user_id && m['activo'] != false && m['is_active'] != false }
+            .map { |m| m['tenant_id'] }
+            .uniq
+          if allowed_ids.empty? && !claims['tenant_id'].to_s.empty?
+            allowed_ids = [claims['tenant_id'].to_s]
+          end
+          allowed_empresas = empresas.select { |e| allowed_ids.include?(e['id']) }
+          if ['ADMIN_PYME', 'TRABAJADOR', 'ADMINISTRADOR EMPRESA', 'CLIENTE'].include?(rol)
+            allowed_empresas = allowed_empresas.first(1)
+          end
+        end
+
+        res.status = 200
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = {
+          ok: true,
+          tenants: allowed_empresas,
+          empresas: allowed_empresas,
+          role: rol
+        }.to_json
+      end
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { ok: false, error: err.message }.to_json
+    end
+  elsif req.request_method == 'GET' && req.path =~ %r{\A(?:/sst)?/api/tenants/([^/]+)/?\z}
+    target_tenant_id = $1
+    begin
+      auth_header = req['Authorization'] || req['authorization'] || (req.query && req.query['token'])
+      claims = verify_jwt_token(auth_header)
+      unless claims
+        res.status = 401
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { ok: false, error: 'No autorizado. Token requerido.' }.to_json
+      else
+        db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+        empresas = db['empresas'] || []
+        memberships = db['user_tenant_memberships'] || []
+        email = claims['email'].to_s.strip.downcase
+        rol = (claims['rol'] || claims['role'] || '').to_s.upcase
+        user_id = claims['user_id'].to_s
+
+        is_master = (email == 'i.gonzalez.dsilva@gmail.com') && ['SUPERADMIN', 'SUPER_ADMIN'].include?(rol)
+        has_membership = memberships.any? do |m|
+          m['user_id'] == user_id && m['tenant_id'] == target_tenant_id && m['activo'] != false && m['is_active'] != false
+        end
+
+        unless is_master || has_membership || (claims['tenant_id'].to_s == target_tenant_id && ['ADMIN_PYME', 'TRABAJADOR'].include?(rol))
+          res.status = 403
+          res['Content-Type'] = 'application/json; charset=utf-8'
+          res.body = {
+            ok: false,
+            error: 'Acceso Denegado: Aislamiento de Seguridad Empresarial'
+          }.to_json
+        else
+          empresa = empresas.find { |e| e['id'] == target_tenant_id }
+          if empresa
+            res.status = 200
+            res['Content-Type'] = 'application/json; charset=utf-8'
+            res.body = { ok: true, tenant: empresa }.to_json
+          else
+            res.status = 404
+            res['Content-Type'] = 'application/json; charset=utf-8'
+            res.body = { ok: false, error: 'Empresa no encontrada' }.to_json
+          end
+        end
+      end
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { ok: false, error: err.message }.to_json
+    end
   elsif req.request_method == 'POST' && req.path =~ %r{(?:/sst)?/api/tenants/([^/]+)/generate-ai-profile}
     tenant_id = $1
     begin
@@ -3122,52 +3220,157 @@ mount_api(server, '/api/auth/login') do |req, res|
     res.status = 200
   elsif req.request_method == 'POST'
     begin
-      payload = JSON.parse(req.body)
-      email = (payload['email'] || payload['username'] || '').to_s.strip.downcase
+      payload = JSON.parse(req.body) rescue {}
+      raw_identifier = (payload['identifier'] || payload['email'] || payload['username'] || '').to_s.strip
+      password = payload['password'].to_s
       cedula = (payload['cedula'] || '').to_s.gsub(/[^\d]/, '')
       requested_tenant_id = (payload['tenant_id'] || payload['companyId'] || '').to_s.strip
 
       db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
       users = db['users'] || []
+      super_admins = db['super_admins'] || []
       memberships = db['user_tenant_memberships'] || []
       empresas = db['empresas'] || []
 
-      user = users.find do |u|
-        (!email.empty? && u['email'].to_s.downcase == email) ||
-        (!cedula.empty? && u['cedula'].to_s.gsub(/[^\d]/, '') == cedula)
+      normalize_nit = ->(n) { n.to_s.gsub(/[\.\s]/, '').upcase }
+      nit_base = ->(n) { normalize_nit.call(n).split('-').first.to_s.gsub(/[^\d]/, '') }
+
+      user = nil
+      empresa_match = nil
+      id_lower = raw_identifier.downcase
+
+      if !raw_identifier.empty?
+        if raw_identifier.include?('@')
+          user = users.find { |u| u['email'].to_s.strip.downcase == id_lower }
+          if !user && id_lower == 'i.gonzalez.dsilva@gmail.com'
+            sa = super_admins.find { |s| s['email'].to_s.strip.downcase == 'i.gonzalez.dsilva@gmail.com' }
+            user = sa if sa
+          end
+          if !user
+            empresa_match = empresas.find do |e|
+              acc_email = (e.dig('acceso', 'correo') || e.dig('acceso', 'email') || e['email'] || '').to_s.strip.downcase
+              !acc_email.empty? && acc_email == id_lower
+            end
+          end
+        else
+          # Búsqueda por NIT (con o sin puntos/espacios/dígito de verificación) o usuario corporativo
+          clean_id_nit = normalize_nit.call(raw_identifier)
+          base_id_nit = nit_base.call(raw_identifier)
+          empresa_match = empresas.find do |e|
+            emp_nit = normalize_nit.call(e['nit'])
+            emp_base = nit_base.call(e['nit'])
+            acc_user = (e.dig('acceso', 'usuario') || '').to_s.strip.downcase
+            (!emp_nit.empty? && emp_nit == clean_id_nit) ||
+              (!base_id_nit.empty? && !emp_base.empty? && emp_base == base_id_nit) ||
+              (!acc_user.empty? && acc_user == id_lower)
+          end
+          unless empresa_match
+            user = users.find do |u|
+              (!cedula.empty? && u['cedula'].to_s.gsub(/[^\d]/, '') == cedula) ||
+                (!u['username'].to_s.empty? && u['username'].to_s.strip.downcase == id_lower)
+            end
+          end
+        end
+      elsif !cedula.empty?
+        user = users.find { |u| u['cedula'].to_s.gsub(/[^\d]/, '') == cedula }
       end
 
-      unless user
-        res.status = 404
+      # Si ingresó por empresa (NIT o usuario/correo corporativo), buscar también si existe un usuario ADMIN_PYME vinculado
+      if empresa_match && !user
+        linked_mem = memberships.find do |m|
+          m['tenant_id'] == empresa_match['id'] && m['activo'] != false && m['is_active'] != false
+        end
+        if linked_mem
+          linked_user = users.find { |u| u['id'] == linked_mem['user_id'] }
+          user = linked_user if linked_user
+        end
+      end
+
+      unless user || empresa_match
+        res.status = 401
         res['Content-Type'] = 'application/json; charset=utf-8'
-        res.body = { error: 'Usuario no encontrado en el registro de membresías.' }.to_json
+        res.body = { ok: false, error: 'Credenciales inválidas. Verifica tu correo, usuario o NIT.' }.to_json
         next
       end
 
-      user_mems = memberships.select { |m| m['user_id'] == user['id'] && m['activo'] != false }
-      if user_mems.empty?
+      if user && (user['activo'] == false || user['estado'].to_s.upcase == 'INACTIVO')
         res.status = 403
         res['Content-Type'] = 'application/json; charset=utf-8'
-        res.body = { error: 'El usuario no tiene empresas activas asignadas en user_tenant_memberships.' }.to_json
+        res.body = { ok: false, error: 'Usuario inactivo. Contacta al administrador.' }.to_json
         next
       end
 
-      active_mem = if !requested_tenant_id.empty?
-                     user_mems.find { |m| m['tenant_id'] == requested_tenant_id } || user_mems.first
-                   else
-                     user_mems.find { |m| m['tenant_id'] == 'emp-1792009016839' } || user_mems.first
-                   end
+      # Validar contraseña si fue enviada o si el registro tiene clave configurada
+      expected_passwords = []
+      expected_passwords << user['password'].to_s if user && !user['password'].to_s.empty?
+      if empresa_match
+        acc_pass = (empresa_match.dig('acceso', 'password') || '').to_s
+        expected_passwords << acc_pass unless acc_pass.empty?
+      end
+      if !expected_passwords.empty? && !password.empty? && !expected_passwords.include?(password)
+        res.status = 401
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { ok: false, error: 'Contraseña incorrecta.' }.to_json
+        next
+      end
+      if !expected_passwords.empty? && password.empty? && !raw_identifier.empty?
+        res.status = 401
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { ok: false, error: 'Debes ingresar tu contraseña.' }.to_json
+        next
+      end
 
-      active_tenant_id = active_mem['tenant_id']
-      empresa = empresas.find { |e| e['id'] == active_tenant_id } || empresas.first || {}
+      effective_email = (user ? user['email'] : empresa_match.dig('acceso', 'correo') || '').to_s.strip.downcase
+      is_master_super_admin = (effective_email == 'i.gonzalez.dsilva@gmail.com')
+
+      if is_master_super_admin
+        effective_rol = 'SUPER_ADMIN'
+        allowed_tenant_ids = empresas.map { |e| e['id'] }
+        user_mems = empresas.map do |e|
+          { 'user_id' => user ? user['id'] : 'usr-superadmin-1', 'tenant_id' => e['id'], 'rol' => 'SUPER_ADMIN', 'activo' => true }
+        end
+      elsif user
+        raw_role = (user['role'] || user['rol'] || 'CONSULTOR_SST').to_s.upcase
+        effective_rol = ['SUPER_ADMIN', 'SUPERADMIN'].include?(raw_role) ? 'ADMIN_PYME' : raw_role
+        user_mems = memberships.select { |m| m['user_id'] == user['id'] && m['activo'] != false && m['is_active'] != false }
+        allowed_tenant_ids = user_mems.map { |m| m['tenant_id'] }.uniq
+        if allowed_tenant_ids.empty? && empresa_match
+          allowed_tenant_ids = [empresa_match['id']]
+          user_mems = [{ 'user_id' => user['id'], 'tenant_id' => empresa_match['id'], 'rol' => effective_rol, 'activo' => true }]
+        end
+      else
+        effective_rol = 'ADMIN_PYME'
+        allowed_tenant_ids = [empresa_match['id']]
+        user_mems = [{ 'user_id' => "emp-user-#{empresa_match['id']}", 'tenant_id' => empresa_match['id'], 'rol' => 'ADMIN_PYME', 'activo' => true }]
+      end
+
+      if allowed_tenant_ids.empty?
+        res.status = 403
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { ok: false, error: 'El usuario no tiene empresas activas asignadas.' }.to_json
+        next
+      end
+
+      active_tenant_id = if !requested_tenant_id.empty? && allowed_tenant_ids.include?(requested_tenant_id)
+                           requested_tenant_id
+                         elsif empresa_match && allowed_tenant_ids.include?(empresa_match['id'])
+                           empresa_match['id']
+                         else
+                           allowed_tenant_ids.first
+                         end
+
+      active_mem = user_mems.find { |m| m['tenant_id'] == active_tenant_id } || user_mems.first
+      empresa = empresas.find { |e| e['id'] == active_tenant_id } || empresa_match || {}
 
       jwt_payload = {
-        user_id: user['id'],
-        email: user['email'],
-        cedula: user['cedula'],
-        worker_id: active_mem['worker_id'] || user['worker_id'],
+        user_id: user ? user['id'] : "emp-user-#{active_tenant_id}",
+        email: effective_email,
+        cedula: user ? user['cedula'] : '',
+        worker_id: active_mem['worker_id'] || (user && user['worker_id']),
         tenant_id: active_tenant_id,
-        rol: active_mem['rol'],
+        allowed_tenant_ids: allowed_tenant_ids,
+        rol: effective_rol,
+        role: effective_rol,
         cargo_id: active_mem['cargo_id'],
         razon_social: empresa['razon_social'] || empresa['razonSocial'] || empresa['nombre'],
         nit: empresa['nit'],
@@ -3187,13 +3390,23 @@ mount_api(server, '/api/auth/login') do |req, res|
         )
       end
 
+      safe_user = user ? user.reject { |k, _| k == 'password' } : {
+        'id' => "emp-user-#{active_tenant_id}",
+        'email' => effective_email,
+        'nombre_completo' => empresa['razonSocial'] || empresa['razon_social'],
+        'role' => effective_rol
+      }
+
       res['Content-Type'] = 'application/json; charset=utf-8'
       res.body = {
+        ok: true,
         status: 'ok',
         token: signed_token,
-        user: user,
+        user: safe_user,
         active_tenant_id: active_tenant_id,
-        rol: active_mem['rol'],
+        allowed_tenant_ids: allowed_tenant_ids,
+        rol: effective_rol,
+        role: effective_rol,
         active_tenant: {
           id: empresa['id'],
           tenant_id: empresa['id'],
@@ -3209,7 +3422,74 @@ mount_api(server, '/api/auth/login') do |req, res|
     rescue => err
       res.status = 500
       res['Content-Type'] = 'application/json; charset=utf-8'
-      res.body = { error: "Error en login multitenant: #{err.message}" }.to_json
+      res.body = { ok: false, error: "Error en login multitenant: #{err.message}" }.to_json
+    end
+  else
+    res.status = 405
+    res.body = { error: 'Método no permitido' }.to_json
+  end
+end
+
+mount_api(server, '/api/admin/memberships') do |req, res|
+  add_cors_headers(res)
+  if req.request_method == 'OPTIONS'
+    res.status = 200
+  elsif req.request_method == 'POST'
+    begin
+      auth_header = req['Authorization'] || req['authorization']
+      claims = verify_jwt_token(auth_header)
+      email = claims ? claims['email'].to_s.strip.downcase : ''
+      rol = claims ? (claims['rol'] || claims['role']).to_s.upcase : ''
+      unless claims && email == 'i.gonzalez.dsilva@gmail.com' && ['SUPERADMIN', 'SUPER_ADMIN'].include?(rol)
+        res.status = 403
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { ok: false, error: 'Acceso denegado: Solo el Super Administrador Único puede asignar empresas.' }.to_json
+        next
+      end
+
+      payload = JSON.parse(req.body) rescue {}
+      target_user_id = payload['user_id'].to_s.strip
+      tenant_ids = Array(payload['tenant_ids']).map(&:to_s).uniq
+
+      if target_user_id.empty?
+        res.status = 400
+        res['Content-Type'] = 'application/json; charset=utf-8'
+        res.body = { ok: false, error: 'user_id es obligatorio.' }.to_json
+        next
+      end
+
+      DB_MUTEX.synchronize do
+        db = File.exist?(DB_FILE) ? JSON.parse(File.read(DB_FILE)) : {}
+        db['user_tenant_memberships'] ||= []
+        db['user_tenant_memberships'].reject! { |m| m['user_id'] == target_user_id }
+        target_user = (db['users'] || []).find { |u| u['id'] == target_user_id }
+        assigned_role = target_user ? (target_user['role'] || target_user['rol'] || 'CONSULTOR_SST') : 'CONSULTOR_SST'
+        now_iso = Time.now.iso8601
+        tenant_ids.each do |tid|
+          db['user_tenant_memberships'] << {
+            'id' => "mem-#{target_user_id}-#{tid}",
+            'user_id' => target_user_id,
+            'tenant_id' => tid,
+            'assigned_role' => assigned_role,
+            'rol' => assigned_role,
+            'assigned_by' => claims['user_id'] || 'usr-superadmin-1',
+            'assigned_at' => now_iso,
+            'is_active' => true,
+            'activo' => true
+          }
+        end
+        tmp_file = "#{DB_FILE}.tmp.#{Process.pid}"
+        File.write(tmp_file, JSON.pretty_generate(db))
+        File.rename(tmp_file, DB_FILE)
+      end
+
+      res.status = 200
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { ok: true, count: tenant_ids.length }.to_json
+    rescue => err
+      res.status = 500
+      res['Content-Type'] = 'application/json; charset=utf-8'
+      res.body = { ok: false, error: err.message }.to_json
     end
   else
     res.status = 405

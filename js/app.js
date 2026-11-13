@@ -142,11 +142,12 @@ export function actualizarSelectorCabecera() {
   if (!select) return;
 
   const esSuperAdmin = auth.isSuperAdmin();
-  const puedeSeleccionarEmpresa = esSuperAdmin || !auth.isWorker();
+  const esConsultor = auth.isConsultor ? auth.isConsultor() : false;
   const empresas = store.getEmpresas();
   const activaId = store.getEmpresaActivaId();
+  const puedeSeleccionarEmpresa = esSuperAdmin || (esConsultor && empresas.length > 1);
 
-  if (puedeSeleccionarEmpresa) {
+  if (esSuperAdmin) {
     select.disabled = false;
     select.classList.remove('cursor-default', 'opacity-95');
     select.classList.add('cursor-pointer');
@@ -158,16 +159,28 @@ export function actualizarSelectorCabecera() {
         </option>
       `).join('')}
     `;
-  } else {
-    // Usuario de Empresa o Trabajador: estrictamente bloqueado a su única empresa
-    select.disabled = true;
-    select.classList.remove('cursor-pointer');
-    select.classList.add('cursor-default', 'opacity-95');
+  } else if (puedeSeleccionarEmpresa) {
+    // Consultor SST con múltiples empresas asignadas: solo muestra sus empresas asignadas
+    select.disabled = false;
+    select.classList.remove('cursor-default', 'opacity-95');
+    select.classList.add('cursor-pointer');
     select.innerHTML = empresas.map(e => `
-      <option value="${e.id}" selected>
+      <option value="${e.id}" ${activaId === e.id ? 'selected' : ''}>
         ${e.razonSocial} (${e.estandaresAplicables} Estándares - Riesgo ${e.claseRiesgo})
       </option>
     `).join('');
+  } else {
+    // Empresa Cliente (ADMIN_PYME) o Trabajador: estrictamente bloqueado a su única empresa
+    select.disabled = true;
+    select.classList.remove('cursor-pointer');
+    select.classList.add('cursor-default', 'opacity-95');
+    select.innerHTML = empresas.length > 0
+      ? empresas.map(e => `
+          <option value="${e.id}" ${activaId === e.id || empresas.length === 1 ? 'selected' : ''}>
+            ${e.razonSocial} (${e.estandaresAplicables} Estándares - Riesgo ${e.claseRiesgo})
+          </option>
+        `).join('')
+      : `<option value="">Sin empresa asignada</option>`;
   }
 
   // Ocultar/mostrar controles exclusivos de Super Administrador en Cabecera y Sidebar
