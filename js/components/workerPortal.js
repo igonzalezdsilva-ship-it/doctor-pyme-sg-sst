@@ -406,9 +406,9 @@ function renderConsolaGestionTrabajadores(container) {
               <span>Políticas y Reglamentos Empresa</span>
             </button>
 
-            <button onclick="window.abrirModalInstrumentoCargo('contrato')" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-sm">
+            <button onclick="window.abrirModalInstrumentoCargo('manual')" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-sm">
               <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-              <span>Instrumentos por Cargo</span>
+              <span>7 Documentos por Cargo</span>
             </button>
 
             <button onclick="window.verPortalModoOperario()" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-black transition flex items-center gap-2 cursor-pointer shadow-md">
@@ -416,6 +416,67 @@ function renderConsolaGestionTrabajadores(container) {
               <span>Abrir Interfaz del Trabajador</span>
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- PANEL DE ACCESO DIRECTO A LOS 7 DOCUMENTOS CORPORATIVOS DEL CARGO (ARTICULADO CON APP DEL TRABAJADOR) -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-indigo-200 shadow-xs space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+          <div>
+            <span class="text-xs font-black text-indigo-950 uppercase tracking-wider flex items-center gap-1.5">
+              <span>📜</span> Catálogo Articulado de los 7 Documentos Oficiales del Trabajador (Formato Corporativo Tamaño Carta)
+            </span>
+            <p class="text-[11px] text-slate-500 mt-0.5">
+              Haz clic en cualquiera de los 7 documentos para visualizar, descargar en PDF (Tamaño Carta) o parametrizar exactamente el mismo formato corporativo que visualiza y firma el trabajador en su App.
+            </p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap self-start sm:self-auto">
+            ✓ Sincronizado 100% con App Trabajador
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+          <button type="button" onclick="window.abrirModalInstrumentoCargo('manual')" class="p-2.5 rounded-xl bg-purple-50/70 hover:bg-purple-600 text-purple-900 hover:text-white border border-purple-200 transition flex flex-col items-center text-center gap-1 cursor-pointer shadow-2xs group">
+            <span class="text-lg">📘</span>
+            <span class="text-[11px] font-black leading-tight">Manual de Funciones</span>
+            <span class="text-[9px] opacity-75 font-mono">Dec. 1072 Art. 2.2.4.6.10</span>
+          </button>
+
+          <button type="button" onclick="window.abrirModalInstrumentoCargo('perfil')" class="p-2.5 rounded-xl bg-amber-50/70 hover:bg-amber-600 text-amber-900 hover:text-white border border-amber-200 transition flex flex-col items-center text-center gap-1 cursor-pointer shadow-2xs group">
+            <span class="text-lg">🎓</span>
+            <span class="text-[11px] font-black leading-tight">Perfil & Competencias</span>
+            <span class="text-[9px] opacity-75 font-mono">Res. 0312 Est. 1.1.2</span>
+          </button>
+
+          <button type="button" onclick="window.abrirModalInstrumentoCargo('pts')" class="p-2.5 rounded-xl bg-teal-50/70 hover:bg-teal-600 text-teal-900 hover:text-white border border-teal-200 transition flex flex-col items-center text-center gap-1 cursor-pointer shadow-2xs group">
+            <span class="text-lg">🛡️</span>
+            <span class="text-[11px] font-black leading-tight">Plan de Trabajo Seguro</span>
+            <span class="text-[9px] opacity-75 font-mono">GTC 45 • Est. 4.2.1</span>
+          </button>
+
+          <button type="button" onclick="window.abrirModalInstrumentoCargo('profesiograma')" class="p-2.5 rounded-xl bg-indigo-50/70 hover:bg-indigo-600 text-indigo-900 hover:text-white border border-indigo-200 transition flex flex-col items-center text-center gap-1 cursor-pointer shadow-2xs group">
+            <span class="text-lg">🩺</span>
+            <span class="text-[11px] font-black leading-tight">Profesiograma SST</span>
+            <span class="text-[9px] opacity-75 font-mono">Res. 2346 • Est. 3.1.4</span>
+          </button>
+
+          <button type="button" onclick="window.abrirModalInstrumentoCargo('epp')" class="p-2.5 rounded-xl bg-orange-50/70 hover:bg-orange-600 text-orange-900 hover:text-white border border-orange-200 transition flex flex-col items-center text-center gap-1 cursor-pointer shadow-2xs group">
+            <span class="text-lg">🦺</span>
+            <span class="text-[11px] font-black leading-tight">Matriz EPP & Dotación</span>
+            <span class="text-[9px] opacity-75 font-mono">Res. 2400 • Est. 4.2.6</span>
+          </button>
+
+          <button type="button" onclick="window.abrirModalInstrumentoCargo('contrato')" class="p-2.5 rounded-xl bg-blue-50/70 hover:bg-blue-600 text-blue-900 hover:text-white border border-blue-200 transition flex flex-col items-center text-center gap-1 cursor-pointer shadow-2xs group">
+            <span class="text-lg">📄</span>
+            <span class="text-[11px] font-black leading-tight">Contrato</span>
+            <span class="text-[9px] opacity-75 font-mono">CST • 9 Cláusulas SST</span>
+          </button>
+
+          <button type="button" onclick="window.abrirModalInstrumentoCargo('recomendaciones')" class="p-2.5 rounded-xl bg-emerald-50/70 hover:bg-emerald-600 text-emerald-900 hover:text-white border border-emerald-200 transition flex flex-col items-center text-center gap-1 cursor-pointer shadow-2xs group">
+            <span class="text-lg">🏥</span>
+            <span class="text-[11px] font-black leading-tight">Recomendaciones Médicas</span>
+            <span class="text-[9px] opacity-75 font-mono">Res. 2346 • Est. 3.1.5</span>
+          </button>
         </div>
       </div>
 
@@ -741,42 +802,51 @@ function renderConsolaGestionTrabajadores(container) {
                       </span>
                     </td>
 
-                    <!-- 4 INSTRUMENTOS OFICIALES POR CARGO (ESTRUCTURA ESTÁNDARES MÍNIMOS & PDF) -->
-                    <td class="py-3 px-4 text-center whitespace-nowrap">
-                      <div class="inline-flex items-center gap-1">
-                        
-                        <!-- 1. Contrato -->
-                        <button onclick="window.abrirModalInstrumentoCargo('contrato', '${escapeHtml(t.cargo)}', '${t.id}')" class="px-2 py-1 bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-700 rounded-md text-[10px] font-bold border border-blue-200 transition shadow-2xs cursor-pointer flex items-center gap-1" title="Ver Documento Guía, Adjuntar PDF o Generar Minuta de Contrato">
-                          <span>📄</span>
-                          <span>Contrato</span>
-                        </button>
+                    <!-- 7 DOCUMENTOS OFICIALES DEL CARGO (ARTICULADOS CON APP DEL TRABAJADOR) + CARPETA -->
+                    <td class="py-3 px-4 text-center">
+                      ${(() => {
+                        const docSigsRow = store.data.employee_document_signatures || [];
+                        const firmasRow = store.getFirmasPorTrabajador ? store.getFirmasPorTrabajador(t.id) : [];
+                        const tieneFirmaDoc = (docTypeKey) => {
+                          return docSigsRow.some(s => (s.employee_id === t.id || s.trabajadorId === t.id) && (s.document_type === docTypeKey || (docTypeKey === 'MANUAL_DE_CARGO' && (s.document_type || '').includes('MANUAL'))))
+                            || firmasRow.some(f => f.tipoDocumento === docTypeKey);
+                        };
+                        const docs7Row = [
+                          { key: 'manual', docType: 'MANUAL_DE_CARGO', icon: '📘', label: 'Manual de Funciones', bg: 'bg-purple-50 text-purple-800 border-purple-200 hover:bg-purple-600' },
+                          { key: 'perfil', docType: 'PERFIL_DE_CARGO', icon: '🎓', label: 'Perfil & Competencias', bg: 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-600' },
+                          { key: 'pts', docType: 'PLAN_DE_TRABAJO_SEGURO', icon: '🛡️', label: 'Plan de Trabajo Seguro', bg: 'bg-teal-50 text-teal-800 border-teal-200 hover:bg-teal-600' },
+                          { key: 'profesiograma', docType: 'PROFESIOGRAMA_SST', icon: '🩺', label: 'Profesiograma SST', bg: 'bg-indigo-50 text-indigo-800 border-indigo-200 hover:bg-indigo-600' },
+                          { key: 'epp', docType: 'MATRIZ_EPP_DOTACION', icon: '🦺', label: 'Matriz EPP & Dotación', bg: 'bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-600' },
+                          { key: 'contrato', docType: 'ANEXO_CONTRACTUAL_Y_NOTIFICACION_RIESGOS', icon: '📄', label: 'Contrato', bg: 'bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-600' },
+                          { key: 'recomendaciones', docType: 'RECOMENDACIONES_MEDICAS', icon: '🏥', label: 'Recomendaciones Médicas', bg: 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-600' }
+                        ];
+                        return `
+                          <div class="flex flex-wrap items-center justify-center gap-1 max-w-[460px] mx-auto">
+                            ${docs7Row.map(d => {
+                              const firmado = tieneFirmaDoc(d.docType);
+                              return `
+                                <button
+                                  type="button"
+                                  onclick="window.abrirModalInstrumentoCargo('${d.key}', '${escapeHtml(t.cargo)}', '${t.id}')"
+                                  class="px-2 py-1 ${d.bg} hover:text-white rounded-md text-[10px] font-bold border transition shadow-2xs cursor-pointer inline-flex items-center gap-1"
+                                  title="${d.label} (${firmado ? '✓ Firmado por el trabajador' : 'Ver Formato Corporativo Tamaño Carta / Descargar PDF'})"
+                                >
+                                  <span>${d.icon}</span>
+                                  <span>${d.label}</span>
+                                  ${firmado ? `<span class="px-1 rounded bg-emerald-600 text-white text-[8px] font-black">✓</span>` : ''}
+                                </button>
+                              `;
+                            }).join('')}
 
-                        <!-- 2. Perfil del Cargo -->
-                        <button onclick="window.abrirModalInstrumentoCargo('perfil', '${escapeHtml(t.cargo)}', '${t.id}')" class="px-2 py-1 bg-amber-50 hover:bg-amber-600 hover:text-white text-amber-800 rounded-md text-[10px] font-bold border border-amber-200 transition shadow-2xs cursor-pointer flex items-center gap-1" title="Ver Fuentes, Matriz de Competencias y Profesiograma del Cargo">
-                          <span>📋</span>
-                          <span>Perfil</span>
-                        </button>
-
-                        <!-- 3. Manual de Funciones -->
-                        <button onclick="window.abrirModalInstrumentoCargo('manual', '${escapeHtml(t.cargo)}', '${t.id}')" class="px-2 py-1 bg-purple-50 hover:bg-purple-600 hover:text-white text-purple-700 rounded-md text-[10px] font-bold border border-purple-200 transition shadow-2xs cursor-pointer flex items-center gap-1" title="Ver Fuentes, Manual de Funciones y Responsabilidades SST">
-                          <span>📖</span>
-                          <span>Manual</span>
-                        </button>
-
-                        <!-- 4. PTS -->
-                        <button onclick="window.abrirModalInstrumentoCargo('pts', '${escapeHtml(t.cargo)}', '${t.id}')" class="px-2 py-1 bg-teal-50 hover:bg-teal-600 hover:text-white text-teal-800 rounded-md text-[10px] font-bold border border-teal-200 transition shadow-2xs cursor-pointer flex items-center gap-1" title="Ver Procedimiento de Trabajo Seguro (GTC 45)">
-                          <span>🛡️</span>
-                          <span>PTS</span>
-                        </button>
-
-                        <!-- 5. Carpeta / Expediente Digital del Trabajador -->
-                        <button onclick="window.abrirModalCarpetaTrabajador('${t.id}')" class="px-2 py-1 ${comp.isComplete ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-600' : 'bg-slate-100 text-slate-800 border-slate-300 hover:bg-indigo-600'} hover:text-white rounded-md text-[10px] font-bold border transition shadow-2xs cursor-pointer flex items-center gap-1" title="Expediente Laboral Digital (${comp.presentCount}/${comp.totalRequired} documentos)">
-                          <span>📁</span>
-                          <span>Carpeta</span>
-                          <span class="px-1 py-0.2 rounded-full text-[8.5px] font-mono font-bold ${comp.isComplete ? 'bg-emerald-200 text-emerald-900' : 'bg-amber-200 text-amber-900'}">${comp.presentCount}/${comp.totalRequired}</span>
-                        </button>
-
-                      </div>
+                            <!-- Carpeta / Expediente Digital del Trabajador -->
+                            <button onclick="window.abrirModalCarpetaTrabajador('${t.id}')" class="px-2 py-1 ${comp.isComplete ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-600' : 'bg-slate-100 text-slate-800 border-slate-300 hover:bg-indigo-600'} hover:text-white rounded-md text-[10px] font-bold border transition shadow-2xs cursor-pointer inline-flex items-center gap-1" title="Expediente Laboral Digital (${comp.presentCount}/${comp.totalRequired} documentos)">
+                              <span>📁</span>
+                              <span>Carpeta</span>
+                              <span class="px-1 py-0.2 rounded-full text-[8.5px] font-mono font-bold ${comp.isComplete ? 'bg-emerald-200 text-emerald-900' : 'bg-amber-200 text-amber-900'}">${comp.presentCount}/${comp.totalRequired}</span>
+                            </button>
+                          </div>
+                        `;
+                      })()}
                     </td>
 
                     <!-- Acciones -->
@@ -1244,10 +1314,9 @@ window.volverAGestionTrabajadores = function() {
 // MODAL CENTRAL DE INSTRUMENTOS DEL CARGO (ESTRUCTURA DE ESTÁNDARES MÍNIMOS)
 // Manejo de Documento Guía, Plantillas Base, Enlaces Oficiales y Adjuntos PDF
 // =============================================================================
-window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', cargoName = null, trabajadorId = null) {
+window.abrirModalInstrumentoCargo = async function(tipoInicial = 'manual', cargoName = null, trabajadorId = null) {
   const empresaActiva = store.getEmpresaActiva() || store.getEmpresas()[0];
   const trabajadores = store.getTrabajadores(empresaActiva.id);
-
   const jobPositions = store.getJobPositions(empresaActiva.id);
 
   // Determinar cargos disponibles combinando catálogo y trabajadores
@@ -1259,9 +1328,31 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
     cargosEmpresa.push('Coordinador SST', 'Operario de Producción', 'Mecánico de Mantenimiento');
   }
 
-  let cargoActivo = cargoName || cargosEmpresa[0];
-  let instrumentoActivo = tipoInicial || 'contrato'; // 'contrato', 'perfil', 'manual', 'pts'
-  const trabajadorContexto = trabajadorId ? store.getTrabajadorPorId(trabajadorId) : null;
+  let trabajadorActivoId = trabajadorId || '';
+  let trabajadorContexto = trabajadorActivoId ? store.getTrabajadorPorId(trabajadorActivoId) : null;
+  let cargoActivo = cargoName || trabajadorContexto?.cargo || cargosEmpresa[0];
+
+  if (!trabajadorContexto && cargoActivo) {
+    const matchTrab = trabajadores.find(t => (t.cargo || '').toLowerCase().trim() === String(cargoActivo).toLowerCase().trim());
+    if (matchTrab) {
+      trabajadorContexto = matchTrab;
+      trabajadorActivoId = matchTrab.id;
+    }
+  }
+
+  const normalizarKeyPestana = (k) => {
+    const s = String(k || 'manual').toLowerCase().trim();
+    if (s === 'anexo' || s === 'anexo_contractual_y_notificacion_riesgos') return 'contrato';
+    if (s === 'manual_de_cargo') return 'manual';
+    if (s === 'perfil_de_cargo') return 'perfil';
+    if (s === 'plan_de_trabajo_seguro') return 'pts';
+    if (s === 'profesiograma_sst') return 'profesiograma';
+    if (s === 'matriz_epp_dotacion') return 'epp';
+    if (s === 'recomendaciones_medicas') return 'recomendaciones';
+    return ['manual', 'perfil', 'pts', 'profesiograma', 'epp', 'contrato', 'recomendaciones'].includes(s) ? s : 'manual';
+  };
+
+  let instrumentoActivo = normalizarKeyPestana(tipoInicial);
 
   const modalId = 'modal-instrumento-cargo-sst';
   const existing = document.getElementById(modalId);
@@ -1269,63 +1360,70 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
 
   const modalEl = document.createElement('div');
   modalEl.id = modalId;
-  modalEl.className = 'fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto';
-
-  const formatCOP = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
+  modalEl.className = 'fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto';
 
   const titulosInstrumentos = {
     manual: {
-      nombre: 'Manual de Funciones y Responsabilidades SG-SST',
-      norma: 'Decreto 1072 de 2015 (Artículos 2.2.4.6.8 & 2.2.4.6.10)',
-      icono: '📖',
+      nombre: 'Manual de Funciones',
+      tituloLargo: 'Manual de Funciones y Responsabilidades SG-SST',
+      norma: 'Decreto 1072 de 2015 (Artículos 2.2.4.6.8 & 2.2.4.6.10) • Res. 0312 Estándar 1.1.2',
+      icono: '📘',
+      docType: 'MANUAL_DE_CARGO',
       color: 'purple'
     },
     perfil: {
-      nombre: 'Perfil del Cargo y Competencias SST',
-      norma: 'Resolución 0312 de 2019 (Estándar 1.1.2 & 1.1.3) & Decreto 1072',
-      icono: '📋',
+      nombre: 'Perfil & Competencias',
+      tituloLargo: 'Perfil del Cargo, Educación, Experiencia y Competencias SST',
+      norma: 'Resolución 0312 de 2019 (Estándar 1.1.2 & 1.1.3) & Decreto 1072 de 2015',
+      icono: '🎓',
+      docType: 'PERFIL_DE_CARGO',
       color: 'amber'
     },
     pts: {
-      nombre: 'Procedimiento y Plan de Trabajo Seguro (PTS)',
-      norma: 'Guía Técnica GTC 45 • Res. 0312 Estándar 4.2.1',
+      nombre: 'Plan de Trabajo Seguro',
+      tituloLargo: 'Procedimiento y Plan de Trabajo Seguro (PTS)',
+      norma: 'Guía Técnica GTC 45 • Resolución 0312 de 2019 Estándar 4.2.1',
       icono: '🛡️',
+      docType: 'PLAN_DE_TRABAJO_SEGURO',
       color: 'teal'
     },
     profesiograma: {
-      nombre: 'Profesiograma y Exámenes Médicos Ocupacionales',
-      norma: 'Resolución 2346 de 2007 • Estándar 3.1.4',
+      nombre: 'Profesiograma SST',
+      tituloLargo: 'Profesiograma y Matriz de Exámenes Médicos Ocupacionales',
+      norma: 'Resolución 2346 de 2007 • Resolución 0312 de 2019 Estándar 3.1.4',
       icono: '🩺',
-      color: 'purple'
+      docType: 'PROFESIOGRAMA_SST',
+      color: 'indigo'
     },
     epp: {
-      nombre: 'Matriz de EPP y Dotación Legal',
-      norma: 'Resolución 2400 de 1979 • Art. 230 CST • Estándar 4.2.6',
+      nombre: 'Matriz EPP & Dotación',
+      tituloLargo: 'Matriz Técnica de Elementos de Protección Personal (EPP) y Dotación Legal',
+      norma: 'Ley 9 de 1979 • Resolución 2400 de 1979 • Art. 230 CST • Estándar 4.2.6',
       icono: '🦺',
-      color: 'amber'
-    },
-    anexo: {
-      nombre: 'Anexo Contractual SST y Notificación de Riesgos',
-      norma: 'Código Sustantivo del Trabajo Arts. 58 y 62 • Dec. 1072',
-      icono: '📝',
-      color: 'teal'
-    },
-    recomendaciones: {
-      nombre: 'Formato de Recomendaciones Médicas Laborales',
-      norma: 'Resolución 2346 de 2007 • Dec. 1072 Art. 2.2.4.6.24 • Res. 0312',
-      icono: '🩺',
-      color: 'purple'
+      docType: 'MATRIZ_EPP_DOTACION',
+      color: 'orange'
     },
     contrato: {
-      nombre: 'Contrato Individual de Trabajo',
-      norma: 'Código Sustantivo del Trabajo (CST Arts. 37-47)',
+      nombre: 'Contrato',
+      tituloLargo: 'Contrato Individual de Trabajo y Anexo Contractual SST (9 Cláusulas)',
+      norma: 'Código Sustantivo del Trabajo • Decreto 1072 de 2015 Art. 2.2.4.6.15 • Res. 0312',
       icono: '📄',
+      docType: 'ANEXO_CONTRACTUAL_Y_NOTIFICACION_RIESGOS',
       color: 'blue'
+    },
+    recomendaciones: {
+      nombre: 'Recomendaciones Médicas',
+      tituloLargo: 'Formato Oficial de Recomendaciones y Restricciones Médicas Laborales',
+      norma: 'Resolución 2346 de 2007 • Dec. 1072 Art. 2.2.4.6.24 • Estándar 3.1.5',
+      icono: '🏥',
+      docType: 'RECOMENDACIONES_MEDICAS',
+      color: 'emerald'
     }
   };
 
   const renderModalContent = async () => {
-    const infoInst = titulosInstrumentos[instrumentoActivo] || titulosInstrumentos.contrato;
+    trabajadorContexto = trabajadorActivoId ? store.getTrabajadorPorId(trabajadorActivoId) : null;
+    const infoInst = titulosInstrumentos[instrumentoActivo] || titulosInstrumentos.manual;
     const fuentes = store.getFuentesInstrumento(cargoActivo, instrumentoActivo, empresaActiva.id);
     const cargoSlug = slugify(cargoActivo);
     const numeralTag = `cargo_${cargoSlug}_${instrumentoActivo}`;
@@ -1338,476 +1436,190 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
       console.warn("No se pudieron cargar adjuntos de IndexedDB:", e);
     }
 
-    const cargoObj = jobPositions.find(j => j.title.toLowerCase().trim() === cargoActivo.toLowerCase().trim() || j.id === cargoActivo);
+    // Generar exactamente el mismo Formato Corporativo en Tamaño Carta que ve el trabajador en su App
+    const formatoCorp = window.generarFormatoCorporativoDocumentoCargo(
+      infoInst.docType,
+      cargoActivo,
+      trabajadorContexto ? trabajadorContexto.id : null
+    );
 
-    const configCargo = store.getPerfilCargo(cargoActivo, empresaActiva.id);
-    const manualCfg = configCargo?.manualFunciones || {};
-    const funcData = cargoObj ? store.getJobPositionFunctions(cargoObj.id) : { sst: [], operativas: [], procesos: [] };
-
-    // Verificar si el trabajador en contexto ya firmó este documento
-    const docSigs = store.data.employee_document_signatures || [];
-    const sigFound = trabajadorContexto
-      ? docSigs.find(s => (s.employee_id === trabajadorContexto.id || s.trabajadorId === trabajadorContexto.id) && (s.document_type === 'MANUAL_DE_CARGO' || (s.document_type || '').includes('MANUAL')))
-      : null;
-    const isFirmado = !!sigFound;
-
-    const deptoArea = cargoObj?.department || (funcData.procesos.length > 0 ? funcData.procesos.join(', ') : (trabajadorContexto?.area || 'Operaciones y Producción'));
-    const jefeInmediato = cargoObj?.parent_job_position_title || (cargoObj?.hierarchy_level === 'Directivo' ? 'Junta Directiva / Representante Legal' : 'Gerencia General / Líder de Proceso');
-    const propositoGeneral = cargoObj?.job_objective || manualCfg.propositoGeneral || cargoObj?.summary_objective || configCargo?.perfil?.objetivo || `Desempeñar con excelencia técnica, compromiso ético y estricto apego a las normas operacionales las actividades asignadas al puesto de ${cargoActivo}, garantizando la preservación de la vida, salud y bienestar integral en el marco del SG-SST y la protección del medio ambiente.`;
-
-    const educacionFormal = cargoObj?.required_education || configCargo?.perfil?.educacion || 'Bachiller Académico o Técnico Laboral';
-    const formacionSST = configCargo?.perfil?.formacionSST || 'Inducción General SG-SST, Curso Virtual 50/20 Horas SG-SST (Dec. 1072/2015), Protocolos de Bioseguridad y Manejo de Emergencias (Res. 0312/2019)';
-    const experienciaRequerida = cargoObj?.required_experience || configCargo?.perfil?.experiencia || '1 año en labores afines a la operación o al sector productivo';
-    const personalidadSkills = (cargoObj?.personality_skills && cargoObj.personality_skills.length > 0)
-      ? cargoObj.personality_skills
-      : ['Liderazgo y comunicación asertiva', 'Disciplina operacional y autocuidado', 'Capacidad de análisis y resolución de problemas', 'Trabajo en equipo y adaptabilidad', 'Orientación a la calidad y mejora continua'];
-
-    const funcionesLines = (cargoObj?.operational_functions && cargoObj.operational_functions.length > 0)
-      ? cargoObj.operational_functions
-      : ((manualCfg.funcionesOperativas && manualCfg.funcionesOperativas.length > 0)
-          ? manualCfg.funcionesOperativas
-          : (funcData.operativas && funcData.operativas.length > 0 ? funcData.operativas : [
-              `Ejecutar las labores diarias y secuenciales asignadas al puesto de ${cargoActivo} cumpliendo los estándares de calidad y seguridad.`,
-              'Inspeccionar y verificar el estado óptimo de las herramientas, maquinarias y equipos antes de iniciar operaciones.',
-              'Mantener el orden, aseo estricto (5S) y organización en su área de influencia operativa.',
-              'Notificar de inmediato al superior jerárquico cualquier falla, desviación o condición subestándar en los procesos.',
-              'Participar en el diligenciamiento de bitácoras, listas de chequeo preoperacional y controles de entrega de turno.'
-            ]));
-
-    const sstLines = (cargoObj?.sst_responsibilities && cargoObj.sst_responsibilities.length > 0)
-      ? cargoObj.sst_responsibilities
-      : ((manualCfg.responsabilidadesSST && manualCfg.responsabilidadesSST.length > 0)
-          ? manualCfg.responsabilidadesSST
-          : (funcData.sst && funcData.sst.length > 0 ? funcData.sst : [
-              'Procurar el cuidado integral de su salud física y mental en el desarrollo de sus actividades laborales (Dec. 1072/2015 Art. 2.2.4.6.10 Num. 1).',
-              'Suministrar información clara, veraz y completa sobre su estado de salud al empleador o área de SST (Dec. 1072/2015 Num. 2).',
-              'Cumplir a cabalidad las normas, reglamentos, instrucciones y procedimientos de trabajo seguro del SG-SST (Dec. 1072/2015 Num. 3).',
-              'Informar oportunamente al empleador o supervisor sobre los peligros y riesgos latentes detectados en su puesto o área de trabajo (Num. 4).',
-              'Participar activamente en las actividades de capacitación, inducción y simulacros de emergencia programados en el Plan Anual (Num. 5).',
-              'Participar y contribuir activamente al cumplimiento de los objetivos y metas del SG-SST de la empresa (Num. 6).',
-              'Reportar de forma inmediata todo incidente, accidente de trabajo o condición insegura a la coordinación de SST.',
-              'Participar en los programas de vigilancia epidemiológica ocupacional y apoyar la labor de los comités paritarios (COPASST / Convivencia).'
-            ]));
-
-    const autoridadAlcance = cargoObj?.authority_scope || 'Autoridad técnica y operacional en su puesto de trabajo. Coordinación directa de labores encomendadas, gestión de recursos operativos y custodia de maquinaria, herramientas e insumos asignados.';
-    const suspensionFacultad = cargoObj?.suspension_faculty || 'Facultad expresa y obligatoria para suspender de forma inmediata cualquier labor o actividad en caso de constatar un riesgo grave o inminente para la vida o la salud, o ante la ausencia o deterioro de Elementos de Protección Personal (EPP), notificando de inmediato a la jefatura de SST.';
-
-    const codigoManual = `MAN-${cargoObj?.code || 'CARG-001'}`;
+    const { contenidoHtml, codigoDoc, isFirmado, docType } = formatoCorp;
+    const tituloDescarga = `${codigoDoc}_${infoInst.nombre}_${trabajadorContexto ? trabajadorContexto.nombre : cargoActivo}`;
 
     modalEl.innerHTML = `
-      <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-4xl overflow-hidden my-6 animate-scaleIn flex flex-col max-h-[92vh]">
+      <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-5xl overflow-hidden my-4 animate-scaleIn flex flex-col max-h-[94vh]">
         
         <!-- Header Principal -->
-        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 text-white flex justify-between items-start flex-shrink-0">
+        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-5 sm:p-6 text-white flex justify-between items-start flex-shrink-0">
           <div>
             <div class="flex items-center gap-2 mb-1.5 flex-wrap">
-              <span class="px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
-                Estructura de Estándares Mínimos Res. 0312
+              <span class="px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-400/30 font-mono">
+                ${codigoDoc} • Versión 01 • Formato Corporativo Tamaño Carta
               </span>
               <span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-white/10 text-slate-300">
                 🏢 ${empresaActiva.razonSocial}
               </span>
               ${trabajadorContexto ? `
-                <span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  Trabajador: ${trabajadorContexto.nombre} (C.C. ${trabajadorContexto.identificacion || trabajadorContexto.cedula})
+                <span class="px-2.5 py-0.5 rounded text-[10px] font-bold ${isFirmado ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
+                  👷 ${trabajadorContexto.nombre} (C.C. ${trabajadorContexto.identificacion || trabajadorContexto.cedula}) • ${isFirmado ? '✓ Firmado en App' : '⏳ Pendiente de Firma'}
                 </span>
               ` : ''}
             </div>
 
-            <h3 class="text-xl font-black text-white flex items-center gap-2">
+            <h3 class="text-lg sm:text-xl font-black text-white flex items-center gap-2 flex-wrap">
               <span>${infoInst.icono}</span>
               <span>${infoInst.nombre}</span>
               <span class="text-sm font-medium text-indigo-300">• Cargo: ${cargoActivo}</span>
             </h3>
             <p class="text-xs text-slate-300 mt-0.5">
-              ${infoInst.norma}. Consulta y visualiza en tiempo real los instrumentos institucionales de talento humano y SST.
+              ${infoInst.norma}. Formato corporativo unificado 100% con la App Móvil del Trabajador.
             </p>
           </div>
 
           <button onclick="document.getElementById('${modalId}').remove()" class="text-slate-400 hover:text-white text-xl font-bold cursor-pointer p-1">✕</button>
         </div>
 
-        <!-- Selector de Cargo y Pestañas de Instrumentos -->
-        <div class="bg-slate-50 p-3.5 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3 flex-shrink-0">
-          
-          <!-- Combobox Buscador Predictivo de Cargo (Bloque 5) -->
-          <div class="relative flex-1 max-w-sm">
-            <label class="text-[10px] font-black uppercase text-slate-500 block mb-1">Buscar o Seleccionar Cargo:</label>
+        <!-- Barra de Selección de Cargo, Trabajador Titular y las 7 Pestañas Oficiales -->
+        <div class="bg-slate-50 p-3.5 border-b border-slate-200 space-y-3 flex-shrink-0">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Selector de Cargo -->
             <div class="relative">
-              <input 
-                type="text" 
-                id="modal-inst-search-cargo" 
-                value="${cargoActivo}" 
-                placeholder="🔍 Escribe para buscar cargo..." 
-                class="w-full px-3 py-1.5 pl-8 pr-7 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 shadow-2xs"
-                autocomplete="off"
-              >
-              <span class="absolute left-2.5 top-2 text-slate-400 text-xs">💼</span>
-              <button type="button" id="btn-toggle-cargo-dropdown" class="absolute right-2 top-2 text-slate-400 hover:text-slate-700 text-xs cursor-pointer">▼</button>
+              <label class="text-[10px] font-black uppercase text-slate-500 block mb-1">1. Cargo Caracterizado:</label>
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="modal-inst-search-cargo" 
+                  value="${cargoActivo}" 
+                  placeholder="🔍 Escribe o selecciona el cargo..." 
+                  class="w-full px-3 py-1.5 pl-8 pr-7 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 shadow-2xs"
+                  autocomplete="off"
+                >
+                <span class="absolute left-2.5 top-2 text-slate-400 text-xs">💼</span>
+                <button type="button" id="btn-toggle-cargo-dropdown" class="absolute right-2 top-2 text-slate-400 hover:text-slate-700 text-xs cursor-pointer">▼</button>
+              </div>
+              <div id="modal-inst-cargo-dropdown" class="hidden absolute top-full left-0 right-0 mt-1 max-h-52 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl z-50 divide-y divide-slate-100 text-xs font-bold">
+                ${cargosEmpresa.map(c => `
+                  <div class="p-2.5 hover:bg-indigo-50 hover:text-indigo-900 cursor-pointer transition item-cargo-option ${c === cargoActivo ? 'bg-indigo-50 text-indigo-800 font-black' : 'text-slate-700'}" data-cargo="${c}">
+                    ${c}
+                  </div>
+                `).join('')}
+              </div>
             </div>
-            <div id="modal-inst-cargo-dropdown" class="hidden absolute top-full left-0 right-0 mt-1 max-h-52 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl z-50 divide-y divide-slate-100 text-xs font-bold">
-              ${cargosEmpresa.map(c => `
-                <div class="p-2.5 hover:bg-indigo-50 hover:text-indigo-900 cursor-pointer transition item-cargo-option ${c === cargoActivo ? 'bg-indigo-50 text-indigo-800 font-black' : 'text-slate-700'}" data-cargo="${c}">
-                  ${c}
-                </div>
-              `).join('')}
+
+            <!-- Selector de Trabajador Titular (Articulado con App del Trabajador) -->
+            <div>
+              <label class="text-[10px] font-black uppercase text-slate-500 block mb-1">2. Trabajador Titular (Sincronizado con App):</label>
+              <select id="modal-inst-select-trabajador" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 shadow-2xs">
+                <option value="">-- Plantilla General del Cargo (${cargoActivo}) --</option>
+                ${trabajadores.map(t => `
+                  <option value="${t.id}" ${trabajadorContexto && trabajadorContexto.id === t.id ? 'selected' : ''}>
+                    👷 ${t.nombre} — C.C. ${t.identificacion || t.cedula} (${t.cargo})
+                  </option>
+                `).join('')}
+              </select>
             </div>
           </div>
 
-          <!-- Pestañas de los 7 Documentos del Cargo + Contrato -->
-          <div class="flex gap-1 overflow-x-auto p-1 bg-slate-200/60 rounded-xl">
-            <button id="tab-inst-manual" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'manual' ? 'bg-white text-purple-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
-              <span>📖</span>
-              <span>Manual</span>
+          <!-- Las 7 Pestañas Oficiales de los Documentos Definidos -->
+          <div class="flex gap-1.5 overflow-x-auto p-1 bg-slate-200/70 rounded-xl">
+            <button id="tab-inst-manual" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap cursor-pointer ${instrumentoActivo === 'manual' ? 'bg-white text-purple-800 shadow-xs font-black' : 'text-slate-600 hover:text-slate-900'}">
+              <span>📘</span>
+              <span>Manual de Funciones</span>
             </button>
-            <button id="tab-inst-perfil" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'perfil' ? 'bg-white text-amber-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
-              <span>📋</span>
-              <span>Perfil</span>
+            <button id="tab-inst-perfil" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap cursor-pointer ${instrumentoActivo === 'perfil' ? 'bg-white text-amber-800 shadow-xs font-black' : 'text-slate-600 hover:text-slate-900'}">
+              <span>🎓</span>
+              <span>Perfil & Competencias</span>
             </button>
-            <button id="tab-inst-pts" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'pts' ? 'bg-white text-teal-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
+            <button id="tab-inst-pts" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap cursor-pointer ${instrumentoActivo === 'pts' ? 'bg-white text-teal-800 shadow-xs font-black' : 'text-slate-600 hover:text-slate-900'}">
               <span>🛡️</span>
-              <span>PTS</span>
+              <span>Plan de Trabajo Seguro</span>
             </button>
-            <button id="tab-inst-profesiograma" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'profesiograma' ? 'bg-white text-purple-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
+            <button id="tab-inst-profesiograma" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap cursor-pointer ${instrumentoActivo === 'profesiograma' ? 'bg-white text-indigo-800 shadow-xs font-black' : 'text-slate-600 hover:text-slate-900'}">
               <span>🩺</span>
-              <span>Profesiograma</span>
+              <span>Profesiograma SST</span>
             </button>
-            <button id="tab-inst-epp" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'epp' ? 'bg-white text-amber-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
+            <button id="tab-inst-epp" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap cursor-pointer ${instrumentoActivo === 'epp' ? 'bg-white text-orange-800 shadow-xs font-black' : 'text-slate-600 hover:text-slate-900'}">
               <span>🦺</span>
-              <span>Matriz EPP</span>
+              <span>Matriz EPP & Dotación</span>
             </button>
-            <button id="tab-inst-anexo" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'anexo' ? 'bg-white text-teal-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
-              <span>📝</span>
-              <span>Anexo SST</span>
-            </button>
-            <button id="tab-inst-recomendaciones" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'recomendaciones' ? 'bg-white text-purple-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
-              <span>🩺</span>
-              <span>Recomendaciones</span>
-            </button>
-            <button id="tab-inst-contrato" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'contrato' ? 'bg-white text-blue-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
+            <button id="tab-inst-contrato" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap cursor-pointer ${instrumentoActivo === 'contrato' ? 'bg-white text-blue-800 shadow-xs font-black' : 'text-slate-600 hover:text-slate-900'}">
               <span>📄</span>
               <span>Contrato</span>
+            </button>
+            <button id="tab-inst-recomendaciones" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap cursor-pointer ${instrumentoActivo === 'recomendaciones' ? 'bg-white text-emerald-800 shadow-xs font-black' : 'text-slate-600 hover:text-slate-900'}">
+              <span>🏥</span>
+              <span>Recomendaciones Médicas</span>
             </button>
           </div>
         </div>
 
         <!-- Contenido Central Scrollable -->
-        <div class="p-6 overflow-y-auto flex-1 space-y-6">
+        <div class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-5 bg-slate-100">
 
-          <!-- BANNER PROCESS-DRIVEN: GENERACIÓN OFICIAL DEL INSTRUMENTO EN PDF -->
-          <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 rounded-2xl border border-indigo-200/80 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+          <!-- BARRA DE ACCIONES DEL FORMATO CORPORATIVO TAMAÑO CARTA -->
+          <div class="bg-white p-3.5 rounded-2xl border border-indigo-200 shadow-xs flex flex-col sm:flex-row justify-between sm:items-center gap-3">
             <div>
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-black text-indigo-900 uppercase tracking-wider flex items-center gap-1.5">
-                  <span>📜</span> Emisión Oficial del Instrumento en PDF (Process-Driven)
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <span>📄</span> Vista Previa Oficial en Tamaño Carta (${codigoDoc} • Versión 01)
                 </span>
-                ${cargoObj ? `<span class="px-2 py-0.2 rounded text-[10px] font-black bg-indigo-200 text-indigo-900 font-mono">${cargoObj.code}</span>` : ''}
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
+                  Idéntico a App del Trabajador
+                </span>
               </div>
-              <p class="text-[11px] text-slate-600 mt-0.5">
-                Genera la minuta legal conforme a la normativa colombiana (Dec. 1072 / Res. 0312) con firmas reglamentarias.
+              <p class="text-[11px] text-slate-500 mt-0.5">
+                Incluye logo institucional de la empresa, control documental, datos del trabajador y sello digital Ley 527 de 1999.
               </p>
             </div>
 
             <div class="flex items-center gap-2 flex-wrap">
               <button 
                 type="button" 
-                onclick="window.imprimirInstrumentoActivoModal('${cargoObj ? cargoObj.id : cargoActivo}', '${instrumentoActivo}', '${trabajadorContexto ? trabajadorContexto.id : ''}')" 
-                class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-xs font-black shadow-md transition flex items-center gap-1.5 cursor-pointer active:scale-95"
+                onclick="window.descargarPdfVisorCargoActual('${escapeHtml(tituloDescarga)}')" 
+                class="px-3.5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-black shadow-sm transition flex items-center gap-1.5 cursor-pointer active:scale-95"
               >
-                <span>🖨️ Generar y Descargar Minuta en PDF</span>
+                <span>📥 Descargar PDF (Carta)</span>
+              </button>
+
+              <button 
+                type="button" 
+                onclick="window.imprimirFormatoCartaVisorActual('${escapeHtml(tituloDescarga)}')" 
+                class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-black shadow-sm transition flex items-center gap-1.5 cursor-pointer active:scale-95"
+              >
+                <span>🖨️ Imprimir Carta</span>
+              </button>
+
+              ${trabajadorContexto ? `
+                <button 
+                  type="button" 
+                  onclick="window.abrirModalFirmarDocumentoCargo('${docType}', '${escapeHtml(infoInst.nombre)}', '${trabajadorContexto.id}')" 
+                  class="px-3.5 py-2 ${isFirmado ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-amber-600 hover:bg-amber-700'} text-white rounded-xl text-xs font-black shadow-sm transition flex items-center gap-1.5 cursor-pointer active:scale-95"
+                >
+                  <span>✍️ ${isFirmado ? 'Ver Firma Registrada' : 'Firmar con Trabajador'}</span>
+                </button>
+              ` : ''}
+
+              <button 
+                type="button" 
+                onclick="window.abrirModalAdministrarCargos('${escapeHtml(cargoActivo)}')" 
+                class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+              >
+                <span>⚙️ Parametrizar</span>
               </button>
             </div>
           </div>
 
           <!-- =================================================================== -->
-          <!-- VISUALIZADOR OFICIAL DEL INSTRUMENTO EN PANTALLA                    -->
+          <!-- HOJA CORPORATIVA TAMAÑO CARTA (IDÉNTICA A LA APP DEL TRABAJADOR)    -->
           <!-- =================================================================== -->
-          ${instrumentoActivo === 'manual' ? `
-            <div class="bg-white rounded-2xl border-2 border-purple-200 shadow-sm overflow-hidden space-y-4 p-5">
-              <!-- Encabezado Contractual y Control Documental -->
-              <div class="bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 text-white p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div>
-                  <span class="text-[10px] uppercase tracking-wider font-mono text-purple-200 block font-bold">Documento Institucional Vinculante & Anexo Laboral SG-SST</span>
-                  <h4 class="text-base font-black text-white">MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES</h4>
-                  <span class="text-[11px] text-purple-200">Decreto 1072 de 2015 (Art. 2.2.4.6.8 & 2.2.4.6.10) • Resolución 0312 Estándar 1.1.2</span>
-                </div>
-                <div class="text-right text-[11px] font-mono bg-white/10 p-2 rounded-lg border border-white/20">
-                  <div><strong>CÓDIGO:</strong> ${codigoManual}</div>
-                  <div><strong>VERSIÓN:</strong> 01 • <strong>VIGENCIA:</strong> ${new Date().toLocaleDateString('es-CO')}</div>
-                  <div class="text-purple-300"><strong>RETENCIÓN LEGAL:</strong> 20 Años</div>
-                </div>
-              </div>
-
-              <!-- Datos Empleador y Trabajador -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
-                  <strong class="text-slate-900 block border-b pb-1 font-bold">🏢 1. DATOS DEL EMPLEADOR / CONTRATANTE:</strong>
-                  <p><strong>Razón Social:</strong> ${empresaActiva.razonSocial}</p>
-                  <p><strong>NIT:</strong> ${empresaActiva.nit}</p>
-                  <p><strong>Dirección:</strong> ${empresaActiva.direccion || 'Calle Principal Zona Industrial'}</p>
-                  <p><strong>Ciudad:</strong> ${empresaActiva.ciudad || 'Bogotá D.C.'} • Tel: ${empresaActiva.telefono || '(601) 745-0000'}</p>
-                </div>
-                <div class="p-3 bg-purple-50/50 border border-purple-200 rounded-xl space-y-1">
-                  <strong class="text-purple-950 block border-b border-purple-200 pb-1 font-bold">👷 2. DATOS DEL TRABAJADOR / TITULAR:</strong>
-                  <p><strong>Nombre Completo:</strong> ${trabajadorContexto ? trabajadorContexto.nombre : '<span class="italic text-slate-500">Documento General para el Cargo</span>'}</p>
-                  <p><strong>Cédula:</strong> ${trabajadorContexto ? `C.C. ${trabajadorContexto.identificacion || trabajadorContexto.cedula}` : 'A convenir al contratar'}</p>
-                  <p><strong>Fecha Ingreso:</strong> ${trabajadorContexto ? (trabajadorContexto.fechaIngreso || trabajadorContexto.fechaContrato || 'Al contratar') : 'Al inicio de labores'}</p>
-                  <p><strong>Tipo Contrato:</strong> ${trabajadorContexto ? (trabajadorContexto.tipoContrato || 'Término Indefinido') : 'Contrato Individual de Trabajo'}</p>
-                </div>
-              </div>
-
-              <!-- I. Identificación del Cargo -->
-              <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
-                <h5 class="text-xs font-black uppercase text-indigo-950 flex items-center gap-1.5 border-b pb-1">
-                  <span class="w-4 h-4 rounded bg-indigo-600 text-white flex items-center justify-center text-[10px]">I</span>
-                  <span>I. Identificación y Ubicación Organizacional del Cargo</span>
-                </h5>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
-                  <div><strong>Nombre Oficial del Cargo:</strong> <span class="font-bold text-indigo-900">${cargoActivo}</span></div>
-                  <div><strong>Nivel Jerárquico:</strong> ${cargoObj?.hierarchy_level || 'Operativo'}</div>
-                  <div><strong>Departamento / Proceso:</strong> ${deptoArea}</div>
-                  <div><strong>Jefe Inmediato:</strong> ${jefeInmediato}</div>
-                </div>
-              </div>
-
-              <!-- II. Perfil del Cargo -->
-              <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
-                <h5 class="text-xs font-black uppercase text-indigo-950 flex items-center gap-1.5 border-b pb-1">
-                  <span class="w-4 h-4 rounded bg-indigo-600 text-white flex items-center justify-center text-[10px]">II</span>
-                  <span>II. Perfil del Cargo (Requisitos Mínimos, Competencias y Formación)</span>
-                </h5>
-                <div class="space-y-1 text-xs pt-1">
-                  <p><strong>• Educación Formal Requerida:</strong> ${educacionFormal}</p>
-                  <p><strong>• Formación Adicional & Certificaciones SG-SST:</strong> ${formacionSST}</p>
-                  <p><strong>• Experiencia Laboral Mínima:</strong> ${experienciaRequerida}</p>
-                  <div>
-                    <strong>• Aspectos de Personalidad & Competencias:</strong>
-                    <div class="flex flex-wrap gap-1 mt-1">
-                      ${personalidadSkills.map(s => `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-800">✓ ${s}</span>`).join('')}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- III. Objetivo del Cargo -->
-              <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
-                <h5 class="text-xs font-black uppercase text-indigo-950 flex items-center gap-1.5 border-b pb-1">
-                  <span class="w-4 h-4 rounded bg-indigo-600 text-white flex items-center justify-center text-[10px]">III</span>
-                  <span>III. Objetivo y Propósito Misional del Cargo</span>
-                </h5>
-                <p class="text-xs text-slate-700 leading-relaxed pt-1">${propositoGeneral}</p>
-                <div class="p-2.5 bg-white rounded-lg border-l-4 border-indigo-600 text-[11px] italic text-slate-600">
-                  <strong>Compromiso SG-SST y Medio Ambiente:</strong> El titular del cargo se compromete a preservar su vida, su salud integral y el bienestar, cumplir estrictamente los Procedimientos de Trabajo Seguro (PTS) y proteger activamente el medio ambiente.
-                </div>
-              </div>
-
-              <!-- IV. Funciones Técnicas y Operativas -->
-              <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
-                <h5 class="text-xs font-black uppercase text-indigo-950 flex items-center gap-1.5 border-b pb-1">
-                  <span class="w-4 h-4 rounded bg-indigo-600 text-white flex items-center justify-center text-[10px]">IV</span>
-                  <span>IV. Funciones Técnicas y Operativas del Cargo (Ciclo PHVA)</span>
-                </h5>
-                <ol class="list-decimal pl-5 space-y-1 text-xs text-slate-700 pt-1">
-                  ${funcionesLines.map(f => `<li>${f}</li>`).join('')}
-                </ol>
-              </div>
-
-              <!-- V. Responsabilidades en la Gerencia del SG-SST -->
-              <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
-                <h5 class="text-xs font-black uppercase text-indigo-950 flex items-center gap-1.5 border-b pb-1">
-                  <span class="w-4 h-4 rounded bg-indigo-600 text-white flex items-center justify-center text-[10px]">V</span>
-                  <span>V. Responsabilidades Legales en la Gerencia del SG-SST (Dec. 1072 & Res. 0312)</span>
-                </h5>
-                <ul class="list-disc pl-5 space-y-1 text-xs text-slate-700 pt-1">
-                  ${sstLines.map(r => `<li>${r}</li>`).join('')}
-                </ul>
-              </div>
-
-              <!-- VI. Autoridad y Alcance -->
-              <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
-                <h5 class="text-xs font-black uppercase text-rose-950 flex items-center gap-1.5 border-b pb-1">
-                  <span class="w-4 h-4 rounded bg-rose-600 text-white flex items-center justify-center text-[10px]">VI</span>
-                  <span>VI. Autoridad, Alcance y Facultad de Suspensión por Riesgo Inminente</span>
-                </h5>
-                <div class="space-y-1.5 text-xs pt-1">
-                  <p><strong>• Personal y Recursos Bajo su Autoridad:</strong> ${autoridadAlcance}</p>
-                  <div class="p-2.5 bg-rose-50 border border-rose-200 text-rose-950 rounded-xl">
-                    <strong>🛑 Facultad Expresa de Suspensión Inmediata (Cero Tolerancia al Riesgo):</strong><br>
-                    ${suspensionFacultad}
-                  </div>
-                </div>
-              </div>
-
-              <!-- VII. Cláusula de Socialización y Firmas -->
-              <div class="p-4 bg-amber-50/70 rounded-2xl border border-amber-200 space-y-3">
-                <h5 class="text-xs font-black uppercase text-amber-950 border-b border-amber-200 pb-1 flex items-center justify-between">
-                  <span>VII. Socialización, Aceptación Vinculante y Firmas de Responsabilidad</span>
-                  ${isFirmado ? `<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-600 text-white font-bold">✓ Firmado Digitalmente</span>` : `<span class="px-2 py-0.5 rounded text-[10px] bg-amber-200 text-amber-900 font-bold">Pendiente de Firma</span>`}
-                </h5>
-                <div class="p-2.5 bg-white rounded-xl border border-amber-200 text-xs italic text-slate-700 leading-relaxed">
-                  <strong>CLÁUSULA DE NOTIFICACIÓN, SOCIALIZACIÓN Y ACEPTACIÓN POR EL TRABAJADOR:</strong><br>
-                  "Certifico que he recibido, leído, comprendido y aceptado en su totalidad el presente MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES correspondiente a mi cargo en ${empresaActiva.razonSocial}. Me comprometo a cumplir estrictamente las funciones asignadas, los procedimientos de trabajo seguro (PTS) y las directrices del Sistema de Gestión de Seguridad y Salud en el Trabajo (SG-SST)."
-                </div>
-
-                <!-- Firmas -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-center text-xs">
-                  <div class="p-2.5 bg-white rounded-xl border border-slate-200 flex flex-col justify-between">
-                    <div class="pt-6 border-b border-slate-300 mb-2"></div>
-                    <strong class="text-slate-900 block">${empresaActiva.responsableSST || 'ESP. EN SEGURIDAD Y SALUD EN EL TRABAJO'}</strong>
-                    <span class="text-[10px] text-slate-500">ELABORÓ / REVISÓ (SST)</span>
-                    <span class="text-[9px] text-slate-400">Lic. SST No. ${empresaActiva.licenciaSST || '15482-2022'}</span>
-                  </div>
-
-                  <div class="p-2.5 bg-white rounded-xl border border-slate-200 flex flex-col justify-between">
-                    <div class="pt-6 border-b border-slate-300 mb-2"></div>
-                    <strong class="text-slate-900 block">${empresaActiva.representanteLegal || 'REPRESENTANTE LEGAL'}</strong>
-                    <span class="text-[10px] text-slate-500">APROBÓ (GERENCIA GENERAL)</span>
-                    <span class="text-[9px] text-slate-400">Empleador Oficial</span>
-                  </div>
-
-                  <div class="p-2.5 bg-white rounded-xl border ${isFirmado ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'} flex flex-col justify-between">
-                    ${isFirmado ? `
-                      <div>
-                        <img src="${sigFound.signature_image_file || sigFound.signature_svg_or_base64 || sigFound.firmaDataUrl}" alt="Firma" class="max-h-12 mx-auto object-contain">
-                        <span class="text-[9px] font-mono font-bold text-emerald-700 block">✓ Sello Digital Ley 527/1999</span>
-                        <span class="text-[8px] font-mono text-slate-500 block truncate">Hash: ${(sigFound.signature_sha256 || sigFound.sha256_hash || '').substring(0, 16)}...</span>
-                      </div>
-                    ` : `
-                      <div class="pt-6 border-b border-slate-300 mb-2"></div>
-                    `}
-                    <strong class="text-slate-900 block">${trabajadorContexto ? trabajadorContexto.nombre : 'TITULAR DEL CARGO'}</strong>
-                    <span class="text-[10px] text-slate-500">C.C. ${trabajadorContexto ? (trabajadorContexto.identificacion || trabajadorContexto.cedula) : 'Por Vincular'}</span>
-                    ${(!isFirmado && trabajadorContexto) ? `
-                      <button type="button" onclick="window.abrirModalFirmarDocumentoCargo('MANUAL_DE_CARGO', '${escapeHtml(cargoActivo)}', '${trabajadorContexto.id}')" class="mt-2 px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-[10px] font-bold shadow-xs cursor-pointer">
-                        ✍️ Firmar Ahora
-                      </button>
-                    ` : ''}
-                  </div>
-                </div>
-              </div>
-
-              <!-- Botones de Acción al pie de la vista previa -->
-              <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200">
-                <button 
-                  type="button" 
-                  onclick="window.imprimirManualDeCargo('${cargoObj ? cargoObj.id : cargoActivo}', '${trabajadorContexto ? trabajadorContexto.id : ''}')"
-                  class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black shadow-sm transition flex items-center gap-1.5 cursor-pointer"
-                >
-                  <span>🖨️ Imprimir / Guardar Manual en PDF</span>
-                </button>
-                <button 
-                  type="button" 
-                  onclick="window.abrirModalAdministrarCargos('${cargoActivo}')"
-                  class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer"
-                >
-                  <span>⚙️ Ajustar Parámetros del Manual</span>
-                </button>
-              </div>
-            </div>
-          ` : instrumentoActivo === 'perfil' ? `
-            <div class="bg-white rounded-2xl border-2 border-amber-200 shadow-sm p-5 space-y-4">
-              <div class="bg-gradient-to-r from-amber-900 to-slate-900 text-white p-4 rounded-xl flex justify-between items-center">
-                <div>
-                  <h4 class="text-base font-black">PERFIL DEL CARGO Y COMPETENCIAS SST</h4>
-                  <span class="text-[11px] text-amber-200">Resolución 0312 de 2019 Estándar 1.1.3 • Decreto 1072 de 2015</span>
-                </div>
-                <div class="text-right text-[11px] font-mono bg-white/10 p-2 rounded-lg">
-                  <div><strong>CÓDIGO:</strong> PF-CARG-${cargoObj?.code || '001'}</div>
-                  <div><strong>ESTÁNDAR:</strong> 1.1.3</div>
-                </div>
-              </div>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div class="p-3 bg-slate-50 border rounded-xl"><strong>Educación Requerida:</strong><br>${educacionFormal}</div>
-                <div class="p-3 bg-slate-50 border rounded-xl"><strong>Experiencia Requerida:</strong><br>${experienciaRequerida}</div>
-              </div>
-              <div class="p-3.5 bg-slate-50 border rounded-xl text-xs space-y-2">
-                <strong>Formación Obligatoria en SG-SST:</strong>
-                <p class="text-slate-700">${formacionSST}</p>
-                <strong>Competencias Clave:</strong>
-                <div class="flex flex-wrap gap-1">
-                  ${personalidadSkills.map(s => `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900">✓ ${s}</span>`).join('')}
-                </div>
-              </div>
-              <div class="flex justify-between items-center pt-2 border-t">
-                <button type="button" onclick="window.imprimirPerfilDeCargo('${cargoObj ? cargoObj.id : cargoActivo}', '${trabajadorContexto ? trabajadorContexto.id : ''}')" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black">
-                  🖨️ Imprimir Perfil en PDF
-                </button>
-                <button type="button" onclick="window.abrirModalAdministrarCargos('${cargoActivo}')" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold">
-                  ⚙️ Ajustar Parámetros
-                </button>
-              </div>
-            </div>
-          ` : instrumentoActivo === 'pts' ? `
-            <div class="bg-white rounded-2xl border-2 border-teal-200 shadow-sm p-5 space-y-4">
-              <div class="bg-gradient-to-r from-teal-900 to-slate-900 text-white p-4 rounded-xl flex justify-between items-center">
-                <div>
-                  <h4 class="text-base font-black">PROCEDIMIENTO DE TRABAJO SEGURO (PTS)</h4>
-                  <span class="text-[11px] text-teal-200">Guía Técnica GTC 45 • Res. 0312 Estándar 4.2.1</span>
-                </div>
-                <div class="text-right text-[11px] font-mono bg-white/10 p-2 rounded-lg">
-                  <div><strong>CÓDIGO:</strong> PTS-${cargoObj?.code || '001'}</div>
-                  <div><strong>ESTÁNDAR:</strong> 4.2.1</div>
-                </div>
-              </div>
-              <div class="p-3 bg-slate-50 border rounded-xl text-xs space-y-1.5">
-                <strong>Peligros Prioritarios Evaluados (GTC 45):</strong>
-                <ul class="list-disc pl-5 text-slate-700">
-                  ${(configCargo?.pts?.peligrosEvaluados || ['Peligro Mecánico (atrapamiento, cortes)', 'Peligro Biomecánico (posturas forzadas, cargas)', 'Peligro Locativo y Físico (ruido, superficies)']).map(p => `<li>${p}</li>`).join('')}
-                </ul>
-              </div>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>1. Antes:</strong><p class="text-[11px] text-slate-600 mt-0.5">${configCargo?.pts?.faseAntes || 'Inspección preoperacional de herramientas y verificación de EPP.'}</p></div>
-                <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>2. Durante:</strong><p class="text-[11px] text-slate-600 mt-0.5">${configCargo?.pts?.faseDurante || 'Atención exclusiva en la labor, respetar guardas y paradas de emergencia.'}</p></div>
-                <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>3. Después:</strong><p class="text-[11px] text-slate-600 mt-0.5">${configCargo?.pts?.faseDespues || 'Desenergizar equipos, ordenar puesto y reportar novedades al supervisor.'}</p></div>
-              </div>
-              <div class="flex justify-between items-center pt-2 border-t">
-                <button type="button" onclick="window.imprimirPlanTrabajoSeguro('${cargoObj ? cargoObj.id : cargoActivo}')" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-black">
-                  🖨️ Imprimir PTS en PDF
-                </button>
-                <button type="button" onclick="window.abrirModalAdministrarCargos('${cargoActivo}')" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold">
-                  ⚙️ Ajustar Parámetros
-                </button>
-              </div>
-            </div>
-          ` : instrumentoActivo === 'contrato' ? `
-            <div class="bg-white rounded-2xl border-2 border-blue-200 shadow-sm p-5 space-y-4">
-              <div class="bg-gradient-to-r from-blue-950 to-slate-900 text-white p-4 rounded-xl flex justify-between items-center">
-                <div>
-                  <h4 class="text-base font-black">CONTRATO INDIVIDUAL DE TRABAJO & ANEXO SST</h4>
-                  <span class="text-[11px] text-blue-200">Código Sustantivo del Trabajo (CST Arts. 37-47) • 9 Cláusulas Estructuradas</span>
-                </div>
-                <div class="text-right text-[11px] font-mono bg-white/10 p-2 rounded-lg">
-                  <div><strong>MINUTA:</strong> CST-09CL</div>
-                  <div><strong>ANEXO SST:</strong> Dec. 1072/2015</div>
-                </div>
-              </div>
-              <div class="p-3 bg-slate-50 border rounded-xl text-xs space-y-2">
-                <p class="font-bold text-slate-900">Estructura Legal Vinculante en 9 Cláusulas:</p>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
-                  <div class="p-2 bg-white rounded border"><strong>I. Objeto & Cargo:</strong> ${cargoActivo}</div>
-                  <div class="p-2 bg-white rounded border"><strong>II. Duración & Fin:</strong> Término pactado / Obra</div>
-                  <div class="p-2 bg-white rounded border"><strong>III. Salario & Pago:</strong> Remuneración de ley</div>
-                  <div class="p-2 bg-white rounded border"><strong>IV. Protocolos SST:</strong> Dec. 1072 / Res. 0312</div>
-                  <div class="p-2 bg-white rounded border text-rose-800"><strong>V. Faltas Graves:</strong> Art. 58/62 CST</div>
-                  <div class="p-2 bg-white rounded border text-indigo-800"><strong>VI. Culpa Exclusiva:</strong> Exoneración Art. 216</div>
-                  <div class="p-2 bg-white rounded border"><strong>VII. Seg. Social:</strong> Salud, Pensión, ARL</div>
-                  <div class="p-2 bg-white rounded border"><strong>VIII. Elementos:</strong> Dotación e inventario</div>
-                  <div class="p-2 bg-white rounded border"><strong>IX. Domicilio:</strong> Acuerdo vinculante</div>
-                </div>
-              </div>
-              <div class="flex justify-between items-center pt-2 border-t">
-                <button type="button" onclick="window.imprimirInstrumentoActivoModal('${cargoObj ? cargoObj.id : cargoActivo}', 'contrato', '${trabajadorContexto ? trabajadorContexto.id : ''}')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black">
-                  🖨️ Generar y Descargar Minuta de Contrato (PDF)
-                </button>
-              </div>
-            </div>
-          ` : ''}
+          <div id="contenedor-imprimible-doc-cargo" class="bg-white p-5 sm:p-8 rounded-xl shadow-lg border border-slate-300 max-w-[816px] mx-auto text-slate-900" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 9pt; line-height: 1.5;">
+            ${contenidoHtml}
+          </div>
 
           <!-- =================================================================== -->
           <!-- 1. ZONA DE DOCUMENTOS GUÍA, PLANTILLAS BASE Y FUENTES MULTI-ENLACE -->
-          <!-- (IDÉNTICO A LA ESTRUCTURA DE ESTÁNDARES MÍNIMOS EN RESOLUCIÓN 0312) -->
           <!-- =================================================================== -->
-          <div class="bg-blue-50/40 p-4 rounded-2xl border border-blue-100/80 space-y-3">
+          <div class="bg-white p-4 rounded-2xl border border-blue-200 shadow-2xs space-y-3">
             <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
               <div class="flex items-center gap-2">
                 <span class="p-1.5 rounded-lg bg-blue-100 text-blue-700 flex-shrink-0">
@@ -1815,10 +1627,10 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
                 </span>
                 <div>
                   <label class="text-xs font-black text-slate-800">
-                    Documento Guía, Plantillas Base y Fuentes Documentales:
+                    Documento Guía, Plantillas Base y Fuentes Documentales (${infoInst.nombre}):
                   </label>
                   <span class="text-[10px] text-slate-500 block">
-                    Ingresa el enlace oficial (Google Docs, Sheets, Drive) con la plantilla editable del ${infoInst.nombre.toLowerCase()}
+                    Ingresa enlaces oficiales (Google Docs, Sheets, Drive) asociados a este documento del cargo
                   </span>
                 </div>
               </div>
@@ -1826,25 +1638,20 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
               <!-- Botón Agregar Nueva Fuente -->
               <button 
                 type="button" 
-                onclick="window.agregarFuenteInstrumentoModal('${cargoActivo}', '${instrumentoActivo}')"
+                onclick="window.agregarFuenteInstrumentoModal('${escapeHtml(cargoActivo)}', '${instrumentoActivo}')"
                 class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer self-start sm:self-auto flex-shrink-0"
-                title="Agregar un nuevo enlace o documento fuente"
               >
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 <span>+ Agregar nueva fuente</span>
               </button>
             </div>
 
-            <!-- Lista Dinámica de Fuentes -->
             <div class="space-y-2 pt-1">
               ${fuentes.map((f, fIdx) => {
                 const fInfo = clasificarFuente(f.url);
                 const tieneUrl = !!f.url;
 
                 return `
-                  <div class="bg-white p-3 rounded-xl border ${tieneUrl ? 'border-blue-200 shadow-2xs' : 'border-slate-200'} flex flex-col md:flex-row items-stretch md:items-center gap-2">
-                    
-                    <!-- Badge Fila / Tipo -->
+                  <div class="bg-slate-50 p-3 rounded-xl border ${tieneUrl ? 'border-blue-200 shadow-2xs' : 'border-slate-200'} flex flex-col md:flex-row items-stretch md:items-center gap-2">
                     <div class="flex items-center gap-1.5 flex-shrink-0">
                       <span class="w-5 h-5 rounded-full ${tieneUrl ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600'} text-[10px] font-black flex items-center justify-center">
                         ${fIdx + 1}
@@ -1854,33 +1661,26 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
                       </span>
                     </div>
 
-                    <!-- Título de la Fuente -->
                     <div class="w-full md:w-52 flex-shrink-0">
                       <input 
                         type="text" 
-                        placeholder="Título opcional (ej: Minuta Oficial CST)..." 
+                        placeholder="Título opcional..." 
                         value="${escapeHtml(f.titulo || '')}" 
-                        onchange="window.actualizarFuenteInstrumentoModal('${cargoActivo}', '${instrumentoActivo}', '${f.id}', 'titulo', this.value)"
-                        class="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                        title="Nombre descriptivo de la fuente o anexo"
+                        onchange="window.actualizarFuenteInstrumentoModal('${escapeHtml(cargoActivo)}', '${instrumentoActivo}', '${f.id}', 'titulo', this.value)"
+                        class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:outline-none"
                       >
                     </div>
 
-                    <!-- URL / Enlace de la Fuente -->
                     <div class="relative flex-1 min-w-0">
-                      <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-                      </div>
                       <input 
                         type="url" 
                         placeholder="https://docs.google.com/document/... o enlace Drive"
                         value="${escapeHtml(f.url || '')}" 
-                        onchange="window.actualizarFuenteInstrumentoModal('${cargoActivo}', '${instrumentoActivo}', '${f.id}', 'url', this.value)"
-                        class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:outline-none ${tieneUrl ? 'font-medium text-slate-800' : 'text-slate-500'}"
+                        onchange="window.actualizarFuenteInstrumentoModal('${escapeHtml(cargoActivo)}', '${instrumentoActivo}', '${f.id}', 'url', this.value)"
+                        class="w-full px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:outline-none ${tieneUrl ? 'font-medium text-slate-800' : 'text-slate-500'}"
                       >
                     </div>
 
-                    <!-- Botones de Acción para esta Fuente -->
                     <div class="flex items-center gap-1.5 flex-shrink-0 justify-end">
                       ${tieneUrl ? `
                         <a 
@@ -1888,31 +1688,23 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
                           target="_blank" 
                           rel="noopener noreferrer" 
                           class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold flex items-center gap-1 transition"
-                          title="Abrir en pestaña nueva"
                         >
-                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                           <span>Abrir</span>
                         </a>
-
                         <button 
                           type="button" 
-                          onclick="window.previsualizarFuenteGuiaInstrumento('${escapeHtml(f.url)}', '${escapeHtml(f.titulo || '')}', '${cargoActivo}', '${instrumentoActivo}')"
+                          onclick="window.previsualizarFuenteGuiaInstrumento('${escapeHtml(f.url)}', '${escapeHtml(f.titulo || '')}', '${escapeHtml(cargoActivo)}', '${instrumentoActivo}')"
                           class="px-2.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-xs font-bold flex items-center gap-1 transition cursor-pointer"
-                          title="Vista previa del documento en Google Cloud sin salir de la App"
                         >
-                          <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                           <span>Ver</span>
                         </button>
                       ` : ''}
-
-                      <!-- Eliminar Fuente -->
                       <button 
                         type="button" 
-                        onclick="window.eliminarFuenteInstrumentoModal('${cargoActivo}', '${instrumentoActivo}', '${f.id}')"
+                        onclick="window.eliminarFuenteInstrumentoModal('${escapeHtml(cargoActivo)}', '${instrumentoActivo}', '${f.id}')"
                         class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
-                        title="Eliminar esta fuente"
                       >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        ✕
                       </button>
                     </div>
                   </div>
@@ -1923,29 +1715,22 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
 
           <!-- =================================================================== -->
           <!-- 2. ZONA DE CARGUE Y GESTIÓN DE ARCHIVOS ADJUNTOS EN PDF (VISOR)     -->
-          <!-- (IDÉNTICO A LA GESTIÓN DE EVIDENCIAS EN RESOLUCIÓN 0312 DE 2019)    -->
           <!-- =================================================================== -->
-          <div class="bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80 space-y-3">
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
             <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
               <span class="text-xs font-black text-slate-800 flex items-center gap-2">
-                <span class="p-1.5 rounded-lg bg-indigo-100 text-indigo-700">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
-                </span>
-                <span>Documentos de Soporte y Archivos PDF Adjuntos (${adjuntos.length})</span>
+                <span>📎 Documentos de Soporte y Archivos PDF Adjuntos (${adjuntos.length})</span>
               </span>
 
-              <!-- Botón Cargar Archivos Locales -->
               <label class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold cursor-pointer transition shadow-sm active:scale-95">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                <span>Adjuntar Archivo Local (PDF, Foto, Doc)</span>
-                <input type="file" multiple onchange="window.adjuntarArchivoInstrumentoModal('${cargoActivo}', '${instrumentoActivo}', this.files, '${trabajadorId || ''}')" class="hidden">
+                <span>+ Adjuntar Archivo Local (PDF, Foto, Doc)</span>
+                <input type="file" multiple onchange="window.adjuntarArchivoInstrumentoModal('${escapeHtml(cargoActivo)}', '${instrumentoActivo}', this.files, '${trabajadorActivoId || ''}')" class="hidden">
               </label>
             </div>
 
-            <!-- Lista de Archivos Adjuntos / Evidencias -->
             ${adjuntos.length === 0 ? `
-              <div class="text-[11px] text-slate-400 italic py-2 bg-white p-3 rounded-xl border border-dashed border-slate-200 text-center">
-                ⚪ No se han adjuntado archivos físicos en PDF para el ${infoInst.nombre.toLowerCase()} de este cargo todavía. Puedes adjuntar contratos firmados, actas o minutas escaneadas para visualizarlos de inmediato.
+              <div class="text-[11px] text-slate-400 italic py-2 bg-slate-50 p-3 rounded-xl border border-dashed border-slate-200 text-center">
+                ⚪ No se han adjuntado archivos físicos adicionales para ${infoInst.nombre.toLowerCase()} de este cargo todavía.
               </div>
             ` : `
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
@@ -1956,47 +1741,26 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
                   const fechaStr = ev.fechaCargue ? new Date(ev.fechaCargue).toLocaleDateString() : '';
 
                   return `
-                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between gap-2 hover:border-indigo-300 transition">
-                      <div class="flex items-center gap-2.5 overflow-hidden cursor-pointer flex-1 min-w-0" onclick="window.previsualizarArchivoInstrumentoModal('${ev.id}')" title="Clic para vista previa en pantalla de ${ev.nombre}">
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex items-center justify-between gap-2 hover:border-indigo-300 transition">
+                      <div class="flex items-center gap-2.5 overflow-hidden cursor-pointer flex-1 min-w-0" onclick="window.previsualizarArchivoInstrumentoModal('${ev.id}')">
                         <span class="p-2 rounded-lg ${esPDF ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'} flex-shrink-0 text-sm">
                           ${esPDF ? '📕' : '📄'}
                         </span>
                         <div class="overflow-hidden min-w-0">
-                          <span class="text-xs font-bold text-slate-800 hover:text-indigo-600 truncate block transition" title="${ev.nombre}">${ev.nombre}</span>
+                          <span class="text-xs font-bold text-slate-800 hover:text-indigo-600 truncate block transition">${ev.nombre}</span>
                           <span class="text-[10px] text-slate-400 block">${sizeStr} • ${fechaStr}</span>
                         </div>
                       </div>
 
                       <div class="flex items-center gap-1 flex-shrink-0">
-                        <!-- Vista Previa Inmediata en Visor de PDF -->
-                        <button 
-                          type="button" 
-                          onclick="window.previsualizarArchivoInstrumentoModal('${ev.id}')" 
-                          class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-md text-[11px] font-bold flex items-center gap-1 transition shadow-2xs cursor-pointer" 
-                          title="Vista previa inmediata del documento sin descargar"
-                        >
-                          <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                          <span>Ver</span>
+                        <button type="button" onclick="window.previsualizarArchivoInstrumentoModal('${ev.id}')" class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-md text-[11px] font-bold cursor-pointer">
+                          Ver
                         </button>
-
-                        <!-- Descargar copia -->
-                        <button 
-                          type="button" 
-                          onclick="window.descargarEvidencia('${ev.id}')" 
-                          class="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition cursor-pointer" 
-                          title="Descargar copia del archivo"
-                        >
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <button type="button" onclick="window.descargarEvidencia('${ev.id}')" class="p-1 text-slate-400 hover:text-slate-600 rounded-md cursor-pointer">
+                          📥
                         </button>
-
-                        <!-- Eliminar Evidencia -->
-                        <button 
-                          type="button" 
-                          onclick="window.eliminarEvidenciaInstrumentoModal('${ev.id}', '${cargoActivo}', '${instrumentoActivo}')" 
-                          class="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition cursor-pointer" 
-                          title="Eliminar este archivo adjunto"
-                        >
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        <button type="button" onclick="window.eliminarEvidenciaInstrumentoModal('${ev.id}', '${escapeHtml(cargoActivo)}', '${instrumentoActivo}')" class="p-1 text-slate-400 hover:text-red-600 rounded-md cursor-pointer">
+                          ✕
                         </button>
                       </div>
                     </div>
@@ -2006,62 +1770,31 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
             `}
           </div>
 
-          <!-- =================================================================== -->
-          <!-- 3. PLANTILLA BASE OFICIAL DE DOCTOR PYME (GENERADOR EN PDF)         -->
-          <!-- =================================================================== -->
-          <div class="bg-amber-50/40 p-4 rounded-2xl border border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <span class="text-xs font-black text-amber-900 block flex items-center gap-1.5">
-                <span>⚡</span>
-                <span>Plantilla Base Oficial Autogenerada por Doctor Pyme SG-SST</span>
-              </span>
-              <p class="text-[11px] text-amber-800 mt-0.5">
-                Genera al instante el documento oficial en PDF con membrete de la empresa, campos normativos y sellos de aprobación.
-              </p>
-            </div>
-
-            <div class="flex items-center gap-2 flex-shrink-0">
-              ${instrumentoActivo === 'contrato' ? `
-                <button onclick="window.ejecutarGeneracionPdfModal('contrato', '${trabajadorId || ''}', '${cargoActivo}')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black transition cursor-pointer shadow-md flex items-center gap-1.5 active:scale-95">
-                  🖨️ Generar Contrato (PDF)
-                </button>
-              ` : instrumentoActivo === 'perfil' ? `
-                <button onclick="window.ejecutarGeneracionPdfModal('perfil', '', '${cargoActivo}')" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black transition cursor-pointer shadow-md flex items-center gap-1.5 active:scale-95">
-                  🖨️ Generar Perfil (PDF)
-                </button>
-              ` : instrumentoActivo === 'manual' ? `
-                <button onclick="window.ejecutarGeneracionPdfModal('manual', '', '${cargoActivo}')" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black transition cursor-pointer shadow-md flex items-center gap-1.5 active:scale-95">
-                  🖨️ Generar Manual (PDF)
-                </button>
-              ` : `
-                <button onclick="window.ejecutarGeneracionPdfModal('pts', '', '${cargoActivo}')" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-black transition cursor-pointer shadow-md flex items-center gap-1.5 active:scale-95">
-                  🖨️ Generar PTS (PDF)
-                </button>
-              `}
-
-              <button onclick="window.abrirModalAdministrarCargos('${cargoActivo}')" class="px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-xl text-xs font-bold transition cursor-pointer shadow-2xs" title="Editar los textos, funciones o requisitos base de este cargo">
-                ⚙️ Ajustar Parámetros
-              </button>
-            </div>
-          </div>
-
         </div>
 
         <!-- Footer -->
-        <div class="p-4 bg-slate-100 border-t border-slate-200 flex justify-between items-center flex-shrink-0">
-          <div class="text-[11px] text-slate-500">
-            Resolución 0312 de 2019 • Estándar 1.1.2 & 1.1.3 • Decreto 1072 de 2015
+        <div class="p-4 bg-slate-900 border-t border-slate-800 flex flex-wrap justify-between items-center gap-2 flex-shrink-0 text-white">
+          <div class="text-[11px] text-slate-300">
+            Formato Corporativo Tamaño Carta • ${codigoDoc} • Versión 01 • Sincronizado con App del Trabajador
           </div>
 
-          <button onclick="document.getElementById('${modalId}').remove()" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition cursor-pointer">
-            Cerrar Consola
-          </button>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="window.descargarPdfVisorCargoActual('${escapeHtml(tituloDescarga)}')" class="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-black transition cursor-pointer">
+              📥 Descargar PDF (Carta)
+            </button>
+            <button type="button" onclick="window.imprimirFormatoCartaVisorActual('${escapeHtml(tituloDescarga)}')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-black transition cursor-pointer">
+              🖨️ Imprimir Carta
+            </button>
+            <button type="button" onclick="document.getElementById('${modalId}').remove()" class="px-5 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-xs font-bold transition cursor-pointer">
+              Cerrar Consola
+            </button>
+          </div>
         </div>
 
       </div>
     `;
 
-    // Listeners reactivos para Combobox Predictivo de Cargos (Bloque 5)
+    // Listeners reactivos para Combobox Predictivo de Cargos
     const inputSearchCargo = document.getElementById('modal-inst-search-cargo');
     const dropdownCargo = document.getElementById('modal-inst-cargo-dropdown');
     const btnToggleDropdown = document.getElementById('btn-toggle-cargo-dropdown');
@@ -2093,26 +1826,35 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
       dropdownCargo.querySelectorAll('.item-cargo-option').forEach(it => {
         it.addEventListener('click', () => {
           cargoActivo = it.dataset.cargo;
+          const matchTrab = trabajadores.find(t => (t.cargo || '').toLowerCase().trim() === String(cargoActivo).toLowerCase().trim());
+          trabajadorActivoId = matchTrab ? matchTrab.id : '';
           dropdownCargo.classList.add('hidden');
           renderModalContent();
         });
       });
-
-      // Cerrar dropdown al hacer clic fuera
-      document.addEventListener('click', (e) => {
-        if (!inputSearchCargo.contains(e.target) && !dropdownCargo.contains(e.target) && !btnToggleDropdown?.contains(e.target)) {
-          dropdownCargo.classList.add('hidden');
-        }
-      }, { once: true });
     }
 
-    document.getElementById('tab-inst-contrato')?.addEventListener('click', () => { instrumentoActivo = 'contrato'; renderModalContent(); });
-    document.getElementById('tab-inst-perfil')?.addEventListener('click', () => { instrumentoActivo = 'perfil'; renderModalContent(); });
+    // Listener para el selector de Trabajador Titular
+    const selectTrabModal = document.getElementById('modal-inst-select-trabajador');
+    if (selectTrabModal) {
+      selectTrabModal.addEventListener('change', (e) => {
+        trabajadorActivoId = e.target.value;
+        if (trabajadorActivoId) {
+          const tSel = store.getTrabajadorPorId(trabajadorActivoId);
+          if (tSel && tSel.cargo) {
+            cargoActivo = tSel.cargo;
+          }
+        }
+        renderModalContent();
+      });
+    }
+
     document.getElementById('tab-inst-manual')?.addEventListener('click', () => { instrumentoActivo = 'manual'; renderModalContent(); });
+    document.getElementById('tab-inst-perfil')?.addEventListener('click', () => { instrumentoActivo = 'perfil'; renderModalContent(); });
     document.getElementById('tab-inst-pts')?.addEventListener('click', () => { instrumentoActivo = 'pts'; renderModalContent(); });
     document.getElementById('tab-inst-profesiograma')?.addEventListener('click', () => { instrumentoActivo = 'profesiograma'; renderModalContent(); });
     document.getElementById('tab-inst-epp')?.addEventListener('click', () => { instrumentoActivo = 'epp'; renderModalContent(); });
-    document.getElementById('tab-inst-anexo')?.addEventListener('click', () => { instrumentoActivo = 'anexo'; renderModalContent(); });
+    document.getElementById('tab-inst-contrato')?.addEventListener('click', () => { instrumentoActivo = 'contrato'; renderModalContent(); });
     document.getElementById('tab-inst-recomendaciones')?.addEventListener('click', () => { instrumentoActivo = 'recomendaciones'; renderModalContent(); });
   };
 
@@ -2192,41 +1934,13 @@ window.eliminarEvidenciaInstrumentoModal = async function(id, cargoName, tipoIns
 };
 
 window.ejecutarGeneracionPdfModal = function(tipo, trabajadorId, cargoName) {
-  const empresaActiva = store.getEmpresaActiva() || store.getEmpresas()[0];
-  const cargoObj = store.getJobPositions(empresaActiva?.id).find(j => (j.title || '').toLowerCase().trim() === (cargoName || '').toLowerCase().trim() || j.id === cargoName);
-  const targetCargoId = cargoObj ? cargoObj.id : cargoName;
-
-  if (tipo === 'contrato') {
-    if (trabajadorId) {
-      window.generarPdfContratoTrabajador(trabajadorId);
-    } else {
-      const trabs = store.getTrabajadores(empresaActiva?.id).filter(t => (t.cargo || '').toLowerCase().trim() === (cargoName || '').toLowerCase().trim());
-      if (trabs.length > 0) {
-        window.generarPdfContratoTrabajador(trabs[0].id);
-      } else if (cargoObj && window.imprimirAnexoContractual) {
-        window.imprimirAnexoContractual(cargoObj.id);
-      } else {
-        alert("Para generar la minuta de contrato laboral, selecciona un trabajador asignado a este cargo.");
-      }
-    }
-  } else if (tipo === 'perfil') {
-    if (window.imprimirPerfilDeCargo) window.imprimirPerfilDeCargo(targetCargoId, trabajadorId);
-    else window.generarPdfPerfilCargo(cargoName, empresaActiva?.id);
-  } else if (tipo === 'manual') {
-    if (window.imprimirManualDeCargo) window.imprimirManualDeCargo(targetCargoId, trabajadorId);
-    else window.generarPdfManualFunciones(cargoName, empresaActiva?.id, trabajadorId);
-  } else if (tipo === 'pts') {
-    if (window.imprimirPlanTrabajoSeguro) window.imprimirPlanTrabajoSeguro(targetCargoId);
-    else window.generarPdfPtsCargo(cargoName, empresaActiva?.id);
-  } else if (tipo === 'profesiograma') {
-    if (window.imprimirProfesiograma) window.imprimirProfesiograma(targetCargoId);
-  } else if (tipo === 'epp') {
-    if (window.imprimirMatrizEPP) window.imprimirMatrizEPP(targetCargoId);
-  } else if (tipo === 'anexo') {
-    if (window.imprimirAnexoContractual) window.imprimirAnexoContractual(targetCargoId);
-  } else if (tipo === 'recomendaciones') {
-    if (window.imprimirRecomendacionesMedicas) window.imprimirRecomendacionesMedicas(targetCargoId, trabajadorId);
-  }
+  const { contenidoHtml, codigoDoc, trabajador } = window.generarFormatoCorporativoDocumentoCargo(tipo, cargoName, trabajadorId);
+  const cleanTitle = `${codigoDoc}_${cargoName || trabajador?.cargo || 'Cargo'}_${trabajador?.nombre || 'Oficial'}`;
+  abrirVentanaDocumentoPortal({
+    titulo: cleanTitle,
+    filename: cleanTitle.replace(/[^a-zA-Z0-9_-]/g, '_'),
+    bodyHtml: contenidoHtml
+  });
 };
 
 window.imprimirInstrumentoActivoModal = function(cargoId, tipoInstrumento, trabajadorId) {
@@ -6444,16 +6158,59 @@ window.descargarPdfVisorCargoActual = async function(tituloDoc) {
 };
 
 // =============================================================================
-// MODAL PANTALLA COMPLETA DE LECTURA, GENERACIÓN CORPORATIVA CARTA Y FIRMA
-// DE LOS 7 INSTRUMENTOS DEL CATÁLOGO DE CARGOS (SG-SST)
+// MOTOR UNIFICADO DE FORMATOS CORPORATIVOS TAMAÑO CARTA (LOS 7 DOCUMENTOS DEL CARGO)
+// Articulado 100% entre la Vista del Administrador (6. Trabajadores) y la App del Trabajador
 // =============================================================================
-window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajadorId) {
-  const trabajador = obtenerTrabajadorResiliente(trabajadorId);
-  if (!trabajador) return;
-  const empresa = resolverEmpresaTrabajador(trabajador);
-  const configCargo = store.getPerfilCargo(trabajador.cargo, empresa.id);
+window.normalizarTipoDocCargo = function(tipoOrKey) {
+  const k = String(tipoOrKey || '').toLowerCase().trim();
+  if (k === 'manual' || k === 'manual_de_cargo') return 'MANUAL_DE_CARGO';
+  if (k === 'perfil' || k === 'perfil_de_cargo') return 'PERFIL_DE_CARGO';
+  if (k === 'pts' || k === 'plan_de_trabajo_seguro') return 'PLAN_DE_TRABAJO_SEGURO';
+  if (k === 'profesiograma' || k === 'profesiograma_sst') return 'PROFESIOGRAMA_SST';
+  if (k === 'epp' || k === 'matriz_epp_dotacion') return 'MATRIZ_EPP_DOTACION';
+  if (k === 'recomendaciones' || k === 'recomendaciones_medicas') return 'RECOMENDACIONES_MEDICAS';
+  if (k === 'contrato' || k === 'anexo' || k === 'anexo_contractual_y_notificacion_riesgos') return 'ANEXO_CONTRACTUAL_Y_NOTIFICACION_RIESGOS';
+  return 'MANUAL_DE_CARGO';
+};
+
+window.generarFormatoCorporativoDocumentoCargo = function(docTypeOrKey, cargoTitle, trabajadorId = null) {
+  const docType = window.normalizarTipoDocCargo(docTypeOrKey);
+  const empresaActiva = store.getEmpresaActiva() || store.getEmpresas()[0];
+  let trabajador = trabajadorId ? (store.getTrabajadorPorId(trabajadorId) || obtenerTrabajadorResiliente(trabajadorId)) : null;
+
+  if (!trabajador && cargoTitle) {
+    const trabsCargo = store.getTrabajadores(empresaActiva?.id).filter(t =>
+      (t.cargo || '').toLowerCase().trim() === String(cargoTitle).toLowerCase().trim()
+    );
+    if (trabsCargo.length > 0) trabajador = trabsCargo[0];
+  }
+
+  const empresa = resolverEmpresaTrabajador(trabajador, empresaActiva?.id);
   const cargosFormales = store.getJobPositions(empresa.id);
-  const cargoFormal = cargosFormales.find(cg => cg.id === trabajador.job_position_id || (cg.title || '').toLowerCase().trim() === (trabajador.cargo || '').toLowerCase().trim());
+  const cargoFormal = cargosFormales.find(cg =>
+    (trabajador?.job_position_id && cg.id === trabajador.job_position_id) ||
+    cg.id === cargoTitle ||
+    (cg.title || '').toLowerCase().trim() === String(cargoTitle || trabajador?.cargo || '').toLowerCase().trim()
+  );
+
+  const nombreCargoOficial = cargoFormal?.title || trabajador?.cargo || cargoTitle || 'CARGO OFICIAL';
+
+  if (!trabajador) {
+    trabajador = {
+      id: '',
+      nombre: 'TITULAR DEL CARGO (PLANTILLA CORPORATIVA)',
+      identificacion: 'POR VINCULAR',
+      cedula: 'POR VINCULAR',
+      cargo: nombreCargoOficial,
+      area: cargoFormal?.department || 'Operaciones y Producción',
+      tipoContrato: 'Término Indefinido',
+      salario: 1750905,
+      fechaIngreso: new Date().toISOString().split('T')[0],
+      fechaContrato: new Date().toISOString().split('T')[0]
+    };
+  }
+
+  const configCargo = store.getPerfilCargo(nombreCargoOficial, empresa.id);
   const todasActividadesProcesos = store.getAllProcessActivities(empresa.id);
   const misActividadesPHVA = cargoFormal
     ? todasActividadesProcesos.filter(a => a.responsible_position_id === cargoFormal.id)
@@ -6463,24 +6220,23 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
 
   // Verificar si ya existe firma registrada para este documento
   const docSigs = store.data.employee_document_signatures || [];
-  const firmas = store.getFirmasPorTrabajador ? store.getFirmasPorTrabajador(trabajador.id) : [];
-  const sigFound = docSigs.find(s => 
-    (s.employee_id === trabajador.id || s.trabajadorId === trabajador.id) && 
-    (s.document_type === docType || s.document_code === codigoInstrumento || (docType === 'MANUAL_DE_CARGO' && (s.document_type || '').includes('MANUAL')))
-  ) || firmas.find(f => f.documentoCodigo === codigoInstrumento || f.documentoId === codigoInstrumento || f.tipoDocumento === docType);
+  const firmas = (trabajador.id && store.getFirmasPorTrabajador) ? store.getFirmasPorTrabajador(trabajador.id) : [];
+  const sigFound = trabajador.id ? (
+    docSigs.find(s => 
+      (s.employee_id === trabajador.id || s.trabajadorId === trabajador.id) && 
+      (s.document_type === docType || s.document_code === codigoInstrumento || (docType === 'MANUAL_DE_CARGO' && (s.document_type || '').includes('MANUAL')))
+    ) || firmas.find(f => f.documentoCodigo === codigoInstrumento || f.documentoId === codigoInstrumento || f.tipoDocumento === docType)
+  ) : null;
   const isFirmado = !!sigFound;
 
-  const firmaGuardadaUrl =
+  const firmaGuardadaUrl = trabajador.id ? (
     obtenerUrlFirmaTrabajador(trabajador) ||
     trabajador.firma_digital_url ||
     trabajador.firma_base64 ||
     trabajador.signature_url ||
     trabajador.signature_svg ||
-    null;
-
-  const modalId = 'modal-firmar-documento-cargo';
-  const existing = document.getElementById(modalId);
-  if (existing) existing.remove();
+    null
+  ) : null;
 
   const formatCOP = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
   const cargoCode = cargoFormal?.code || 'CARG-001';
@@ -7221,6 +6977,41 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
       ${generarFirmasYSelloCorporativoCarta({ empresa, trabajador, isFirmado, sigFound, firmaGuardadaUrl, codigoDoc, incluirRepresentanteLegal: true })}
     `;
   }
+
+  return {
+    contenidoHtml,
+    codigoDoc,
+    codigoInstrumento,
+    isFirmado,
+    sigFound,
+    firmaGuardadaUrl,
+    trabajador,
+    empresa,
+    cargoFormal,
+    docType
+  };
+};
+
+// =============================================================================
+// MODAL PANTALLA COMPLETA DE LECTURA, GENERACIÓN CORPORATIVA CARTA Y FIRMA
+// DE LOS 7 INSTRUMENTOS DEL CATÁLOGO DE CARGOS (SG-SST)
+// =============================================================================
+window.abrirModalFirmarDocumentoCargo = function(docTypeInput, cargoTitle, trabajadorId) {
+  const trabajador = obtenerTrabajadorResiliente(trabajadorId);
+  if (!trabajador) return;
+
+  const {
+    contenidoHtml,
+    codigoDoc,
+    isFirmado,
+    sigFound,
+    firmaGuardadaUrl,
+    docType
+  } = window.generarFormatoCorporativoDocumentoCargo(docTypeInput, cargoTitle || trabajador.cargo, trabajador.id);
+
+  const modalId = 'modal-firmar-documento-cargo';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
 
   const modalEl = document.createElement('div');
   modalEl.id = modalId;
