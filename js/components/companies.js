@@ -7,6 +7,7 @@ import { auth } from '../auth.js';
 import { determinarGrupoEstandares } from '../standards.js';
 import { evidenceDB, leerArchivoDataUrl } from '../db.js';
 import { comprimirImagen } from '../services/compressionService.js';
+import { abrirModalPoliticasReglamentosEmpresa } from './companyPoliciesModal.js';
 
 let filtroBusqueda = '';
 let pestanaEmpresas = 'directorio'; // 'directorio' | 'accesos'
@@ -221,7 +222,7 @@ export function renderCompanies() {
 
         <button 
           type="button"
-          onclick="window.abrirModalPoliticasReglamentosEmpresa && window.abrirModalPoliticasReglamentosEmpresa('${empresaActiva?.id || ''}')" 
+          onclick="window.abrirModalPoliticasReglamentosEmpresa('${empresaActiva?.id || ''}')" 
           class="pb-3 px-4 text-sm font-bold border-b-2 border-transparent text-teal-700 hover:text-teal-900 hover:border-teal-600 transition flex items-center gap-2 cursor-pointer"
         >
           <span>📜 Políticas y Reglamentos (App Trabajador)</span>
@@ -363,7 +364,7 @@ export function renderCompanies() {
                     <button type="button" onclick="window.abrirModalFirmasInstitucionales('${emp.id}')" class="w-full py-1.5 px-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-xs font-bold transition border border-purple-200/60 flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer" title="Gestionar Firmas Institucionales (Representante Legal y Coordinador SST)">
                       <span>✍️</span> <span>Firmas Institucionales & SST</span>
                     </button>
-                    <button type="button" onclick="window.abrirModalPoliticasReglamentosEmpresa && window.abrirModalPoliticasReglamentosEmpresa('${emp.id}')" class="w-full py-1.5 px-2 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-lg text-xs font-bold transition border border-teal-200/80 flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer" title="Parametrizar, generar PDF y publicar Políticas y Reglamentos de la Empresa en la App del Trabajador">
+                    <button type="button" onclick="window.abrirModalPoliticasReglamentosEmpresa('${emp.id}')" class="w-full py-1.5 px-2 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-lg text-xs font-bold transition border border-teal-200/80 flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer" title="Parametrizar, generar PDF y publicar Políticas y Reglamentos de la Empresa en la App del Trabajador">
                       <span>📜</span> <span>Políticas y Reglamentos (App Trabajador)</span>
                     </button>
                   </div>

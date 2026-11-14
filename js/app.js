@@ -25,6 +25,7 @@ import { renderCopasstCcl } from './components/copasstCcl.js';
 import { abrirModalIA } from './components/aiAssistant.js';
 import './components/diagramViewer.js';
 import './components/documentViewer.js';
+import './components/companyPoliciesModal.js';
 import './services/eppReports.js';
 
 const routes = {

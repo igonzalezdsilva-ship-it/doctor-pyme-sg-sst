@@ -2381,6 +2381,10 @@ class Store {
     return emp || null;
   }
 
+  getEmpresaById(id) {
+    return this.getEmpresa(id);
+  }
+
   saveEmpresa(empresaData) {
     const estandares = determinarGrupoEstandares(empresaData.trabajadores, empresaData.claseRiesgo);
     let finalId = empresaData.id;
@@ -3579,7 +3583,7 @@ class Store {
   // =============================================================================
   getPlantillaPoliticasEmpresaPorDefecto(companyId = null) {
     const cid = companyId || (this.empresaActivaId !== 'todas' ? this.empresaActivaId : 'emp-1790438946268');
-    const emp = this.getEmpresaById(cid) || { razonSocial: 'LA EMPRESA', nit: '900.000.000-1' };
+    const emp = this.getEmpresa(cid) || this.getEmpresaById(cid) || { razonSocial: 'LA EMPRESA', nit: '900.000.000-1' };
     const razon = emp.razonSocial || 'LA EMPRESA';
     return [
       {

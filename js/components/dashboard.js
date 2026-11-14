@@ -5,6 +5,7 @@
 import { store } from '../store.js';
 import { obtenerEstandaresPorGrupo, calcularPuntaje } from '../standards.js';
 import { evidenceDB } from '../db.js';
+import { abrirModalPoliticasReglamentosEmpresa } from './companyPoliciesModal.js';
 
 export function renderDashboard() {
   const container = document.getElementById('main-content');
@@ -325,7 +326,7 @@ export function renderDashboard() {
               <span class="text-[10px] text-slate-400 uppercase font-bold block">Cobertura de Firmas</span>
               <span class="text-sm font-black text-indigo-600 font-mono">${Math.round((store.getFirmas(empresaActiva.id).length / Math.max(1, (store.getTrabajadores(empresaActiva.id).length * 4))) * 100)}%</span>
             </div>
-            <button onclick="window.abrirModalPoliticasReglamentosEmpresa && window.abrirModalPoliticasReglamentosEmpresa('${empresaActiva.id}')" class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
+            <button onclick="window.abrirModalPoliticasReglamentosEmpresa('${empresaActiva.id}')" class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
               <span>📜</span> Parametrizar y Publicar Políticas
             </button>
             <button onclick="window.recordarTodasLasFirmasPendientes()" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition flex items-center gap-1">
