@@ -265,6 +265,8 @@ export function imprimirPoliticaReglamentoEmpresa(polId, empresaId = null) {
   const coordNombre = emp.sst_coordinator_name || emp.responsableSST || 'Coordinador SG-SST';
   const coordLic = emp.sst_coordinator_sst_license || emp.licenciaSST || 'Licencia SST Vigente';
   const coordSigUrl = emp.sst_coordinator_signature_url || `/uploads/sig_inst_coord_sst_${emp.id}.svg`;
+  const logoSrc = emp.logoUrl || emp.logo_url || emp.logo || './assets/app-icon.png';
+  const cleanFileName = `${pol.codigo || pol.id}_${(pol.title || 'Politica').replace(/[^a-zA-Z0-9_-]/g, '_')}`;
 
   const win = window.open('', '_blank');
   if (!win) {
@@ -278,81 +280,128 @@ export function imprimirPoliticaReglamentoEmpresa(polId, empresaId = null) {
     <head>
       <meta charset="UTF-8">
       <title>${pol.codigo || pol.id} - ${pol.title} - ${emp.razonSocial}</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
       <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; color: #0f172a; margin: 28px; line-height: 1.55; font-size: 12.5px; }
-        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
-        .header-table td { border: 1px solid #cbd5e1; padding: 8px 12px; vertical-align: middle; }
-        .title-box { text-align: center; font-weight: 800; font-size: 14px; text-transform: uppercase; background: #f8fafc; }
-        .section { margin-top: 14px; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff; }
-        .section h3 { margin: 0 0 6px 0; font-size: 12px; text-transform: uppercase; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+        @page { size: letter; margin: 10mm 12mm; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; color: #0f172a; margin: 24px auto; max-width: 816px; line-height: 1.5; font-size: 10pt; background: #f8fafc; padding: 0 12px; }
+        .sheet { background: #ffffff; padding: 24px 28px; border: 1px solid #cbd5e1; border-radius: 6px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08); }
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; border: 2px solid #0f172a; }
+        .header-table td { border: 1px solid #0f172a; padding: 8px 10px; vertical-align: middle; }
+        .title-box { text-align: center; font-weight: 800; font-size: 11pt; text-transform: uppercase; background: #f8fafc; }
+        .section { margin-top: 12px; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; page-break-inside: avoid; }
+        .section h3 { margin: 0 0 6px 0; font-size: 9.5pt; text-transform: uppercase; color: #1e1b4b; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 4px; font-weight: 900; }
         ul { margin: 6px 0; padding-left: 20px; }
-        li { margin-bottom: 6px; }
-        .sig-grid { display: table; width: 100%; margin-top: 28px; border-top: 1px solid #cbd5e1; padding-top: 16px; }
+        li { margin-bottom: 5px; text-align: justify; }
+        .sig-grid { display: table; width: 100%; margin-top: 24px; border-top: 1px solid #cbd5e1; padding-top: 16px; page-break-inside: avoid; }
         .sig-col { display: table-cell; width: 50%; text-align: center; vertical-align: bottom; padding: 0 12px; }
-        .sig-img { max-height: 55px; max-width: 180px; object-fit: contain; margin: 0 auto 4px auto; display: block; }
-        @media print { .no-print { display: none; } body { margin: 12mm; } }
+        .sig-img { max-height: 52px; max-width: 170px; object-fit: contain; margin: 0 auto 4px auto; display: block; }
+        @media print {
+          .no-print { display: none !important; }
+          body { margin: 0; padding: 0; background: #ffffff; max-width: 100%; }
+          .sheet { border: none; box-shadow: none; padding: 0; }
+        }
       </style>
     </head>
     <body>
-      <div class="no-print" style="margin-bottom:16px; text-align:right;">
-        <button onclick="window.print()" style="padding:8px 16px; background:#0f766e; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🖨️ Imprimir / Guardar como PDF</button>
-      </div>
-      <table class="header-table">
-        <tr>
-          <td style="width:22%; text-align:center; font-weight:bold;">
-            ${emp.razonSocial}<br><span style="font-size:10px; color:#475569;">NIT: ${emp.nit}</span>
-          </td>
-          <td class="title-box" style="width:53%;">
-            SISTEMA DE GESTIÓN DE LA SEGURIDAD Y SALUD EN EL TRABAJO (SG-SST)<br>
-            <span style="color:#0f766e;">${pol.title}</span>
-          </td>
-          <td style="width:25%; font-size:11px;">
-            <strong>Código:</strong> ${pol.codigo || pol.id}<br>
-            <strong>Versión:</strong> ${pol.version || '01'}<br>
-            <strong>Fecha:</strong> ${pol.fechaVigencia || new Date().toISOString().split('T')[0]}<br>
-            <strong>Estado:</strong> PUBLICADO
-          </td>
-        </tr>
-      </table>
-
-      <div class="section">
-        <h3>1. Marco Legal y Normativo</h3>
-        <p style="margin:0;">${pol.norma}</p>
-      </div>
-
-      <div class="section">
-        <h3>2. Objetivo y Compromiso Institucional</h3>
-        <p style="margin:0;">${pol.objetivo}</p>
-      </div>
-
-      <div class="section">
-        <h3>3. Directrices, Disposiciones y Obligaciones</h3>
-        <ul>
-          ${(pol.puntos || []).map(pt => `<li>${pt}</li>`).join('')}
-        </ul>
-      </div>
-
-      <div class="section" style="background:#f0fdf4; border-color:#bbf7d0;">
-        <h3>4. Publicación y Socialización a los Trabajadores</h3>
-        <p style="margin:0;">${pol.clausulaAceptacion}</p>
-      </div>
-
-      <div class="sig-grid">
-        <div class="sig-col">
-          <img src="${coordSigUrl}" class="sig-img" onerror="this.style.display='none'">
-          <div style="border-top:1px solid #334155; padding-top:4px; width:80%; margin:0 auto;">
-            <strong>${coordNombre}</strong><br>
-            <span style="font-size:10px; color:#475569;">Responsable / Coordinador SG-SST (${coordLic})</span>
-          </div>
-        </div>
-        <div class="sig-col">
-          <img src="${repSigUrl}" class="sig-img" onerror="this.style.display='none'">
-          <div style="border-top:1px solid #334155; padding-top:4px; width:80%; margin:0 auto;">
-            <strong>${repNombre}</strong><br>
-            <span style="font-size:10px; color:#475569;">Representante Legal — ${emp.razonSocial}</span>
-          </div>
+      <div class="no-print" style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 14px; border-radius:8px; color:#fff;">
+        <span style="font-size:12px; font-weight:800; color:#5eead4;">📄 FORMATO CORPORATIVO TAMAÑO CARTA (${pol.codigo || pol.id} • Versión ${pol.version || '01'})</span>
+        <div style="display:flex; gap:8px;">
+          <button id="btn-dl-pol" onclick="descargarPdfCarta()" style="padding:7px 14px; background:#0d9488; color:white; border:none; border-radius:6px; font-weight:800; font-size:12px; cursor:pointer;">📥 Descargar PDF (Carta)</button>
+          <button onclick="window.print()" style="padding:7px 14px; background:#4338ca; color:white; border:none; border-radius:6px; font-weight:800; font-size:12px; cursor:pointer;">🖨️ Imprimir Carta</button>
         </div>
       </div>
+
+      <div id="hoja-carta-politica" class="sheet">
+        <table class="header-table">
+          <tr>
+            <td style="width:22%; text-align:center;">
+              <img src="${logoSrc}" alt="${emp.razonSocial}" style="max-height:46px; max-width:125px; object-fit:contain; display:block; margin:0 auto 4px auto;" onerror="this.style.display='none'">
+              <strong style="font-size:8pt; color:#0f172a; display:block; line-height:1.15;">${(emp.razonSocial || 'SERVICIOS IG SAS').toUpperCase()}</strong>
+              <span style="font-size:7pt; color:#475569; font-weight:700;">NIT: ${emp.nit || '901003370'}</span>
+            </td>
+            <td class="title-box" style="width:53%;">
+              <div style="font-size:11pt; font-weight:900; color:#0f172a; line-height:1.2;">${(pol.title || '').toUpperCase()}</div>
+              <div style="font-size:7.5pt; color:#334155; font-weight:800; margin-top:3px;">SISTEMA DE GESTIÓN DE LA SEGURIDAD Y SALUD EN EL TRABAJO (SG-SST)</div>
+              <div style="font-size:7pt; color:#0f766e; font-weight:700; margin-top:2px;">${pol.norma}</div>
+            </td>
+            <td style="width:25%; font-size:8pt; line-height:1.45; color:#0f172a;">
+              <div><strong>Código:</strong> ${pol.codigo || pol.id}</div>
+              <div><strong>Versión:</strong> ${pol.version || '01'}</div>
+              <div><strong>Fecha:</strong> ${pol.fechaVigencia || new Date().toISOString().split('T')[0]}</div>
+              <div><strong>Empresa:</strong> ${emp.razonSocial}</div>
+              <div><strong>Formato:</strong> Carta (Letter)</div>
+            </td>
+          </tr>
+        </table>
+
+        <div class="section">
+          <h3>I. Marco Legal y Normativo</h3>
+          <p style="margin:0; text-align:justify;">${pol.norma}</p>
+        </div>
+
+        <div class="section">
+          <h3>II. Objetivo y Compromiso Institucional</h3>
+          <p style="margin:0; text-align:justify;">${pol.objetivo}</p>
+        </div>
+
+        <div class="section">
+          <h3>III. Directrices, Disposiciones y Obligaciones</h3>
+          <ul>
+            ${(pol.puntos || []).map(pt => `<li>${pt}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="section" style="background:#f0fdf4; border-color:#86efac;">
+          <h3 style="color:#065f46; border-bottom-color:#bbf7d0;">IV. Publicación, Divulgación y Cumplimiento Obligatorio</h3>
+          <p style="margin:0; text-align:justify; color:#064e3b; font-weight:600;">${pol.clausulaAceptacion}</p>
+        </div>
+
+        <div class="sig-grid">
+          <div class="sig-col">
+            <img src="${coordSigUrl}" class="sig-img" onerror="this.style.display='none'">
+            <div style="border-top:1.5px solid #0f172a; padding-top:4px; width:85%; margin:0 auto;">
+              <strong style="font-size:9pt;">${coordNombre}</strong><br>
+              <span style="font-size:7.5pt; color:#475569;">Responsable / Coordinador SG-SST (${coordLic})</span>
+            </div>
+          </div>
+          <div class="sig-col">
+            <img src="${repSigUrl}" class="sig-img" onerror="this.style.display='none'">
+            <div style="border-top:1.5px solid #0f172a; padding-top:4px; width:85%; margin:0 auto;">
+              <strong style="font-size:9pt;">${repNombre}</strong><br>
+              <span style="font-size:7.5pt; color:#475569;">Representante Legal — ${emp.razonSocial}</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px; border:1px dashed #16a34a; background:#f0fdf4; border-radius:4px; padding:6px 10px; font-size:6.8pt; color:#064e3b; text-align:center;">
+          🔒 <strong>CONTROL DOCUMENTAL SG-SST (DECRETO 1072 DE 2015 ART. 2.2.4.6.12)</strong> • Documento oficial publicado en la App del Trabajador • Formato Corporativo Tamaño Carta
+        </div>
+      </div>
+
+      <script>
+        async function descargarPdfCarta() {
+          const el = document.getElementById('hoja-carta-politica');
+          const btn = document.getElementById('btn-dl-pol');
+          if (!el || typeof html2pdf === 'undefined') { window.print(); return; }
+          const orig = btn.innerHTML;
+          btn.disabled = true;
+          btn.innerHTML = '⏳ Generando PDF Carta...';
+          try {
+            await html2pdf().set({
+              margin: [8, 8, 8, 8],
+              filename: '${cleanFileName}.pdf',
+              image: { type: 'jpeg', quality: 0.98 },
+              html2canvas: { scale: 2, useCORS: true, logging: false },
+              jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+            }).from(el).save();
+          } catch (e) {
+            window.print();
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = orig;
+          }
+        }
+      </script>
     </body>
     </html>
   `);

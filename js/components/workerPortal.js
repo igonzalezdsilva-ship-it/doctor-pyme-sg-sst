@@ -99,6 +99,11 @@ export function resolverEmpresaTrabajador(trabajador, companyIdContext = null) {
     };
   }
 
+  if (emp) {
+    emp.razonSocial = emp.razonSocial || emp.razon_social || 'EMPRESA SG-SST';
+    emp.logoUrl = emp.logoUrl || emp.logo_url || emp.logo || './assets/app-icon.png';
+  }
+
   return emp;
 }
 
@@ -2481,6 +2486,7 @@ window.generarPdfCartaPreaviso = function(trabajadorId) {
           .sig-table td { display: block; width: 100%; padding: 10px 0; }
         }
         @media print { 
+          @page { size: letter; margin: 10mm 12mm; }
           body { padding: 0 !important; background: #ffffff !important; } 
           .no-print, .doc-control-bar { display: none !important; } 
           .doc-wrapper { max-width: 100% !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
@@ -2496,24 +2502,25 @@ window.generarPdfCartaPreaviso = function(trabajadorId) {
         <div style="display:flex; align-items:center; gap:8px;">
           <button type="button" id="btn-descargar-pdf" class="btn-download" onclick="descargarDocumentoPDF()">
             <span>📥</span>
-            <span>Descargar PDF</span>
+            <span>Descargar PDF (Carta)</span>
           </button>
           <button type="button" class="btn-print" onclick="window.print()">
             <span>🖨️</span>
-            <span>Imprimir</span>
+            <span>Imprimir Carta</span>
           </button>
         </div>
       </div>
 
       <div class="doc-wrapper">
         <div id="documento-imprimible">
-          <div class="header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 20px; gap: 15px;">
-        <div>
-          <strong style="font-size: 15px; color: #0f172a;">${empresa.razonSocial}</strong>
-          <div class="meta-empresa">NIT: ${empresa.nit} • Dirección de Talento Humano & Seguridad Social</div>
-        </div>
-        ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 55px; max-width: 140px; object-fit: contain;">` : ''}
-      </div>
+          ${generarEncabezadoCorporativoCarta({
+            empresa,
+            titulo: 'PREAVISO LEGAL DE TERMINACIÓN DE CONTRATO A TÉRMINO FIJO',
+            norma: 'Artículo 46 del Código Sustantivo del Trabajo & Ley 50 de 1990 Art. 3',
+            codigo: 'SST-FOR-PRE-01',
+            version: '01',
+            fecha: new Date().toISOString().split('T')[0]
+          })}
 
       <div style="margin-bottom: 18px;">
         <span>Bogotá D.C., ${fechaHoyStr}</span>
@@ -3169,6 +3176,7 @@ function abrirVentanaDocumentoPortal({ titulo, filename, bodyHtml, cssExtra = ''
           .doc-wrapper { padding: 16px 10px; border-radius: 8px; }
         }
         @media print { 
+          @page { size: letter; margin: 10mm 12mm; }
           body { padding: 0 !important; background: #ffffff !important; } 
           .no-print, .doc-control-bar { display: none !important; } 
           .doc-wrapper { max-width: 100% !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
@@ -3185,11 +3193,11 @@ function abrirVentanaDocumentoPortal({ titulo, filename, bodyHtml, cssExtra = ''
         <div style="display:flex; align-items:center; gap:8px;">
           <button type="button" id="btn-descargar-pdf" class="btn-download" onclick="descargarDocumentoPDF()">
             <span>📥</span>
-            <span>Descargar PDF</span>
+            <span>Descargar PDF (Carta)</span>
           </button>
           <button type="button" class="btn-print" onclick="window.print()">
             <span>🖨️</span>
-            <span>Imprimir</span>
+            <span>Imprimir Carta</span>
           </button>
         </div>
       </div>
@@ -3343,13 +3351,14 @@ window.generarPdfContratoTrabajador = function(trabajadorId) {
   const hashFirmaStr = firmaRegistrada?.hashDocumento || firmaRegistrada?.sha256_hash || trabajador.signature_sha256 || 'SHA-256';
 
   const bodyHtml = `
-      <div class="header">
-        ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 50px; max-width: 150px; object-fit: contain; margin-bottom: 4px;"><br>` : ''}
-        <strong style="font-size: 13pt; color: #0f172a;">${empresa.razonSocial}</strong>
-        <div style="font-size: 9.5pt; color: #64748b;">NIT: ${empresa.nit} • Matriz de Talento Humano & SG-SST</div>
-        <h1>CONTRATO INDIVIDUAL DE TRABAJO A ${trabajador.tipoContrato ? trabajador.tipoContrato.toUpperCase() : 'TÉRMINO INDEFINIDO'}</h1>
-        <h2>Conforme al Código Sustantivo del Trabajo de Colombia • 9 Cláusulas Estructuradas</h2>
-      </div>
+      ${generarEncabezadoCorporativoCarta({
+        empresa,
+        titulo: `CONTRATO INDIVIDUAL DE TRABAJO A ${trabajador.tipoContrato ? trabajador.tipoContrato.toUpperCase() : 'TÉRMINO INDEFINIDO'} Y ANEXO DE RIESGOS SST`,
+        norma: 'Código Sustantivo del Trabajo de Colombia • Decreto 1072 de 2015 • 9 Cláusulas Estructuradas',
+        codigo: 'SST-FOR-CNT-01',
+        version: '01',
+        fecha: trabajador.fechaContrato || trabajador.fechaIngreso || new Date().toISOString().split('T')[0]
+      })}
 
       <table class="data-table">
         <tr>
@@ -3452,64 +3461,28 @@ window.generarPdfContratoTrabajador = function(trabajadorId) {
         <p class="clausula-text">${c9}</p>
       </div>
 
-      <div style="font-size: 8.5pt; margin: 15px 0 25px 0; text-align: justify; line-height: 1.5;">
+      <div style="font-size: 8.5pt; margin: 12px 0 10px 0; text-align: justify; line-height: 1.5;">
         Para constancia de comprensión, aceptación expresa y notificación plena de las nueve (9) cláusulas aquí contenidas, se firma en dos (2) ejemplares de igual valor y tenor legal a los ${new Date().getDate()} días del mes de ${new Intl.DateTimeFormat('es-CO', { month: 'long' }).format(new Date())} de ${new Date().getFullYear()}.
       </div>
 
-      <table class="sig-table">
-        <tr>
-          <td>
-            <div style="min-height: 52px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px;">
-              <!-- Sello / Firma patronal -->
-            </div>
-            <div class="sig-line"></div>
-            <strong style="font-size: 9.5pt; color: #0f172a;">${empresa.razonSocial}</strong><br>
-            <span style="font-size: 8.5pt; color: #334155;">NIT: ${empresa.nit}</span><br>
-            <span style="font-size: 8pt; color: #64748b;">Rep. Legal: ${empresa.representanteLegal || 'Gerencia General'}</span><br>
-            <strong style="font-size: 8pt; color: #1e1b4b;">EL EMPLEADOR</strong>
-          </td>
-          <td>
-            <div style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 4px;">
-              ${firmaImagen ? `
-                <img src="${firmaImagen}" alt="Firma ${trabajador.nombre}" style="max-height: 48px; max-width: 170px; object-fit: contain; margin-bottom: 2px;">
-                <div style="font-size: 7pt; font-family: monospace; color: #047857; font-weight: bold;">✓ FIRMA ELECTRÓNICA REGISTRADA (Ley 527/99)</div>
-                <div style="font-size: 5.5pt; color: #334155; font-family: monospace; margin-top: 1px; line-height: 1.35; max-width: 250px;">
-                  Firmado digitalmente el ${bogotaFirmaStr} | IP: ${ipFirmaStr} | Hash: ${hashFirmaStr} | Validez probatoria Ley 527 de 1999
-                </div>
-              ` : `
-                <span style="font-size: 8pt; color: #94a3b8; font-style: italic;">[Firma autógrafa o digital del colaborador]</span>
-              `}
-            </div>
-            <div class="sig-line"></div>
-            <strong style="font-size: 9.5pt; color: #0f172a;">${trabajador.nombre}</strong><br>
-            <span style="font-size: 8.5pt; color: #334155;">C.C. Nº ${trabajador.identificacion || trabajador.cedula}</span><br>
-            <span style="font-size: 8pt; color: #64748b;">Cargo: ${trabajador.cargo}</span><br>
-            <strong style="font-size: 8pt; color: #1e1b4b;">EL TRABAJADOR (Aceptación Expresa y Vinculante)</strong>
-          </td>
-        </tr>
-      </table>
-
-      <div style="margin-top: 25px; border-top: 1px solid #cbd5e1; padding-top: 5px; font-size: 8px; color: #94a3b8; text-align: center;">
-        Documento generado a través de DOCTOR PYME SG-SST • Validez probatoria Código Sustantivo del Trabajo • Decreto 1072 de 2015
-      </div>
+      ${generarFirmasYSelloCorporativoCarta({
+        empresa,
+        trabajador,
+        isFirmado: Boolean(firmaRegistrada || firmaImagen),
+        sigFound: firmaRegistrada,
+        firmaGuardadaUrl: firmaImagen,
+        codigoDoc: 'SST-FOR-CNT-01',
+        incluirRepresentanteLegal: true
+      })}
   `;
 
   const cssContrato = `
-    .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 12px; }
-    h1 { margin: 0; font-size: 13pt; text-transform: uppercase; color: #0f172a; font-weight: 900; }
-    h2 { margin: 2px 0 0; font-size: 9pt; color: #4338ca; text-transform: uppercase; font-weight: bold; }
     .data-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 8.5pt; }
     .data-table th, .data-table td { border: 1px solid #cbd5e1; padding: 4.5px 8px; text-align: left; vertical-align: middle; }
     .data-table th { background: #f8fafc; font-weight: bold; width: 28%; font-size: 8pt; color: #334155; }
     .section-box { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; margin-bottom: 9px; page-break-inside: avoid; }
     .section-title { font-size: 9pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 3px; margin: 0 0 5px 0; }
     .clausula-text { font-size: 8.5pt; line-height: 1.45; margin: 0; text-align: justify; }
-    .sig-table { width: 100%; border-collapse: collapse; margin-top: 25px; page-break-inside: avoid; }
-    .sig-table td { width: 50%; vertical-align: top; text-align: center; padding: 0 20px; }
-    .sig-line { border-top: 1px solid #0f172a; margin-bottom: 5px; }
-    @media (max-width: 640px) {
-      .sig-table td { display: block; width: 100%; padding: 10px 0; }
-    }
   `;
 
   abrirVentanaDocumentoPortal({
@@ -3535,13 +3508,13 @@ window.generarPdfPerfilCargo = function(cargoName, companyId) {
   const cfg = store.getPerfilCargo(cargoName, companyId);
 
   const bodyHtml = `
-      <div class="header">
-        ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 52px; max-width: 150px; object-fit: contain; margin-bottom: 5px;"><br>` : ''}
-        <strong style="font-size: 13px; color: #0f172a;">${empresa.razonSocial}</strong>
-        <div style="font-size: 9px; color: #64748b;">NIT: ${empresa.nit} • Sistema de Gestión de Seguridad y Salud en el Trabajo</div>
-        <h1>PERFIL OCUPACIONAL Y DESCRIPTOR DEL CARGO</h1>
-        <h2>Resolución 0312 de 2019 (Estándar 1.1.2) & Decreto 1072 de 2015</h2>
-      </div>
+      ${generarEncabezadoCorporativoCarta({
+        empresa,
+        titulo: `PERFIL OCUPACIONAL Y COMPETENCIAS DEL CARGO: ${cargoName}`,
+        norma: 'Resolución 0312 de 2019 (Estándar 1.1.2) & Decreto 1072 de 2015',
+        codigo: 'SST-PRF-002',
+        version: '01'
+      })}
 
       <div class="section-title">1. Identificación del Cargo</div>
       <table>
@@ -3596,9 +3569,6 @@ window.generarPdfPerfilCargo = function(cargoName, companyId) {
   `;
 
   const cssPerfil = `
-    .header { text-align: center; border-bottom: 2px solid #b45309; padding-bottom: 10px; margin-bottom: 15px; }
-    h1 { margin: 0; font-size: 14px; text-transform: uppercase; color: #b45309; }
-    h2 { margin: 2px 0 0; font-size: 11px; color: #1e293b; text-transform: uppercase; }
     .section-title { background: #fef3c7; border-left: 4px solid #b45309; padding: 5px 8px; font-weight: bold; text-transform: uppercase; margin: 12px 0 6px; color: #78350f; font-size: 10px; }
     table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
     th, td { border: 1px solid #cbd5e1; padding: 5px 8px; text-align: left; }
@@ -3632,13 +3602,13 @@ window.generarPdfPtsCargo = function(cargoName, companyId) {
   const cfg = store.getPerfilCargo(cargoName, companyId);
 
   const bodyHtml = `
-      <div class="header">
-        ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.razonSocial}" style="max-height: 52px; max-width: 150px; object-fit: contain; margin-bottom: 5px;"><br>` : ''}
-        <strong style="font-size: 13px; color: #0f172a;">${empresa.razonSocial}</strong>
-        <div style="font-size: 9px; color: #64748b;">NIT: ${empresa.nit} • Control Operacional SG-SST (GTC 45)</div>
-        <h1>PROCEDIMIENTO DE TRABAJO SEGURO (PTS)</h1>
-        <h2>Estándar de Operación y Prevención de Accidentes • Cargo: ${cargoName}</h2>
-      </div>
+      ${generarEncabezadoCorporativoCarta({
+        empresa,
+        titulo: `PLAN Y PROCEDIMIENTO DE TRABAJO SEGURO (PTS): ${cargoName}`,
+        norma: 'GTC 45 • Decreto 1072 de 2015 • Control Operacional SG-SST',
+        codigo: 'SST-PTS-003',
+        version: '01'
+      })}
 
       <div class="section-title">1. Peligros Críticos Evaluados (Matriz GTC 45)</div>
       <ul>
@@ -3685,9 +3655,6 @@ window.generarPdfPtsCargo = function(cargoName, companyId) {
   `;
 
   const cssPts = `
-    .header { text-align: center; border-bottom: 2px solid #0f766e; padding-bottom: 10px; margin-bottom: 15px; }
-    h1 { margin: 0; font-size: 13.5px; text-transform: uppercase; color: #0f766e; }
-    h2 { margin: 2px 0 0; font-size: 10.5px; color: #1e293b; text-transform: uppercase; }
     .section-title { background: #ccfbf1; border-left: 4px solid #0f766e; padding: 5px 8px; font-weight: bold; text-transform: uppercase; margin: 12px 0 6px; color: #115e59; font-size: 10px; }
     .step-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
     .step-box strong { color: #0f766e; display: block; margin-bottom: 3px; }
@@ -6010,14 +5977,182 @@ window.firmarPolitica = function(polId, polTitle, trabajadorId) {
   window.abrirModalConfirmacionFirmaRapida(polId, polTitle, trabajadorId, true);
 };
 
+// =============================================================================
+// MOTOR DE ESTRUCTURACIÓN DE FORMATOS CORPORATIVOS TAMAÑO CARTA (SG-SST)
+// Garantiza presencia de Logo de la Empresa, Código, Versión, Fecha, Datos del
+// Trabajador, Tablas Técnicas, Firmas y Sello Forense (Ley 527 de 1999)
+// =============================================================================
+function generarEncabezadoCorporativoCarta({ empresa, titulo, norma, codigo, version = '01', fecha = null, consecutivo = '' }) {
+  const logoUrl = empresa?.logoUrl || empresa?.logo_url || empresa?.logo || './assets/app-icon.png';
+  const razonSocial = (empresa?.razonSocial || empresa?.razon_social || 'EMPRESA SG-SST').toUpperCase();
+  const nit = empresa?.nit || '901003370';
+  const fechaStr = fecha || new Date().toLocaleDateString('es-CO');
+
+  return `
+    <table class="corp-header-table" style="width: 100%; border-collapse: collapse; margin-bottom: 14px; border: 2px solid #0f172a; background: #ffffff; color: #0f172a;">
+      <tr>
+        <td style="width: 22%; text-align: center; vertical-align: middle; padding: 8px 10px; border: 1px solid #0f172a;">
+          <img src="${logoUrl}" alt="${escapeHtml(razonSocial)}" style="max-height: 52px; max-width: 135px; object-fit: contain; margin: 0 auto 4px auto; display: block;" onerror="this.style.display='none'">
+          <div style="font-size: 8pt; font-weight: 900; color: #0f172a; line-height: 1.15;">${razonSocial}</div>
+          <div style="font-size: 7pt; color: #475569; font-weight: 700;">NIT: ${nit}</div>
+        </td>
+        <td style="width: 53%; text-align: center; vertical-align: middle; padding: 8px 12px; border: 1px solid #0f172a;">
+          <div style="font-size: 11pt; font-weight: 900; color: #0f172a; text-transform: uppercase; line-height: 1.25;">${titulo}</div>
+          <div style="font-size: 7.5pt; font-weight: 800; color: #0f766e; text-transform: uppercase; margin-top: 3px;">SISTEMA DE GESTIÓN DE LA SEGURIDAD Y SALUD EN EL TRABAJO (SG-SST)</div>
+          <div style="font-size: 7.5pt; font-weight: 600; color: #475569; margin-top: 2px;">${norma}</div>
+        </td>
+        <td style="width: 25%; vertical-align: middle; padding: 8px 10px; border: 1px solid #0f172a; font-size: 7.5pt; line-height: 1.45; background: #f8fafc; color: #0f172a;">
+          <div><strong>Código:</strong> <span style="font-family: monospace; font-weight: 800; color: #0f766e;">${codigo}</span></div>
+          <div><strong>Versión:</strong> ${version}</div>
+          <div><strong>Emisión:</strong> ${fechaStr}</div>
+          <div><strong>Empresa:</strong> ${razonSocial}</div>
+          ${consecutivo ? `<div><strong>Consecutivo:</strong> <span style="color: #0f766e; font-weight: 800;">${consecutivo}</span></div>` : `<div><strong>Formato:</strong> Carta (Letter)</div>`}
+        </td>
+      </tr>
+    </table>
+  `;
+}
+
+function generarTablaDatosTrabajadorCarta({ empresa, trabajador, cargoFormal = null, isFirmado = false, sigFound = null }) {
+  const razonSocial = empresa?.razonSocial || empresa?.razon_social || 'EMPRESA SG-SST';
+  const depto = cargoFormal?.department || trabajador?.area || 'Operaciones y Producción';
+  const fechaFirmaStr = sigFound?.bogota_timestamp || (sigFound?.signed_at || sigFound?.fechaHoraISO ? new Date(sigFound.signed_at || sigFound.fechaHoraISO).toLocaleString('es-CO') : new Date().toLocaleString('es-CO'));
+  const fechaIngreso = trabajador?.fechaContrato || trabajador?.fechaIngreso || trabajador?.fechaInicio || 'Vigente';
+
+  return `
+    <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; background: #ffffff; page-break-inside: avoid;">
+      <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+        <span>I. DATOS DE IDENTIFICACIÓN DEL TRABAJADOR, EMPLEADOR Y TRAZABILIDAD CRONOLÓGICA</span>
+        <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 7pt; font-weight: 800; ${isFirmado ? 'background: #dcfce7; color: #166534; border: 1px solid #86efac;' : 'background: #fef3c7; color: #92400e; border: 1px solid #fde68a;'}">
+          ${isFirmado ? '✓ FIRMADO Y SOCIALIZADO' : '⚠️ PENDIENTE DE FIRMA'}
+        </span>
+      </div>
+
+      <table style="width: 100%; border-collapse: collapse; font-size: 8pt; color: #0f172a;">
+        <tr>
+          <td style="width: 18%; font-weight: 800; color: #475569; padding: 4px 6px; background: #f8fafc; border: 1px solid #e2e8f0;">NOMBRE COMPLETO:</td>
+          <td style="width: 32%; padding: 4px 6px; border: 1px solid #e2e8f0;"><strong>${trabajador?.nombre || 'TRABAJADOR TITULAR'}</strong></td>
+          <td style="width: 18%; font-weight: 800; color: #475569; padding: 4px 6px; background: #f8fafc; border: 1px solid #e2e8f0;">DOCUMENTO IDENTIDAD:</td>
+          <td style="width: 32%; padding: 4px 6px; border: 1px solid #e2e8f0;"><strong>C.C. ${trabajador?.identificacion || trabajador?.cedula || 'N/A'}</strong></td>
+        </tr>
+        <tr>
+          <td style="font-weight: 800; color: #475569; padding: 4px 6px; background: #f8fafc; border: 1px solid #e2e8f0;">CARGO DESEMPEÑADO:</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;"><strong>${trabajador?.cargo || cargoFormal?.title || 'Operativo'}</strong> (${depto})</td>
+          <td style="font-weight: 800; color: #475569; padding: 4px 6px; background: #f8fafc; border: 1px solid #e2e8f0;">TIPO DE CONTRATO:</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;"><strong>${trabajador?.tipoContrato || 'Término Indefinido'}</strong> (Ingreso: ${fechaIngreso})</td>
+        </tr>
+        <tr>
+          <td style="font-weight: 800; color: #475569; padding: 4px 6px; background: #f8fafc; border: 1px solid #e2e8f0;">EMPRESA EMPLEADORA:</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;"><strong>${razonSocial}</strong> (NIT: ${empresa?.nit || 'N/A'})</td>
+          <td style="font-weight: 800; color: #475569; padding: 4px 6px; background: #f8fafc; border: 1px solid #e2e8f0;">SEDE / DIRECCIÓN:</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">${empresa?.direccion || 'Sede Principal'} • ${empresa?.ciudad || 'Bogotá D.C.'}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: 800; color: #475569; padding: 4px 6px; background: #f8fafc; border: 1px solid #e2e8f0;">REPRESENTANTE LEGAL:</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">${empresa?.legal_rep_name || empresa?.representanteLegal || 'Gerencia General'}</td>
+          <td style="font-weight: 800; color: #475569; padding: 4px 6px; background: #f8fafc; border: 1px solid #e2e8f0;">FECHA/HORA FIRMA:</td>
+          <td style="padding: 4px 6px; border: 1px solid #e2e8f0; font-family: monospace; font-size: 7.5pt; font-weight: 700; color: ${isFirmado ? '#0f766e' : '#b45309'};">
+            ${isFirmado ? `✍️ ${fechaFirmaStr}` : '⏳ Pendiente de firma digital'}
+          </td>
+        </tr>
+      </table>
+    </div>
+  `;
+}
+
+function generarFirmasYSelloCorporativoCarta({ empresa, trabajador, isFirmado = false, sigFound = null, firmaGuardadaUrl = null, codigoDoc = 'DOC-SST', incluirRepresentanteLegal = false }) {
+  const razonSocial = empresa?.razonSocial || empresa?.razon_social || 'EMPRESA SG-SST';
+  const firmaTrabImg = (sigFound ? (sigFound.signature_image_file || sigFound.signature_svg_or_base64 || sigFound.firmaDataUrl || sigFound.firmaBase64) : null) || (isFirmado ? firmaGuardadaUrl : null);
+  const fechaFirmaStr = sigFound?.bogota_timestamp || (sigFound?.signed_at || sigFound?.fechaHoraISO ? new Date(sigFound.signed_at || sigFound.fechaHoraISO).toLocaleString('es-CO') : (isFirmado ? new Date().toLocaleString('es-CO') : 'Pendiente de firma'));
+  const hashStr = sigFound?.signature_sha256 || sigFound?.sha256_hash || sigFound?.hashDocumento || trabajador?.signature_sha256 || 'SHA256-VERIFICADO';
+
+  const coordNombre = empresa?.sst_coordinator_name || (empresa?.responsableSST ? empresa.responsableSST.split(' - ')[0] : 'Coordinador / Especialista SG-SST');
+  const coordLic = empresa?.sst_coordinator_sst_license || (empresa?.responsableSST && empresa.responsableSST.includes('Licencia') ? empresa.responsableSST.split(' - ')[1] : `Lic. SST: ${empresa?.licenciaSST || 'Resolución Vigente'}`);
+  const coordSigUrl = empresa?.sst_coordinator_signature_url || `/uploads/sig_inst_coord_sst_${empresa?.id}.svg`;
+
+  const repNombre = empresa?.legal_rep_name || (empresa?.representanteLegal ? empresa.representanteLegal.split(' - ')[0] : 'Representante Legal');
+  const repDoc = empresa?.legal_rep_id_number || (empresa?.representanteLegal && empresa.representanteLegal.includes('CC:') ? empresa.representanteLegal.split(' - ')[1] : `NIT: ${empresa?.nit || ''}`);
+  const repSigUrl = empresa?.legal_rep_signature_url || `/uploads/sig_inst_rep_legal_${empresa?.id}.svg`;
+
+  return `
+    <!-- BLOQUE DE FIRMAS CORPORATIVAS -->
+    <table style="width: 100%; border-collapse: separate; border-spacing: 10px 0; margin-top: 14px; page-break-inside: avoid;">
+      <tr>
+        <!-- FIRMA DEL TRABAJADOR -->
+        <td style="width: ${incluirRepresentanteLegal ? '36%' : '48%'}; vertical-align: bottom; text-align: center; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; background: #fafafa;">
+          <div style="font-size: 7pt; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 4px;">
+            RECIBIDO Y ACEPTADO POR EL TRABAJADOR
+          </div>
+          <div style="min-height: 56px; display: flex; align-items: center; justify-content: center; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 4px; margin-bottom: 6px;">
+            ${firmaTrabImg ? `
+              <img src="${firmaTrabImg}" alt="Firma Trabajador" style="max-height: 48px; max-width: 170px; object-fit: contain; display: block; margin: 0 auto;">
+            ` : `
+              <span style="font-size: 7.5pt; color: #94a3b8; font-style: italic;">[Espacio para Firma Digital / Autógrafa]</span>
+            `}
+          </div>
+          <div style="border-top: 1.5px solid #0f172a; padding-top: 4px;">
+            <strong style="font-size: 8.5pt; color: #0f172a; text-transform: uppercase;">${trabajador?.nombre || 'TRABAJADOR TITULAR'}</strong><br>
+            <span style="font-size: 7.5pt; color: #334155;">C.C. ${trabajador?.identificacion || trabajador?.cedula || 'N/A'} • Cargo: ${trabajador?.cargo || 'Operativo'}</span><br>
+            <span style="font-size: 6.5pt; color: #64748b;">Fecha/Hora: ${fechaFirmaStr}</span>
+          </div>
+        </td>
+
+        <!-- FIRMA DEL RESPONSABLE SG-SST -->
+        <td style="width: ${incluirRepresentanteLegal ? '32%' : '48%'}; vertical-align: bottom; text-align: center; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; background: #fafafa;">
+          <div style="font-size: 7pt; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 4px;">
+            EMITIDO Y VALIDADO POR RESPONSABLE SG-SST
+          </div>
+          <div style="min-height: 56px; display: flex; align-items: center; justify-content: center; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 4px; margin-bottom: 6px;">
+            <img src="${coordSigUrl}" alt="Firma SST" style="max-height: 48px; max-width: 160px; object-fit: contain; display: block; margin: 0 auto;" onerror="this.style.display='none'">
+          </div>
+          <div style="border-top: 1.5px solid #0f172a; padding-top: 4px;">
+            <strong style="font-size: 8.5pt; color: #0f172a;">${coordNombre}</strong><br>
+            <span style="font-size: 7.5pt; color: #334155;">${razonSocial} • ${coordLic}</span><br>
+            <span style="font-size: 6.5pt; color: #64748b;">Gestión Documental SG-SST (${codigoDoc})</span>
+          </div>
+        </td>
+
+        ${incluirRepresentanteLegal ? `
+          <!-- FIRMA DEL REPRESENTANTE LEGAL / EMPLEADOR -->
+          <td style="width: 32%; vertical-align: bottom; text-align: center; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; background: #fafafa;">
+            <div style="font-size: 7pt; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 4px;">
+              APROBADO POR EL EMPLEADOR
+            </div>
+            <div style="min-height: 56px; display: flex; align-items: center; justify-content: center; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 4px; margin-bottom: 6px;">
+              <img src="${repSigUrl}" alt="Firma Empleador" style="max-height: 48px; max-width: 160px; object-fit: contain; display: block; margin: 0 auto;" onerror="this.style.display='none'">
+            </div>
+            <div style="border-top: 1.5px solid #0f172a; padding-top: 4px;">
+              <strong style="font-size: 8.5pt; color: #0f172a;">${repNombre}</strong><br>
+              <span style="font-size: 7.5pt; color: #334155;">${repDoc}</span><br>
+              <span style="font-size: 6.5pt; color: #64748b;">Representante Legal • ${razonSocial}</span>
+            </div>
+          </td>
+        ` : ''}
+      </tr>
+    </table>
+
+    <!-- SELLO FORENSE DE INTEGRIDAD DIGITAL Y GESTIÓN DOCUMENTAL -->
+    <div style="margin-top: 10px; padding: 7px 12px; background: #f0fdf4; border: 1px dashed #0d9488; border-radius: 6px; font-family: monospace; font-size: 7pt; color: #0f766e; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; page-break-inside: avoid;">
+      <div>
+        <strong>🔒 SELLO DE INTEGRIDAD DIGITAL Y VALIDEZ PROBATORIA (LEY 527 DE 1999)</strong>
+        ${isFirmado ? ` • Hash: ${String(hashStr).substring(0, 28)}...` : ''}
+      </div>
+      <div>
+        <strong>RETENCIÓN LEGAL OBLIGATORIA: 20 AÑOS (Art. 2.2.4.6.13 Dec. 1072 de 2015)</strong>
+      </div>
+    </div>
+  `;
+}
+
 window.abrirVisorPoliticaMovil = function(polId, polTitle, trabajadorId) {
   const trabajador = obtenerTrabajadorResiliente(trabajadorId);
   if (!trabajador) return;
   const empresa = resolverEmpresaTrabajador(trabajador);
   const firmas = store.getFirmasPorTrabajador ? store.getFirmasPorTrabajador(trabajador.id) : [];
-  const docSigs = store.getEmployeeDocumentSignatures ? store.getEmployeeDocumentSignatures(trabajador.id) : [];
-  const isFirmada = firmas.some(f => f.documentoId === polId || f.documentoCodigo === polId) ||
-                    docSigs.some(s => s.document_code === polId || s.document_id === polId || s.document_type === polId);
+  const docSigs = store.getEmployeeDocumentSignatures ? store.getEmployeeDocumentSignatures(trabajador.id) : (store.data?.employee_document_signatures || []);
+  const sigFound = docSigs.find(s => (s.employee_id === trabajador.id || s.trabajadorId === trabajador.id) && (s.document_code === polId || s.document_id === polId || s.document_type === polId)) ||
+                   firmas.find(f => f.documentoId === polId || f.documentoCodigo === polId);
+  const isFirmada = !!sigFound;
 
   const listaPoliticas = (store.getPoliticasEmpresa ? store.getPoliticasEmpresa(empresa.id) : []) || [];
   const polParametrizada = listaPoliticas.find(p => p.id === polId);
@@ -6027,51 +6162,62 @@ window.abrirVisorPoliticaMovil = function(polId, polTitle, trabajadorId) {
       codigo: 'POL-SST-001',
       version: '01',
       norma: 'Decreto 1072 de 2015 (Art. 2.2.4.6.5, 2.2.4.6.6 y 2.2.4.6.7) & Res. 0312 de 2019',
-      objetivo: `En ${empresa.razonSocial} nos comprometemos con la protección de la vida, la integridad física y la salud de todos nuestros trabajadores en obra y planta.`,
+      objetivo: `En ${empresa.razonSocial} nos comprometemos desde la Alta Dirección con la protección de la vida, la integridad física y mental y la salud de todos nuestros trabajadores, contratistas y subcontratistas en todos los centros de trabajo y frentes de obra.`,
       puntos: [
-        'Ninguna meta de producción o urgencia está por encima de tu vida y tu seguridad.',
-        'Todos los trabajadores tienen derecho y deber de reportar peligros y detener tareas con riesgo grave.',
-        'La empresa suministra los Elementos de Protección Personal (EPP) y capacitaciones para prevenir accidentes y enfermedades laborales.'
+        'Identificar los peligros, evaluar y valorar los riesgos de cada cargo y establecer los respectivos controles preventivos en la fuente, el medio y el individuo.',
+        'Proteger la seguridad y salud de todos los trabajadores mediante la mejora continua del Sistema de Gestión de la Seguridad y Salud en el Trabajo (SG-SST).',
+        'Cumplir rigurosamente la normatividad nacional vigente aplicable en materia de riesgos laborales y estándares mínimos.',
+        'Garantizar la consulta y participación activa de los trabajadores a través del COPASST y el Comité de Convivencia Laboral.',
+        'Suministrar oportunamente los Elementos de Protección Personal (EPP) certificados y ejecutar el Plan Anual de Capacitación.'
       ]
     },
     'DOC-POL-ALC-02': {
       codigo: 'POL-SPA-002',
       version: '01',
-      norma: 'Resolución 1075 de 1992, Ley 1335 de 2009 y Art. 60 CST',
-      objetivo: `Mantener ambientes de trabajo 100% seguros, sanos y libres del consumo de alcohol, tabaco y sustancias psicoactivas durante la jornada laboral.`,
+      norma: 'Resolución 1075 de 1992, Ley 1335 de 2009, Resolución 0312 de 2019 y Art. 60 CST',
+      objetivo: `Mantener ambientes de trabajo 100% seguros, sanos, productivos y libres del consumo de alcohol, tabaco, vapeadores y sustancias psicoactivas durante la jornada laboral y en el ejercicio de funciones operativas.`,
       puntos: [
-        'Está prohibido presentarse a laborar o permanecer en las instalaciones bajo el efecto de bebidas alcohólicas o sustancias psicoactivas.',
-        'Operar maquinaria, vehículos o herramientas bajo efectos de estas sustancias pone en peligro grave tu vida y la de tus compañeros.',
-        'Fomentamos estilos de vida saludables y actividades de prevención para el bienestar de todos.'
+        'Se prohíbe estrictamente presentarse a laborar o permanecer en las instalaciones o frentes de obra bajo el efecto de bebidas alcohólicas, drogas o sustancias psicoactivas.',
+        'Se prohíbe el porte, distribución, venta o consumo de bebidas alcohólicas, tabaco y sustancias psicoactivas dentro de las instalaciones, vehículos o proyectos de la empresa.',
+        'Operar maquinaria, vehículos, herramientas o realizar trabajo en alturas bajo efectos de estas sustancias constituye falta gravísima conforme al Código Sustantivo del Trabajo.',
+        'La empresa promueve estilos de vida y trabajo saludables, campañas de prevención y actividades de bienestar físico y mental para todos los colaboradores.'
       ]
     },
     'DOC-REG-HIG-03': {
       codigo: 'REG-HSI-003',
       version: '01',
-      norma: 'Artículos 349 y 350 del Código Sustantivo del Trabajo & Ley 962 de 2005',
-      objetivo: `Establecer las normas de higiene y seguridad industrial para prevenir accidentes de trabajo y enfermedades laborales conforme a la legislación colombiana.`,
+      norma: 'Artículos 349 y 350 del Código Sustantivo del Trabajo, Ley 9 de 1979, Res. 2400 de 1979 y Ley 962 de 2005',
+      objetivo: `Prescribir y establecer las normas de higiene y seguridad industrial de obligatorio cumplimiento en ${empresa.razonSocial} para conservar la vida y la salud de los trabajadores y prevenir accidentes de trabajo y enfermedades laborales.`,
       puntos: [
-        'Mantener siempre el orden, limpieza y despeje de pasillos, salidas de emergencia y puestos de trabajo.',
-        'Utilizar correctamente las guardas de seguridad de equipos y herramientas.',
-        'Reportar de inmediato todo incidente o accidente de trabajo, por leve que parezca, dentro de las primeras 48 horas.'
+        'La empresa se obliga a dar cumplimiento a las disposiciones legales vigentes tendientes a garantizar los mecanismos que aseguren una adecuada y oportuna prevención de los accidentes de trabajo y enfermedades laborales.',
+        'Promover y garantizar la conformación y funcionamiento del Comité Paritario de Seguridad y Salud en el Trabajo (COPASST).',
+        'Destinar los recursos técnicos, humanos y financieros necesarios para las actividades de Medicina Preventiva, Medicina del Trabajo e Higiene y Seguridad Industrial.',
+        'Mantener siempre el orden, limpieza (5S) y despeje de pasillos, salidas de emergencia y puestos de trabajo, y utilizar las guardas de seguridad de equipos y herramientas.',
+        'Reportar de inmediato todo incidente o accidente de trabajo dentro de las primeras 48 horas siguientes a su ocurrencia.'
       ]
     },
     'DOC-REG-INT-04': {
       codigo: 'REG-RIT-004',
       version: '01',
-      norma: 'Artículos 104 al 126 del Código Sustantivo del Trabajo & Ley 1010 de 2006',
-      objetivo: `Regular las condiciones laborales, derechos, deberes, jornada de trabajo, convivencia laboral, prohibiciones y escala de faltas y procedimientos disciplinarios en ${empresa.razonSocial}.`,
+      norma: 'Artículos 104 al 126 del Código Sustantivo del Trabajo, Ley 1010 de 2006 y Ley 2101 de 2021',
+      objetivo: `Regular las condiciones de admisión, aprendizaje, período de prueba, jornada de trabajo, horas extras, descansos, salarios, derechos, obligaciones, prohibiciones, convivencia laboral, escala de faltas y procedimientos disciplinarios en ${empresa.razonSocial}.`,
       puntos: [
-        'Cumplir puntualmente con el horario de trabajo, turnos asignados y normas de convivencia laboral.',
-        'Realizar personalmente la labor en los términos estipulados, acatar las instrucciones y guardar riguroso respeto con superiores y compañeros.',
-        'Conservar en buen estado las herramientas y equipos asignados y cumplir todas las directrices del SG-SST.',
-        'Toda actuación disciplinaria garantiza el debido proceso y el derecho a descargos conforme al Art. 115 del CST.'
+        'Cumplir puntualmente con el horario de trabajo, turnos asignados y registrar personalmente su asistencia en los medios dispuestos por el empleador.',
+        'Realizar personalmente la labor en los términos estipulados, observar los preceptos de este reglamento, acatar y cumplir las órdenes e instrucciones de sus superiores jerárquicos.',
+        'Guardar rigurosa moral y respeto en las relaciones con sus superiores y compañeros, previniendo cualquier conducta de acoso laboral conforme a la Ley 1010 de 2006.',
+        'Conservar y restituir en buen estado, salvo el deterioro natural, los instrumentos, equipos y útiles que le hayan sido facilitados para el desempeño de su labor.',
+        'Observar con suma diligencia y cuidado las instrucciones y órdenes preventivas de accidentes o de enfermedades laborales del SG-SST.',
+        'Toda actuación sancionatoria o disciplinaria respetará el debido proceso, la presunción de inocencia y el derecho a ser oído en diligencia de descargos conforme al Art. 115 del CST.'
       ]
     }
   };
 
   const info = polParametrizada || resumenPorPolitica[polId] || resumenPorPolitica['DOC-POL-SST-01'];
   const tituloFinal = polParametrizada?.title || polTitle;
+  const codigoPol = info.codigo || polId;
+  const versionPol = info.version || '01';
+  const fechaPol = info.fechaVigencia || new Date().toLocaleDateString('es-CO');
+  const firmaGuardadaUrl = obtenerUrlFirmaTrabajador(trabajador) || trabajador.firma_digital_url || trabajador.firma_base64 || trabajador.signature_url || trabajador.signature_svg || null;
 
   const modalId = 'modal-visor-politica-movil';
   const existing = document.getElementById(modalId);
@@ -6079,13 +6225,18 @@ window.abrirVisorPoliticaMovil = function(polId, polTitle, trabajadorId) {
 
   const modalEl = document.createElement('div');
   modalEl.id = modalId;
-  modalEl.className = 'fixed inset-0 z-[65] bg-slate-950 flex flex-col overflow-hidden animate-fadeIn text-slate-100 select-none';
+  modalEl.className = 'fixed inset-0 z-[65] bg-slate-950 flex flex-col overflow-hidden animate-fadeIn text-slate-900 select-none';
 
   modalEl.innerHTML = `
     <!-- Cabecera Sólida con Botón Grande Cerrar X -->
     <div class="bg-[#0B111E] px-4 pb-3 border-b border-slate-800 flex items-center justify-between gap-2 flex-shrink-0 sticky top-0 z-40" style="padding-top: max(env(safe-area-inset-top, 44px), 44px);">
       <div class="overflow-hidden">
-        <span class="text-[10px] font-mono text-teal-400 font-bold block">${info.codigo || polId} • v${info.version || '01'} • ${empresa.razonSocial}</span>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-mono text-teal-400 font-bold">${codigoPol} • Versión ${versionPol}</span>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${isFirmada ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
+            ${isFirmada ? '✅ Firmado' : '⚠️ Pendiente'}
+          </span>
+        </div>
         <h3 class="text-sm sm:text-base font-black text-white truncate">${tituloFinal}</h3>
       </div>
       <button 
@@ -6097,76 +6248,114 @@ window.abrirVisorPoliticaMovil = function(polId, polTitle, trabajadorId) {
       </button>
     </div>
 
-    <!-- Contenido Legible de la Política / Reglamento -->
-    <div class="flex-1 overflow-y-auto p-5 space-y-4 max-w-2xl mx-auto w-full">
-      <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-teal-300">Empresa: ${empresa.razonSocial} (NIT: ${empresa.nit || 'N/A'})</span>
-          <span class="px-2.5 py-0.5 rounded-full text-xs font-black ${isFirmada ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
-            ${isFirmada ? '✅ Firmado' : '⚠️ Pendiente por Firmar'}
-          </span>
-        </div>
-        <p class="text-xs text-slate-300">Trabajador: <strong>${trabajador.nombre}</strong> · Cargo: <strong>${trabajador.cargo}</strong></p>
-        ${info.norma ? `<p class="text-[11px] text-indigo-300 font-medium">Marco Legal: ${info.norma}</p>` : ''}
-      </div>
+    <!-- Hoja Corporativa Tamaño Carta -->
+    <div class="flex-1 overflow-y-auto p-3 sm:p-6 bg-slate-200">
+      <div id="contenedor-imprimible-doc-cargo" class="bg-white p-5 sm:p-8 rounded-xl shadow-xl border border-slate-300 max-w-[816px] mx-auto text-slate-900" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 9pt; line-height: 1.5;">
+        
+        ${generarEncabezadoCorporativoCarta({
+          empresa,
+          titulo: tituloFinal,
+          norma: info.norma || 'Decreto 1072 de 2015 • Resolución 0312 de 2019 • Código Sustantivo del Trabajo',
+          codigo: codigoPol,
+          version: versionPol,
+          fecha: fechaPol
+        })}
 
-      <div class="p-5 bg-white text-slate-900 rounded-2xl shadow-lg space-y-4 text-sm leading-relaxed">
-        <div class="flex items-center justify-between border-b border-slate-200 pb-2 gap-2">
-          <h4 class="text-base font-black text-slate-900">${tituloFinal}</h4>
-          <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px] font-bold flex-shrink-0">${info.codigo || polId}</span>
+        ${generarTablaDatosTrabajadorCarta({
+          empresa,
+          trabajador,
+          cargoFormal: null,
+          isFirmado: isFirmada,
+          sigFound
+        })}
+
+        <!-- SECCIÓN II: OBJETO Y DECLARACIÓN INSTITUCIONAL -->
+        <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+          <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+            II. OBJETIVO Y COMPROMISO DE LA ALTA DIRECCIÓN
+          </div>
+          <p style="margin: 0; font-size: 8.5pt; color: #0f172a; text-align: justify; line-height: 1.55;">
+            ${info.objetivo}
+          </p>
         </div>
-        <p class="text-slate-700 font-medium">${info.objetivo}</p>
-        <div class="space-y-2">
-          <strong class="text-slate-900 block">Disposiciones y Compromisos Obligatorios:</strong>
-          <ul class="list-disc pl-5 space-y-2 text-slate-800">
-            ${(info.puntos || []).map(p => `<li>${p}</li>`).join('')}
-          </ul>
+
+        <!-- SECCIÓN III: DIRECTRICES, DISPOSICIONES Y OBLIGACIONES NORMATIVAS -->
+        <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+          <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+            III. DIRECTRICES, DISPOSICIONES Y COMPROMISOS DE OBLIGATORIO CUMPLIMIENTO
+          </div>
+          <ol style="margin: 0; padding-left: 18px; font-size: 8.5pt; color: #0f172a; line-height: 1.55;">
+            ${(info.puntos || []).map(p => `<li style="margin-bottom: 5px; text-align: justify;">${p}</li>`).join('')}
+          </ol>
         </div>
+
         ${info.enlace ? `
-          <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl flex items-center justify-between gap-2 text-xs">
-            <span class="text-indigo-950 font-semibold">📎 Documento Maestro / Soporte Anexo:</span>
-            <a href="${info.enlace}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-xs flex-shrink-0">
+          <div data-html2canvas-ignore="true" class="no-print" style="border: 1px solid #c7d2fe; background: #eef2ff; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <span style="font-size: 8pt; font-weight: 700; color: #1e1b4b;">📎 Documento Maestro / Anexo Externo Vinculado:</span>
+            <a href="${info.enlace}" target="_blank" rel="noopener noreferrer" style="padding: 5px 10px; background: #4338ca; color: #ffffff; border-radius: 6px; font-size: 7.5pt; font-weight: 700; text-decoration: none;">
               Abrir Soporte ↗
             </a>
           </div>
         ` : ''}
-        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-950">
-          <strong>Declaración de Lectura y Aceptación:</strong> ${info.clausulaAceptacion || `Confirmo que he leído y comprendido este documento oficial y me comprometo a cumplirlo en mis labores diarias en ${empresa.razonSocial}.`}
-        </div>
-        <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-600 pt-2 border-t border-slate-200">
-          <div>
-            <strong>REVISÓ (RESPONSABLE SG-SST):</strong><br>
-            ${empresa.responsableSST || 'Coordinador SG-SST'}<br>
-            Lic. SST: ${empresa.licenciaSST || 'Vigente'}
+
+        <!-- SECCIÓN IV: DECLARACIÓN DE LECTURA, SOCIALIZACIÓN Y ACEPTACIÓN -->
+        <div style="border: 1px solid #bbf7d0; border-left: 4px solid #0d9488; background: #f0fdf4; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+          <div style="font-size: 8pt; font-weight: 800; color: #065f46; text-transform: uppercase; margin-bottom: 4px;">
+            IV. CONSTANCIA DE SOCIALIZACIÓN, LECTURA Y COMPROMISO LEGAL DEL TRABAJADOR:
           </div>
-          <div>
-            <strong>APROBÓ Y PUBLICÓ (EMPLEADOR):</strong><br>
-            ${empresa.representanteLegal || 'Representante Legal'}<br>
-            ${empresa.razonSocial}
-          </div>
+          <p style="margin: 0; font-size: 8pt; color: #064e3b; text-align: justify; line-height: 1.45;">
+            ${info.clausulaAceptacion || `En cumplimiento del Decreto 1072 de 2015 y la Resolución 0312 de 2019, certifico que he sido notificado(a), he leído y comprendido íntegramente el presente documento normativo (${tituloFinal}) de ${empresa.razonSocial}, comprometiéndome a su estricto acatamiento durante el desempeño de mis funciones laborales.`}
+          </p>
         </div>
+
+        ${generarFirmasYSelloCorporativoCarta({
+          empresa,
+          trabajador,
+          isFirmado: isFirmada,
+          sigFound,
+          firmaGuardadaUrl,
+          codigoDoc: codigoPol,
+          incluirRepresentanteLegal: true
+        })}
+
       </div>
     </div>
 
     <!-- Barra Inferior de Acción -->
-    <div class="p-4 bg-[#0B111E] border-t border-slate-800 flex items-center justify-between gap-3 flex-shrink-0" style="padding-bottom: max(env(safe-area-inset-bottom, 12px), 12px);">
-      ${isFirmada ? `
+    <div class="p-3.5 sm:p-4 bg-[#0B111E] border-t border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 flex-shrink-0" style="padding-bottom: max(env(safe-area-inset-bottom, 12px), 12px);">
+      ${!isFirmada ? `
         <button 
           type="button" 
-          onclick="document.getElementById('${modalId}')?.remove()" 
-          class="w-full min-h-[52px] py-3.5 px-5 bg-emerald-700 text-white rounded-2xl text-[16px] font-bold flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <span>✅ Ya firmaste este documento (Cerrar)</span>
-        </button>
-      ` : `
-        <button 
-          type="button" 
-          onclick="document.getElementById('${modalId}')?.remove(); window.abrirModalConfirmacionFirmaRapida('${polId}', '${escapeHtml(polTitle)}', '${trabajador.id}', true)"
-          class="w-full min-h-[54px] py-4 px-5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-[16px] font-bold shadow-xl flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+          onclick="document.getElementById('${modalId}')?.remove(); window.abrirModalConfirmacionFirmaRapida('${polId}', '${escapeHtml(tituloFinal)}', '${trabajador.id}', true)"
+          class="w-full sm:flex-1 min-h-[52px] py-3.5 px-5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-[16px] font-bold shadow-xl flex items-center justify-center gap-2 cursor-pointer active:scale-95"
         >
           <span>✍️ Firmar Documento con 1 Toque</span>
         </button>
-      `}
+      ` : ''}
+
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <button 
+          type="button" 
+          onclick="window.descargarPdfVisorCargoActual('${escapeHtml(codigoPol + '_' + tituloFinal)}')"
+          class="flex-1 sm:flex-initial min-h-[48px] px-4 py-2.5 bg-teal-700 hover:bg-teal-600 text-white rounded-xl text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+        >
+          <span>📥 Descargar PDF (Carta)</span>
+        </button>
+        <button 
+          type="button" 
+          onclick="window.imprimirFormatoCartaVisorActual('${escapeHtml(tituloFinal)}')"
+          class="flex-1 sm:flex-initial min-h-[48px] px-4 py-2.5 bg-indigo-700 hover:bg-indigo-600 text-white rounded-xl text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+        >
+          <span>🖨️ Imprimir Carta</span>
+        </button>
+        <button 
+          type="button" 
+          onclick="document.getElementById('${modalId}')?.remove()" 
+          class="flex-1 sm:flex-initial min-h-[48px] px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-sm font-bold transition cursor-pointer active:scale-95"
+        >
+          <span>Cerrar</span>
+        </button>
+      </div>
     </div>
   `;
 
@@ -6211,6 +6400,19 @@ window.verSelloFirma = function(sigId) {
   document.body.appendChild(modalEl);
 };
 
+window.imprimirFormatoCartaVisorActual = function(tituloDoc) {
+  const el = document.getElementById('contenedor-imprimible-doc-cargo');
+  if (!el) {
+    window.print();
+    return;
+  }
+  abrirVentanaDocumentoPortal({
+    titulo: tituloDoc || 'Formato Corporativo SG-SST',
+    filename: (tituloDoc || 'Formato_Corporativo_SGSST').replace(/[^a-zA-Z0-9_-]/g, '_'),
+    bodyHtml: el.innerHTML
+  });
+};
+
 window.descargarPdfVisorCargoActual = async function(tituloDoc) {
   const el = document.getElementById('contenedor-imprimible-doc-cargo');
   if (!el) {
@@ -6227,21 +6429,23 @@ window.descargarPdfVisorCargoActual = async function(tituloDoc) {
         document.head.appendChild(s);
       });
     }
-    const cleanName = (tituloDoc || 'Documento_Cargo_SST').replace(/[^a-zA-Z0-9_-]/g, '_');
+    const cleanName = (tituloDoc || 'Documento_Corporativo_SST').replace(/[^a-zA-Z0-9_-]/g, '_');
     await window.html2pdf().set({
-      margin: [10, 10, 10, 10],
+      margin: [8, 8, 8, 8],
       filename: `${cleanName}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+      jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
     }).from(el).save();
   } catch (e) {
-    window.print();
+    window.imprimirFormatoCartaVisorActual(tituloDoc);
   }
 };
 
 // =============================================================================
-// MODAL PANTALLA COMPLETA DE LECTURA Y FIRMA DE LOS 4 INSTRUMENTOS DE CARGO
+// MODAL PANTALLA COMPLETA DE LECTURA, GENERACIÓN CORPORATIVA CARTA Y FIRMA
+// DE LOS 7 INSTRUMENTOS DEL CATÁLOGO DE CARGOS (SG-SST)
 // =============================================================================
 window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajadorId) {
   const trabajador = obtenerTrabajadorResiliente(trabajadorId);
@@ -6266,25 +6470,37 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
   ) || firmas.find(f => f.documentoCodigo === codigoInstrumento || f.documentoId === codigoInstrumento || f.tipoDocumento === docType);
   const isFirmado = !!sigFound;
 
+  const firmaGuardadaUrl =
+    obtenerUrlFirmaTrabajador(trabajador) ||
+    trabajador.firma_digital_url ||
+    trabajador.firma_base64 ||
+    trabajador.signature_url ||
+    trabajador.signature_svg ||
+    null;
+
   const modalId = 'modal-firmar-documento-cargo';
   const existing = document.getElementById(modalId);
   if (existing) existing.remove();
 
-  // Generar contenido oficial del documento según el tipo
+  const formatCOP = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
+  const cargoCode = cargoFormal?.code || 'CARG-001';
+  const fechaEmision = cargoFormal?.updatedAt ? new Date(cargoFormal.updatedAt).toLocaleDateString('es-CO') : new Date().toLocaleDateString('es-CO');
+
+  // Generar Formato Corporativo en Tamaño Carta según el tipo de documento
   let contenidoHtml = '';
   let codigoDoc = '';
 
   if (docType === 'MANUAL_DE_CARGO') {
-    codigoDoc = `MAN-${cargoFormal?.code || 'OPE-001'}`;
+    codigoDoc = `MAN-${cargoCode}`;
     const depto = cargoFormal?.department || trabajador.area || 'Operaciones y Producción';
     const jefe = cargoFormal?.parent_job_position_title || (cargoFormal?.hierarchy_level === 'Directivo' ? 'Junta Directiva / Representante Legal' : 'Gerencia General / Líder de Proceso');
-    const objetivo = cargoFormal?.job_objective || cargoFormal?.summary_objective || configCargo?.perfil?.objetivo || `Desempeñar con excelencia técnica, compromiso ético y estricto apego a las normas del SG-SST las actividades asignadas al puesto de ${trabajador.cargo}.`;
+    const objetivo = cargoFormal?.job_objective || cargoFormal?.summary_objective || configCargo?.perfil?.objetivo || `Desempeñar con excelencia técnica, compromiso ético y estricto apego a las normas del SG-SST las actividades asignadas al puesto de ${trabajador.cargo}, garantizando la preservación de la vida, salud e integridad en los procesos operativos.`;
     const edu = cargoFormal?.required_education || configCargo?.perfil?.educacion || 'Bachiller Académico o Técnico Laboral';
-    const exp = cargoFormal?.required_experience || configCargo?.perfil?.experiencia || '1 año en labores afines a la operación o manufactura';
+    const exp = cargoFormal?.required_experience || configCargo?.perfil?.experiencia || '1 año en labores afines a la operación o sector productivo';
     const formSst = configCargo?.perfil?.formacionSST || 'Inducción General SG-SST, Curso 50/20h SST (Dec. 1072/2015), Protocolos de Bioseguridad y Manejo de Emergencias (Res. 0312/2019)';
     const skills = (cargoFormal?.personality_skills && cargoFormal.personality_skills.length > 0)
       ? cargoFormal.personality_skills
-      : ['Liderazgo y comunicación asertiva', 'Disciplina operacional y autocuidado', 'Capacidad analítica y resolución de problemas', 'Trabajo en equipo y adaptabilidad', 'Orientación a la calidad'];
+      : ['Liderazgo y comunicación asertiva', 'Disciplina operacional y autocuidado', 'Capacidad analítica y resolución de problemas', 'Trabajo en equipo y adaptabilidad', 'Orientación a la calidad y mejora continua'];
 
     const funciones = (cargoFormal?.operational_functions && cargoFormal.operational_functions.length > 0)
       ? cargoFormal.operational_functions
@@ -6315,341 +6531,696 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
     const suspension = cargoFormal?.suspension_faculty || 'Facultad expresa y obligatoria para suspender de forma inmediata cualquier labor o actividad en caso de constatar un riesgo grave o inminente para la vida o la salud, o ante la ausencia o deterioro de Elementos de Protección Personal (EPP), notificando de inmediato a la jefatura de SST.';
 
     contenidoHtml = `
-      <div class="space-y-4 text-xs leading-relaxed text-slate-800">
-        
-        <!-- ENCABEZADO CONTRACTUAL Y DE CONTROL DOCUMENTAL -->
-        <div class="bg-indigo-50/70 p-3.5 rounded-2xl border border-indigo-200 space-y-2">
-          <div class="flex items-center justify-between pb-2 border-b border-indigo-200">
-            <div>
-              <span class="text-[9px] font-black uppercase tracking-wider text-indigo-700 block">Encabezado Contractual & Control Documental</span>
-              <strong class="text-sm font-black text-indigo-950">${empresa.razonSocial} (NIT: ${empresa.nit})</strong>
-            </div>
-            <span class="px-2.5 py-1 rounded-lg text-[10px] font-mono font-black bg-indigo-950 text-white">
-              ${codigoDoc} • Versión 01
-            </span>
-          </div>
+      ${generarEncabezadoCorporativoCarta({
+        empresa,
+        titulo: 'MANUAL DE FUNCIONES Y RESPONSABILIDADES EN SG-SST',
+        norma: 'Decreto 1072 de 2015 (Art. 2.2.4.6.8 Num. 2 & Art. 2.2.4.6.10) • Resolución 0312 de 2019 Estándar 1.1.2',
+        codigo: codigoDoc,
+        version: '01',
+        fecha: fechaEmision
+      })}
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
-            <div><strong>Trabajador Titular:</strong> ${trabajador.nombre}</div>
-            <div><strong>Cédula de Ciudadanía:</strong> C.C. ${trabajador.identificacion || trabajador.cedula}</div>
-            <div><strong>Fecha de Ingreso:</strong> ${trabajador.fechaIngreso || trabajador.fechaContrato || trabajador.fechaInicio || 'Al momento de vinculación'}</div>
-            <div><strong>Tipo de Contrato:</strong> ${trabajador.tipoContrato || 'Término Indefinido'}</div>
-            <div><strong>Sede / Dirección:</strong> ${empresa.direccion || 'Calle Principal Zona Industrial'}</div>
-            <div><strong>Ciudad & Contacto:</strong> ${empresa.ciudad || 'Bogotá D.C.'} • ${empresa.telefono || '(601) 745-0000'}</div>
-          </div>
+      ${generarTablaDatosTrabajadorCarta({ empresa, trabajador, cargoFormal, isFirmado, sigFound })}
+
+      <!-- II. IDENTIFICACIÓN Y UBICACIÓN DEL CARGO -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          II. IDENTIFICACIÓN Y UBICACIÓN ORGANIZACIONAL DEL CARGO
         </div>
-
-        <!-- I. IDENTIFICACIÓN DEL CARGO -->
-        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
-          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider flex items-center gap-1.5">
-            <span class="w-4 h-4 rounded bg-indigo-100 text-indigo-800 flex items-center justify-center text-[10px] font-black">I</span>
-            <span>I. Identificación y Ubicación del Cargo</span>
-          </h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
-            <div><strong>Cargo Oficial:</strong> ${trabajador.cargo}</div>
-            <div><strong>Nivel Jerárquico:</strong> ${cargoFormal?.hierarchy_level || 'Operativo'}</div>
-            <div><strong>Departamento / Proceso:</strong> ${depto}</div>
-            <div><strong>Jefe Inmediato:</strong> ${jefe}</div>
-          </div>
-        </div>
-
-        <!-- II. PERFIL DEL CARGO (REQUISITOS MÍNIMOS Y COMPETENCIAS) -->
-        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
-          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider flex items-center gap-1.5">
-            <span class="w-4 h-4 rounded bg-indigo-100 text-indigo-800 flex items-center justify-center text-[10px] font-black">II</span>
-            <span>II. Perfil del Cargo, Requisitos Mínimos y Competencias</span>
-          </h4>
-          <div class="space-y-1 text-[11px] pt-1">
-            <p><strong>• Educación Formal:</strong> ${edu} (Licencia SST según aplique)</p>
-            <p><strong>• Formación Adicional / Certificaciones SG-SST:</strong> ${formSst}</p>
-            <p><strong>• Experiencia Mínima:</strong> ${exp}</p>
-            <div class="pt-1">
-              <strong>• Competencias y Personalidad:</strong>
-              <div class="flex flex-wrap gap-1 mt-1">
-                ${skills.map(sk => `<span class="px-2 py-0.5 rounded text-[10px] bg-slate-200 text-slate-800 font-bold">✓ ${sk}</span>`).join('')}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- III. OBJETIVO DEL CARGO -->
-        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
-          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider flex items-center gap-1.5">
-            <span class="w-4 h-4 rounded bg-indigo-100 text-indigo-800 flex items-center justify-center text-[10px] font-black">III</span>
-            <span>III. Objetivo y Propósito Misional del Cargo</span>
-          </h4>
-          <p class="text-[11px] text-slate-700 leading-relaxed pt-1">${objetivo}</p>
-          <p class="text-[10px] italic text-slate-500 bg-white p-2 rounded border border-slate-200 mt-1">
-            <strong>Compromiso SG-SST:</strong> Preservar la vida, la salud integral y el bienestar, cumplir normas de seguridad y proteger activamente el medio ambiente.
-          </p>
-        </div>
-
-        <!-- IV. FUNCIONES TÉCNICAS Y OPERATIVAS -->
-        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
-          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider flex items-center gap-1.5">
-            <span class="w-4 h-4 rounded bg-indigo-100 text-indigo-800 flex items-center justify-center text-[10px] font-black">IV</span>
-            <span>IV. Funciones Técnicas y Operativas del Cargo (Ciclo PHVA)</span>
-          </h4>
-          <ol class="list-decimal pl-5 space-y-1 text-[11px] text-slate-700 pt-1">
-            ${funciones.map(f => `<li>${f}</li>`).join('')}
-          </ol>
-        </div>
-
-        <!-- V. RESPONSABILIDADES EN LA GERENCIA DEL SG-SST -->
-        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
-          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider flex items-center gap-1.5">
-            <span class="w-4 h-4 rounded bg-indigo-100 text-indigo-800 flex items-center justify-center text-[10px] font-black">V</span>
-            <span>V. Responsabilidades Legales en la Gerencia del SG-SST (Dec. 1072 & Res. 0312)</span>
-          </h4>
-          <ul class="list-disc pl-5 space-y-1 text-[11px] text-slate-700 pt-1">
-            ${responsabilidades.map(r => `<li>${r}</li>`).join('')}
-          </ul>
-        </div>
-
-        <!-- VI. AUTORIDAD Y ALCANCE -->
-        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
-          <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider flex items-center gap-1.5">
-            <span class="w-4 h-4 rounded bg-rose-100 text-rose-800 flex items-center justify-center text-[10px] font-black">VI</span>
-            <span>VI. Autoridad, Alcance y Facultad de Suspensión por Riesgo Inminente</span>
-          </h4>
-          <div class="space-y-1.5 text-[11px] pt-1">
-            <p><strong>• Alcance y Autoridad:</strong> ${autoridad}</p>
-            <div class="p-2 bg-rose-50 border border-rose-200 text-rose-900 rounded-lg">
-              <strong>🛑 Facultad Expresa de Suspensión Inmediata (Cero Tolerancia):</strong><br>
-              ${suspension}
-            </div>
-          </div>
-        </div>
-
-        <!-- VII. PIE DE PÁGINA CONTRACTUAL Y SOCIALIZACIÓN -->
-        <div class="bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200 space-y-2">
-          <h4 class="font-black text-amber-950 border-b border-amber-200 pb-1 text-xs uppercase tracking-wider">
-            VII. Cláusula de Notificación, Socialización y Aceptación por el Trabajador
-          </h4>
-          <p class="text-[11px] text-amber-950 leading-relaxed italic bg-white p-2.5 rounded-xl border border-amber-200">
-            "Certifico que he recibido, leído, comprendido y aceptado en su totalidad el presente MANUAL DE CARGOS, RESPONSABILIDADES Y FUNCIONES correspondiente a mi cargo en ${empresa.razonSocial}. Me comprometo a cumplir estrictamente las funciones asignadas, los procedimientos de trabajo seguro (PTS) y las directrices del Sistema de Gestión de Seguridad y Salud en el Trabajo (SG-SST)."
-          </p>
-
-          <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-600 pt-1 border-t border-amber-200">
-            <div>
-              <strong>ELABORÓ / REVISÓ (SST):</strong><br>
-              ${empresa.responsableSST || 'Esp. en Seguridad y Salud en el Trabajo'}<br>
-              Licencia SST No. ${empresa.licenciaSST || '15482-2022'}
-            </div>
-            <div>
-              <strong>APROBÓ (GERENCIA GENERAL):</strong><br>
-              ${empresa.representanteLegal || 'Representante Legal / Gerencia'}<br>
-              Empleador Oficial
-            </div>
-          </div>
-        </div>
-
+        <table style="width: 100%; border-collapse: collapse; font-size: 8pt;">
+          <tr>
+            <td style="width: 22%; font-weight: 800; color: #475569; padding: 4px 6px; background: #f8fafc; border: 1px solid #e2e8f0;">CARGO OFICIAL:</td>
+            <td style="width: 28%; padding: 4px 6px; border: 1px solid #e2e8f0;"><strong>${trabajador.cargo}</strong></td>
+            <td style="width: 22%; font-weight: 800; color: #475569; padding: 4px 6px; background: #f8fafc; border: 1px solid #e2e8f0;">NIVEL JERÁRQUICO:</td>
+            <td style="width: 28%; padding: 4px 6px; border: 1px solid #e2e8f0;">${cargoFormal?.hierarchy_level || 'Operativo'}</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 800; color: #475569; padding: 4px 6px; background: #f8fafc; border: 1px solid #e2e8f0;">DEPARTAMENTO / PROCESO:</td>
+            <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">${depto}</td>
+            <td style="font-weight: 800; color: #475569; padding: 4px 6px; background: #f8fafc; border: 1px solid #e2e8f0;">JEFE INMEDIATO:</td>
+            <td style="padding: 4px 6px; border: 1px solid #e2e8f0;">${jefe}</td>
+          </tr>
+        </table>
       </div>
+
+      <!-- III. REQUISITOS MÍNIMOS Y COMPETENCIAS -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          III. PERFIL DEL CARGO, REQUISITOS MÍNIMOS Y COMPETENCIAS
+        </div>
+        <div style="font-size: 8.5pt; line-height: 1.5; color: #0f172a;">
+          <p style="margin: 0 0 4px 0;"><strong>• Educación Formal Requerida:</strong> ${edu}</p>
+          <p style="margin: 0 0 4px 0;"><strong>• Formación Adicional y Certificaciones SG-SST:</strong> ${formSst}</p>
+          <p style="margin: 0 0 6px 0;"><strong>• Experiencia Laboral Mínima:</strong> ${exp}</p>
+          <div>
+            <strong>• Competencias y Habilidades Conductuales:</strong>
+            <div style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px;">
+              ${skills.map(sk => `<span style="display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 7.5pt; font-weight: 700; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">✓ ${sk}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IV. OBJETIVO Y PROPÓSITO MISIONAL DEL CARGO -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          IV. OBJETIVO Y PROPÓSITO MISIONAL DEL CARGO
+        </div>
+        <p style="margin: 0 0 6px 0; font-size: 8.5pt; text-align: justify; line-height: 1.5;">${objetivo}</p>
+        <div style="background: #f8fafc; border-left: 3px solid #4338ca; padding: 6px 10px; font-size: 8pt; font-style: italic; color: #334155;">
+          <strong>Compromiso SG-SST:</strong> Preservar la vida, la salud integral y el bienestar, cumplir rigurosamente las normas de seguridad, portar los EPP y proteger activamente el medio ambiente.
+        </div>
+      </div>
+
+      <!-- V. FUNCIONES TÉCNICAS Y OPERATIVAS DEL CARGO -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          V. FUNCIONES TÉCNICAS Y OPERATIVAS DEL CARGO (CICLO PHVA)
+        </div>
+        <ol style="margin: 0; padding-left: 18px; font-size: 8.5pt; line-height: 1.55; color: #0f172a;">
+          ${funciones.map(f => `<li style="margin-bottom: 4px; text-align: justify;">${f}</li>`).join('')}
+        </ol>
+      </div>
+
+      <!-- VI. RESPONSABILIDADES EN EL SG-SST -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          VI. RESPONSABILIDADES LEGALES EN EL SG-SST (DEC. 1072 ART. 2.2.4.6.10 & RES. 0312 EST. 1.1.2)
+        </div>
+        <ul style="margin: 0; padding-left: 18px; font-size: 8.5pt; line-height: 1.55; color: #0f172a;">
+          ${responsabilidades.map(r => `<li style="margin-bottom: 4px; text-align: justify;">${r}</li>`).join('')}
+        </ul>
+      </div>
+
+      <!-- VII. AUTORIDAD Y FACULTAD DE SUSPENSIÓN -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          VII. AUTORIDAD, ALCANCE Y FACULTAD DE SUSPENSIÓN POR RIESGO INMINENTE
+        </div>
+        <p style="margin: 0 0 6px 0; font-size: 8.5pt;"><strong>• Alcance y Autoridad:</strong> ${autoridad}</p>
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid #dc2626; border-radius: 6px; padding: 8px 10px; font-size: 8pt; color: #7f1d1d;">
+          <strong>🛑 FACULTAD EXPRESA DE SUSPENSIÓN INMEDIATA (STOP WORK AUTHORITY):</strong><br>
+          ${suspension}
+        </div>
+      </div>
+
+      <!-- VIII. DECLARACIÓN DE NOTIFICACIÓN Y ACEPTACIÓN -->
+      <div style="border: 1px solid #bbf7d0; border-left: 4px solid #0d9488; background: #f0fdf4; border-radius: 6px; padding: 9px 12px; margin-bottom: 12px; page-break-inside: avoid; font-size: 8pt; color: #064e3b; text-align: justify;">
+        <strong>DECLARACIÓN Y COMPROMISO LEGAL DEL TRABAJADOR:</strong><br>
+        Certifico que he recibido, leído, comprendido y aceptado en su totalidad el presente MANUAL DE FUNCIONES Y RESPONSABILIDADES EN SG-SST correspondiente a mi cargo de <strong>${trabajador.cargo}</strong> en <strong>${empresa.razonSocial}</strong>. Me comprometo a cumplir estrictamente las funciones asignadas, los procedimientos de trabajo seguro (PTS) y las directrices del Sistema de Gestión de la Seguridad y Salud en el Trabajo (SG-SST).
+      </div>
+
+      ${generarFirmasYSelloCorporativoCarta({ empresa, trabajador, isFirmado, sigFound, firmaGuardadaUrl, codigoDoc, incluirRepresentanteLegal: true })}
     `;
   } else if (docType === 'PERFIL_DE_CARGO') {
-    codigoDoc = `PRF-${cargoFormal?.code || 'CARG-002'}`;
-    const objetivo = cargoFormal?.job_objective || cargoFormal?.summary_objective || configCargo?.perfil?.objetivo || `Desempeñar con excelencia y estricto apego a las normas de seguridad las funciones asociadas al cargo de ${trabajador.cargo}.`;
+    codigoDoc = `PF-CARG-${cargoCode}`;
+    const objetivo = cargoFormal?.job_objective || cargoFormal?.summary_objective || configCargo?.perfil?.objetivo || `Desempeñar con excelencia técnica y estricto apego a las normas de seguridad y salud en el trabajo las funciones asociadas al cargo de ${trabajador.cargo}.`;
     const edu = cargoFormal?.required_education || configCargo?.perfil?.educacion || 'Bachiller Académico o Técnico Laboral';
     const exp = cargoFormal?.required_experience || configCargo?.perfil?.experiencia || '1 año en labores afines';
-    const formSst = configCargo?.perfil?.formacionSST || 'Inducción General SG-SST, Curso 50/20h SST, Protocolo de EPP, Plan de Emergencias y Reporte de Peligros.';
-    const comp = configCargo?.perfil?.competencias || 'Compromiso con el autocuidado, disciplina operacional, trabajo en equipo, orientación a la calidad y comunicación efectiva.';
-    const exam = configCargo?.perfil?.examenesMedicos || 'Énfasis osteomuscular, agudeza visual, audiometría tonal ocupacional y valoración médica general.';
+    const formSst = configCargo?.perfil?.formacionSST || 'Inducción General y Específica en SG-SST, Curso Virtual de 50/20 Horas en SG-SST, Protocolo de EPP, Plan de Emergencias y Reporte de Peligros.';
+    const compList = (Array.isArray(cargoFormal?.required_skills) && cargoFormal.required_skills.length > 0)
+      ? cargoFormal.required_skills
+      : (configCargo?.perfil?.competencias ? configCargo.perfil.competencias.split(',').map(s => s.trim()).filter(Boolean) : ['Compromiso con el autocuidado', 'Disciplina operacional y cumplimiento de PTS', 'Trabajo en equipo y comunicación efectiva', 'Orientación a la calidad y mejora continua', 'Identificación proactiva de peligros y riesgos']);
+    const exam = configCargo?.perfil?.examenesMedicos || 'Evaluación médica ocupacional con énfasis osteomuscular, visiometría, audiometría tonal ocupacional y espirometría.';
+
     contenidoHtml = `
-      <div class="space-y-3 text-xs leading-relaxed text-slate-800">
-        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-950 flex items-center justify-between">
-          <div>
-            <strong>Perfil & Competencia SST del Cargo:</strong> ${trabajador.cargo} en ${empresa.razonSocial}.
-          </div>
-          <span class="px-2 py-0.5 rounded bg-amber-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
+      ${generarEncabezadoCorporativoCarta({
+        empresa,
+        titulo: 'PERFIL DE CARGO Y REQUISITOS DE COMPETENCIA EN SG-SST',
+        norma: 'Decreto 1072 de 2015 Art. 2.2.4.6.10 • Resolución 0312 de 2019 Estándar 1.1.2 & 1.1.3',
+        codigo: codigoDoc,
+        version: '01',
+        fecha: fechaEmision
+      })}
+
+      ${generarTablaDatosTrabajadorCarta({ empresa, trabajador, cargoFormal, isFirmado, sigFound })}
+
+      <!-- II. ESPECIFICACIÓN TÉCNICA DEL PERFIL -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          II. ESPECIFICACIÓN TÉCNICA Y REQUISITOS DE COMPETENCIA DEL CARGO
         </div>
-        <div class="p-3 bg-slate-50 border rounded-xl text-[11px]">
-          <strong>Objetivo Misional del Cargo:</strong>
-          <p class="mt-1 text-slate-700">${objetivo}</p>
+        <table style="width: 100%; border-collapse: collapse; font-size: 8pt; margin-bottom: 8px;">
+          <tr>
+            <td style="width: 24%; font-weight: 800; color: #475569; padding: 5px 8px; background: #f8fafc; border: 1px solid #cbd5e1;">DENOMINACIÓN DEL CARGO:</td>
+            <td style="width: 26%; padding: 5px 8px; border: 1px solid #cbd5e1;"><strong>${trabajador.cargo}</strong></td>
+            <td style="width: 24%; font-weight: 800; color: #475569; padding: 5px 8px; background: #f8fafc; border: 1px solid #cbd5e1;">NIVEL OCUPACIONAL:</td>
+            <td style="width: 26%; padding: 5px 8px; border: 1px solid #cbd5e1;">${cargoFormal?.hierarchy_level || 'Operativo'}</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 800; color: #475569; padding: 5px 8px; background: #f8fafc; border: 1px solid #cbd5e1;">EDUCACIÓN FORMAL REQUERIDA:</td>
+            <td style="padding: 5px 8px; border: 1px solid #cbd5e1;">${edu}</td>
+            <td style="font-weight: 800; color: #475569; padding: 5px 8px; background: #f8fafc; border: 1px solid #cbd5e1;">EXPERIENCIA MÍNIMA:</td>
+            <td style="padding: 5px 8px; border: 1px solid #cbd5e1;">${exp}</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 800; color: #475569; padding: 5px 8px; background: #f8fafc; border: 1px solid #cbd5e1;">OBJETIVO MISIONAL DEL CARGO:</td>
+            <td colspan="3" style="padding: 5px 8px; border: 1px solid #cbd5e1; text-align: justify;">${objetivo}</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- III. CERTIFICACIONES Y FORMACIÓN REGLAMENTARIA EN SST -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          III. CERTIFICACIONES Y FORMACIÓN REGLAMENTARIA OBLIGATORIA EN SG-SST
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
-          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>• Educación Formal Requerida:</strong><br>${edu}</div>
-          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>• Experiencia Mínima:</strong><br>${exp}</div>
+        <p style="margin: 0 0 8px 0; font-size: 8.5pt; font-weight: 600; color: #0f172a;">${formSst}</p>
+        <table style="width: 100%; border-collapse: collapse; font-size: 8pt;">
+          <thead>
+            <tr style="background: #f1f5f9;">
+              <th style="border: 1px solid #cbd5e1; padding: 5px 8px; text-align: left; color: #334155;">Capacitación / Certificación Requerida</th>
+              <th style="border: 1px solid #cbd5e1; padding: 5px 8px; text-align: left; color: #334155;">Norma Legal de Referencia</th>
+              <th style="border: 1px solid #cbd5e1; padding: 5px 8px; text-align: center; color: #334155;">Periodicidad / Vigencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px;"><strong>Inducción y Reinducción General y Específica SG-SST</strong></td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px;">Decreto 1072 de 2015 Art. 2.2.4.6.11 • Est. 1.2.2</td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center;">Ingreso y Anual</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px;"><strong> Prevención de Peligros, Uso de EPP y Trabajo Seguro</strong></td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px;">Resolución 0312 de 2019 Est. 1.2.1 • Ley 9 de 1979</td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center;">Permanente / Anual</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px;"><strong>Trabajo Seguro en Alturas / Tareas de Alto Riesgo (Según Aplique)</strong></td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px;">Resolución 4272 de 2021</td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center;">Reentrenamiento Anual</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px;"><strong>Plan de Prevención, Preparación y Respuesta ante Emergencias</strong></td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px;">Decreto 1072 de 2015 Art. 2.2.4.6.25</td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center;">Anual</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- IV. COMPETENCIAS TÉCNICAS Y HABILIDADES CONDUCTUALES -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          IV. COMPETENCIAS TÉCNICAS, ORGANIZACIONALES Y APTITUD MÉDICA
         </div>
-        <div class="p-2.5 bg-slate-50 border rounded-xl text-[11px]">
-          <strong>• Formación y Entrenamiento en SG-SST (Res. 0312 Est. 1.2.1):</strong>
-          <p class="mt-0.5 text-slate-700">${formSst}</p>
-        </div>
-        <div class="p-2.5 bg-slate-50 border rounded-xl text-[11px]">
-          <strong>• Competencias y Habilidades del Cargo:</strong>
-          <p class="mt-0.5 text-slate-700">${comp}</p>
-        </div>
-        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">Perfil de Aptitud Médica Ocupacional (Res. 2346/2007)</h4>
-        <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl text-[11px] text-teal-950 space-y-1">
-          <p><strong>• Evaluaciones Médicas Requeridas:</strong> ${exam}</p>
+        <ul style="margin: 0 0 8px 0; padding-left: 18px; font-size: 8.5pt; line-height: 1.5;">
+          ${compList.map(c => `<li style="margin-bottom: 3px;"><strong>${c}</strong></li>`).join('')}
+        </ul>
+        <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 6px; padding: 7px 10px; font-size: 8pt; color: #134e4a;">
+          <strong>• Perfil de Aptitud Médica Ocupacional Requerida (Res. 2346/2007):</strong> ${exam}
         </div>
       </div>
+
+      <!-- V. DECLARACIÓN Y COMPROMISO -->
+      <div style="border: 1px solid #bbf7d0; border-left: 4px solid #0d9488; background: #f0fdf4; border-radius: 6px; padding: 9px 12px; margin-bottom: 12px; page-break-inside: avoid; font-size: 8pt; color: #064e3b; text-align: justify;">
+        <strong>DECLARACIÓN Y COMPROMISO LEGAL DEL TRABAJADOR:</strong><br>
+        En cumplimiento del Decreto 1072 de 2015 y la Resolución 0312 de 2019, declaro conocer y cumplir los requisitos de educación, formación, experiencia y competencias exigidos para el cargo de <strong>${trabajador.cargo}</strong>, comprometiéndome a participar activamente en el Plan Anual de Capacitación y Entrenamiento en SG-SST.
+      </div>
+
+      ${generarFirmasYSelloCorporativoCarta({ empresa, trabajador, isFirmado, sigFound, firmaGuardadaUrl, codigoDoc, incluirRepresentanteLegal: true })}
     `;
   } else if (docType === 'PLAN_DE_TRABAJO_SEGURO') {
-    codigoDoc = `PTS-${cargoFormal?.code || 'SEG-003'}`;
-    const eppPts = configCargo?.pts?.eppRequeridos || ['Casco de seguridad', 'Gafas de seguridad', 'Botas con puntera', 'Guantes de protección'];
+    codigoDoc = `PTS-${cargoCode}`;
+    const eppPts = configCargo?.pts?.eppRequeridos || ['Casco de seguridad dieléctrico con barbuquejo', 'Gafas de seguridad con filtro UV', 'Botas de seguridad con puntera certificada', 'Guantes de protección mecánica / nitrilo', 'Protección auditiva y respiratoria según tarea'];
+    const peligrosList = configCargo?.pts?.peligrosEvaluados || [
+      'Peligro Mecánico (atrapamiento, golpes por herramientas o máquinas en movimiento)',
+      'Peligro Biomecánico (levantamiento de cargas, posturas prolongadas o forzadas)',
+      'Peligro Físico y Locativo (superficies irregulares, trabajo en alturas, ruido continuo)'
+    ];
+    const funcOperativas = (cargoFormal?.operational_functions && cargoFormal.operational_functions.length > 0)
+      ? cargoFormal.operational_functions
+      : (configCargo?.manualFunciones?.funcionesOperativas || [
+          `Alistamiento preoperacional e inspección de seguridad en el puesto de ${trabajador.cargo}`,
+          'Ejecución técnica de labores operativas aplicando controles en fuente, medio e individuo',
+          'Verificación de orden, aseo (5S), desenergización y cierre seguro del turno'
+        ]);
+
     contenidoHtml = `
-      <div class="space-y-3 text-xs leading-relaxed text-slate-800">
-        <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl text-[11px] text-teal-950 flex items-center justify-between">
-          <div>
-            <strong>Plan de Trabajo Seguro (PTS):</strong> ${configCargo?.pts?.titulo || `Procedimiento de Trabajo Seguro para ${trabajador.cargo}`}
+      ${generarEncabezadoCorporativoCarta({
+        empresa,
+        titulo: 'PROCEDIMIENTO Y PLAN DE TRABAJO SEGURO (PTS)',
+        norma: 'Resolución 0312 de 2019 Est. 4.2.1 • Decreto 1072 de 2015 Art. 2.2.4.6.24 • Guía Técnica GTC 45',
+        codigo: codigoDoc,
+        version: '01',
+        fecha: fechaEmision
+      })}
+
+      ${generarTablaDatosTrabajadorCarta({ empresa, trabajador, cargoFormal, isFirmado, sigFound })}
+
+      <!-- II. OBJETIVO, ALCANCE Y PELIGROS EVALUADOS -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          II. OBJETIVO, ALCANCE Y PELIGROS PRIORITARIOS EVALUADOS (MATRIZ GTC 45)
+        </div>
+        <p style="margin: 0 0 6px 0; font-size: 8.5pt; line-height: 1.5; text-align: justify;">
+          <strong>${configCargo?.pts?.titulo || `Procedimiento de Trabajo Seguro (PTS) para ${trabajador.cargo}`}:</strong> Estandarizar las buenas prácticas de seguridad, controles preventivos en la fuente, medio e individuo, y métodos seguros de ejecución para el cargo de <strong>${trabajador.cargo}</strong>.
+        </p>
+        <p style="margin: 0 0 6px 0; font-size: 8pt; color: #334155;">
+          <strong>Peligros Prioritarios Evaluados (GTC 45):</strong> ${Array.isArray(peligrosList) ? peligrosList.join(' • ') : peligrosList}
+        </p>
+        <div>
+          <strong style="font-size: 8pt; color: #0f172a;">EPP Obligatorios para Iniciar la Labor:</strong>
+          <div style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px;">
+            ${eppPts.map(e => `<span style="display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 7.5pt; font-weight: 700; background: #ccfbf1; color: #115e59; border: 1px solid #99f6e4;">🥽 ${e}</span>`).join('')}
           </div>
-          <span class="px-2 py-0.5 rounded bg-teal-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
-        </div>
-        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">Peligros Evaluados en el Cargo (Matriz GTC 45)</h4>
-        <ul class="list-disc pl-5 space-y-1 text-xs text-slate-700">
-          ${(configCargo?.pts?.peligrosEvaluados || [
-            'Peligro Mecánico (atrapamiento, golpes por herramientas o máquinas en movimiento)',
-            'Peligro Biomecánico (levantamiento de cargas, posturas prolongadas)',
-            'Peligro Físico y Locativo (pisos húmedos o desnivelados, ruido continuo)'
-          ]).map(p => `<li>${p}</li>`).join('')}
-        </ul>
-
-        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider pt-1">EPP Obligatorios para Iniciar</h4>
-        <div class="flex flex-wrap gap-1.5">
-          ${eppPts.map(e => `<span class="px-2 py-0.5 rounded bg-teal-100 text-teal-900 text-[10px] font-bold border border-teal-200">🥽 ${e}</span>`).join('')}
-        </div>
-
-        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider pt-2">Secuencia Operativa Segura (Antes, Durante y Después)</h4>
-        <div class="space-y-2 text-xs text-slate-800">
-          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>1. Antes de iniciar la labor:</strong> ${configCargo?.pts?.faseAntes || 'Revisa el estado de tu área, herramientas y ponte todos tus Elementos de Protección Personal (EPP).'}</div>
-          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>2. Durante la ejecución de la tarea:</strong> ${configCargo?.pts?.faseDurante || 'Concéntrate en la labor, usa siempre las guardas de seguridad y nunca retires protecciones de las máquinas.'}</div>
-          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>3. Después / Al terminar el turno:</strong> ${configCargo?.pts?.faseDespues || 'Apaga y desconecta equipos, deja limpio y ordenado tu puesto y avisa cualquier novedad al supervisor.'}</div>
-          <div class="p-2.5 bg-rose-50 border border-rose-200 text-rose-950 rounded-xl"><strong>🚨 Protocolo en Caso de Emergencia:</strong> ${configCargo?.pts?.emergencias || 'Detener de inmediato la labor, activar la alarma, evacuar al Punto de Encuentro y notificar al Coordinador SST.'}</div>
         </div>
       </div>
+
+      <!-- III. FASE 1: ANTES DE INICIAR LABORES -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          III. FASE 1: PROTOCOLO PREOPERACIONAL OBLIGATORIO (ANTES DE INICIAR LABORES)
+        </div>
+        <p style="margin: 0; font-size: 8.5pt; line-height: 1.55; text-align: justify;">
+          ${configCargo?.pts?.faseAntes || 'Realizar inspección preoperacional obligatoria del área, equipos y herramientas. Verificar que los Elementos de Protección Personal (EPP) se encuentren limpios y en óptimo estado. Diligenciar permisos de trabajo y Análisis de Trabajo Seguro (ATS) cuando aplique y reportar cualquier síntoma de salud o condición insegura.'}
+        </p>
+      </div>
+
+      <!-- IV. FASE 2: DURANTE LA LABOR -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          IV. FASE 2: CONTROLES OPERATIVOS Y PASO A PASO SEGURO (DURANTE LA LABOR)
+        </div>
+        <p style="margin: 0 0 8px 0; font-size: 8.5pt; line-height: 1.55; text-align: justify;">
+          ${configCargo?.pts?.faseDurante || 'Mantener atención y concentración exclusiva en la labor. Prohibido el uso de elementos distractores en áreas operativas. Aplicar higiene postural, realizar pausas activas y conservar siempre instaladas las guardas y dispositivos de seguridad.'}
+        </p>
+        <table style="width: 100%; border-collapse: collapse; font-size: 8pt;">
+          <thead>
+            <tr style="background: #f1f5f9;">
+              <th style="width: 32%; border: 1px solid #cbd5e1; padding: 5px 8px; text-align: left; color: #334155;">Actividad Caracterizada</th>
+              <th style="width: 34%; border: 1px solid #cbd5e1; padding: 5px 8px; text-align: left; color: #334155;">Riesgos Potenciales</th>
+              <th style="width: 34%; border: 1px solid #cbd5e1; padding: 5px 8px; text-align: left; color: #334155;">Medida de Control / Procedimiento Seguro</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${funcOperativas.slice(0, 4).map(act => `
+              <tr>
+                <td style="border: 1px solid #e2e8f0; padding: 5px 8px;"><strong>${act.split(':')[0]}</strong></td>
+                <td style="border: 1px solid #e2e8f0; padding: 5px 8px;">Atrapamiento mecánico, sobreesfuerzo biomecánico, caída a nivel o alturas, contacto eléctrico/químico.</td>
+                <td style="border: 1px solid #e2e8f0; padding: 5px 8px;">Uso continuo de EPP certificados, inspección preoperacional, señalización de área y cumplimiento estricto de este PTS.</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- V. FASE 3: DESPUÉS DE LA LABOR -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          V. FASE 3: CIERRE SEGURO, ORDEN Y ASEO (DESPUÉS DE LA LABOR)
+        </div>
+        <p style="margin: 0; font-size: 8.5pt; line-height: 1.55; text-align: justify;">
+          ${configCargo?.pts?.faseDespues || 'Desenergizar y apagar los equipos siguiendo la secuencia técnica del fabricante. Realizar orden, limpieza y aseo del puesto de trabajo (5S), almacenar herramientas en su sitio designado y reportar el estado final del turno al supervisor.'}
+        </p>
+      </div>
+
+      <!-- VI. EMERGENCIAS Y DETENCIÓN DE TRABAJO -->
+      <div style="border: 1px solid #fecaca; border-left: 4px solid #b91c1c; background: #fff5f5; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #b91c1c; text-transform: uppercase; border-bottom: 1.5px solid #fecaca; padding-bottom: 4px; margin-bottom: 6px;">
+          VI. EMERGENCIAS Y AUTORIDAD DE DETENCIÓN DE TRABAJO (STOP WORK AUTHORITY)
+        </div>
+        <p style="margin: 0; font-size: 8.5pt; line-height: 1.55; color: #7f1d1d; text-align: justify;">
+          ${configCargo?.pts?.emergencias || 'En caso de incidente, accidente o conato de emergencia: detener de inmediato la labor, activar la alarma, evacuar por la ruta señalizada hacia el Punto de Encuentro y notificar de inmediato al Coordinador SG-SST y Brigada de Emergencias.'}
+        </p>
+      </div>
+
+      ${generarFirmasYSelloCorporativoCarta({ empresa, trabajador, isFirmado, sigFound, firmaGuardadaUrl, codigoDoc })}
     `;
   } else if (docType === 'PROFESIOGRAMA_SST') {
-    codigoDoc = `PMO-${cargoFormal?.code || 'MED-004'}`;
+    codigoDoc = `MED-PROF-${cargoCode}`;
     const prof = configCargo?.profesiograma || {};
+
     contenidoHtml = `
-      <div class="space-y-3 text-xs leading-relaxed text-slate-800">
-        <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-[11px] text-rose-950 flex items-center justify-between">
-          <div>
-            <strong>Profesiograma SST del Cargo (${trabajador.cargo}):</strong> Matriz de Evaluaciones Médicas Ocupacionales (Resolución 2346 de 2007).
-          </div>
-          <span class="px-2 py-0.5 rounded bg-rose-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
+      ${generarEncabezadoCorporativoCarta({
+        empresa,
+        titulo: 'PROFESIOGRAMA Y MATRIZ DE EXÁMENES MÉDICOS OCUPACIONALES',
+        norma: 'Resolución 2346 de 2007 • Decreto 1072 de 2015 Art. 2.2.4.6.24 • Resolución 0312 de 2019 Estándar 3.1.4',
+        codigo: codigoDoc,
+        version: '01',
+        fecha: fechaEmision
+      })}
+
+      ${generarTablaDatosTrabajadorCarta({ empresa, trabajador, cargoFormal, isFirmado, sigFound })}
+
+      <!-- II. MATRIZ DE EXPOSICIÓN Y ÉNFASIS OCUPACIONAL -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          II. DETERMINACIÓN DE EVALUACIONES MÉDICAS SEGÚN FACTORES DE RIESGO DEL CARGO
         </div>
-        <div class="space-y-2.5 text-[11px]">
-          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
-            <strong class="text-slate-900 block uppercase text-[10px] tracking-wider text-teal-800">1. Exámenes Médicos de Ingreso / Pre-Ocupacionales:</strong>
-            <p class="mt-1 text-slate-700">${prof.ingreso || 'Examen médico ocupacional con énfasis osteomuscular, Visiometría ocupacional, Audiometría tonal y Espirometría.'}</p>
-          </div>
-          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
-            <strong class="text-slate-900 block uppercase text-[10px] tracking-wider text-indigo-800">2. Exámenes Médicos Periódicos y Vigilancia Epidemiológica (PVE):</strong>
-            <p class="mt-1 text-slate-700">${prof.periodico || 'Control anual osteomuscular, audiometría de control y seguimiento en Programa de Vigilancia Epidemiológica (PVE).'}</p>
-          </div>
-          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
-            <strong class="text-slate-900 block uppercase text-[10px] tracking-wider text-amber-800">3. Examen Médico de Egreso / Retiro Laboral:</strong>
-            <p class="mt-1 text-slate-700">${prof.egreso || 'Valoración médica ocupacional general de retiro (vigencia 5 días hábiles tras terminación del contrato).'}</p>
-          </div>
-          <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-950">
-            <strong class="block uppercase text-[10px] tracking-wider">4. Criterios de Restricción / Contraindicaciones Relativas al Cargo:</strong>
-            <p class="mt-1">${prof.restricciones || 'Vértigo no controlado (para trabajo en alturas), afecciones respiratorias severas no tratadas o patologías osteomusculares agudas sin rehabilitación.'}</p>
-          </div>
+        <div style="font-size: 8.5pt; line-height: 1.55; color: #0f172a;">
+          <p style="margin: 0 0 6px 0;"><strong>1. Exámenes Médicos de Ingreso / Pre-Ocupacionales:</strong><br>${prof.ingreso || 'Examen médico ocupacional con énfasis osteomuscular, Visiometría ocupacional, Audiometría tonal y Espirometría (más pruebas de alturas/espacios confinados según aplique).'}</p>
+          <p style="margin: 0 0 6px 0;"><strong>2. Exámenes Médicos Periódicos y Vigilancia Epidemiológica (PVE):</strong><br>${prof.periodico || 'Control anual osteomuscular, audiometría tonal de control, optometría y seguimiento en los Programas de Vigilancia Epidemiológica (PVE).'}</p>
+          <p style="margin: 0;"><strong>3. Examen Médico de Egreso / Retiro Laboral:</strong><br>${prof.egreso || 'Valoración médica ocupacional integral de retiro (dentro de los 5 días hábiles siguientes a la terminación del vínculo laboral).'}</p>
         </div>
       </div>
+
+      <!-- III. BATERÍA DE EVALUACIONES MÉDICAS Y PARACLÍNICOS -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+          III. BATERÍA DE EVALUACIONES MÉDICAS OCUPACIONALES DEL CARGO (${trabajador.cargo})
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 8pt;">
+          <thead>
+            <tr style="background: #f1f5f9;">
+              <th style="border: 1px solid #cbd5e1; padding: 5px 8px; text-align: left; color: #334155;">Evaluación Médica / Paraclínico Ocupacional</th>
+              <th style="border: 1px solid #cbd5e1; padding: 5px 8px; text-align: center; color: #334155;">Ingreso (Preempleo)</th>
+              <th style="border: 1px solid #cbd5e1; padding: 5px 8px; text-align: center; color: #334155;">Periódico (Anual)</th>
+              <th style="border: 1px solid #cbd5e1; padding: 5px 8px; text-align: center; color: #334155;">Egreso (Retiro)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px;"><strong>Valoración Médica Ocupacional con Énfasis Osteomuscular</strong></td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center; color: #15803d; font-weight: 800;">OBLIGATORIO</td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center; color: #15803d; font-weight: 800;">OBLIGATORIO</td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center; color: #15803d; font-weight: 800;">OBLIGATORIO</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px;"><strong>Audiometría Tonal Ocupacional (Conservación Auditiva)</strong></td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center; color: #15803d; font-weight: 800;">OBLIGATORIO</td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center; color: #15803d; font-weight: 800;">OBLIGATORIO</td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center; color: #15803d; font-weight: 800;">OBLIGATORIO</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px;"><strong>Visiometría / Optometría Ocupacional</strong></td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center; color: #15803d; font-weight: 800;">OBLIGATORIO</td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center; color: #15803d; font-weight: 800;">OBLIGATORIO</td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center; color: #64748b; font-weight: 700;">Según exposición</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px;"><strong>Espirometría / Función Pulmonar (Exposición a Material Particulado/Químicos)</strong></td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center; color: #15803d; font-weight: 800;">OBLIGATORIO</td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center; color: #15803d; font-weight: 800;">OBLIGATORIO</td>
+              <td style="border: 1px solid #e2e8f0; padding: 5px 8px; text-align: center; color: #15803d; font-weight: 800;">OBLIGATORIO</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- IV. CRITERIOS DE RESTRICCIÓN Y CONTRAINDICACIONES -->
+      <div style="border: 1px solid #fecaca; border-left: 4px solid #dc2626; background: #fff5f5; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #b91c1c; text-transform: uppercase; margin-bottom: 4px;">
+          IV. CRITERIOS DE RESTRICCIÓN Y CONTRAINDICACIONES MÉDICAS RELATIVAS AL CARGO
+        </div>
+        <p style="margin: 0; font-size: 8.5pt; color: #7f1d1d; text-align: justify;">
+          ${prof.restricciones || 'Vértigo o alteraciones del equilibrio no controladas (para trabajo en alturas), afecciones cardiorrespiratorias severas no tratadas o patologías osteomusculares agudas sin rehabilitación que puedan agravarse con la exposición ocupacional.'}
+        </p>
+      </div>
+
+      <!-- V. DECLARACIÓN Y COMPROMISO -->
+      <div style="border: 1px solid #bbf7d0; border-left: 4px solid #0d9488; background: #f0fdf4; border-radius: 6px; padding: 9px 12px; margin-bottom: 12px; page-break-inside: avoid; font-size: 8pt; color: #064e3b; text-align: justify;">
+        <strong>DECLARACIÓN Y COMPROMISO LEGAL DEL TRABAJADOR:</strong><br>
+        En cumplimiento de la Resolución 2346 de 2007 y el Decreto 1072 de 2015 (Art. 2.2.4.6.10), declaro haber sido informado(a) sobre el Profesiograma de mi cargo, comprometiéndome a suministrar información clara, veraz y completa sobre mi estado de salud y asistir puntualmente a los exámenes médicos ocupacionales de ingreso, periódicos y de egreso programados por el empleador.
+      </div>
+
+      ${generarFirmasYSelloCorporativoCarta({ empresa, trabajador, isFirmado, sigFound, firmaGuardadaUrl, codigoDoc, incluirRepresentanteLegal: true })}
     `;
   } else if (docType === 'MATRIZ_EPP_DOTACION') {
-    codigoDoc = `EPP-${cargoFormal?.code || 'DOT-005'}`;
+    codigoDoc = `EPP-CARG-${cargoCode}`;
     const matEpp = configCargo?.matrizEpp || {};
     const listaEppCargo = (matEpp.eppRequeridos && matEpp.eppRequeridos.length > 0)
-      ? matEpp.eppRequeridos
-      : (configCargo?.pts?.eppRequeridos || ['Casco de seguridad', 'Gafas de seguridad', 'Botas de seguridad con puntera', 'Guantes de protección mecánica', 'Protección auditiva']);
+      ? (Array.isArray(matEpp.eppRequeridos) ? matEpp.eppRequeridos : String(matEpp.eppRequeridos).split('\n').map(s => s.trim()).filter(Boolean))
+      : (configCargo?.pts?.eppRequeridos || [
+          'Casco de Seguridad Industrial Tipo I Clase E (Dieléctrico con barbuquejo)',
+          'Gafas de Seguridad con Protección Lateral y Filtro UV Antiempañante',
+          'Protector Auditivo de Inserción / Tipo Copa (NRR ≥ 25 dB)',
+          'Respirador Purificador para Material Particulado N95 / Media Cara con Filtros',
+          'Guantes de Protección Mecánica (Vaqueta / Nitrilo de Alta Resistencia)',
+          'Botas de Seguridad en Cuero Hidrofugado con Puntera Certificada y Suela Antideslizante'
+        ]);
+
     contenidoHtml = `
-      <div class="space-y-3 text-xs leading-relaxed text-slate-800">
-        <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-[11px] text-indigo-950 flex items-center justify-between">
-          <div>
-            <strong>Matriz Técnica de EPP & Dotación (${trabajador.cargo}):</strong> Ley 9 de 1979, Res. 2400 de 1979 y Art. 230 CST.
-          </div>
-          <span class="px-2 py-0.5 rounded bg-indigo-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
+      ${generarEncabezadoCorporativoCarta({
+        empresa,
+        titulo: 'MATRIZ TÉCNICA DE ELEMENTOS DE PROTECCIÓN PERSONAL (EPP) Y DOTACIÓN',
+        norma: 'Ley 9 de 1979 (Arts. 122-124) • Resolución 2400 de 1979 • Decreto 1072 de 2015 • CST Art. 230 • Res. 0312 Est. 4.2.6',
+        codigo: codigoDoc,
+        version: '01',
+        fecha: fechaEmision
+      })}
+
+      ${generarTablaDatosTrabajadorCarta({ empresa, trabajador, cargoFormal, isFirmado, sigFound })}
+
+      <!-- II. MATRIZ TÉCNICA DE EPP Y DOTACIÓN POR CARGO -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px; display: flex; justify-content: space-between;">
+          <span>II. ESPECIFICACIÓN TÉCNICA DE EPP Y DOTACIÓN ASIGNADOS AL CARGO: ${trabajador.cargo}</span>
+          <span style="font-size: 7.5pt; color: #64748b;">Total Elementos: ${listaEppCargo.length}</span>
         </div>
-        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-          <strong class="text-slate-900 block uppercase text-[10px] tracking-wider">Elementos de Protección Personal (EPP) Asignados al Cargo:</strong>
-          <ul class="list-disc pl-5 space-y-1 text-[11px] text-slate-800">
-            ${listaEppCargo.map(item => `<li><strong>${item}</strong> — Uso obligatorio permanente en área operativa.</li>`).join('')}
-          </ul>
-        </div>
-        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px]">
-          <strong class="text-slate-900 block uppercase text-[10px] tracking-wider">Normas Técnicas de Certificación Aplicables:</strong>
-          <p class="mt-1 text-slate-700">${matEpp.normasTecnicas || 'Casco ANSI Z89.1, Gafas ANSI Z87.1, Botas ASTM F2413 / NTC 2396, Guantes EN 388, Protección Auditiva ANSI S3.19.'}</p>
-        </div>
-        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-950">
-          <strong class="block uppercase text-[10px] tracking-wider">Frecuencia de Entrega y Reposición (Art. 230 CST & Dec. 1072):</strong>
-          <p class="mt-1">${matEpp.frecuenciaReposicion || 'Dotación legal cada 4 meses (30 abril, 31 agosto, 20 diciembre - Art. 230 CST) y reposición inmediata de EPP por deterioro o desgaste.'}</p>
-        </div>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 8pt; margin-bottom: 8px;">
+          <thead>
+            <tr style="background: #f1f5f9;">
+              <th style="width: 6%; border: 1px solid #cbd5e1; padding: 5px 6px; text-align: center; color: #334155;">#</th>
+              <th style="width: 14%; border: 1px solid #cbd5e1; padding: 5px 6px; text-align: left; color: #334155;">Categoría</th>
+              <th style="width: 40%; border: 1px solid #cbd5e1; padding: 5px 6px; text-align: left; color: #334155;">Elemento de Protección / Dotación Requerido</th>
+              <th style="width: 24%; border: 1px solid #cbd5e1; padding: 5px 6px; text-align: left; color: #334155;">Norma Técnica Aplicable</th>
+              <th style="width: 16%; border: 1px solid #cbd5e1; padding: 5px 6px; text-align: center; color: #334155;">Uso / Reposición</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${listaEppCargo.map((item, idx) => `
+              <tr>
+                <td style="border: 1px solid #e2e8f0; padding: 5px 6px; text-align: center; font-weight: 700; color: #64748b;">${idx + 1}</td>
+                <td style="border: 1px solid #e2e8f0; padding: 5px 6px;">
+                  <span style="display: inline-block; padding: 1.5px 6px; border-radius: 4px; font-size: 7pt; font-weight: 800; background: #dcfce7; color: #166534;">EPP / DOT</span>
+                </td>
+                <td style="border: 1px solid #e2e8f0; padding: 5px 6px;"><strong>${item}</strong></td>
+                <td style="border: 1px solid #e2e8f0; padding: 5px 6px; font-family: monospace; font-size: 7.5pt; color: #0369a1;">ANSI / NTC / ASTM / EN</td>
+                <td style="border: 1px solid #e2e8f0; padding: 5px 6px; text-align: center; font-size: 7.5pt;">Obligatorio / Por desgaste</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <p style="margin: 0; font-size: 8pt; color: #334155;">
+          <strong>• Normas Técnicas de Certificación exigibles:</strong> ${matEpp.normasTecnicas || 'Casco ANSI Z89.1 / NTC 1523, Gafas ANSI Z87.1 / NTC 1825, Botas ASTM F2413 / NTC 2396, Guantes EN 388 / NTC 2190, Protección Auditiva ANSI S3.19 / NTC 2272, Respiradores NIOSH 42 CFR 84.'}
+        </p>
       </div>
+
+      <!-- III. CRONOGRAMA LEGAL DE DOTACIÓN Y REPOSICIÓN -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px;">
+          III. CRONOGRAMA LEGAL DE DOTACIÓN (ART. 230 CST) Y DIRECTRICES DE REPOSICIÓN
+        </div>
+        <p style="margin: 0; font-size: 8.5pt; color: #0f172a; text-align: justify;">
+          ${matEpp.frecuenciaReposicion || 'Entrega de dotación legal cuatrimestral (30 de abril, 31 de agosto y 20 de diciembre conforme al Artículo 230 del Código Sustantivo del Trabajo) y reposición inmediata y gratuita de cualquier Elemento de Protección Personal (EPP) que presente desgaste, deterioro o pérdida de su capacidad protectora.'}
+        </p>
+      </div>
+
+      <!-- IV. DECLARACIÓN Y COMPROMISO LEGAL DEL TRABAJADOR -->
+      <div style="border: 1px solid #bbf7d0; border-left: 4px solid #0d9488; background: #f0fdf4; border-radius: 6px; padding: 9px 12px; margin-bottom: 12px; page-break-inside: avoid; font-size: 8pt; color: #064e3b; text-align: justify;">
+        <strong>DECLARACIÓN Y COMPROMISO LEGAL DEL TRABAJADOR:</strong><br>
+        En cumplimiento de la Ley 9 de 1979 (Arts. 122-124), Resolución 2400 de 1979, Decreto 1072 de 2015, Resolución 0312 de 2019 (Estándar 4.2.6) y el Artículo 230 del Código Sustantivo del Trabajo, declaro conocer la Matriz de EPP y Dotación de mi cargo, comprometiéndome a utilizarlos de forma obligatoria durante toda mi jornada laboral, velar por su buen estado y solicitar oportunamente su reposición en caso de deterioro.
+      </div>
+
+      ${generarFirmasYSelloCorporativoCarta({ empresa, trabajador, isFirmado, sigFound, firmaGuardadaUrl, codigoDoc })}
     `;
   } else if (docType === 'RECOMENDACIONES_MEDICAS') {
-    codigoDoc = `REC-${cargoFormal?.code || 'MED-007'}`;
+    codigoDoc = `REC-MED-${cargoCode}`;
     const recMed = configCargo?.recomendacionesMedicas || {};
+    const tipoEval = recMed.tipoEvaluacion || 'Concepto de Aptitud Médica Ocupacional / Seguimiento PVE';
+    const entidad = recMed.entidadEmisora || 'IPS de Salud Ocupacional Certificada • Médico Especialista en SST / ARL';
+    const vigencia = recMed.vigencia || 'Vigencia de 12 meses o hasta nueva valoración médica ocupacional';
+    const biomecanicas = recMed.recomendacionesBiomecanicas || `• Realizar pausas activas dirigidas de 5 a 10 minutos cada 2 horas de jornada continua enfocadas en miembros superiores y columna.\n• Aplicar higiene postural estricta en el puesto de ${trabajador.cargo} y flexión de rodillas para manejo de cargas sin superar los límites legales (25 kg hombres / 12.5 kg mujeres).\n• Alternar posturas de trabajo evitando bipedestación o sedestación prolongada continua.`;
+    const restricciones = recMed.restriccionesLaborales || '• Sin restricciones médicas absolutas que impidan la labor, sujeto al acatamiento estricto de pausas activas, higiene postural y límites de carga.\n• Evitar movimientos de hiperextensión, rotación brusca o flexión forzada de tronco con carga.';
+    const adaptacion = recMed.adaptacionPuesto || '• Adecuación ergonómica del área operativa, ubicación de herramientas dentro del radio de alcance óptimo y uso de ayudas mecánicas (carretillas, aparejos o malacates) para el desplazamiento de materiales pesados.';
+    const seguimiento = recMed.seguimientoControl || '• Seguimiento periódico al cumplimiento de las recomendaciones por parte del Responsable del SG-SST y valoración médica ocupacional anual de control en el Programa de Vigilancia Epidemiológica (PVE).';
+    const compromiso = recMed.compromisoLegal || 'El trabajador declara que ha sido notificado formalmente por el Empleador y el Responsable del SG-SST del contenido de las recomendaciones y directrices médico-ocupacionales de su cargo, comprometiéndose bajo el principio de autocuidado (Dec. 1072/2015 Art. 2.2.4.6.10) a cumplirlas rigurosamente.';
+
     contenidoHtml = `
-      <div class="space-y-3 text-xs leading-relaxed text-slate-800">
-        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-950 flex items-center justify-between">
-          <div>
-            <strong>Acta de Recomendaciones Médicas y Seguimiento PVE (${trabajador.cargo}):</strong> Resolución 2346 de 2007 y Decreto 1072 de 2015.
-          </div>
-          <span class="px-2 py-0.5 rounded bg-emerald-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
+      ${generarEncabezadoCorporativoCarta({
+        empresa,
+        titulo: 'FORMATO OFICIAL DE NOTIFICACIÓN Y SEGUIMIENTO A RECOMENDACIONES MÉDICAS LABORALES',
+        norma: 'Resolución 2346 de 2007 • Decreto 1072 de 2015 Art. 2.2.4.6.24 • Ley 776 de 2002 • Res. 0312 Estándar 3.1.5',
+        codigo: codigoDoc,
+        version: '01',
+        fecha: fechaEmision
+      })}
+
+      ${generarTablaDatosTrabajadorCarta({ empresa, trabajador, cargoFormal, isFirmado, sigFound })}
+
+      <!-- II. DATOS DE LA EVALUACIÓN Y ENTIDAD EMISORA -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; background: #f8fafc; page-break-inside: avoid;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 8pt;">
+          <tr>
+            <td style="width: 50%; padding: 3px 6px;"><strong>TIPO DE EVALUACIÓN / CONCEPTO:</strong> ${tipoEval}</td>
+            <td style="width: 50%; padding: 3px 6px;"><strong>VIGENCIA Y PERIODICIDAD:</strong> ${vigencia}</td>
+          </tr>
+          <tr>
+            <td style="padding: 3px 6px;"><strong>ENTIDAD EMISORA / IPS / ARL:</strong> ${entidad}</td>
+            <td style="padding: 3px 6px;"><strong>NIVEL DE RIESGO ARL:</strong> Clase ${empresa.claseRiesgo || 'V'} (${empresa.arl || 'ARL Vigente'})</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- III. RECOMENDACIONES ERGONÓMICAS Y BIOMECÁNICAS -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 11px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px;">
+          II. RECOMENDACIONES ERGONÓMICAS, POSTURALES Y BIOMECÁNICAS
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
-          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>• Tipo de Evaluación / Concepto:</strong><br>${recMed.tipoEvaluacion || 'Concepto de Aptitud Médica Ocupacional con Recomendaciones / Seguimiento PVE'}</div>
-          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>• Entidad Emisora / Vigencia:</strong><br>${recMed.entidadEmisora || 'IPS de Medicina Laboral Certificada / ARL'} (${recMed.vigencia || 'Control Anual PVE'})</div>
+        <div style="font-size: 8.5pt; line-height: 1.5; white-space: pre-line; text-align: justify; color: #0f172a;">${biomecanicas}</div>
+      </div>
+
+      <!-- IV. RESTRICCIONES LABORALES Y ADAPTACIÓN DEL PUESTO -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 11px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #b91c1c; text-transform: uppercase; border-bottom: 2px solid #fecaca; padding-bottom: 4px; margin-bottom: 6px;">
+          III. RESTRICCIONES OCUPACIONALES Y ADAPTACIÓN DEL PUESTO DE TRABAJO
         </div>
-        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px]">
-          <strong class="text-slate-900 block uppercase text-[10px] tracking-wider text-teal-800">1. Recomendaciones Biomecánicas y de Higiene Postural:</strong>
-          <p class="mt-1 text-slate-700">${recMed.recomendacionesBiomecanicas || `Realizar pausas activas dirigidas de 5 a 10 minutos cada 2 horas de jornada continua. Aplicar higiene postural estricta en el puesto de ${trabajador.cargo} y no levantar cargas mayores a 25 kg sin ayuda mecánica.`}</p>
-        </div>
-        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px]">
-          <strong class="text-slate-900 block uppercase text-[10px] tracking-wider text-indigo-800">2. Restricciones Ocupacionales y Adaptación del Puesto:</strong>
-          <p class="mt-1 text-slate-700"><strong>Restricciones:</strong> ${recMed.restriccionesLaborales || 'Sin restricciones absolutas que impidan la labor, sujeto a cumplimiento de pausas activas y controles.'}</p>
-          <p class="mt-1 text-slate-700"><strong>Adaptación del Puesto:</strong> ${recMed.adaptacionPuesto || 'Adecuación ergonómica del área operativa, ayudas mecánicas para transporte de cargas e iluminación óptima.'}</p>
-        </div>
-        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-950">
-          <strong class="block uppercase text-[10px] tracking-wider">3. Seguimiento Epidemiológico y Compromiso de Cumplimiento:</strong>
-          <p class="mt-1">${recMed.seguimientoControl || 'Seguimiento periódico por el Responsable SG-SST y valoración médica ocupacional anual de control.'}</p>
-          <p class="mt-1 font-semibold">${recMed.compromisoLegal || 'El trabajador y el empleador se comprometen al acatamiento estricto de las recomendaciones médicas emitidas conforme a la Resolución 2346 de 2007.'}</p>
+        <div style="font-size: 8.5pt; line-height: 1.5; white-space: pre-line; text-align: justify; background: #fff5f5; border: 1px solid #fecaca; border-radius: 6px; padding: 7px 10px; color: #7f1d1d; margin-bottom: 8px;">${restricciones}</div>
+        <div style="font-size: 8.5pt; line-height: 1.5; text-align: justify; color: #0f172a;">
+          <strong>• Medidas de Adaptación Razonable del Puesto:</strong><br>${adaptacion}
         </div>
       </div>
+
+      <!-- V. PLAN DE SEGUIMIENTO MÉDICO-OCUPACIONAL -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 11px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px;">
+          IV. PLAN DE SEGUIMIENTO EPIDEMIOLÓGICO Y PERIODICIDAD DE CONTROL (PVE)
+        </div>
+        <div style="font-size: 8.5pt; line-height: 1.5; white-space: pre-line; text-align: justify; color: #0f172a;">${seguimiento}</div>
+      </div>
+
+      <!-- VI. DECLARACIÓN DE AUTOCUIDADO Y RESERVA LEGAL -->
+      <div style="border: 1px solid #bbf7d0; border-left: 4px solid #0d9488; background: #f0fdf4; border-radius: 6px; padding: 9px 12px; margin-bottom: 12px; page-break-inside: avoid; font-size: 8pt; color: #064e3b; text-align: justify;">
+        <strong>V. DECLARACIÓN DE NOTIFICACIÓN, AUTOCUIDADO Y RESERVA DE HISTORIA CLÍNICA:</strong><br>
+        ${compromiso}<br>
+        <span style="font-size: 7.5pt; font-style: italic; color: #047857;">Nota de Confidencialidad (Res. 2346/2007 & Ley 1581/2012): El diagnóstico clínico e historia médica están sujetos a reserva legal; este formato consigna exclusivamente las recomendaciones para la prevención y adaptación del puesto.</span>
+      </div>
+
+      ${generarFirmasYSelloCorporativoCarta({ empresa, trabajador, isFirmado, sigFound, firmaGuardadaUrl, codigoDoc, incluirRepresentanteLegal: true })}
     `;
   } else {
-    codigoDoc = 'ANX-CONT-006';
+    // 6. CONTRATO INDIVIDUAL DE TRABAJO Y ANEXO CONTRACTUAL SST
+    codigoDoc = `CONT-SST-${cargoCode}`;
     const anexoCfg = configCargo?.anexoContractual || {};
     const c1 = anexoCfg.clausula1_objeto || anexoCfg.notificacionRiesgos || `EL EMPLEADOR contrata los servicios personales de EL TRABAJADOR para desempeñar el cargo de ${trabajador.cargo}, ejecutando de manera directa, subordinada y diligente las funciones inherentes al puesto conforme al Manual de Funciones, Perfil de Cargo y directrices técnicas de la empresa en el marco de su objeto social.`;
-    const c2 = anexoCfg.clausula2_duracion || 'El presente contrato se celebra por la duración de la obra o labor encomendada / por el término pactado entre las partes. La relación laboral terminará válidamente por culminación de la labor contratada, por mutuo acuerdo entre las partes o unilateralmente con justa causa conforme al Artículo 62 del Código Sustantivo del Trabajo (CST), sin lugar a indemnización.';
-    const c3 = anexoCfg.clausula3_salario || 'EL EMPLEADOR pagará a EL TRABAJADOR por la prestación de sus servicios la remuneración mensual pactada en dinero legal colombiano, sobre la cual se liquidarán las prestaciones sociales de ley y los aportes al Sistema de Seguridad Social Integral.';
-    const c4 = anexoCfg.clausula4_obligaciones_sst || anexoCfg.clausulaPrincipal || 'Dada la naturaleza de alto riesgo y directrices del SG-SST, EL TRABAJADOR se obliga perentoriamente a procurar el cuidado integral de su salud, cumplir estrictamente los Procedimientos de Trabajo Seguro (PTS), portar los EPP y no realizar tareas críticas sin permiso de trabajo.';
+
+    let duracionDefault = 'El presente contrato se celebra por la duración de la obra o labor encomendada / por el término pactado entre las partes. La relación laboral terminará válidamente por culminación de la labor contratada, por mutuo acuerdo entre las partes o unilateralmente con justa causa conforme al Artículo 62 del Código Sustantivo del Trabajo (CST), sin lugar a indemnización.';
+    if (trabajador.tipoContrato === 'Término Fijo' && trabajador.fechaFinContrato) {
+      duracionDefault = `El presente contrato se celebra a TÉRMINO FIJO con fecha de inicio el ${trabajador.fechaContrato || trabajador.fechaIngreso || 'inicio de labores'} y fecha de vencimiento pactada el ${trabajador.fechaFinContrato}. Su prórroga se regirá estrictamente por lo previsto en el Artículo 46 del Código Sustantivo del Trabajo. La terminación operará válidamente por expiración del plazo fijado con el preaviso legal de mínimo treinta (30) días, por mutuo acuerdo o unilateralmente con justa causa (Art. 62 CST).`;
+    } else if (trabajador.tipoContrato === 'Término Indefinido') {
+      duracionDefault = `El presente contrato se celebra a TÉRMINO INDEFINIDO a partir del ${trabajador.fechaContrato || trabajador.fechaIngreso || 'inicio de labores'}, subsistiendo mientras perduren las causas que le dieron origen y la materia del trabajo. Podrá darse por terminado válidamente por mutuo acuerdo o unilateralmente con justa causa conforme al Artículo 62 del Código Sustantivo del Trabajo.`;
+    }
+    const c2 = anexoCfg.clausula2_duracion || duracionDefault;
+    const c3 = anexoCfg.clausula3_salario || `EL EMPLEADOR pagará a EL TRABAJADOR por la prestación de sus servicios el salario mensual pactado de ${formatCOP(trabajador.salario || 1750905)} M/CTE, sobre el cual se liquidarán las prestaciones sociales de ley y los aportes al Sistema de Seguridad Social Integral conforme a la legislación laboral colombiana.`;
+    const c4 = anexoCfg.clausula4_obligaciones_sst || anexoCfg.clausulaPrincipal || 'Dada la naturaleza de alto riesgo y directrices del SG-SST, EL TRABAJADOR se obliga perentoriamente a procurar el cuidado integral de su salud, cumplir estrictamente los Procedimientos de Trabajo Seguro (PTS), portar e inspeccionar permanentemente los EPP y no realizar tareas críticas sin permiso de trabajo.';
     const c5 = anexoCfg.clausula5_faltas_graves || anexoCfg.regimenSancionatorio || 'Se califica expresamente como FALTA GRAVE (Art. 58 y Art. 62 Literal a) Num. 6 del CST, y Art. 91 Dec. 1295/94): el no uso reiterado de los EPP, el desacato de los PTS, presentarse bajo efectos de alcohol o drogas y cualquier omisión que comprometa la seguridad, facultando la terminación unilateral con justa causa.';
     const c6 = anexoCfg.clausula6_culpa_exclusiva || 'Si ocurre un accidente de trabajo derivado de la imprudencia temeraria, desatención voluntaria o violación de procedimientos de seguridad por parte del trabajador, dicho evento se considerará por CULPA EXCLUSIVA DEL TRABAJADOR, exonerando al empleador de responsabilidad civil ordinaria de perjuicios (Art. 216 CST).';
     const c7 = anexoCfg.clausula7_seguridad_social || 'EL EMPLEADOR afiliará y mantendrá al día las cotizaciones de EL TRABAJADOR al Sistema de Seguridad Social Integral: Salud (EPS), Pensión (AFP) y Riesgos Laborales (ARL) conforme a la Ley 100 de 1993 y Decreto 1072 de 2015.';
     const c8 = anexoCfg.clausula8_elementos_herramientas || 'EL EMPLEADOR suministrará las herramientas, equipos y elementos requeridos para la labor bajo inventario y custodia. En caso de portabilidad o traslado, el trabajador responderá por su debido cuidado y restitución inmediata.';
-    const c9 = anexoCfg.clausula9_domicilio_firmas || 'Las partes fijan como domicilio contractual la ciudad de ejecución de labores y manifiestan que este documento contiene la totalidad de los acuerdos vinculantes suscritos en dos ejemplares.';
+    const c9 = anexoCfg.clausula9_domicilio_firmas || `Las partes fijan como domicilio contractual la ciudad de ${empresa.ciudad || 'Bogotá D.C.'} y manifiestan que este documento contiene la totalidad de los acuerdos vinculantes suscritos en dos (2) ejemplares de igual valor y tenor legal.`;
 
     contenidoHtml = `
-      <div class="space-y-2.5 text-xs leading-relaxed text-slate-800">
-        <div class="p-2.5 bg-indigo-50 border border-indigo-200 rounded-xl text-[11px] text-indigo-950">
-          <strong>Anexo Contractual y Notificación de Riesgos:</strong> Contrato Individual de Trabajo y Compromisos SST (9 Cláusulas).
-        </div>
-        <div class="space-y-2 pr-1">
-          <div class="p-2.5 bg-slate-50 border rounded-lg"><strong>I. Objeto, Cargo y Alcance:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c1}</p></div>
-          <div class="p-2.5 bg-slate-50 border rounded-lg"><strong>II. Duración y Terminación:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c2}</p></div>
-          <div class="p-2.5 bg-slate-50 border rounded-lg"><strong>III. Salario y Forma de Pago:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c3}</p></div>
-          <div class="p-2.5 bg-slate-50 border rounded-lg"><strong>IV. Obligaciones y Protocolos SST:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c4}</p></div>
-          <div class="p-2.5 bg-rose-50 border border-rose-200 rounded-lg"><strong>V. Faltas Graves y Justa Causa:</strong> <p class="text-[11px] text-rose-900 mt-0.5">${c5}</p></div>
-          <div class="p-2.5 bg-indigo-50 border border-indigo-200 rounded-lg"><strong>VI. Culpa Exclusiva y Exoneración:</strong> <p class="text-[11px] text-indigo-900 mt-0.5">${c6}</p></div>
-          <div class="p-2.5 bg-slate-50 border rounded-lg"><strong>VII. Seguridad Social Integral:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c7}</p></div>
-          <div class="p-2.5 bg-slate-50 border rounded-lg"><strong>VIII. Elementos y Portabilidad de Herramientas:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c8}</p></div>
-          <div class="p-2.5 bg-slate-50 border rounded-lg"><strong>IX. Domicilio, Acuerdo Total y Firmas:</strong> <p class="text-[11px] text-slate-700 mt-0.5">${c9}</p></div>
-        </div>
+      ${generarEncabezadoCorporativoCarta({
+        empresa,
+        titulo: `CONTRATO INDIVIDUAL DE TRABAJO A ${(trabajador.tipoContrato || 'TÉRMINO INDEFINIDO').toUpperCase()} Y ANEXO SST`,
+        norma: 'Código Sustantivo del Trabajo de Colombia • Decreto 1072 de 2015 Art. 2.2.4.6.15 • Resolución 0312 de 2019 • 9 Cláusulas Estructuradas',
+        codigo: codigoDoc,
+        version: '01',
+        fecha: trabajador.fechaContrato || trabajador.fechaIngreso || fechaEmision
+      })}
+
+      <!-- TABLA CONTRACTUAL DE LAS PARTES -->
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 8pt; color: #0f172a;">
+        <tr>
+          <th style="width: 28%; background: #f8fafc; border: 1px solid #cbd5e1; padding: 4.5px 8px; text-align: left; color: #334155;">EMPLEADOR:</th>
+          <td style="border: 1px solid #cbd5e1; padding: 4.5px 8px;"><strong>${empresa.razonSocial}</strong> (NIT: ${empresa.nit})</td>
+        </tr>
+        <tr>
+          <th style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 4.5px 8px; text-align: left; color: #334155;">REPRESENTANTE LEGAL:</th>
+          <td style="border: 1px solid #cbd5e1; padding: 4.5px 8px;">${empresa.representanteLegal || 'Gerencia General'}</td>
+        </tr>
+        <tr>
+          <th style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 4.5px 8px; text-align: left; color: #334155;">TRABAJADOR:</th>
+          <td style="border: 1px solid #cbd5e1; padding: 4.5px 8px;"><strong>${trabajador.nombre}</strong></td>
+        </tr>
+        <tr>
+          <th style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 4.5px 8px; text-align: left; color: #334155;">DOCUMENTO DE IDENTIDAD:</th>
+          <td style="border: 1px solid #cbd5e1; padding: 4.5px 8px;"><strong>C.C. ${trabajador.identificacion || trabajador.cedula}</strong></td>
+        </tr>
+        <tr>
+          <th style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 4.5px 8px; text-align: left; color: #334155;">CARGO CONTRATADO:</th>
+          <td style="border: 1px solid #cbd5e1; padding: 4.5px 8px;"><strong>${trabajador.cargo}</strong> (${cargoFormal?.department || trabajador.area || 'Operaciones'})</td>
+        </tr>
+        <tr>
+          <th style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 4.5px 8px; text-align: left; color: #334155;">SALARIO MENSUAL PACTADO:</th>
+          <td style="border: 1px solid #cbd5e1; padding: 4.5px 8px;"><strong>${formatCOP(trabajador.salario || 1750905)} M/CTE</strong></td>
+        </tr>
+        <tr>
+          <th style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 4.5px 8px; text-align: left; color: #334155;">FECHA DE INICIO DE LABORES:</th>
+          <td style="border: 1px solid #cbd5e1; padding: 4.5px 8px;"><strong>${trabajador.fechaContrato || trabajador.fechaIngreso || 'Al momento de suscripción'}</strong></td>
+        </tr>
+        ${trabajador.fechaFinContrato ? `
+          <tr>
+            <th style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 4.5px 8px; text-align: left; color: #334155;">FECHA DE VENCIMIENTO PACTADA:</th>
+            <td style="border: 1px solid #cbd5e1; padding: 4.5px 8px;"><strong style="color: #b91c1c;">${trabajador.fechaFinContrato}</strong> (Sujeto a preaviso legal Art. 46 CST)</td>
+          </tr>
+        ` : ''}
+        <tr>
+          <th style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 4.5px 8px; text-align: left; color: #334155;">TIPO DE CONTRATO:</th>
+          <td style="border: 1px solid #cbd5e1; padding: 4.5px 8px;"><strong>${trabajador.tipoContrato || 'Término Indefinido'}</strong></td>
+        </tr>
+      </table>
+
+      <!-- PREÁMBULO CONTRACTUAL -->
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; margin-bottom: 9px; background: #f8fafc; font-size: 8.5pt; text-align: justify; line-height: 1.45;">
+        Entre los suscritos a saber: por una parte <strong>${empresa.razonSocial}</strong> (NIT: ${empresa.nit}), sociedad legalmente constituida, representada por <strong>${empresa.representanteLegal || 'la Gerencia General'}</strong>, en adelante <strong>EL EMPLEADOR</strong>, y por la otra parte <strong>${trabajador.nombre}</strong>, mayor de edad, identificado(a) con cédula de ciudadanía Nº <strong>${trabajador.identificacion || trabajador.cedula}</strong>, en adelante <strong>EL TRABAJADOR</strong> contratado para el cargo de <strong>${trabajador.cargo}</strong>, se celebra el presente <strong>CONTRATO INDIVIDUAL DE TRABAJO Y ANEXO CONTRACTUAL DE SST</strong>, el cual se regirá por el Código Sustantivo del Trabajo de Colombia, el Decreto 1072 de 2015, la Resolución 0312 de 2019 y las siguientes nueve (9) cláusulas pactadas de común acuerdo:
       </div>
+
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 4px;">CLÁUSULA PRIMERA: OBJETO, CARGO Y ALCANCE</div>
+        <p style="margin: 0; font-size: 8.5pt; text-align: justify; line-height: 1.45;">${c1}</p>
+      </div>
+
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 4px;">CLÁUSULA SEGUNDA: DURACIÓN Y TERMINACIÓN DE LA LABOR</div>
+        <p style="margin: 0; font-size: 8.5pt; text-align: justify; line-height: 1.45;">${c2}</p>
+      </div>
+
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 4px;">CLÁUSULA TERCERA: SALARIO Y FORMA DE PAGO</div>
+        <p style="margin: 0; font-size: 8.5pt; text-align: justify; line-height: 1.45;">${c3}</p>
+      </div>
+
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 4px;">CLÁUSULA CUARTA: OBLIGACIONES ESPECIALES Y PROTOCOLOS SST (ALTO RIESGO)</div>
+        <p style="margin: 0; font-size: 8.5pt; text-align: justify; line-height: 1.45;">${c4}</p>
+      </div>
+
+      <div style="border: 1px solid #fecaca; border-left: 4px solid #b91c1c; background: #fff5f5; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #b91c1c; text-transform: uppercase; border-bottom: 1.5px solid #fecaca; padding-bottom: 3px; margin-bottom: 4px;">CLÁUSULA QUINTA: FALTAS GRAVES Y JUSTAS CAUSAS DE TERMINACIÓN</div>
+        <p style="margin: 0; font-size: 8.5pt; color: #7f1d1d; text-align: justify; line-height: 1.45;">${c5}</p>
+      </div>
+
+      <div style="border: 1px solid #e0e7ff; border-left: 4px solid #4338ca; background: #f8fafc; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #3730a3; text-transform: uppercase; border-bottom: 1.5px solid #e0e7ff; padding-bottom: 3px; margin-bottom: 4px;">CLÁUSULA SEXTA: CULPA EXCLUSIVA DEL TRABAJADOR Y EXONERACIÓN PATRONAL (ART. 216 CST)</div>
+        <p style="margin: 0; font-size: 8.5pt; text-align: justify; line-height: 1.45;">${c6}</p>
+      </div>
+
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 4px;">CLÁUSULA SÉPTIMA: SEGURIDAD SOCIAL INTEGRAL</div>
+        <p style="margin: 0; font-size: 8.5pt; text-align: justify; line-height: 1.45;">${c7}</p>
+      </div>
+
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 4px;">CLÁUSULA OCTAVA: ELEMENTOS DE TRABAJO Y PORTABILIDAD DE HERRAMIENTAS</div>
+        <p style="margin: 0; font-size: 8.5pt; text-align: justify; line-height: 1.45;">${c8}</p>
+      </div>
+
+      <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; margin-bottom: 10px; page-break-inside: avoid;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #1e1b4b; text-transform: uppercase; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 4px;">CLÁUSULA NOVENA: DOMICILIO CONTRACTUAL, ACUERDO TOTAL Y FIRMAS</div>
+        <p style="margin: 0; font-size: 8.5pt; text-align: justify; line-height: 1.45;">${c9}</p>
+      </div>
+
+      <div style="font-size: 8pt; margin: 10px 0 12px 0; text-align: justify; color: #0f172a;">
+        Para constancia de comprensión, aceptación expresa y notificación plena de las nueve (9) cláusulas aquí contenidas, se firma en dos (2) ejemplares de igual valor y tenor legal a los ${new Date().getDate()} días del mes de ${new Intl.DateTimeFormat('es-CO', { month: 'long' }).format(new Date())} de ${new Date().getFullYear()}.
+      </div>
+
+      ${generarFirmasYSelloCorporativoCarta({ empresa, trabajador, isFirmado, sigFound, firmaGuardadaUrl, codigoDoc, incluirRepresentanteLegal: true })}
     `;
   }
-
-  const firmaGuardadaUrl =
-    obtenerUrlFirmaTrabajador(trabajador) ||
-    trabajador.firma_digital_url ||
-    trabajador.firma_base64 ||
-    trabajador.signature_url ||
-    trabajador.signature_svg ||
-    null;
 
   const modalEl = document.createElement('div');
   modalEl.id = modalId;
@@ -6662,7 +7233,7 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
         <span class="text-2xl flex-shrink-0">📜</span>
         <div class="overflow-hidden">
           <div class="flex items-center gap-2">
-            <span class="text-[10px] font-black uppercase tracking-wider text-teal-300 font-mono">${codigoDoc}</span>
+            <span class="text-[10px] font-black uppercase tracking-wider text-teal-300 font-mono">${codigoDoc} • Versión 01 • Tamaño Carta</span>
             <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${isFirmado ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
               ${isFirmado ? '✅ Firmado' : '⚠️ Pendiente'}
             </span>
@@ -6679,61 +7250,39 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
       </button>
     </div>
 
-    <!-- Contenido Legible del Documento -->
-    <div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100">
-      <div id="contenedor-imprimible-doc-cargo" class="bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-slate-200 max-w-3xl mx-auto space-y-4">
+    <!-- Hoja Corporativa Tamaño Carta + Panel de Firma Interactiva -->
+    <div class="flex-1 overflow-y-auto p-3 sm:p-6 bg-slate-200 space-y-4">
+      <!-- HOJA OFICIAL IMPRIMIBLE TAMAÑO CARTA -->
+      <div id="contenedor-imprimible-doc-cargo" class="bg-white p-5 sm:p-8 rounded-xl shadow-xl border border-slate-300 max-w-[816px] mx-auto text-slate-900" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 9pt; line-height: 1.5;">
         ${contenidoHtml}
+      </div>
 
-        ${isFirmado ? `
-          <div class="pt-4 border-t border-slate-200">
-            <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-black text-emerald-900 uppercase flex items-center gap-1.5">
-                  <span>✅</span> Documento Firmado Digitalmente (Ley 527 de 1999)
-                </span>
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-200 text-emerald-900">
-                  Vigente
-                </span>
+      <!-- PANEL INTERACTIVO DE FIRMA (NO SE IMPRIME EN EL PDF) -->
+      ${!isFirmado ? `
+        <div data-html2canvas-ignore="true" class="no-print max-w-[816px] mx-auto bg-white p-4 sm:p-5 rounded-2xl shadow-md border-2 border-teal-500 space-y-3">
+          ${firmaGuardadaUrl ? `
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div>
+                <strong class="text-sm font-black text-emerald-950 block">✅ Tu Firma Digital ya está lista para estamparse en el Formato Corporativo</strong>
+                <span class="text-xs text-emerald-800">Toca el botón verde <strong>"✅ Sí, Firmar Documento"</strong> abajo para estampar tu firma en este formato oficial.</span>
               </div>
-              
-              <div class="flex flex-col sm:flex-row items-center gap-4 pt-1">
-                <div class="p-2 bg-white rounded-xl border border-emerald-200 flex-shrink-0 text-center">
-                  <img src="${sigFound.signature_image_file || sigFound.signature_svg_or_base64 || sigFound.firmaDataUrl || firmaGuardadaUrl || ''}" alt="Firma" style="max-height: 60px; max-width: 180px; object-fit: contain;">
-                  <span class="text-[10px] text-slate-600 block font-mono mt-0.5">${trabajador.nombre}</span>
-                </div>
-                <div class="text-[11px] font-mono text-slate-700 space-y-1 overflow-hidden">
-                  <p class="truncate"><strong class="text-slate-900">Hash SHA-256:</strong> ${sigFound.signature_sha256 || sigFound.sha256_hash || sigFound.hashDocumento || 'Verificado'}</p>
-                  <p><strong class="text-slate-900">Fecha Bogotá (UTC-5):</strong> ${sigFound.bogota_timestamp || (sigFound.signed_at || sigFound.fechaHoraISO ? new Date(sigFound.signed_at || sigFound.fechaHoraISO).toLocaleString('es-CO') : 'Registrado')}</p>
-                </div>
+              <div class="bg-slate-50 p-2 rounded-xl border border-emerald-300 flex-shrink-0">
+                <img src="${firmaGuardadaUrl}" alt="Firma Registrada" style="max-height: 50px; max-width: 150px; object-fit: contain;">
               </div>
             </div>
-          </div>
-        ` : `
-          <div class="pt-4 border-t border-slate-200 space-y-3">
-            ${firmaGuardadaUrl ? `
-              <div class="p-4 bg-emerald-50 border-2 border-emerald-400 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div>
-                  <strong class="text-sm font-black text-emerald-950 block">✅ Tu Firma Digital ya está lista</strong>
-                  <span class="text-xs text-emerald-800">Solo toca el botón verde abajo para firmar este documento con 1 toque.</span>
-                </div>
-                <div class="bg-white p-2 rounded-xl border border-emerald-300 flex-shrink-0">
-                  <img src="${firmaGuardadaUrl}" alt="Firma Registrada" style="max-height: 50px; max-width: 150px; object-fit: contain;">
-                </div>
+          ` : `
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-black text-slate-900 uppercase">✍️ Dibuja tu Firma con el Dedo para estamparla en el Formato:</span>
+                <button type="button" id="btn-clear-doc-sig" class="text-xs text-rose-600 underline font-bold cursor-pointer">Borrar Firma</button>
               </div>
-            ` : `
-              <div class="space-y-1.5">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-black text-slate-900 uppercase">✍️ Dibuja tu Firma con el Dedo:</span>
-                  <button type="button" id="btn-clear-doc-sig" class="text-xs text-rose-600 underline font-bold cursor-pointer">Borrar Firma</button>
-                </div>
-                <div class="border-2 border-teal-500 rounded-2xl overflow-hidden bg-white">
-                  <canvas id="canvas-doc-sig" class="signature-pad-canvas w-full h-36"></canvas>
-                </div>
+              <div class="border-2 border-teal-500 rounded-2xl overflow-hidden bg-white">
+                <canvas id="canvas-doc-sig" class="signature-pad-canvas w-full h-36"></canvas>
               </div>
-            `}
-          </div>
-        `}
-      </div>
+            </div>
+          `}
+        </div>
+      ` : ''}
     </div>
 
     <!-- Barra Inferior Fija con Botones Grandes de Alta Accesibilidad -->
@@ -6751,10 +7300,18 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
       <div class="flex items-center gap-2 w-full sm:w-auto">
         <button 
           type="button" 
-          onclick="window.descargarPdfVisorCargoActual('${escapeHtml(cargoTitle)}')"
-          class="flex-1 sm:flex-initial min-h-[48px] px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+          onclick="window.descargarPdfVisorCargoActual('${escapeHtml(codigoDoc + '_' + cargoTitle + '_' + trabajador.nombre)}')"
+          class="flex-1 sm:flex-initial min-h-[48px] px-4 py-2.5 bg-teal-700 hover:bg-teal-600 text-white rounded-xl text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
         >
-          <span>📥 Descargar PDF</span>
+          <span>📥 Descargar PDF (Carta)</span>
+        </button>
+
+        <button 
+          type="button" 
+          onclick="window.imprimirFormatoCartaVisorActual('${escapeHtml(codigoDoc + ' - ' + cargoTitle)}')"
+          class="flex-1 sm:flex-initial min-h-[48px] px-4 py-2.5 bg-indigo-700 hover:bg-indigo-600 text-white rounded-xl text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+        >
+          <span>🖨️ Imprimir Carta</span>
         </button>
 
         <button 

@@ -3117,27 +3117,16 @@ window.eliminarCargoDirecto = async function(cargoId) {
 // =============================================================================
 
 function generarCeldaLogoEmpresa(empresa, subtexto = '') {
-  const razon = (empresa?.razonSocial || 'EMPRESA CLIENTE').toUpperCase();
+  const razon = (empresa?.razonSocial || empresa?.name || 'SERVICIOS IG SAS').toUpperCase();
   const nit = empresa?.nit ? `NIT: ${empresa.nit}` : '';
+  const logoSrc = empresa?.logoUrl || empresa?.logo_url || empresa?.logo || './assets/app-icon.png';
 
-  if (empresa?.logoUrl) {
-    return `
-      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px; text-align: center;">
-        <img src="${empresa.logoUrl}" alt="${razon}" style="max-height: 52px; max-width: 145px; object-fit: contain; margin-bottom: 3px;">
-        <strong style="font-size: 7.5pt; color: #0f172a; line-height: 1.15; max-width: 160px; word-break: break-word;">${razon}</strong>
-        ${nit ? `<span style="font-size: 6.5pt; color: #64748b; line-height: 1.1;">${nit}</span>` : ''}
-      </div>
-    `;
-  }
-
-  const initials = razon.split(/\s+/).filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase() || 'SG';
   return `
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px; text-align: center;">
-      <div style="width: 44px; height: 44px; border-radius: 8px; background: #0f172a; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13pt; margin-bottom: 3px; letter-spacing: 0.5px;">
-        ${initials}
-      </div>
+      <img src="${logoSrc}" alt="${razon}" style="max-height: 48px; max-width: 135px; object-fit: contain; margin-bottom: 3px;" onerror="this.style.display='none'">
       <strong style="font-size: 8pt; color: #0f172a; line-height: 1.15; max-width: 160px; word-break: break-word;">${razon}</strong>
-      ${nit ? `<span style="font-size: 6.5pt; color: #64748b; line-height: 1.1;">${nit}</span>` : ''}
+      ${nit ? `<span style="font-size: 6.8pt; color: #475569; line-height: 1.1; font-weight: 700;">${nit}</span>` : ''}
+      ${subtexto ? `<span style="font-size: 6pt; color: #64748b; line-height: 1.1; margin-top: 1px;">${subtexto}</span>` : ''}
     </div>
   `;
 }
