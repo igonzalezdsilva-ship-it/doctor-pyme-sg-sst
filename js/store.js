@@ -3312,6 +3312,7 @@ class Store {
         profesiograma: { ...def.profesiograma, ...(existing.profesiograma || {}) },
         matrizEpp: { ...def.matrizEpp, ...(existing.matrizEpp || {}) },
         anexoContractual: { ...def.anexoContractual, ...(existing.anexoContractual || {}) },
+        recomendacionesMedicas: { ...def.recomendacionesMedicas, ...(existing.recomendacionesMedicas || {}) },
         contratoModelo: { ...def.contratoModelo, ...(existing.contratoModelo || {}) }
       };
     }
@@ -3553,6 +3554,17 @@ class Store {
         clausulaPrincipal: 'Dada la naturaleza de alto riesgo y directrices del SG-SST, EL TRABAJADOR se obliga al cumplimiento de los Procedimientos de Trabajo Seguro (PTS), uso de EPP y autocuidado integral.',
         regimenSancionatorio: 'El incumplimiento de las obligaciones de SST constituirá FALTA GRAVE conforme al Art. 62 del CST.'
       },
+      recomendacionesMedicas: {
+        tipoEvaluacion: 'Concepto de Aptitud Médica Ocupacional con Recomendaciones / Seguimiento PVE',
+        entidadEmisora: 'IPS de Medicina del Trabajo y Salud Ocupacional Certificada / EPS / ARL',
+        vigencia: 'Permanente / Control Anual en Programa de Vigilancia Epidemiológica (PVE)',
+        recomendacionesBiomecanicas: `Realizar pausas activas dirigidas de 5 a 10 minutos cada 2 horas de jornada continua. Aplicar higiene postural estricta en el puesto de ${cargoName}. Evitar levantamiento manual de cargas superiores a 25 kg en hombres y 12.5 kg en mujeres sin ayuda mecánica.`,
+        restriccionesLaborales: 'Sin restricciones absolutas que impidan la labor, sujeto a cumplimiento de pausas activas, alternancia postural y controles de ingeniería.',
+        adaptacionPuesto: 'Adecuación ergonómica del área operativa, ayudas mecánicas para transporte de cargas e iluminación óptima.',
+        eppProteccion: epp.join(', '),
+        seguimientoControl: 'Seguimiento periódico por el Responsable SG-SST y valoración médica ocupacional anual de control.',
+        compromisoLegal: 'El trabajador y el empleador se comprometen al acatamiento estricto de las recomendaciones médicas emitidas conforme a la Resolución 2346 de 2007 y Decreto 1072 de 2015.'
+      },
       contratoModelo: {
         tipoSugerido: 'Término Indefinido',
         jornada: '46 horas semanales ordinarias (Ley 2101 de 2021) conforme al horario establecido por el empleador.',
@@ -3560,6 +3572,159 @@ class Store {
         obligacionesSST: 'El trabajador se compromete expresamente a cumplir todas las directrices del SG-SST (Decreto 1072 de 2015). El incumplimiento reiterado de normas de seguridad constituirá justa causa de terminación del contrato.'
       }
     };
+  }
+
+  // =============================================================================
+  // CRUD POLÍTICAS Y REGLAMENTOS DE LA EMPRESA (PUBLICACIÓN A APP DEL TRABAJADOR)
+  // =============================================================================
+  getPlantillaPoliticasEmpresaPorDefecto(companyId = null) {
+    const cid = companyId || (this.empresaActivaId !== 'todas' ? this.empresaActivaId : 'emp-1790438946268');
+    const emp = this.getEmpresaById(cid) || { razonSocial: 'LA EMPRESA', nit: '900.000.000-1' };
+    const razon = emp.razonSocial || 'LA EMPRESA';
+    return [
+      {
+        id: 'DOC-POL-SST-01',
+        companyId: cid,
+        codigo: 'POL-SST-001',
+        version: '01',
+        title: 'Política Integral de Seguridad y Salud en el Trabajo',
+        categoria: 'Política Obligatoria',
+        norma: 'Decreto 1072 de 2015 (Art. 2.2.4.6.5, 2.2.4.6.6 y 2.2.4.6.7) & Res. 0312 de 2019',
+        estadoPublicacion: 'PUBLICADO',
+        fechaVigencia: new Date().toISOString().split('T')[0],
+        enlace: 'https://docs.google.com/document/d/1vfHlhlNkl3thBA5VrxDOoYrR_lb93BAMUjNfJ_L5x8A/edit?usp=sharing',
+        objetivo: `En ${razon} nos comprometemos desde la Alta Dirección con la protección de la vida, la integridad física, mental y social de todos nuestros trabajadores, contratistas y subcontratistas en todos los centros de trabajo y frentes operativos, mediante la identificación continua de peligros, evaluación y valoración de riesgos y determinación de controles eficaces.`,
+        puntos: [
+          'Ninguna meta de producción, operación o urgencia está por encima de la vida, la salud y la seguridad del trabajador.',
+          'Identificar los peligros, evaluar y valorar los riesgos y establecer los respectivos controles para prevenir accidentes de trabajo y enfermedades laborales.',
+          'Proteger la seguridad y salud de todos los trabajadores mediante la mejora continua del Sistema de Gestión de la Seguridad y Salud en el Trabajo (SG-SST).',
+          'Cumplir rigurosamente la normatividad nacional vigente aplicable en materia de riesgos laborales y demás requisitos que suscriba la empresa.',
+          'Garantizar la consulta y participación activa de los trabajadores a través del COPASST o Vigía SST y el Comité de Convivencia Laboral.',
+          'Asignar los recursos humanos, técnicos y financieros necesarios y suministrar oportunamente los Elementos de Protección Personal (EPP) certificados.'
+        ],
+        clausulaAceptacion: `Declaro que he leído, comprendido y recibido socialización de la Política Integral de Seguridad y Salud en el Trabajo de ${razon}, y me comprometo a cumplirla en mis labores diarias.`
+      },
+      {
+        id: 'DOC-POL-ALC-02',
+        companyId: cid,
+        codigo: 'POL-SPA-002',
+        version: '01',
+        title: 'Política de Prevención de Consumo de Alcohol, Tabaco y Sustancias Psicoactivas',
+        categoria: 'Política Obligatoria',
+        norma: 'Resolución 1075 de 1992, Ley 1335 de 2009, Código Sustantivo del Trabajo Art. 60 y Dec. 1072/2015',
+        estadoPublicacion: 'PUBLICADO',
+        fechaVigencia: new Date().toISOString().split('T')[0],
+        enlace: 'https://docs.google.com/document/d/1vfHlhlNkl3thBA5VrxDOoYrR_lb93BAMUjNfJ_L5x8A/edit?usp=sharing',
+        objetivo: `Mantener en ${razon} ambientes de trabajo 100% seguros, sanos, productivos y libres del consumo de bebidas alcohólicas, tabaco, vapeadores y sustancias psicoactivas, previniendo incidentes o accidentes laborales derivados de la alteración de las capacidades físicas o psicomotoras.`,
+        puntos: [
+          'Queda estrictamente prohibido presentarse a laborar, conducir vehículos o permanecer en las instalaciones de la empresa bajo el efecto de bebidas alcohólicas, narcóticos o sustancias psicoactivas.',
+          'Se prohíbe poseer, consumir, distribuir, vender o comercializar bebidas alcohólicas o sustancias psicoactivas dentro de las sedes, obras, vehículos o durante el ejercicio de funciones.',
+          'Se establecen zonas 100% libres de humo de tabaco, cigarrillos electrónicos y vapeadores en todas las áreas cerradas e instalaciones operativas (Ley 1335 de 2009).',
+          'Operar maquinaria, equipos, herramientas o vehículos bajo efectos de estas sustancias constituye FALTA GRAVE (Art. 60 y 62 CST) por poner en peligro grave la vida propia y la de los compañeros.',
+          'La empresa promueve estilos de vida y trabajo saludables, campañas de sensibilización y programas de prevención en articulación con la EPS y la ARL.'
+        ],
+        clausulaAceptacion: `Declaro que conozco y acato la Política de Prevención de Consumo de Alcohol, Tabaco y Sustancias Psicoactivas de ${razon}, comprometiéndome a mantenerme libre de los efectos de dichas sustancias durante mi jornada laboral.`
+      },
+      {
+        id: 'DOC-REG-HIG-03',
+        companyId: cid,
+        codigo: 'REG-HSI-003',
+        version: '01',
+        title: 'Reglamento de Higiene y Seguridad Industrial',
+        categoria: 'Reglamento Legal',
+        norma: 'Artículos 349 y 350 del Código Sustantivo del Trabajo (CST), Ley 962 de 2005 y Decreto 1072 de 2015',
+        estadoPublicacion: 'PUBLICADO',
+        fechaVigencia: new Date().toISOString().split('T')[0],
+        enlace: 'https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing',
+        objetivo: `Prescribir y publicar las disposiciones legales sobre prevención de accidentes de trabajo y enfermedades laborales en ${razon}, garantizando condiciones óptimas de higiene y seguridad industrial en todos los puestos de trabajo.`,
+        puntos: [
+          'La empresa se obliga a promover y garantizar la constitución y funcionamiento del Comité Paritario de Seguridad y Salud en el Trabajo (COPASST) o Vigía SST y el Comité de Convivencia Laboral.',
+          'Los riesgos existentes en la empresa están constituidos principalmente por factores mecánicos, físicos, químicos, eléctricos, locativos, biomecánicos, psicosociales y de tránsito según la Matriz GTC 45.',
+          'Mantener permanentemente el orden, aseo (5S), limpieza y despeje de pasillos, salidas de emergencia, extintores y puestos de trabajo.',
+          'Utilizar obligatoriamente las guardas de protección de máquinas, equipos y herramientas, y portar los EPP suministrados para cada tarea.',
+          'Reportar de inmediato todo incidente o accidente de trabajo, por leve que parezca, al jefe inmediato y al área de SST para su atención y registro ante la ARL.',
+          'Tanto la empresa como los trabajadores darán estricto cumplimiento a las disposiciones legales, técnicas y reglamentarias del SG-SST.'
+        ],
+        clausulaAceptacion: `Certifico que me ha sido socializado y publicado el Reglamento de Higiene y Seguridad Industrial de ${razon} y me comprometo a cumplir sus normas de prevención.`
+      },
+      {
+        id: 'DOC-REG-INT-04',
+        companyId: cid,
+        codigo: 'REG-RIT-004',
+        version: '01',
+        title: 'Reglamento Interno de Trabajo',
+        categoria: 'Reglamento Legal',
+        norma: 'Título IV (Artículos 104 al 126) del Código Sustantivo del Trabajo (CST), Ley 1010 de 2006 y Ley 1429 de 2010',
+        estadoPublicacion: 'PUBLICADO',
+        fechaVigencia: new Date().toISOString().split('T')[0],
+        enlace: 'https://docs.google.com/document/d/1KwN9NqmkfD7RTZMilnMopH4AeTbdIftwNfaBRCQg9H8/edit?usp=sharing',
+        objetivo: `Regular las condiciones laborales, derechos, deberes, jornada de trabajo, convivencia laboral, orden jerárquico, prohibiciones y escala de faltas y procedimientos disciplinarios a los que se sujetan tanto ${razon} (Empleador) como todos sus trabajadores.`,
+        puntos: [
+          'Condiciones de Admisión, Período de Prueba y Jornada Laboral: Cumplir puntualmente con el horario de trabajo, turnos asignados y marcación o registro de asistencia conforme a la Ley 2101 de 2021.',
+          'Deberes y Obligaciones del Trabajador (Art. 58 CST): Realizar personalmente la labor en los términos estipulados, acatar las órdenes e instrucciones del empleador y guardar riguroso respeto y moral en las relaciones con superiores y compañeros.',
+          'Orden, Seguridad y Conservación de Equipos: Conservar y restituir en buen estado los instrumentos, herramientas y útiles que le hayan sido facilitados y acatar con rigor todas las normas del SG-SST.',
+          'Mecanismos de Prevención del Acoso Laboral (Ley 1010 de 2006): Garantizar un trato digno y respetuoso y hacer uso confidencial del Comité de Convivencia Laboral ante cualquier conducta de acoso.',
+          'Escala de Faltas y Procedimiento Disciplinario (Art. 115 CST): Toda sanción disciplinaria o llamado de atención respetará el debido proceso, el derecho a la defensa y descargos del trabajador.',
+          'Justas Causas de Terminación (Art. 62 CST): El incumplimiento grave de las obligaciones contractuales, de seguridad y salud en el trabajo o de las prohibiciones legales facultará la terminación del contrato con justa causa.'
+        ],
+        clausulaAceptacion: `Certifico que he leído, conocido y aceptado el Reglamento Interno de Trabajo de ${razon}, el cual hace parte integral de mi contrato de trabajo conforme al Código Sustantivo del Trabajo.`
+      }
+    ];
+  }
+
+  getPoliticasEmpresa(companyId = null) {
+    const cid = companyId || (this.empresaActivaId !== 'todas' ? this.empresaActivaId : 'emp-1790438946268');
+    if (!Array.isArray(this.data.politicas_empresa)) {
+      this.data.politicas_empresa = [];
+    }
+    const defaults = this.getPlantillaPoliticasEmpresaPorDefecto(cid);
+    const idsValidos = defaults.map(d => d.id);
+
+    // Filtrar políticas guardadas para esta empresa (excluyendo el antiguo DOC-RES-COP-04)
+    const existentes = this.data.politicas_empresa.filter(p =>
+      (p.companyId === cid || ((cid === 'emp-004' || cid === 'emp-1790438946268') && (p.companyId === 'emp-1790438946268' || p.companyId === 'emp-004'))) &&
+      idsValidos.includes(p.id)
+    );
+
+    return defaults.map(def => {
+      const saved = existentes.find(e => e.id === def.id);
+      if (saved) {
+        return {
+          ...def,
+          ...saved,
+          puntos: Array.isArray(saved.puntos) && saved.puntos.length > 0 ? saved.puntos : def.puntos
+        };
+      }
+      return def;
+    });
+  }
+
+  guardarPoliticaEmpresa(companyId, polData) {
+    const cid = companyId || polData?.companyId || (this.empresaActivaId !== 'todas' ? this.empresaActivaId : 'emp-1790438946268');
+    if (!Array.isArray(this.data.politicas_empresa)) {
+      this.data.politicas_empresa = [];
+    }
+    const idx = this.data.politicas_empresa.findIndex(p =>
+      p.id === polData.id &&
+      (p.companyId === cid || ((cid === 'emp-004' || cid === 'emp-1790438946268') && (p.companyId === 'emp-1790438946268' || p.companyId === 'emp-004')))
+    );
+
+    const record = {
+      ...polData,
+      companyId: cid,
+      estadoPublicacion: polData.estadoPublicacion || 'PUBLICADO',
+      updatedAt: new Date().toISOString()
+    };
+
+    if (idx >= 0) {
+      this.data.politicas_empresa[idx] = { ...this.data.politicas_empresa[idx], ...record };
+    } else {
+      this.data.politicas_empresa.push(record);
+    }
+
+    this.saveToStorage();
+    this.notify();
+    return record;
   }
 
   // =============================================================================

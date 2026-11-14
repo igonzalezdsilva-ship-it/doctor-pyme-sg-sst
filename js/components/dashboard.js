@@ -320,11 +320,14 @@ export function renderDashboard() {
             </p>
           </div>
 
-          <div class="flex items-center gap-3">
+          <div class="flex flex-wrap items-center gap-2.5">
             <div class="text-right">
               <span class="text-[10px] text-slate-400 uppercase font-bold block">Cobertura de Firmas</span>
               <span class="text-sm font-black text-indigo-600 font-mono">${Math.round((store.getFirmas(empresaActiva.id).length / Math.max(1, (store.getTrabajadores(empresaActiva.id).length * 4))) * 100)}%</span>
             </div>
+            <button onclick="window.abrirModalPoliticasReglamentosEmpresa && window.abrirModalPoliticasReglamentosEmpresa('${empresaActiva.id}')" class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
+              <span>📜</span> Parametrizar y Publicar Políticas
+            </button>
             <button onclick="window.recordarTodasLasFirmasPendientes()" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition flex items-center gap-1">
               <span>📧</span> Recordar a Todos
             </button>
@@ -339,7 +342,7 @@ export function renderDashboard() {
                 <th class="p-3 text-center border-r border-slate-200">Política SST</th>
                 <th class="p-3 text-center border-r border-slate-200">Política Alcohol/Drogas</th>
                 <th class="p-3 text-center border-r border-slate-200">Reglamento Higiene</th>
-                <th class="p-3 text-center border-r border-slate-200">Acta Responsabilidades</th>
+                <th class="p-3 text-center border-r border-slate-200">Reglamento Interno Trabajo</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
@@ -350,7 +353,7 @@ export function renderDashboard() {
                   { id: 'DOC-POL-SST-01', nombre: 'Política Integral SST' },
                   { id: 'DOC-POL-ALC-02', nombre: 'Política Alcohol y Drogas' },
                   { id: 'DOC-REG-HIG-03', nombre: 'Reglamento de Higiene' },
-                  { id: 'DOC-RES-COP-04', nombre: 'Acta de Responsabilidades' }
+                  { id: 'DOC-REG-INT-04', nombre: 'Reglamento Interno de Trabajo' }
                 ];
 
                 return trabs.map(t => `
@@ -667,7 +670,7 @@ if (typeof window !== 'undefined') {
       { id: 'DOC-POL-SST-01', nombre: 'Política Integral SST' },
       { id: 'DOC-POL-ALC-02', nombre: 'Política Alcohol y Drogas' },
       { id: 'DOC-REG-HIG-03', nombre: 'Reglamento de Higiene' },
-      { id: 'DOC-RES-COP-04', nombre: 'Acta de Responsabilidades' }
+      { id: 'DOC-REG-INT-04', nombre: 'Reglamento Interno de Trabajo' }
     ];
 
     let countPendientes = 0;

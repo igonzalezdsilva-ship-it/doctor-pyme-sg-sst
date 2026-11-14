@@ -216,39 +216,20 @@
       const container = document.getElementById('main-content');
       if (!container) return;
 
-      // Si el usuario no está autenticado o no es un trabajador
-      if (!auth.isAuthenticated()) {
-        renderLoginMovil(container);
+      window.IS_WORKER_MOBILE_APP = true;
+
+      // Si es un trabajador autenticado, renderizar directo su pantalla de inicio personal
+      if (auth.isAuthenticated() && auth.isWorker()) {
+        if (window.cambiarTabMovil) {
+          window.cambiarTabMovil('inicio');
+        } else {
+          renderWorkerPortal();
+        }
         return;
       }
 
-      // Si es un trabajador autenticado, renderizar directo su portal
-      if (auth.isWorker()) {
-        renderWorkerPortal();
-        return;
-      }
-
-      // Si es un Administrador que abrió app.html para probar
-      if (auth.isAdmin() || auth.isCompanyAdmin() || auth.isSuperAdmin()) {
-        const user = auth.getUser();
-        renderWorkerPortal();
-        
-        // Agregar banner superior de aviso para Administradores
-        const topBanner = document.createElement('div');
-        topBanner.className = 'bg-indigo-900/90 text-white p-2.5 text-xs flex items-center justify-between border-b border-indigo-700/50 sticky top-0 z-50';
-        topBanner.innerHTML = `
-          <div class="flex items-center gap-2">
-            <span>🛠️</span>
-            <span><strong>Sesión Admin:</strong> ${escapeHtml(user.nombre)}</span>
-          </div>
-          <a href="./index.html" class="px-2.5 py-1 bg-indigo-700 hover:bg-indigo-600 rounded-lg text-[10px] font-bold text-white transition">
-            Volver a Consola Web →
-          </a>
-        `;
-        document.body.prepend(topBanner);
-        return;
-      }
-
+      // Si no está autenticado como trabajador (o hay una sesión previa de Admin en el navegador),
+      // mostrar exclusivamente el login móvil del trabajador y NUNCA el menú selector de trabajadores.
       renderLoginMovil(container);
     }
 
@@ -358,7 +339,11 @@
         try {
           const res = await (auth.loginWorkerByPin ? auth.loginWorkerByPin(nit, cedula, pin) : auth.workerLogin(nit, cedula, pin));
           if (res.ok) {
-            renderWorkerPortal();
+            if (window.cambiarTabMovil) {
+              window.cambiarTabMovil('inicio');
+            } else {
+              renderWorkerPortal();
+            }
           } else {
             if (errBox) {
               errBox.innerText = res.error || 'Credenciales incorrectas.';

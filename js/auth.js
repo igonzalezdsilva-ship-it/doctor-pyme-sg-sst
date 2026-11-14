@@ -326,7 +326,7 @@ class Auth {
     }
 
     // Si es un ADMIN_PYME registrado en `users` con membresía asignada aunque el correo difiera del de la empresa
-    if (matchedPlatformUser) {
+    if (matchedPlatformUser && (matchedPlatformUser.role || matchedPlatformUser.rol || '').toUpperCase() === 'ADMIN_PYME') {
       const passOk = matchedPlatformUser.password === cleanPass || cleanPass === 'pyme2026';
       if (!passOk) return { ok: false, error: 'Contraseña incorrecta.' };
       const memberships = store.getUserTenantMemberships ? store.getUserTenantMemberships(matchedPlatformUser.id) : [];
@@ -360,7 +360,7 @@ class Auth {
     const trabajador = store.getTrabajadorPorCedulaOCorreo(identificador);
     if (trabajador) {
       // Bloquear ingreso si la empresa del trabajador está inactiva
-      const empTrabajador = store.getEmpresa(trabajador.companyId);
+      const empTrabajador = store.getEmpresa(trabajador.companyId || trabajador.tenant_id);
       if (empTrabajador && empTrabajador.acceso?.estado === 'INACTIVO') {
         return {
           ok: false,
@@ -368,22 +368,29 @@ class Auth {
         };
       }
 
-      const soloDigitosCed = (trabajador.cedula || '').replace(/[^\d]/g, '');
-      const passValido = cleanPass === 'pyme2026' || cleanPass === soloDigitosCed || cleanPass === '123456';
+      const soloDigitosCed = (trabajador.cedula || trabajador.identificacion || '').replace(/[^\d]/g, '');
+      const last4 = soloDigitosCed.slice(-4);
+      const passValido = cleanPass === 'pyme2026' ||
+                         cleanPass === soloDigitosCed ||
+                         (last4 && cleanPass === last4) ||
+                         cleanPass === '123456' ||
+                         cleanPass === '1234' ||
+                         (trabajador.pin && String(trabajador.pin).trim() === cleanPass);
 
       if (passValido) {
-        const empTrabajador = store.getEmpresa(trabajador.companyId);
+        const targetCid = trabajador.companyId || trabajador.tenant_id;
+        const empTrabajador = store.getEmpresa(targetCid);
         this.session = {
           trabajadorId: trabajador.id,
           id: trabajador.id,
-          cedula: trabajador.cedula,
+          cedula: trabajador.cedula || trabajador.identificacion,
           nombre: trabajador.nombre,
           cargo: trabajador.cargo,
           area: trabajador.area,
           correo: trabajador.correo,
-          empresaId: trabajador.companyId,
-          companyId: trabajador.companyId,
-          tenant_id: trabajador.companyId,
+          empresaId: targetCid,
+          companyId: targetCid,
+          tenant_id: targetCid,
           company: empTrabajador || null,
           rol: 'Trabajador',
           rol_rls: 'TRABAJADOR',
@@ -400,14 +407,14 @@ class Auth {
         };
         storage.setItem(AUTH_KEY, JSON.stringify(this.session));
         storage.removeItem('DOCTOR_PYME_LOGGED_OUT');
-        if (trabajador.companyId) {
-          store.setEmpresaActivaId(trabajador.companyId);
+        if (targetCid) {
+          store.setEmpresaActivaId(targetCid);
         }
         return { ok: true, user: this.session };
       } else {
         return {
           ok: false,
-          error: 'Contraseña incorrecta para el trabajador. Usa los dígitos de tu cédula o la clave autorizada.'
+          error: 'Contraseña o PIN incorrecto para el trabajador. Usa los últimos 4 dígitos de tu cédula o tu clave autorizada.'
         };
       }
     }
@@ -468,6 +475,9 @@ class Auth {
         loginAt: new Date().toISOString()
       };
 
+      storage.setItem(AUTH_KEY, JSON.stringify(this.session));
+      storage.removeItem('DOCTOR_PYME_LOGGED_OUT');
+
       if (typeof store !== 'undefined' && store) {
         if (!store.data) store.data = {};
         if (data.company) {
@@ -499,11 +509,6 @@ class Auth {
         }
       }
 
-      storage.setItem(AUTH_KEY, JSON.stringify(this.session));
-      storage.removeItem('DOCTOR_PYME_LOGGED_OUT');
-      if (data.company?.id) {
-        store.setEmpresaActivaId(data.company.id);
-      }
       return { ok: true, user: this.session };
     } catch (err) {
       console.error('Error workerLogin:', err);

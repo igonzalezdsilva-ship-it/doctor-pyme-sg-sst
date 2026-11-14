@@ -226,14 +226,22 @@ export function renderWorkerPortal() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  // 1. Si el usuario autenticado es un Trabajador, ingresar directo a su Portal Personal
+  // 1. Si el usuario autenticado es un Trabajador, ingresar directo a su Portal Personal (Inicio)
   if (auth.isWorker()) {
+    modoVistaAutogestion = false;
+    trabajadorSeleccionadoId = null;
     const trabajadorUser = auth.getUser();
     renderVistaAutogestionTrabajador(container, trabajadorUser, false);
     return;
   }
 
-  // 2. Si un Administrador o Empresa activó la previsualización del portal de un operario
+  // Protección adicional en app.html: un operario en la app móvil nunca debe ver la consola de administrador
+  if (window.IS_WORKER_MOBILE_APP) {
+    window.location.reload();
+    return;
+  }
+
+  // 2. Si un Administrador o Empresa activó la previsualización del portal de un operario desde index.html
   if (modoVistaAutogestion && trabajadorSeleccionadoId) {
     const trab = store.getTrabajadorPorId(trabajadorSeleccionadoId);
     if (trab) {
@@ -384,6 +392,12 @@ function renderConsolaGestionTrabajadores(container) {
             <button onclick="window.abrirModalAuditoriaManuales()" class="px-4 py-2.5 bg-purple-700 hover:bg-purple-600 text-white rounded-xl text-xs font-black transition flex items-center gap-2 cursor-pointer shadow-lg shadow-purple-900/30 active:scale-95" title="Auditoría de Socialización y Firmas de Manuales de Cargo (Res. 0312 Estándar 1.1.2)">
               <span>📋</span>
               <span>Auditoría Firmas Manuales (Est. 1.1.2)</span>
+            </button>
+
+            <!-- BOTÓN PARAMETRIZACIÓN Y PUBLICACIÓN DE POLÍTICAS Y REGLAMENTOS DE LA EMPRESA -->
+            <button onclick="window.abrirModalPoliticasReglamentosEmpresa('${empresaActiva.id}')" class="px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-black transition flex items-center gap-2 cursor-pointer shadow-lg shadow-teal-900/30 active:scale-95" title="Parametrizar, generar PDF y publicar las 4 Políticas y Reglamentos de la Empresa en la App del Trabajador">
+              <span>📜</span>
+              <span>Políticas y Reglamentos Empresa</span>
             </button>
 
             <button onclick="window.abrirModalInstrumentoCargo('contrato')" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-sm">
@@ -4144,6 +4158,11 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
   // Activar modo app móvil nativa para ocultar menús laterales y cabecera de escritorio
   document.body.classList.add('mobile-app-mode');
 
+  // Garantía estricta: Si el usuario autenticado es un trabajador o está en la App Móvil, NUNCA mostrar controles de Admin ni lista de trabajadores
+  if (auth.isWorker() || window.IS_WORKER_MOBILE_APP) {
+    esModoAdmin = false;
+  }
+
   // Asegurar obtención del trabajador más reciente y completo en memoria
   const idBuscada = trabajador?.id || trabajador?.trabajadorId;
   if (idBuscada) {
@@ -4202,66 +4221,101 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
     'Protección auditiva tipo inserción / copa'
   ];
 
-  // Documentos de Cargo Obligatorios
+  // 7 Documentos de Cargo Obligatorios (en función del Catálogo de Caracterización de Cargos)
   const instrumentosCargo = [
     {
       type: 'MANUAL_DE_CARGO',
       id: 'DOC-MANUAL-CARGO',
-      title: 'Manual de Funciones y Responsabilidades SST',
-      norma: 'Decreto 1072 de 2015 Art. 2.2.4.6.10',
-      icono: '📖',
+      key: 'manual',
+      title: '1. Manual de Funciones',
+      norma: 'Manual de Funciones y Responsabilidades SST (Dec. 1072/2015 Art. 2.2.4.6.10)',
+      icono: '📘',
       color: 'purple'
     },
     {
       type: 'PERFIL_DE_CARGO',
       id: 'DOC-PERFIL-CARGO',
-      title: 'Perfil de Cargo SST & Competencias',
-      norma: 'Estándar 1.1.2 Resolución 0312 de 2019',
-      icono: '📋',
+      key: 'perfil',
+      title: '2. Perfil & Competencia',
+      norma: 'Educación, Experiencia y Competencias SST (Res. 0312/2019 Est. 1.1.2)',
+      icono: '🎓',
       color: 'amber'
     },
     {
       type: 'PLAN_DE_TRABAJO_SEGURO',
       id: 'DOC-PTS-CARGO',
-      title: 'Procedimiento de Trabajo Seguro (PTS)',
-      norma: 'Pasos para trabajar seguro en tu puesto',
+      key: 'pts',
+      title: '3. Plan de Trabajo Seguro',
+      norma: 'Procedimiento de Trabajo Seguro (PTS) Antes, Durante y Después (GTC 45)',
       icono: '🛡️',
       color: 'teal'
     },
     {
+      type: 'PROFESIOGRAMA_SST',
+      id: 'DOC-PROFESIOGRAMA-CARGO',
+      key: 'profesiograma',
+      title: '4. Profesiograma SST',
+      norma: 'Exámenes Médicos Ocupacionales de Ingreso, Periódicos y Egreso (Res. 2346/2007)',
+      icono: '🩺',
+      color: 'rose'
+    },
+    {
+      type: 'MATRIZ_EPP_DOTACION',
+      id: 'DOC-EPP-CARGO',
+      key: 'epp',
+      title: '5. Matriz EPP & Dotación',
+      norma: 'Elementos de Protección Personal y Dotación por Cargo (Ley 9/1979 & Res. 2400)',
+      icono: '🥽',
+      color: 'indigo'
+    },
+    {
       type: 'ANEXO_CONTRACTUAL_Y_NOTIFICACION_RIESGOS',
       id: 'DOC-ANEXO-CONTRACTUAL',
-      title: 'Anexo Contractual y Notificación de Riesgos',
-      norma: 'Código Sustantivo del Trabajo & GTC 45',
-      icono: '📄',
+      key: 'anexo',
+      title: '6. Contrato',
+      norma: 'Contrato Individual de Trabajo, Anexo SST y Notificación de Riesgos (CST & GTC 45)',
+      icono: '⚖️',
       color: 'blue'
+    },
+    {
+      type: 'RECOMENDACIONES_MEDICAS',
+      id: 'DOC-RECOMENDACIONES-CARGO',
+      key: 'recomendaciones',
+      title: '7. Recomendaciones Médicas',
+      norma: 'Concepto de Aptitud, Recomendaciones Biomecánicas y Seguimiento PVE (Res. 2346)',
+      icono: '🏥',
+      color: 'emerald'
     }
   ];
 
-  // Políticas normativas
-  const politicasInstitucionales = [
+  // Políticas y Reglamentos de la Empresa (Parametrizados desde el Panel Administrador)
+  const politicasInstitucionales = (store.getPoliticasEmpresa ? store.getPoliticasEmpresa(empresa.id) : null) || [
     {
       id: 'DOC-POL-SST-01',
       title: 'Política Integral de Seguridad y Salud en el Trabajo',
       categoria: 'Política Obligatoria',
+      norma: 'Decreto 1072 de 2015 Art. 2.2.4.6.5',
       enlace: 'https://docs.google.com/document/d/1vfHlhlNkl3thBA5VrxDOoYrR_lb93BAMUjNfJ_L5x8A/edit?usp=sharing'
     },
     {
       id: 'DOC-POL-ALC-02',
-      title: 'Prevención de Alcohol, Tabaco y Sustancias Psicoactivas',
+      title: 'Política de Prevención de Consumo de Alcohol, Tabaco y Sustancias Psicoactivas',
       categoria: 'Política Obligatoria',
+      norma: 'Resolución 1075 de 1992 & Ley 1335 de 2009',
       enlace: 'https://docs.google.com/document/d/1vfHlhlNkl3thBA5VrxDOoYrR_lb93BAMUjNfJ_L5x8A/edit?usp=sharing'
     },
     {
       id: 'DOC-REG-HIG-03',
       title: 'Reglamento de Higiene y Seguridad Industrial',
-      categoria: 'Reglamento',
+      categoria: 'Reglamento Legal',
+      norma: 'Artículos 349 y 350 del Código Sustantivo del Trabajo',
       enlace: 'https://docs.google.com/document/d/1AwfsK-lNec9gO-FHNRu4HiyMB3p9WEBNxh5KpyPzKuE/edit?usp=sharing'
     },
     {
-      id: 'DOC-RES-COP-04',
-      title: 'Acta de Asignación de Responsabilidades en SST',
-      categoria: 'Responsabilidades',
+      id: 'DOC-REG-INT-04',
+      title: 'Reglamento Interno de Trabajo',
+      categoria: 'Reglamento Legal',
+      norma: 'Artículos 104 al 126 del Código Sustantivo del Trabajo',
       enlace: 'https://docs.google.com/document/d/1KwN9NqmkfD7RTZMilnMopH4AeTbdIftwNfaBRCQg9H8/edit?usp=sharing'
     }
   ];
@@ -4597,7 +4651,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
         ` : ''}
 
         <!-- --------------------------------------------------------------- -->
-        <!-- PESTAÑA 2: MI CARGO Y DOCS (4 INSTRUMENTOS + FIRMA 1-CLIC)      -->
+        <!-- PESTAÑA 2: MI CARGO Y DOCS (7 INSTRUMENTOS + FIRMA 1-CLIC)      -->
         <!-- --------------------------------------------------------------- -->
         ${activeMobileTab === 'docs' ? `
           <div class="space-y-4 animate-fadeIn">
@@ -4605,21 +4659,21 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
             <div class="bg-gradient-to-r from-indigo-950 to-slate-900 p-4 rounded-2xl border border-indigo-900/50 space-y-1">
               <div class="flex items-center justify-between">
                 <span class="text-[10px] font-black uppercase tracking-wider text-teal-300 block">
-                  Documentos de tu Puesto
+                  Catálogo de Caracterización de Cargos
                 </span>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-black ${instrumentosFirmadosCount === totalInstrumentos ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500 text-slate-950'}">
                   ${instrumentosFirmadosCount}/${totalInstrumentos} Firmados
                 </span>
               </div>
               <h2 class="text-base sm:text-lg font-black text-white">
-                Mis 4 Documentos del Cargo
+                Mis 7 Documentos del Cargo (${trabajador.cargo})
               </h2>
               <p class="text-xs text-slate-200 leading-relaxed">
-                Lee tus funciones y pasos de seguridad en <strong>${empresa.razonSocial}</strong> y fírmalos con 1 solo toque usando tu firma guardada.
+                Consulta los 7 documentos oficiales parametrizados en la Caracterización de Cargos de <strong>${empresa.razonSocial}</strong> y fírmalos con 1 solo toque usando tu firma guardada.
               </p>
             </div>
 
-            <!-- Listado de los 4 Instrumentos de Cargo Obligatorios -->
+            <!-- Listado de los 7 Instrumentos de Cargo Obligatorios -->
             <div class="space-y-3.5">
               ${instrumentosCargo.map((inst, idx) => {
                 const sigFound = docSigs.find(s => s.document_type === inst.type || s.document_code === inst.id) ||
@@ -5742,7 +5796,10 @@ function obtenerCodigoDocPorTipo(docType, cargoFormal) {
   if (docType === 'MANUAL_DE_CARGO') return 'DOC-MANUAL-CARGO';
   if (docType === 'PERFIL_DE_CARGO') return 'DOC-PERFIL-CARGO';
   if (docType === 'PLAN_DE_TRABAJO_SEGURO') return 'DOC-PTS-CARGO';
+  if (docType === 'PROFESIOGRAMA_SST') return 'DOC-PROFESIOGRAMA-CARGO';
+  if (docType === 'MATRIZ_EPP_DOTACION') return 'DOC-EPP-CARGO';
   if (docType === 'ANEXO_CONTRACTUAL_Y_NOTIFICACION_RIESGOS') return 'DOC-ANEXO-CONTRACTUAL';
+  if (docType === 'RECOMENDACIONES_MEDICAS') return 'DOC-RECOMENDACIONES-CARGO';
   return docType || `MAN-${cargoFormal?.code || 'OPE-001'}`;
 }
 
@@ -5961,8 +6018,14 @@ window.abrirVisorPoliticaMovil = function(polId, polTitle, trabajadorId) {
   const isFirmada = firmas.some(f => f.documentoId === polId || f.documentoCodigo === polId) ||
                     docSigs.some(s => s.document_code === polId || s.document_id === polId || s.document_type === polId);
 
+  const listaPoliticas = (store.getPoliticasEmpresa ? store.getPoliticasEmpresa(empresa.id) : []) || [];
+  const polParametrizada = listaPoliticas.find(p => p.id === polId);
+
   const resumenPorPolitica = {
     'DOC-POL-SST-01': {
+      codigo: 'POL-SST-001',
+      version: '01',
+      norma: 'Decreto 1072 de 2015 (Art. 2.2.4.6.5, 2.2.4.6.6 y 2.2.4.6.7) & Res. 0312 de 2019',
       objetivo: `En ${empresa.razonSocial} nos comprometemos con la protección de la vida, la integridad física y la salud de todos nuestros trabajadores en obra y planta.`,
       puntos: [
         'Ninguna meta de producción o urgencia está por encima de tu vida y tu seguridad.',
@@ -5971,6 +6034,9 @@ window.abrirVisorPoliticaMovil = function(polId, polTitle, trabajadorId) {
       ]
     },
     'DOC-POL-ALC-02': {
+      codigo: 'POL-SPA-002',
+      version: '01',
+      norma: 'Resolución 1075 de 1992, Ley 1335 de 2009 y Art. 60 CST',
       objetivo: `Mantener ambientes de trabajo 100% seguros, sanos y libres del consumo de alcohol, tabaco y sustancias psicoactivas durante la jornada laboral.`,
       puntos: [
         'Está prohibido presentarse a laborar o permanecer en las instalaciones bajo el efecto de bebidas alcohólicas o sustancias psicoactivas.',
@@ -5979,6 +6045,9 @@ window.abrirVisorPoliticaMovil = function(polId, polTitle, trabajadorId) {
       ]
     },
     'DOC-REG-HIG-03': {
+      codigo: 'REG-HSI-003',
+      version: '01',
+      norma: 'Artículos 349 y 350 del Código Sustantivo del Trabajo & Ley 962 de 2005',
       objetivo: `Establecer las normas de higiene y seguridad industrial para prevenir accidentes de trabajo y enfermedades laborales conforme a la legislación colombiana.`,
       puntos: [
         'Mantener siempre el orden, limpieza y despeje de pasillos, salidas de emergencia y puestos de trabajo.',
@@ -5986,17 +6055,22 @@ window.abrirVisorPoliticaMovil = function(polId, polTitle, trabajadorId) {
         'Reportar de inmediato todo incidente o accidente de trabajo, por leve que parezca, dentro de las primeras 48 horas.'
       ]
     },
-    'DOC-RES-COP-04': {
-      objetivo: `Definir las responsabilidades en Seguridad y Salud en el Trabajo (SG-SST) para el cargo de ${trabajador.cargo}.`,
+    'DOC-REG-INT-04': {
+      codigo: 'REG-RIT-004',
+      version: '01',
+      norma: 'Artículos 104 al 126 del Código Sustantivo del Trabajo & Ley 1010 de 2006',
+      objetivo: `Regular las condiciones laborales, derechos, deberes, jornada de trabajo, convivencia laboral, prohibiciones y escala de faltas y procedimientos disciplinarios en ${empresa.razonSocial}.`,
       puntos: [
-        'Procurar el cuidado integral de tu salud y suministrar información clara y veraz sobre tu estado físico.',
-        'Usar todos los EPP entregados para tu labor y asistir a las capacitaciones programadas.',
-        'Participar activamente en las inspecciones preoperacionales y en el cumplimiento de las normas SST.'
+        'Cumplir puntualmente con el horario de trabajo, turnos asignados y normas de convivencia laboral.',
+        'Realizar personalmente la labor en los términos estipulados, acatar las instrucciones y guardar riguroso respeto con superiores y compañeros.',
+        'Conservar en buen estado las herramientas y equipos asignados y cumplir todas las directrices del SG-SST.',
+        'Toda actuación disciplinaria garantiza el debido proceso y el derecho a descargos conforme al Art. 115 del CST.'
       ]
     }
   };
 
-  const info = resumenPorPolitica[polId] || resumenPorPolitica['DOC-POL-SST-01'];
+  const info = polParametrizada || resumenPorPolitica[polId] || resumenPorPolitica['DOC-POL-SST-01'];
+  const tituloFinal = polParametrizada?.title || polTitle;
 
   const modalId = 'modal-visor-politica-movil';
   const existing = document.getElementById(modalId);
@@ -6010,8 +6084,8 @@ window.abrirVisorPoliticaMovil = function(polId, polTitle, trabajadorId) {
     <!-- Cabecera Sólida con Botón Grande Cerrar X -->
     <div class="bg-[#0B111E] px-4 pb-3 border-b border-slate-800 flex items-center justify-between gap-2 flex-shrink-0 sticky top-0 z-40" style="padding-top: max(env(safe-area-inset-top, 44px), 44px);">
       <div class="overflow-hidden">
-        <span class="text-[10px] font-mono text-teal-400 font-bold block">${polId} • ${empresa.razonSocial}</span>
-        <h3 class="text-sm sm:text-base font-black text-white truncate">${polTitle}</h3>
+        <span class="text-[10px] font-mono text-teal-400 font-bold block">${info.codigo || polId} • v${info.version || '01'} • ${empresa.razonSocial}</span>
+        <h3 class="text-sm sm:text-base font-black text-white truncate">${tituloFinal}</h3>
       </div>
       <button 
         type="button" 
@@ -6022,29 +6096,53 @@ window.abrirVisorPoliticaMovil = function(polId, polTitle, trabajadorId) {
       </button>
     </div>
 
-    <!-- Contenido Legible de la Política -->
+    <!-- Contenido Legible de la Política / Reglamento -->
     <div class="flex-1 overflow-y-auto p-5 space-y-4 max-w-2xl mx-auto w-full">
       <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-teal-300">Empresa: ${empresa.razonSocial}</span>
+          <span class="text-xs font-bold text-teal-300">Empresa: ${empresa.razonSocial} (NIT: ${empresa.nit || 'N/A'})</span>
           <span class="px-2.5 py-0.5 rounded-full text-xs font-black ${isFirmada ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
             ${isFirmada ? '✅ Firmado' : '⚠️ Pendiente por Firmar'}
           </span>
         </div>
         <p class="text-xs text-slate-300">Trabajador: <strong>${trabajador.nombre}</strong> · Cargo: <strong>${trabajador.cargo}</strong></p>
+        ${info.norma ? `<p class="text-[11px] text-indigo-300 font-medium">Marco Legal: ${info.norma}</p>` : ''}
       </div>
 
       <div class="p-5 bg-white text-slate-900 rounded-2xl shadow-lg space-y-4 text-sm leading-relaxed">
-        <h4 class="text-base font-black text-slate-900 border-b border-slate-200 pb-2">${polTitle}</h4>
+        <div class="flex items-center justify-between border-b border-slate-200 pb-2 gap-2">
+          <h4 class="text-base font-black text-slate-900">${tituloFinal}</h4>
+          <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px] font-bold flex-shrink-0">${info.codigo || polId}</span>
+        </div>
         <p class="text-slate-700 font-medium">${info.objetivo}</p>
         <div class="space-y-2">
-          <strong class="text-slate-900 block">Compromisos Clave para tu Seguridad:</strong>
+          <strong class="text-slate-900 block">Disposiciones y Compromisos Obligatorios:</strong>
           <ul class="list-disc pl-5 space-y-2 text-slate-800">
-            ${info.puntos.map(p => `<li>${p}</li>`).join('')}
+            ${(info.puntos || []).map(p => `<li>${p}</li>`).join('')}
           </ul>
         </div>
+        ${info.enlace ? `
+          <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl flex items-center justify-between gap-2 text-xs">
+            <span class="text-indigo-950 font-semibold">📎 Documento Maestro / Soporte Anexo:</span>
+            <a href="${info.enlace}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-xs flex-shrink-0">
+              Abrir Soporte ↗
+            </a>
+          </div>
+        ` : ''}
         <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-950">
-          <strong>Declaración de Lectura:</strong> Confirmo que he leído y comprendido esta política y me comprometo a cumplirla en mis labores diarias en ${empresa.razonSocial}.
+          <strong>Declaración de Lectura y Aceptación:</strong> ${info.clausulaAceptacion || `Confirmo que he leído y comprendido este documento oficial y me comprometo a cumplirlo en mis labores diarias en ${empresa.razonSocial}.`}
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-600 pt-2 border-t border-slate-200">
+          <div>
+            <strong>REVISÓ (RESPONSABLE SG-SST):</strong><br>
+            ${empresa.responsableSST || 'Coordinador SG-SST'}<br>
+            Lic. SST: ${empresa.licenciaSST || 'Vigente'}
+          </div>
+          <div>
+            <strong>APROBÓ Y PUBLICÓ (EMPLEADOR):</strong><br>
+            ${empresa.representanteLegal || 'Representante Legal'}<br>
+            ${empresa.razonSocial}
+          </div>
         </div>
       </div>
     </div>
@@ -6348,33 +6446,56 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
       </div>
     `;
   } else if (docType === 'PERFIL_DE_CARGO') {
-    codigoDoc = 'PF-CARG-002';
+    codigoDoc = `PRF-${cargoFormal?.code || 'CARG-002'}`;
+    const objetivo = cargoFormal?.job_objective || cargoFormal?.summary_objective || configCargo?.perfil?.objetivo || `Desempeñar con excelencia y estricto apego a las normas de seguridad las funciones asociadas al cargo de ${trabajador.cargo}.`;
+    const edu = cargoFormal?.required_education || configCargo?.perfil?.educacion || 'Bachiller Académico o Técnico Laboral';
+    const exp = cargoFormal?.required_experience || configCargo?.perfil?.experiencia || '1 año en labores afines';
+    const formSst = configCargo?.perfil?.formacionSST || 'Inducción General SG-SST, Curso 50/20h SST, Protocolo de EPP, Plan de Emergencias y Reporte de Peligros.';
+    const comp = configCargo?.perfil?.competencias || 'Compromiso con el autocuidado, disciplina operacional, trabajo en equipo, orientación a la calidad y comunicación efectiva.';
+    const exam = configCargo?.perfil?.examenesMedicos || 'Énfasis osteomuscular, agudeza visual, audiometría tonal ocupacional y valoración médica general.';
     contenidoHtml = `
       <div class="space-y-3 text-xs leading-relaxed text-slate-800">
-        <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-[11px] text-indigo-950">
-          <strong>Perfil de Cargo y Exámenes Ocupacionales:</strong> ${trabajador.cargo} en ${empresa.razonSocial}.
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-950 flex items-center justify-between">
+          <div>
+            <strong>2. Perfil & Competencia SST del Cargo:</strong> ${trabajador.cargo} en ${empresa.razonSocial}.
+          </div>
+          <span class="px-2 py-0.5 rounded bg-amber-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
         </div>
-        <div class="grid grid-cols-2 gap-2 text-[11px]">
-          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>Educación Requerida:</strong><br>${cargoFormal?.required_education || configCargo?.perfil?.educacion || 'Bachiller o Técnico'}</div>
-          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>Experiencia Mínima:</strong><br>${cargoFormal?.required_experience || configCargo?.perfil?.experiencia || '1 año'}</div>
+        <div class="p-3 bg-slate-50 border rounded-xl text-[11px]">
+          <strong>Objetivo Misional del Cargo:</strong>
+          <p class="mt-1 text-slate-700">${objetivo}</p>
         </div>
-
-        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">Exámenes Médicos y Permisos (Res. 2346/2007)</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>• Educación Formal Requerida:</strong><br>${edu}</div>
+          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>• Experiencia Mínima:</strong><br>${exp}</div>
+        </div>
+        <div class="p-2.5 bg-slate-50 border rounded-xl text-[11px]">
+          <strong>• Formación y Entrenamiento en SG-SST (Res. 0312 Est. 1.2.1):</strong>
+          <p class="mt-0.5 text-slate-700">${formSst}</p>
+        </div>
+        <div class="p-2.5 bg-slate-50 border rounded-xl text-[11px]">
+          <strong>• Competencias y Habilidades del Cargo:</strong>
+          <p class="mt-0.5 text-slate-700">${comp}</p>
+        </div>
+        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">Perfil de Aptitud Médica Ocupacional (Res. 2346/2007)</h4>
         <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl text-[11px] text-teal-950 space-y-1">
-          <p><strong>• Ingreso y Periódico:</strong> Énfasis osteomuscular, agudeza visual, audiometría tonal y valoración médica general.</p>
-          <p><strong>• Egreso:</strong> Examen médico de retiro laboral para verificar condiciones de salud al terminar vínculo.</p>
+          <p><strong>• Evaluaciones Médicas Requeridas:</strong> ${exam}</p>
         </div>
       </div>
     `;
   } else if (docType === 'PLAN_DE_TRABAJO_SEGURO') {
-    codigoDoc = 'PTS-SEG-003';
+    codigoDoc = `PTS-${cargoFormal?.code || 'SEG-003'}`;
+    const eppPts = configCargo?.pts?.eppRequeridos || ['Casco de seguridad', 'Gafas de seguridad', 'Botas con puntera', 'Guantes de protección'];
     contenidoHtml = `
       <div class="space-y-3 text-xs leading-relaxed text-slate-800">
-        <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl text-[11px] text-teal-950">
-          <strong>Pasos para trabajar seguro en tu puesto (${trabajador.cargo}):</strong> Sigue estas reglas todos los días para evitar accidentes.
+        <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl text-[11px] text-teal-950 flex items-center justify-between">
+          <div>
+            <strong>3. Plan de Trabajo Seguro (PTS):</strong> ${configCargo?.pts?.titulo || `Procedimiento de Trabajo Seguro para ${trabajador.cargo}`}
+          </div>
+          <span class="px-2 py-0.5 rounded bg-teal-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
         </div>
-        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">Peligros Principales en tu Puesto & Cuidados</h4>
-        <ul class="list-disc pl-5 space-y-1.5 text-xs text-slate-700">
+        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider">Peligros Evaluados en el Cargo (Matriz GTC 45)</h4>
+        <ul class="list-disc pl-5 space-y-1 text-xs text-slate-700">
           ${(configCargo?.pts?.peligrosEvaluados || [
             'Peligro Mecánico (atrapamiento, golpes por herramientas o máquinas en movimiento)',
             'Peligro Biomecánico (levantamiento de cargas, posturas prolongadas)',
@@ -6382,16 +6503,114 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
           ]).map(p => `<li>${p}</li>`).join('')}
         </ul>
 
-        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider pt-2">Pasos Obligatorios (Antes, Durante y Después)</h4>
+        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider pt-1">EPP Obligatorios para Iniciar</h4>
+        <div class="flex flex-wrap gap-1.5">
+          ${eppPts.map(e => `<span class="px-2 py-0.5 rounded bg-teal-100 text-teal-900 text-[10px] font-bold border border-teal-200">🥽 ${e}</span>`).join('')}
+        </div>
+
+        <h4 class="font-black text-slate-900 border-b pb-1 text-xs uppercase tracking-wider pt-2">Secuencia Operativa Segura (Antes, Durante y Después)</h4>
         <div class="space-y-2 text-xs text-slate-800">
-          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>1. Antes de iniciar:</strong> ${configCargo?.pts?.faseAntes || 'Revisa el estado de tu área, herramientas y ponte todos tus Elementos de Protección Personal (EPP).'}</div>
-          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>2. Durante la tarea:</strong> ${configCargo?.pts?.faseDurante || 'Concéntrate en la labor, usa siempre las guardas de seguridad y nunca retires protecciones de las máquinas.'}</div>
-          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>3. Al terminar:</strong> ${configCargo?.pts?.faseDespues || 'Apaga y desconecta equipos, deja limpio y ordenado tu puesto y avisa cualquier novedad al supervisor.'}</div>
+          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>1. Antes de iniciar la labor:</strong> ${configCargo?.pts?.faseAntes || 'Revisa el estado de tu área, herramientas y ponte todos tus Elementos de Protección Personal (EPP).'}</div>
+          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>2. Durante la ejecución de la tarea:</strong> ${configCargo?.pts?.faseDurante || 'Concéntrate en la labor, usa siempre las guardas de seguridad y nunca retires protecciones de las máquinas.'}</div>
+          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>3. Después / Al terminar el turno:</strong> ${configCargo?.pts?.faseDespues || 'Apaga y desconecta equipos, deja limpio y ordenado tu puesto y avisa cualquier novedad al supervisor.'}</div>
+          <div class="p-2.5 bg-rose-50 border border-rose-200 text-rose-950 rounded-xl"><strong>🚨 Protocolo en Caso de Emergencia:</strong> ${configCargo?.pts?.emergencias || 'Detener de inmediato la labor, activar la alarma, evacuar al Punto de Encuentro y notificar al Coordinador SST.'}</div>
+        </div>
+      </div>
+    `;
+  } else if (docType === 'PROFESIOGRAMA_SST') {
+    codigoDoc = `PMO-${cargoFormal?.code || 'MED-004'}`;
+    const prof = configCargo?.profesiograma || {};
+    contenidoHtml = `
+      <div class="space-y-3 text-xs leading-relaxed text-slate-800">
+        <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-[11px] text-rose-950 flex items-center justify-between">
+          <div>
+            <strong>4. Profesiograma SST del Cargo (${trabajador.cargo}):</strong> Matriz de Evaluaciones Médicas Ocupacionales (Resolución 2346 de 2007).
+          </div>
+          <span class="px-2 py-0.5 rounded bg-rose-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
+        </div>
+        <div class="space-y-2.5 text-[11px]">
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+            <strong class="text-slate-900 block uppercase text-[10px] tracking-wider text-teal-800">1. Exámenes Médicos de Ingreso / Pre-Ocupacionales:</strong>
+            <p class="mt-1 text-slate-700">${prof.ingreso || 'Examen médico ocupacional con énfasis osteomuscular, Visiometría ocupacional, Audiometría tonal y Espirometría.'}</p>
+          </div>
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+            <strong class="text-slate-900 block uppercase text-[10px] tracking-wider text-indigo-800">2. Exámenes Médicos Periódicos y Vigilancia Epidemiológica (PVE):</strong>
+            <p class="mt-1 text-slate-700">${prof.periodico || 'Control anual osteomuscular, audiometría de control y seguimiento en Programa de Vigilancia Epidemiológica (PVE).'}</p>
+          </div>
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+            <strong class="text-slate-900 block uppercase text-[10px] tracking-wider text-amber-800">3. Examen Médico de Egreso / Retiro Laboral:</strong>
+            <p class="mt-1 text-slate-700">${prof.egreso || 'Valoración médica ocupacional general de retiro (vigencia 5 días hábiles tras terminación del contrato).'}</p>
+          </div>
+          <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-950">
+            <strong class="block uppercase text-[10px] tracking-wider">4. Criterios de Restricción / Contraindicaciones Relativas al Cargo:</strong>
+            <p class="mt-1">${prof.restricciones || 'Vértigo no controlado (para trabajo en alturas), afecciones respiratorias severas no tratadas o patologías osteomusculares agudas sin rehabilitación.'}</p>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (docType === 'MATRIZ_EPP_DOTACION') {
+    codigoDoc = `EPP-${cargoFormal?.code || 'DOT-005'}`;
+    const matEpp = configCargo?.matrizEpp || {};
+    const listaEppCargo = (matEpp.eppRequeridos && matEpp.eppRequeridos.length > 0)
+      ? matEpp.eppRequeridos
+      : (configCargo?.pts?.eppRequeridos || ['Casco de seguridad', 'Gafas de seguridad', 'Botas de seguridad con puntera', 'Guantes de protección mecánica', 'Protección auditiva']);
+    contenidoHtml = `
+      <div class="space-y-3 text-xs leading-relaxed text-slate-800">
+        <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-[11px] text-indigo-950 flex items-center justify-between">
+          <div>
+            <strong>5. Matriz Técnica de EPP & Dotación (${trabajador.cargo}):</strong> Ley 9 de 1979, Res. 2400 de 1979 y Art. 230 CST.
+          </div>
+          <span class="px-2 py-0.5 rounded bg-indigo-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
+        </div>
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+          <strong class="text-slate-900 block uppercase text-[10px] tracking-wider">Elementos de Protección Personal (EPP) Asignados al Cargo:</strong>
+          <ul class="list-disc pl-5 space-y-1 text-[11px] text-slate-800">
+            ${listaEppCargo.map(item => `<li><strong>${item}</strong> — Uso obligatorio permanente en área operativa.</li>`).join('')}
+          </ul>
+        </div>
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px]">
+          <strong class="text-slate-900 block uppercase text-[10px] tracking-wider">Normas Técnicas de Certificación Aplicables:</strong>
+          <p class="mt-1 text-slate-700">${matEpp.normasTecnicas || 'Casco ANSI Z89.1, Gafas ANSI Z87.1, Botas ASTM F2413 / NTC 2396, Guantes EN 388, Protección Auditiva ANSI S3.19.'}</p>
+        </div>
+        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-950">
+          <strong class="block uppercase text-[10px] tracking-wider">Frecuencia de Entrega y Reposición (Art. 230 CST & Dec. 1072):</strong>
+          <p class="mt-1">${matEpp.frecuenciaReposicion || 'Dotación legal cada 4 meses (30 abril, 31 agosto, 20 diciembre - Art. 230 CST) y reposición inmediata de EPP por deterioro o desgaste.'}</p>
+        </div>
+      </div>
+    `;
+  } else if (docType === 'RECOMENDACIONES_MEDICAS') {
+    codigoDoc = `REC-${cargoFormal?.code || 'MED-007'}`;
+    const recMed = configCargo?.recomendacionesMedicas || {};
+    contenidoHtml = `
+      <div class="space-y-3 text-xs leading-relaxed text-slate-800">
+        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-950 flex items-center justify-between">
+          <div>
+            <strong>7. Acta de Recomendaciones Médicas y Seguimiento PVE (${trabajador.cargo}):</strong> Resolución 2346 de 2007 y Decreto 1072 de 2015.
+          </div>
+          <span class="px-2 py-0.5 rounded bg-emerald-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>• Tipo de Evaluación / Concepto:</strong><br>${recMed.tipoEvaluacion || 'Concepto de Aptitud Médica Ocupacional con Recomendaciones / Seguimiento PVE'}</div>
+          <div class="p-2.5 bg-slate-50 border rounded-xl"><strong>• Entidad Emisora / Vigencia:</strong><br>${recMed.entidadEmisora || 'IPS de Medicina Laboral Certificada / ARL'} (${recMed.vigencia || 'Control Anual PVE'})</div>
+        </div>
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px]">
+          <strong class="text-slate-900 block uppercase text-[10px] tracking-wider text-teal-800">1. Recomendaciones Biomecánicas y de Higiene Postural:</strong>
+          <p class="mt-1 text-slate-700">${recMed.recomendacionesBiomecanicas || `Realizar pausas activas dirigidas de 5 a 10 minutos cada 2 horas de jornada continua. Aplicar higiene postural estricta en el puesto de ${trabajador.cargo} y no levantar cargas mayores a 25 kg sin ayuda mecánica.`}</p>
+        </div>
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px]">
+          <strong class="text-slate-900 block uppercase text-[10px] tracking-wider text-indigo-800">2. Restricciones Ocupacionales y Adaptación del Puesto:</strong>
+          <p class="mt-1 text-slate-700"><strong>Restricciones:</strong> ${recMed.restriccionesLaborales || 'Sin restricciones absolutas que impidan la labor, sujeto a cumplimiento de pausas activas y controles.'}</p>
+          <p class="mt-1 text-slate-700"><strong>Adaptación del Puesto:</strong> ${recMed.adaptacionPuesto || 'Adecuación ergonómica del área operativa, ayudas mecánicas para transporte de cargas e iluminación óptima.'}</p>
+        </div>
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-950">
+          <strong class="block uppercase text-[10px] tracking-wider">3. Seguimiento Epidemiológico y Compromiso de Cumplimiento:</strong>
+          <p class="mt-1">${recMed.seguimientoControl || 'Seguimiento periódico por el Responsable SG-SST y valoración médica ocupacional anual de control.'}</p>
+          <p class="mt-1 font-semibold">${recMed.compromisoLegal || 'El trabajador y el empleador se comprometen al acatamiento estricto de las recomendaciones médicas emitidas conforme a la Resolución 2346 de 2007.'}</p>
         </div>
       </div>
     `;
   } else {
-    codigoDoc = 'ANX-CONT-004';
+    codigoDoc = 'ANX-CONT-006';
     const anexoCfg = configCargo?.anexoContractual || {};
     const c1 = anexoCfg.clausula1_objeto || anexoCfg.notificacionRiesgos || `EL EMPLEADOR contrata los servicios personales de EL TRABAJADOR para desempeñar el cargo de ${trabajador.cargo}, ejecutando de manera directa, subordinada y diligente las funciones inherentes al puesto conforme al Manual de Funciones, Perfil de Cargo y directrices técnicas de la empresa en el marco de su objeto social.`;
     const c2 = anexoCfg.clausula2_duracion || 'El presente contrato se celebra por la duración de la obra o labor encomendada / por el término pactado entre las partes. La relación laboral terminará válidamente por culminación de la labor contratada, por mutuo acuerdo entre las partes o unilateralmente con justa causa conforme al Artículo 62 del Código Sustantivo del Trabajo (CST), sin lugar a indemnización.';
@@ -10284,4 +10503,336 @@ window.abrirModalReporteConvivenciaWorker = function(trabajadorId) {
       }
     }
   });
+};
+
+// =============================================================================
+// MÓDULO ADMINISTRADOR: PARAMETRIZACIÓN, GENERACIÓN PDF Y PUBLICACIÓN DE LAS
+// 4 POLÍTICAS Y REGLAMENTOS DE LA EMPRESA (SINCRONIZACIÓN EN TIEMPO REAL CON APP TRABAJADOR)
+// =============================================================================
+let politicaEmpresaSeleccionadaId = 'DOC-POL-SST-01';
+
+window.abrirModalPoliticasReglamentosEmpresa = function(empresaId = null, polIdInicial = null) {
+  const emp = (empresaId && store.getEmpresaById(empresaId)) || store.getEmpresaActiva() || store.getEmpresas()[0];
+  if (!emp) return;
+  if (polIdInicial) {
+    politicaEmpresaSeleccionadaId = polIdInicial;
+  }
+
+  const politicas = store.getPoliticasEmpresa(emp.id);
+  const polActiva = politicas.find(p => p.id === politicaEmpresaSeleccionadaId) || politicas[0];
+  politicaEmpresaSeleccionadaId = polActiva.id;
+
+  const trabs = store.getTrabajadores(emp.id).filter(t => (t.estado || 'Activo') === 'Activo');
+  const firmasEmp = store.getFirmas(emp.id);
+  const docSigsAll = store.data.employee_document_signatures || [];
+
+  const contarFirmasPorPolitica = (pid) => {
+    return trabs.filter(t =>
+      firmasEmp.some(f => f.trabajadorId === t.id && (f.documentoId === pid || f.documentoCodigo === pid)) ||
+      docSigsAll.some(s => (s.employee_id === t.id || s.trabajadorId === t.id) && (s.document_code === pid || s.document_id === pid || s.document_type === pid))
+    ).length;
+  };
+
+  const modalId = 'modal-admin-politicas-reglamentos-empresa';
+  document.getElementById(modalId)?.remove();
+
+  const modalEl = document.createElement('div');
+  modalEl.id = modalId;
+  modalEl.className = 'fixed inset-0 z-[75] bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fadeIn';
+
+  modalEl.innerHTML = `
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-5xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      
+      <!-- Cabecera Institucional -->
+      <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-teal-950 px-6 py-4 text-white flex items-center justify-between gap-4 flex-shrink-0">
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-teal-500/25 text-teal-200 border border-teal-400/30">
+              Módulo de Parametrización y Publicación Institucional
+            </span>
+            <span class="text-xs font-bold text-indigo-200">🏢 ${emp.razonSocial} (NIT: ${emp.nit})</span>
+          </div>
+          <h2 class="text-lg sm:text-xl font-black text-white mt-0.5">
+            📜 Políticas y Reglamentos de la Empresa (Publicación en App del Trabajador)
+          </h2>
+          <p class="text-xs text-slate-300">
+            Edita, genera en PDF oficial con firmas institucionales y publica en tiempo real los 4 documentos normativos que visualizan y firman los trabajadores en su App Móvil.
+          </p>
+        </div>
+        <button 
+          type="button" 
+          onclick="document.getElementById('${modalId}')?.remove()" 
+          class="px-4 py-2 rounded-xl bg-white/10 hover:bg-rose-600 text-white text-xs font-black transition cursor-pointer flex-shrink-0"
+        >
+          Cerrar ✕
+        </button>
+      </div>
+
+      <!-- Cuerpo: Selector Lateral de las 4 Políticas/Reglamentos + Formulario de Parametrización -->
+      <div class="flex-1 overflow-y-auto grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-200">
+        
+        <!-- Columna Izquierda: Los 4 Documentos Institucionales -->
+        <div class="lg:col-span-4 p-4 bg-slate-50 space-y-2.5">
+          <div class="text-[11px] font-black uppercase tracking-wider text-slate-500 px-1">
+            Catálogo Oficial (4 Documentos):
+          </div>
+          ${politicas.map((p, i) => {
+            const isSel = p.id === polActiva.id;
+            const firmadosCount = contarFirmasPorPolitica(p.id);
+            return `
+              <button 
+                type="button"
+                onclick="window.abrirModalPoliticasReglamentosEmpresa('${emp.id}', '${p.id}')"
+                class="w-full text-left p-3.5 rounded-2xl border transition cursor-pointer flex flex-col gap-1.5 ${isSel ? 'bg-indigo-950 text-white border-indigo-700 shadow-md' : 'bg-white hover:bg-indigo-50/50 text-slate-800 border-slate-200'}"
+              >
+                <div class="flex items-center justify-between gap-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${isSel ? 'bg-teal-500/20 text-teal-300 border border-teal-400/30' : 'bg-slate-100 text-slate-600'}">
+                    #${i + 1} • ${p.codigo || p.id}
+                  </span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${isSel ? 'bg-emerald-500/25 text-emerald-300' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
+                    🟢 Publicado (${firmadosCount}/${trabs.length} firmas)
+                  </span>
+                </div>
+                <div class="text-xs font-black leading-snug ${isSel ? 'text-white' : 'text-slate-900'}">
+                  ${p.title}
+                </div>
+                <div class="text-[10px] ${isSel ? 'text-slate-300' : 'text-slate-500'} truncate">
+                  ${p.norma}
+                </div>
+              </button>
+            `;
+          }).join('')}
+
+          <div class="p-3.5 bg-teal-50 border border-teal-200 rounded-2xl text-[11px] text-teal-950 space-y-1 mt-3">
+            <strong class="block font-black">💡 ¿Cómo funciona la publicación?</strong>
+            <p class="leading-relaxed">
+              Al guardar los cambios de cualquiera de estos 4 documentos, el texto actualizado, sus cláusulas y su soporte PDF quedan inmediatamente publicados en la pestaña <strong>"Mi Cargo & Docs ➔ Políticas y Reglamentos de la Empresa"</strong> de la App de todos los trabajadores de <strong>${emp.razonSocial}</strong>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Editor Paramétrico y Generador PDF -->
+        <div class="lg:col-span-8 p-5 sm:p-6 space-y-4 bg-white">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
+            <div>
+              <span class="text-[10px] font-mono font-bold uppercase text-indigo-600">${polActiva.id} • Categoría: ${polActiva.categoria}</span>
+              <h3 class="text-base font-black text-slate-900">${polActiva.title}</h3>
+            </div>
+            <div class="flex items-center gap-2">
+              <button 
+                type="button"
+                onclick="window.imprimirPoliticaReglamentoEmpresa('${polActiva.id}', '${emp.id}')"
+                class="px-3.5 py-2 bg-slate-900 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer"
+              >
+                <span>🖨️</span>
+                <span>Generar / Descargar PDF Oficial</span>
+              </button>
+            </div>
+          </div>
+
+          <form id="form-parametrizar-politica-empresa" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="sm:col-span-2">
+                <label class="block text-[11px] font-black uppercase text-slate-700 mb-1">Título Oficial del Documento</label>
+                <input type="text" id="pol-emp-title" value="${escapeHtml(polActiva.title)}" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-[11px] font-black uppercase text-slate-700 mb-1">Código & Versión</label>
+                <div class="grid grid-cols-2 gap-1.5">
+                  <input type="text" id="pol-emp-codigo" value="${escapeHtml(polActiva.codigo || polActiva.id)}" class="w-full px-2.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono font-bold text-slate-900" placeholder="Código">
+                  <input type="text" id="pol-emp-version" value="${escapeHtml(polActiva.version || '01')}" class="w-full px-2.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono font-bold text-slate-900" placeholder="Versión">
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="sm:col-span-2">
+                <label class="block text-[11px] font-black uppercase text-slate-700 mb-1">Marco Normativo / Base Legal</label>
+                <input type="text" id="pol-emp-norma" value="${escapeHtml(polActiva.norma || '')}" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-[11px] font-black uppercase text-slate-700 mb-1">Fecha de Vigencia / Publicación</label>
+                <input type="date" id="pol-emp-fecha" value="${escapeHtml(polActiva.fechaVigencia || new Date().toISOString().split('T')[0])}" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono text-slate-800">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-black uppercase text-slate-700 mb-1">Objetivo / Declaración General de la Empresa</label>
+              <textarea id="pol-emp-objetivo" rows="3" required class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 leading-relaxed focus:ring-2 focus:ring-indigo-500 focus:outline-none">${escapeHtml(polActiva.objetivo || '')}</textarea>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-[11px] font-black uppercase text-slate-700">Disposiciones, Compromisos o Capítulos Clave (Uno por línea)</label>
+                <span class="text-[10px] text-indigo-600 font-semibold">Se muestran como viñetas legibles en la App del Trabajador y en el PDF</span>
+              </div>
+              <textarea id="pol-emp-puntos" rows="6" required class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 leading-relaxed focus:ring-2 focus:ring-indigo-500 focus:outline-none">${escapeHtml((polActiva.puntos || []).join('\n'))}</textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-black uppercase text-slate-700 mb-1">Enlace a Documento Maestro Externo / Drive (Opcional)</label>
+                <input type="url" id="pol-emp-enlace" value="${escapeHtml(polActiva.enlace || '')}" placeholder="https://docs.google.com/..." class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-[11px] font-black uppercase text-slate-700 mb-1">Cláusula de Aceptación Digital del Trabajador</label>
+                <input type="text" id="pol-emp-clausula" value="${escapeHtml(polActiva.clausulaAceptacion || '')}" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+              <span class="text-[11px] text-slate-500">
+                Aprobador Patronal: <strong>${emp.representanteLegal || 'Representante Legal'}</strong> · Responsable SST: <strong>${emp.responsableSST || 'Coordinador SST'}</strong>
+              </span>
+              <div class="flex items-center gap-2.5">
+                <button 
+                  type="submit" 
+                  class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black shadow-lg shadow-emerald-900/20 transition flex items-center gap-2 cursor-pointer"
+                >
+                  <span>💾 Guardar y Publicar en App del Trabajador</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modalEl);
+
+  document.getElementById('form-parametrizar-politica-empresa')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const puntosRaw = document.getElementById('pol-emp-puntos')?.value || '';
+    const puntosArr = puntosRaw.split('\n').map(s => s.trim()).filter(Boolean);
+
+    store.guardarPoliticaEmpresa(emp.id, {
+      id: polActiva.id,
+      companyId: emp.id,
+      title: document.getElementById('pol-emp-title')?.value.trim() || polActiva.title,
+      codigo: document.getElementById('pol-emp-codigo')?.value.trim() || polActiva.codigo,
+      version: document.getElementById('pol-emp-version')?.value.trim() || '01',
+      norma: document.getElementById('pol-emp-norma')?.value.trim() || polActiva.norma,
+      fechaVigencia: document.getElementById('pol-emp-fecha')?.value || polActiva.fechaVigencia,
+      objetivo: document.getElementById('pol-emp-objetivo')?.value.trim() || polActiva.objetivo,
+      puntos: puntosArr,
+      enlace: document.getElementById('pol-emp-enlace')?.value.trim() || '',
+      clausulaAceptacion: document.getElementById('pol-emp-clausula')?.value.trim() || polActiva.clausulaAceptacion,
+      estadoPublicacion: 'PUBLICADO'
+    });
+
+    if (window.mostrarToastOperativo) {
+      window.mostrarToastOperativo('✓ Documento guardado y publicado en la App del Trabajador');
+    } else {
+      alert('✓ Documento guardado y publicado exitosamente en la App del Trabajador.');
+    }
+    window.abrirModalPoliticasReglamentosEmpresa(emp.id, polActiva.id);
+  });
+};
+
+window.imprimirPoliticaReglamentoEmpresa = function(polId, empresaId = null) {
+  const emp = (empresaId && store.getEmpresaById(empresaId)) || store.getEmpresaActiva() || store.getEmpresas()[0];
+  if (!emp) return;
+  const politicas = store.getPoliticasEmpresa(emp.id);
+  const pol = politicas.find(p => p.id === polId) || politicas[0];
+  if (!pol) return;
+
+  const repNombre = emp.legal_rep_name || emp.representanteLegal || 'Representante Legal';
+  const repSigUrl = emp.legal_rep_signature_url || `/uploads/sig_inst_rep_legal_${emp.id}.svg`;
+  const coordNombre = emp.sst_coordinator_name || emp.responsableSST || 'Coordinador SG-SST';
+  const coordLic = emp.sst_coordinator_sst_license || emp.licenciaSST || 'Licencia SST Vigente';
+  const coordSigUrl = emp.sst_coordinator_signature_url || `/uploads/sig_inst_coord_sst_${emp.id}.svg`;
+
+  const win = window.open('', '_blank');
+  if (!win) {
+    alert('Por favor habilita las ventanas emergentes para generar el PDF oficial.');
+    return;
+  }
+
+  win.document.write(`
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <title>${pol.codigo || pol.id} - ${pol.title} - ${emp.razonSocial}</title>
+      <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; color: #0f172a; margin: 28px; line-height: 1.55; font-size: 12.5px; }
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+        .header-table td { border: 1px solid #cbd5e1; padding: 8px 12px; vertical-align: middle; }
+        .title-box { text-align: center; font-weight: 800; font-size: 14px; text-transform: uppercase; background: #f8fafc; }
+        .section { margin-top: 14px; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff; }
+        .section h3 { margin: 0 0 6px 0; font-size: 12px; text-transform: uppercase; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+        ul { margin: 6px 0; padding-left: 20px; }
+        li { margin-bottom: 6px; }
+        .sig-grid { display: table; width: 100%; margin-top: 28px; border-top: 1px solid #cbd5e1; padding-top: 16px; }
+        .sig-col { display: table-cell; width: 50%; text-align: center; vertical-align: bottom; padding: 0 12px; }
+        .sig-img { max-height: 55px; max-width: 180px; object-fit: contain; margin: 0 auto 4px auto; display: block; }
+        @media print { .no-print { display: none; } body { margin: 12mm; } }
+      </style>
+    </head>
+    <body>
+      <div class="no-print" style="margin-bottom:16px; text-align:right;">
+        <button onclick="window.print()" style="padding:8px 16px; background:#0f766e; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🖨️ Imprimir / Guardar como PDF</button>
+      </div>
+      <table class="header-table">
+        <tr>
+          <td style="width:22%; text-align:center; font-weight:bold;">
+            ${emp.razonSocial}<br><span style="font-size:10px; color:#475569;">NIT: ${emp.nit}</span>
+          </td>
+          <td class="title-box" style="width:53%;">
+            SISTEMA DE GESTIÓN DE LA SEGURIDAD Y SALUD EN EL TRABAJO (SG-SST)<br>
+            <span style="color:#0f766e;">${pol.title}</span>
+          </td>
+          <td style="width:25%; font-size:11px;">
+            <strong>Código:</strong> ${pol.codigo || pol.id}<br>
+            <strong>Versión:</strong> ${pol.version || '01'}<br>
+            <strong>Fecha:</strong> ${pol.fechaVigencia || new Date().toISOString().split('T')[0]}<br>
+            <strong>Estado:</strong> PUBLICADO
+          </td>
+        </tr>
+      </table>
+
+      <div class="section">
+        <h3>1. Marco Legal y Normativo</h3>
+        <p style="margin:0;">${pol.norma}</p>
+      </div>
+
+      <div class="section">
+        <h3>2. Objetivo y Compromiso Institucional</h3>
+        <p style="margin:0;">${pol.objetivo}</p>
+      </div>
+
+      <div class="section">
+        <h3>3. Directrices, Disposiciones y Obligaciones</h3>
+        <ul>
+          ${(pol.puntos || []).map(pt => `<li>${pt}</li>`).join('')}
+        </ul>
+      </div>
+
+      <div class="section" style="background:#f0fdf4; border-color:#bbf7d0;">
+        <h3>4. Publicación y Socialización a los Trabajadores</h3>
+        <p style="margin:0;">${pol.clausulaAceptacion}</p>
+      </div>
+
+      <div class="sig-grid">
+        <div class="sig-col">
+          <img src="${coordSigUrl}" class="sig-img" onerror="this.style.display='none'">
+          <div style="border-top:1px solid #334155; padding-top:4px; width:80%; margin:0 auto;">
+            <strong>${coordNombre}</strong><br>
+            <span style="font-size:10px; color:#475569;">Responsable / Coordinador SG-SST (${coordLic})</span>
+          </div>
+        </div>
+        <div class="sig-col">
+          <img src="${repSigUrl}" class="sig-img" onerror="this.style.display='none'">
+          <div style="border-top:1px solid #334155; padding-top:4px; width:80%; margin:0 auto;">
+            <strong>${repNombre}</strong><br>
+            <span style="font-size:10px; color:#475569;">Representante Legal — ${emp.razonSocial}</span>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `);
+  win.document.close();
 };

@@ -218,6 +218,17 @@ export function renderCompanies() {
             Ley 527/1999 • Bóveda S3
           </span>
         </button>
+
+        <button 
+          type="button"
+          onclick="window.abrirModalPoliticasReglamentosEmpresa && window.abrirModalPoliticasReglamentosEmpresa('${empresaActiva?.id || ''}')" 
+          class="pb-3 px-4 text-sm font-bold border-b-2 border-transparent text-teal-700 hover:text-teal-900 hover:border-teal-600 transition flex items-center gap-2 cursor-pointer"
+        >
+          <span>📜 Políticas y Reglamentos (App Trabajador)</span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-100 text-teal-800">
+            4 Documentos • Publicar
+          </span>
+        </button>
       </div>
 
       ${pestanaEmpresas === 'directorio' ? `
@@ -348,9 +359,12 @@ export function renderCompanies() {
                   </div>
 
                   <!-- Botón de Firmas Institucionales (Bloque 1) -->
-                  <div class="mt-2">
+                  <div class="mt-2 grid grid-cols-1 gap-1.5">
                     <button type="button" onclick="window.abrirModalFirmasInstitucionales('${emp.id}')" class="w-full py-1.5 px-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-xs font-bold transition border border-purple-200/60 flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer" title="Gestionar Firmas Institucionales (Representante Legal y Coordinador SST)">
                       <span>✍️</span> <span>Firmas Institucionales & SST</span>
+                    </button>
+                    <button type="button" onclick="window.abrirModalPoliticasReglamentosEmpresa && window.abrirModalPoliticasReglamentosEmpresa('${emp.id}')" class="w-full py-1.5 px-2 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-lg text-xs font-bold transition border border-teal-200/80 flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer" title="Parametrizar, generar PDF y publicar Políticas y Reglamentos de la Empresa en la App del Trabajador">
+                      <span>📜</span> <span>Políticas y Reglamentos (App Trabajador)</span>
                     </button>
                   </div>
                 </div>
