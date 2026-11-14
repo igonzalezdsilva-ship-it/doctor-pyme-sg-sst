@@ -1270,43 +1270,43 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
 
   const titulosInstrumentos = {
     manual: {
-      nombre: '1. Manual de Funciones y Responsabilidades SG-SST',
+      nombre: 'Manual de Funciones y Responsabilidades SG-SST',
       norma: 'Decreto 1072 de 2015 (Artículos 2.2.4.6.8 & 2.2.4.6.10)',
       icono: '📖',
       color: 'purple'
     },
     perfil: {
-      nombre: '2. Perfil del Cargo y Competencias SST',
+      nombre: 'Perfil del Cargo y Competencias SST',
       norma: 'Resolución 0312 de 2019 (Estándar 1.1.2 & 1.1.3) & Decreto 1072',
       icono: '📋',
       color: 'amber'
     },
     pts: {
-      nombre: '3. Procedimiento y Plan de Trabajo Seguro (PTS)',
+      nombre: 'Procedimiento y Plan de Trabajo Seguro (PTS)',
       norma: 'Guía Técnica GTC 45 • Res. 0312 Estándar 4.2.1',
       icono: '🛡️',
       color: 'teal'
     },
     profesiograma: {
-      nombre: '4. Profesiograma y Exámenes Médicos Ocupacionales',
+      nombre: 'Profesiograma y Exámenes Médicos Ocupacionales',
       norma: 'Resolución 2346 de 2007 • Estándar 3.1.4',
       icono: '🩺',
       color: 'purple'
     },
     epp: {
-      nombre: '5. Matriz de EPP y Dotación Legal',
+      nombre: 'Matriz de EPP y Dotación Legal',
       norma: 'Resolución 2400 de 1979 • Art. 230 CST • Estándar 4.2.6',
       icono: '🦺',
       color: 'amber'
     },
     anexo: {
-      nombre: '6. Anexo Contractual SST y Notificación de Riesgos',
+      nombre: 'Anexo Contractual SST y Notificación de Riesgos',
       norma: 'Código Sustantivo del Trabajo Arts. 58 y 62 • Dec. 1072',
       icono: '📝',
       color: 'teal'
     },
     recomendaciones: {
-      nombre: '7. Formato de Recomendaciones Médicas Laborales',
+      nombre: 'Formato de Recomendaciones Médicas Laborales',
       norma: 'Resolución 2346 de 2007 • Dec. 1072 Art. 2.2.4.6.24 • Res. 0312',
       icono: '🩺',
       color: 'purple'
@@ -1449,35 +1449,35 @@ window.abrirModalInstrumentoCargo = async function(tipoInicial = 'contrato', car
             </div>
           </div>
 
-          <!-- Pestañas de los 6 Documentos del Cargo + Contrato -->
+          <!-- Pestañas de los 7 Documentos del Cargo + Contrato -->
           <div class="flex gap-1 overflow-x-auto p-1 bg-slate-200/60 rounded-xl">
             <button id="tab-inst-manual" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'manual' ? 'bg-white text-purple-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
               <span>📖</span>
-              <span>1. Manual</span>
+              <span>Manual</span>
             </button>
             <button id="tab-inst-perfil" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'perfil' ? 'bg-white text-amber-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
               <span>📋</span>
-              <span>2. Perfil</span>
+              <span>Perfil</span>
             </button>
             <button id="tab-inst-pts" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'pts' ? 'bg-white text-teal-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
               <span>🛡️</span>
-              <span>3. PTS</span>
+              <span>PTS</span>
             </button>
             <button id="tab-inst-profesiograma" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'profesiograma' ? 'bg-white text-purple-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
               <span>🩺</span>
-              <span>4. Profesiograma</span>
+              <span>Profesiograma</span>
             </button>
             <button id="tab-inst-epp" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'epp' ? 'bg-white text-amber-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
               <span>🦺</span>
-              <span>5. Matriz EPP</span>
+              <span>Matriz EPP</span>
             </button>
             <button id="tab-inst-anexo" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'anexo' ? 'bg-white text-teal-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
               <span>📝</span>
-              <span>6. Anexo SST</span>
+              <span>Anexo SST</span>
             </button>
             <button id="tab-inst-recomendaciones" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'recomendaciones' ? 'bg-white text-purple-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
               <span>🩺</span>
-              <span>7. Recomendaciones</span>
+              <span>Recomendaciones</span>
             </button>
             <button id="tab-inst-contrato" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${instrumentoActivo === 'contrato' ? 'bg-white text-blue-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">
               <span>📄</span>
@@ -4228,7 +4228,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
       type: 'MANUAL_DE_CARGO',
       id: 'DOC-MANUAL-CARGO',
       key: 'manual',
-      title: '1. Manual de Funciones',
+      title: 'Manual de Funciones',
       norma: 'Manual de Funciones y Responsabilidades SST (Dec. 1072/2015 Art. 2.2.4.6.10)',
       icono: '📘',
       color: 'purple'
@@ -4237,7 +4237,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
       type: 'PERFIL_DE_CARGO',
       id: 'DOC-PERFIL-CARGO',
       key: 'perfil',
-      title: '2. Perfil & Competencia',
+      title: 'Perfil & Competencia',
       norma: 'Educación, Experiencia y Competencias SST (Res. 0312/2019 Est. 1.1.2)',
       icono: '🎓',
       color: 'amber'
@@ -4246,7 +4246,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
       type: 'PLAN_DE_TRABAJO_SEGURO',
       id: 'DOC-PTS-CARGO',
       key: 'pts',
-      title: '3. Plan de Trabajo Seguro',
+      title: 'Plan de Trabajo Seguro',
       norma: 'Procedimiento de Trabajo Seguro (PTS) Antes, Durante y Después (GTC 45)',
       icono: '🛡️',
       color: 'teal'
@@ -4255,7 +4255,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
       type: 'PROFESIOGRAMA_SST',
       id: 'DOC-PROFESIOGRAMA-CARGO',
       key: 'profesiograma',
-      title: '4. Profesiograma SST',
+      title: 'Profesiograma SST',
       norma: 'Exámenes Médicos Ocupacionales de Ingreso, Periódicos y Egreso (Res. 2346/2007)',
       icono: '🩺',
       color: 'rose'
@@ -4264,7 +4264,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
       type: 'MATRIZ_EPP_DOTACION',
       id: 'DOC-EPP-CARGO',
       key: 'epp',
-      title: '5. Matriz EPP & Dotación',
+      title: 'Matriz EPP & Dotación',
       norma: 'Elementos de Protección Personal y Dotación por Cargo (Ley 9/1979 & Res. 2400)',
       icono: '🥽',
       color: 'indigo'
@@ -4273,7 +4273,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
       type: 'ANEXO_CONTRACTUAL_Y_NOTIFICACION_RIESGOS',
       id: 'DOC-ANEXO-CONTRACTUAL',
       key: 'anexo',
-      title: '6. Contrato',
+      title: 'Contrato',
       norma: 'Contrato Individual de Trabajo, Anexo SST y Notificación de Riesgos (CST & GTC 45)',
       icono: '⚖️',
       color: 'blue'
@@ -4282,7 +4282,7 @@ function renderVistaAutogestionTrabajador(container, trabajador, esModoAdmin = f
       type: 'RECOMENDACIONES_MEDICAS',
       id: 'DOC-RECOMENDACIONES-CARGO',
       key: 'recomendaciones',
-      title: '7. Recomendaciones Médicas',
+      title: 'Recomendaciones Médicas',
       norma: 'Concepto de Aptitud, Recomendaciones Biomecánicas y Seguimiento PVE (Res. 2346)',
       icono: '🏥',
       color: 'emerald'
@@ -6458,7 +6458,7 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
       <div class="space-y-3 text-xs leading-relaxed text-slate-800">
         <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-950 flex items-center justify-between">
           <div>
-            <strong>2. Perfil & Competencia SST del Cargo:</strong> ${trabajador.cargo} en ${empresa.razonSocial}.
+            <strong>Perfil & Competencia SST del Cargo:</strong> ${trabajador.cargo} en ${empresa.razonSocial}.
           </div>
           <span class="px-2 py-0.5 rounded bg-amber-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
         </div>
@@ -6491,7 +6491,7 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
       <div class="space-y-3 text-xs leading-relaxed text-slate-800">
         <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl text-[11px] text-teal-950 flex items-center justify-between">
           <div>
-            <strong>3. Plan de Trabajo Seguro (PTS):</strong> ${configCargo?.pts?.titulo || `Procedimiento de Trabajo Seguro para ${trabajador.cargo}`}
+            <strong>Plan de Trabajo Seguro (PTS):</strong> ${configCargo?.pts?.titulo || `Procedimiento de Trabajo Seguro para ${trabajador.cargo}`}
           </div>
           <span class="px-2 py-0.5 rounded bg-teal-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
         </div>
@@ -6525,7 +6525,7 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
       <div class="space-y-3 text-xs leading-relaxed text-slate-800">
         <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-[11px] text-rose-950 flex items-center justify-between">
           <div>
-            <strong>4. Profesiograma SST del Cargo (${trabajador.cargo}):</strong> Matriz de Evaluaciones Médicas Ocupacionales (Resolución 2346 de 2007).
+            <strong>Profesiograma SST del Cargo (${trabajador.cargo}):</strong> Matriz de Evaluaciones Médicas Ocupacionales (Resolución 2346 de 2007).
           </div>
           <span class="px-2 py-0.5 rounded bg-rose-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
         </div>
@@ -6559,7 +6559,7 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
       <div class="space-y-3 text-xs leading-relaxed text-slate-800">
         <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-[11px] text-indigo-950 flex items-center justify-between">
           <div>
-            <strong>5. Matriz Técnica de EPP & Dotación (${trabajador.cargo}):</strong> Ley 9 de 1979, Res. 2400 de 1979 y Art. 230 CST.
+            <strong>Matriz Técnica de EPP & Dotación (${trabajador.cargo}):</strong> Ley 9 de 1979, Res. 2400 de 1979 y Art. 230 CST.
           </div>
           <span class="px-2 py-0.5 rounded bg-indigo-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
         </div>
@@ -6586,7 +6586,7 @@ window.abrirModalFirmarDocumentoCargo = function(docType, cargoTitle, trabajador
       <div class="space-y-3 text-xs leading-relaxed text-slate-800">
         <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-950 flex items-center justify-between">
           <div>
-            <strong>7. Acta de Recomendaciones Médicas y Seguimiento PVE (${trabajador.cargo}):</strong> Resolución 2346 de 2007 y Decreto 1072 de 2015.
+            <strong>Acta de Recomendaciones Médicas y Seguimiento PVE (${trabajador.cargo}):</strong> Resolución 2346 de 2007 y Decreto 1072 de 2015.
           </div>
           <span class="px-2 py-0.5 rounded bg-emerald-900 text-white font-mono text-[10px] font-bold">${codigoDoc}</span>
         </div>
