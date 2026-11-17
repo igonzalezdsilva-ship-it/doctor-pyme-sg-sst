@@ -1,16 +1,24 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "co.doctorpyme.app",
       "sha256_cert_fingerprints": [
-        "8B:63:4A:75:24:CC:19:7B:2E:37:C4:36:D4:91:60:41:F1:59:45:CF:4D:6D:85:C0:AE:FB:07:4F:C0:37:0E:80"
+        "8B:63:4A:75:24:CC:19:7B:2E:37:C4:36:D4:91:60:41:F1:59:45:CF:4D:6D:85:C0:AE:FB:07:4F:C0:37:0E:80",
+        "0E:FD:F4:93:DD:60:AC:49:7C:7D:39:2F:F6:1B:73:98:37:9F:DD:AB:E5:79:43:6D:17:D6:DD:67:95:CB:BA:EA",
+        "9F:D0:20:F7:B9:F0:BC:E3:E8:57:02:5D:28:22:E5:76:1E:5B:D5:BA:0E:9B:74:AE:A5:04:08:1A:47:54:8F:0A",
+        "88:2F:B0:84:C8:83:0B:80:82:72:2F:24:AD:BC:3A:16:2D:00:19:D2:D9:F0:F3:8B:12:7F:76:C9:98:C3:A4:82"
       ]
     }
   },
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "co.doctorpyme.sst",
