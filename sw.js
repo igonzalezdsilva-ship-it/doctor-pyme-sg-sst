@@ -3,7 +3,7 @@
 // Cache-First para estáticos, Network-First para APIs y soporte Offline en campo
 // =============================================================================
 
-const CACHE_NAME = 'doctor-pyme-v3.5';
+const CACHE_NAME = 'doctor-pyme-v3.6';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -11,7 +11,10 @@ const ASSETS_TO_CACHE = [
   './index.html',
   './manifest.json',
   './manifest.webmanifest',
+  './css/tokens.css',
   './css/styles.css',
+  './css/shell.css',
+  './js/shell.js',
   './favicon.svg',
   './assets/app-icon.png',
   './assets/logo-horizontal.png',

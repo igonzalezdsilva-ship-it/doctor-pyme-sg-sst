@@ -3,6 +3,7 @@
 // =============================================================================
 import { store } from './store.js';
 import { auth } from './auth.js';
+import { initShell } from './shell.js';
 import { renderDashboard } from './components/dashboard.js';
 import { renderCompanies } from './components/companies.js';
 import { renderEvaluation } from './components/evaluation.js';
@@ -111,15 +112,7 @@ function router() {
   const renderFn = routes[hash] || renderDashboard;
 
   // Actualizar clases activas en sidebar
-  document.querySelectorAll('.nav-link').forEach(link => {
-    if (link.getAttribute('href') === hash) {
-      link.classList.add('bg-indigo-700', 'text-white');
-      link.classList.remove('text-slate-300', 'hover:bg-slate-800');
-    } else {
-      link.classList.remove('bg-indigo-700', 'text-white');
-      link.classList.add('text-slate-300', 'hover:bg-slate-800');
-    }
-  });
+  if (typeof window.shellOnRoute === 'function') window.shellOnRoute(hash);
 
   try {
     const container = document.getElementById('main-content');
@@ -153,10 +146,10 @@ export function actualizarSelectorCabecera() {
     select.classList.remove('cursor-default', 'opacity-95');
     select.classList.add('cursor-pointer');
     select.innerHTML = `
-      <option value="todas" ${activaId === 'todas' ? 'selected' : ''}>🏢 Todas las Empresas (Panel Global)</option>
+      <option value="todas" ${activaId === 'todas' ? 'selected' : ''}>Todas las empresas (panel global)</option>
       ${empresas.map(e => `
         <option value="${e.id}" ${activaId === e.id ? 'selected' : ''}>
-          ${e.razonSocial} (${e.estandaresAplicables} Estándares - Riesgo ${e.claseRiesgo})
+          ${e.razonSocial} · NIT ${e.nit || 'sin NIT'}
         </option>
       `).join('')}
     `;
@@ -167,7 +160,7 @@ export function actualizarSelectorCabecera() {
     select.classList.add('cursor-pointer');
     select.innerHTML = empresas.map(e => `
       <option value="${e.id}" ${activaId === e.id ? 'selected' : ''}>
-        ${e.razonSocial} (${e.estandaresAplicables} Estándares - Riesgo ${e.claseRiesgo})
+        ${e.razonSocial} · NIT ${e.nit || 'sin NIT'}
       </option>
     `).join('');
   } else {
@@ -178,7 +171,7 @@ export function actualizarSelectorCabecera() {
     select.innerHTML = empresas.length > 0
       ? empresas.map(e => `
           <option value="${e.id}" ${activaId === e.id || empresas.length === 1 ? 'selected' : ''}>
-            ${e.razonSocial} (${e.estandaresAplicables} Estándares - Riesgo ${e.claseRiesgo})
+            ${e.razonSocial} · NIT ${e.nit || 'sin NIT'}
           </option>
         `).join('')
       : `<option value="">Sin empresa asignada</option>`;
@@ -193,7 +186,7 @@ export function actualizarSelectorCabecera() {
   const sidebarLinkEmpresas = document.querySelector('aside a.nav-link[href="#empresas"]');
   if (sidebarLinkEmpresas) {
     const svgIcon = sidebarLinkEmpresas.querySelector('svg');
-    const labelTitle = esSuperAdmin ? 'Empresas Clientes' : '1. Empresa';
+    const labelTitle = esSuperAdmin ? 'Empresas clientes' : 'Perfil de empresa';
     sidebarLinkEmpresas.setAttribute('data-title', labelTitle);
     sidebarLinkEmpresas.innerHTML = '';
     if (svgIcon) sidebarLinkEmpresas.appendChild(svgIcon);
@@ -247,6 +240,8 @@ export function actualizarSelectorCabecera() {
   }
 
   actualizarSelectorAnioCabecera();
+  if (typeof window.renderTenantSwitcher === 'function') window.renderTenantSwitcher();
+  if (typeof window.shellOnRoute === 'function') window.shellOnRoute(window.location.hash || '#dashboard');
 }
 
 window.actualizarSelectorCabecera = actualizarSelectorCabecera;
@@ -261,7 +256,7 @@ export function actualizarSelectorAnioCabecera() {
 
   select.innerHTML = anios.map(a => `
     <option value="${a}" ${anioActivo === a ? 'selected' : ''}>
-      Año ${a} ${a === '2025' ? '(Inicial)' : ''}
+      ${a}
     </option>
   `).join('');
 }
@@ -398,18 +393,18 @@ window.mostrarNotificacion = function(mensaje, tipo = 'success') {
   if (!toastContainer) {
     toastContainer = document.createElement('div');
     toastContainer.id = 'toast-container';
-    toastContainer.className = 'fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none';
+    toastContainer.className = 'fixed bottom-20 md:bottom-5 right-4 md:right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none';
     document.body.appendChild(toastContainer);
   }
 
   const toast = document.createElement('div');
-  const bg = tipo === 'success' ? 'bg-slate-900 text-white border-l-4 border-emerald-500' : 'bg-red-900 text-white border-l-4 border-red-500';
-  const icon = tipo === 'success' ? '✅' : '⚠️';
-  toast.className = `${bg} shadow-2xl rounded-xl p-4 flex items-center gap-3 text-xs font-semibold pointer-events-auto transform translate-y-2 opacity-0 transition duration-300 ease-out`;
-  toast.innerHTML = `
-    <span class="text-base">${icon}</span>
-    <div class="flex-1">${mensaje}</div>
-  `;
+  toast.setAttribute('role', 'status');
+  toast.style.cssText = tipo === 'success'
+    ? 'background: var(--card); color: var(--ok-fg); border: 1px solid var(--ok-border);'
+    : 'background: var(--card); color: var(--danger-fg); border: 1px solid var(--danger-border);';
+  toast.className = 'rounded-lg px-4 py-3 text-sm font-medium pointer-events-auto transform translate-y-2 opacity-0 transition duration-150 ease-out';
+  toast.style.boxShadow = 'var(--shadow-pop)';
+  toast.textContent = String(mensaje).replace(/^[^\p{L}\p{N}¿¡]+/u, '');
   toastContainer.appendChild(toast);
 
   requestAnimationFrame(() => {
@@ -449,7 +444,15 @@ async function initApp() {
     const roleEl = document.getElementById('user-display-role');
     if (nameEl) nameEl.innerText = user.nombre;
     if (roleEl) roleEl.innerText = user.rol;
+    const avatarEl = document.getElementById('user-avatar');
+    if (avatarEl) {
+      const w = String(user.nombre || '').replace(/^(Ing\.|Dr\.|Dra\.)\s+/i, '').trim().split(/\s+/).filter(Boolean);
+      avatarEl.textContent = ((w[0] || 'D')[0] + (w[1] ? w[1][0] : '')).toUpperCase();
+    }
   }
+
+  // Shell global (sidebar agrupada, Tenant Switcher, Bottom Nav móvil)
+  initShell();
 
   // Control de Cinta Colapsable de Menú Lateral (Bloque 1)
   const appSidebar = document.getElementById('app-sidebar');
@@ -461,7 +464,8 @@ async function initApp() {
       appSidebar.classList.toggle('sidebar-collapsed', collapsed);
       const icon = btnToggleSidebar.querySelector('svg');
       if (icon) icon.classList.toggle('rotate-180', collapsed);
-      btnToggleSidebar.title = collapsed ? "Expandir Menú" : "Contraer Menú";
+      btnToggleSidebar.title = collapsed ? "Expandir menú" : "Contraer menú";
+      btnToggleSidebar.setAttribute('aria-label', collapsed ? 'Expandir menú' : 'Contraer menú');
     };
 
     const isCollapsedSaved = localStorage.getItem('DOCTOR_PYME_SIDEBAR_COLLAPSED') === 'true';
@@ -531,35 +535,21 @@ async function initApp() {
   store.onSaveStatus((info) => {
     const dot = document.getElementById('save-status-dot');
     const text = document.getElementById('save-status-text');
-    const badge = document.getElementById('save-status-badge');
     const btn = document.getElementById('header-save-indicator');
     if (!dot || !text || !btn) return;
 
     if (info.status === 'ok') {
-      dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse';
-      btn.className = 'flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-bold transition shadow-2xs cursor-pointer group';
-      const hora = new Date(info.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      text.innerText = `100% Sincronizado en Servidor Nube + Respaldo Local (${hora})`;
-      if (badge) {
-        badge.innerText = 'Nube + Local';
-        badge.className = 'text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-semibold hidden md:inline';
-      }
+      const hora = new Date(info.timestamp).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+      btn.setAttribute('data-state', 'ok');
+      text.innerText = `Sincronizado ${hora}`;
+      btn.title = 'Sincronizado con el servidor y respaldo local. Abrir centro de resguardo.';
     } else if (info.status === 'syncing') {
-      dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping';
-      btn.className = 'flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 rounded-xl text-xs font-bold transition shadow-2xs cursor-pointer group';
-      text.innerText = 'Sincronizando cambios con el servidor...';
-      if (badge) {
-        badge.innerText = 'Sincronizando';
-        badge.className = 'text-[10px] text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded font-semibold hidden md:inline';
-      }
+      btn.setAttribute('data-state', 'syncing');
+      text.innerText = 'Sincronizando…';
     } else {
-      dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse';
-      btn.className = 'flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-900 rounded-xl text-xs font-bold transition shadow-2xs cursor-pointer group';
-      text.innerText = 'Modo Offline (Pendiente de sincronizar)';
-      if (badge) {
-        badge.innerText = 'Pendiente Sync';
-        badge.className = 'text-[10px] text-rose-800 bg-rose-100 px-1.5 py-0.5 rounded font-semibold hidden md:inline';
-      }
+      btn.setAttribute('data-state', 'offline');
+      text.innerText = 'Sin conexión · pendiente';
+      btn.title = 'Cambios guardados en este equipo, pendientes de subir al servidor.';
     }
   });
 

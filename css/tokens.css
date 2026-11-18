@@ -1,0 +1,49 @@
+/* =============================================================================
+   TOKENS SEMÁNTICOS - DOCTOR PYME (ver .impeccable.md)
+   Claridad clínica y tranquilidad operativa. Un solo primario (teal profundo).
+   Cada vista debe consumir estas variables; nada de hex sueltos.
+   ============================================================================= */
+:root {
+  /* Superficies */
+  --background: #f3f5f6;
+  --foreground: #172125;
+  --card: #ffffff;
+  --card-foreground: #172125;
+  --muted: #e9edef;
+  --muted-foreground: #526066; /* 5.9:1 sobre --background */
+  --border: #d9dfe2;
+  --input: #cdd5d8;
+
+  /* Acción e identidad */
+  --primary: #0f766e;
+  --primary-hover: #115e59;
+  --primary-foreground: #ffffff;
+  --primary-soft: #e4f3f1;
+  --ring: #0f766e;
+
+  /* Semáforos de estado (texto AA sobre su fondo) */
+  --ok-fg: #047857;
+  --ok-bg: #ecfdf5;
+  --ok-border: #a7f3d0;
+  --warn-fg: #b45309;
+  --warn-bg: #fffbeb;
+  --warn-border: #fde68a;
+  --danger-fg: #be123c;
+  --danger-bg: #fff1f2;
+  --danger-border: #fecdd3;
+
+  /* Forma y profundidad */
+  --radius: 0.5rem;
+  --shadow-xs: 0 1px 2px 0 rgb(16 24 28 / 0.05);
+  --shadow-pop: 0 8px 24px -8px rgb(16 24 28 / 0.18), 0 2px 6px -2px rgb(16 24 28 / 0.08);
+
+  /* Tipografía */
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Shell */
+  --sidebar-w: 16rem;
+  --sidebar-w-collapsed: 4rem;
+  --header-h: 3.5rem;
+  --bottomnav-h: 4rem;
+}
